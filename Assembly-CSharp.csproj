@@ -61,6 +61,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Player.cs" />
+    <Compile Include="Assets\Scripts\ObjectSpawner.cs" />
+    <Compile Include="Assets\Scripts\Move.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
