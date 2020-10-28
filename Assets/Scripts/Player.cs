@@ -14,15 +14,21 @@ public class Player : MonoBehaviour
 
     [Header("Keyboard")]
     public float kb_scaleSpeed = 1f;
+    [Range(0.1f, 1f)]
+    public float kb_slowScale = 0.9f;
     public float kb_rotationSpeed = 1f;
+    [Range(0.1f, 1f)]
+    public float kb_slowRotation = 0.9f;
+
+
 
     // private variables
     private MeshRenderer meshRenderer;
     private Color defaultColor;
     private Color moveColor;
 
-    private enum MouseState {hover, move, none};
-    MouseState mouseState = MouseState.none;
+    private enum MouseState { hover, move, none };
+    private MouseState mouseState = MouseState.none;
     private bool mouseIsActive;
     private Vector3 mouseStartPos;
     private Vector3 mousePos;
@@ -31,6 +37,8 @@ public class Player : MonoBehaviour
     private float rotationTargetAngle;
     private float scaleTargetValue;
 
+    private PolygonCollider2D collider;
+
 
     void Start()
     {
@@ -38,43 +46,28 @@ public class Player : MonoBehaviour
         defaultColor = meshRenderer.material.color;
         moveColor = defaultColor * 1.2f;
         midPoint = this.transform.position;
+        collider = this.GetComponent<PolygonCollider2D>();
     }
 
 
     void Update()
     {
-        GetInput();
         ManageMovement();
+        VisualizeCurrentPlane();
     }
 
+    // -------------------- MOVEMENT ---------------------
 
     void ManageMovement()
     {
+        GetInput();
         MouseMovement();
         KeyboardMovement();
-    }
 
-
-    void KeyboardMovement ()
-    {
-        // rotation
-        float horizontalAxis = Input.GetAxis("Horizontal");
-        if (horizontalAxis != 0)
-        {
-            this.transform.eulerAngles -= new Vector3(0, 0, horizontalAxis * kb_rotationSpeed);
-        }
-
-
-        // scale
-        float verticalAxis = Input.GetAxis("Vertical");
-        if (verticalAxis != 0)
-        {
-            this.transform.localScale += new Vector3(verticalAxis * kb_scaleSpeed, verticalAxis * kb_scaleSpeed, 0);
-        }
         this.transform.localScale = ClampVector3(this.transform.localScale, scaleMin, scaleMax);
     }
-    
 
+    // MOUSE
     void MouseMovement()
     {
         if (mouseState == MouseState.hover)
@@ -85,19 +78,19 @@ public class Player : MonoBehaviour
         else if (mouseState == MouseState.move)
         {
             meshRenderer.material.color = moveColor;
-
-            // rotation
+            
             Vector2 mouseToMid = mousePos - midPoint;
             Vector2 lastMouseToMid = lastMousePos - midPoint;
+            lastMousePos = mousePos;
+
+            // ROTATION
             rotationTargetAngle = Vector2.SignedAngle(lastMouseToMid, mouseToMid);
             this.transform.eulerAngles += new Vector3(0, 0, rotationTargetAngle);
 
-            // scale
+            // SCALE
             scaleTargetValue = (mouseToMid.magnitude - lastMouseToMid.magnitude) * scaleSensitivity;
-            this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
-
-            lastMousePos = mousePos;
-
+            if (mouseToMid.magnitude < scaleMax)
+                this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
         }
 
         else
@@ -106,21 +99,48 @@ public class Player : MonoBehaviour
         }
     }
 
-    //public Vector2 FindNearestPointOnLine(Vector2 origin, Vector2 end, Vector2 point)
-    //{
-    //    //Get heading
-    //    Vector2 heading = (end - origin);
-    //    float magnitudeMax = heading.magnitude;
-    //    heading.Normalize();
+    // KEYBOARD
+    void KeyboardMovement()
+    {
+        // ROTATION
+        float horizontalAxis = Input.GetAxis("Horizontal");
+        float slowAxis = Input.GetAxis("Slow");
+        float slowRotValue = slowAxis + 1 - (2 * slowAxis * kb_slowRotation);
+        if (horizontalAxis != 0)
+        {
+            this.transform.eulerAngles -= new Vector3(0, 0, horizontalAxis * kb_rotationSpeed * slowRotValue);
+        }
 
-    //    //Do projection from the point but clamp it
-    //    Vector2 lhs = point - origin;
-    //    float dotP = Vector2.Dot(lhs, heading);
-    //    dotP = Mathf.Clamp(dotP, 0f, magnitudeMax);
-    //    return origin + heading * dotP;
-    //}
+        // SCALE
+        float verticalAxis = Input.GetAxis("Vertical");
+        float slowScaleFactor = slowAxis + 1 - (2 * slowAxis * kb_slowScale);
+        float scaleValue = verticalAxis * kb_scaleSpeed * slowScaleFactor;
+        if (verticalAxis != 0)
+        {
+            this.transform.localScale += new Vector3(scaleValue, scaleValue, 0);
+        }
 
-        void GetInput()
+    }
+
+    // ---------------------- VISUALISATION ---------------------
+
+    void VisualizeCurrentPlane()
+    {
+        Vector2[] points = collider.points;
+        for (int i=0; i<points.Length-1; i++)
+            points[i] = this.transform.TransformPoint(points[i]);
+        for(int i=0; i<points.Length-1; i++)
+        {
+            Vector2 triangleLineMid = points[i] + ((points[(i + 1)%3] - points[i])/2f);
+            Vector2 directionOut = (triangleLineMid + (triangleLineMid - (Vector2)midPoint)).normalized;
+            Debug.DrawLine((Vector2)midPoint + 10 * directionOut, midPoint, Color.green);
+        }
+    }
+
+    // ----------------------- Events ----------------------
+    
+
+    void GetInput()
     {
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
@@ -132,13 +152,9 @@ public class Player : MonoBehaviour
         {
             mouseState = MouseState.move;
             lastMousePos = mousePos;
-            //mouseStartPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
-            //mouseStartPos = Camera.main.ScreenToWorldPoint(mouseStartPos);
         }
         else if (!Input.GetMouseButton(0))
             mouseState = MouseState.hover;
-
-        
     }
 
     void OnMouseExit()
@@ -152,9 +168,19 @@ public class Player : MonoBehaviour
         mouseState = MouseState.none;
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        print("Collisionenter");
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        print("triggerEnter");
+    }
 
 
-    // Extension Methods
+
+    // ------------------- Extension Methods ---------------------
 
     Vector3 ClampVector3(Vector3 value, float min, float max)
     {
@@ -164,5 +190,19 @@ public class Player : MonoBehaviour
             Mathf.Clamp(value.y, min, max),
             value.z);
         return clampedVector3;
+    }
+
+    public Vector2 FindNearestPointOnLine(Vector2 start, Vector2 end, Vector2 point)
+    {
+        //Get heading
+        Vector2 heading = (end - start);
+        float magnitudeMax = heading.magnitude;
+        heading.Normalize();
+
+        //Do projection from the point but clamp it
+        Vector2 lhs = point - start;
+        float dotP = Vector2.Dot(lhs, heading);
+        dotP = Mathf.Clamp(dotP, 0f, magnitudeMax);
+        return start + heading * dotP;
     }
 }
