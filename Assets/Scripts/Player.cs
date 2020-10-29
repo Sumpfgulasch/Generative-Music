@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Player : MonoBehaviour
 {
     // public variables
+    [Header("CONTROLS")]
     [Header("Mouse")]
     public float rotationSpeed = 5f;
     public float scaleSpeed = 5f;
@@ -20,14 +22,15 @@ public class Player : MonoBehaviour
     [Range(0.1f, 1f)]
     public float kb_slowRotation = 0.9f;
 
-
+    [Header("Environment distance visualisation")]
+    public float offset = 1f;
 
     // private variables
     private MeshRenderer meshRenderer;
     private Color defaultColor;
     private Color moveColor;
 
-    private enum MouseState { hover, move, none };
+    private enum MouseState { hover, scale, scaleRot, none };
     private MouseState mouseState = MouseState.none;
     private bool mouseIsActive;
     private Vector3 mouseStartPos;
@@ -39,6 +42,8 @@ public class Player : MonoBehaviour
 
     private PolygonCollider2D collider;
 
+    private LineRenderer lineRenderer;
+
 
     void Start()
     {
@@ -47,6 +52,7 @@ public class Player : MonoBehaviour
         moveColor = defaultColor * 1.2f;
         midPoint = this.transform.position;
         collider = this.GetComponent<PolygonCollider2D>();
+        lineRenderer = this.GetComponent<LineRenderer>();
     }
 
 
@@ -75,7 +81,7 @@ public class Player : MonoBehaviour
             meshRenderer.material.color = Color.white;
         }
 
-        else if (mouseState == MouseState.move)
+        else if (mouseState == MouseState.scaleRot)
         {
             meshRenderer.material.color = moveColor;
             
@@ -86,6 +92,20 @@ public class Player : MonoBehaviour
             // ROTATION
             rotationTargetAngle = Vector2.SignedAngle(lastMouseToMid, mouseToMid);
             this.transform.eulerAngles += new Vector3(0, 0, rotationTargetAngle);
+
+            // SCALE
+            scaleTargetValue = (mouseToMid.magnitude - lastMouseToMid.magnitude) * scaleSensitivity;
+            if (mouseToMid.magnitude < scaleMax)
+                this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
+        }
+
+        else if (mouseState == MouseState.scale)
+        {
+            meshRenderer.material.color = moveColor;
+
+            Vector2 mouseToMid = mousePos - midPoint;
+            Vector2 lastMouseToMid = lastMousePos - midPoint;
+            lastMousePos = mousePos;
 
             // SCALE
             scaleTargetValue = (mouseToMid.magnitude - lastMouseToMid.magnitude) * scaleSensitivity;
@@ -126,46 +146,110 @@ public class Player : MonoBehaviour
 
     void VisualizeCurrentPlane()
     {
+        // 1) init
+        RaycastHit[] edgeHits = new RaycastHit[3];
+        Vector3[] environmentVertices = new Vector3[3];
+        Vector3 intersection;
+
+        // 2) Prepare raycast
         Vector2[] points = collider.points;
-        for (int i=0; i<points.Length-1; i++)
+        for (int i=0; i<points.Length; i++)
             points[i] = this.transform.TransformPoint(points[i]);
-        for(int i=0; i<points.Length-1; i++)
+        for(int i=0; i<points.Length; i++)
         {
-            Vector2 triangleLineMid = points[i] + ((points[(i + 1)%3] - points[i])/2f);
-            Vector2 directionOut = (triangleLineMid + (triangleLineMid - (Vector2)midPoint)).normalized;
-            Debug.DrawLine((Vector2)midPoint + 10 * directionOut, midPoint, Color.green);
+            Vector3 triangleEdgeMid = points[i] + ((points[(i + 1)%3] - points[i])/2f);
+            triangleEdgeMid.z = this.transform.position.z;
+            Vector3 directionOut = (triangleEdgeMid - midPoint).normalized;
+            RaycastHit hit;
+
+            // 3) Raycasts (from player to environment)
+            if (Physics.Raycast(midPoint, directionOut, out hit))
+            {
+                edgeHits[i] = hit;
+                Debug.DrawLine(triangleEdgeMid, hit.point, Color.red);
+            }
         }
+        // 4) Construct environment triangle by new raycast intersections
+        for (int i = 0; i < edgeHits.Length; i++)
+        {
+            Vector3 point1, point2;
+            Vector3 direction1, direction2;
+            point1 = edgeHits[i].point;
+            point1.z = edgeHits[0].point.z;
+            point2 = edgeHits[(i+1)%3].point;
+            point2.z = edgeHits[0].point.z;
+            direction1 = Vector3.Cross(Vector3.forward, edgeHits[i].normal);
+            direction1.z = 0;
+            direction2 = Vector3.Cross(Vector3.forward, edgeHits[(i + 1) % 3].normal);
+            direction2.z = 0;
+
+            if (ExtensionMethods.LineLineIntersection(out intersection, point1, direction1, point2, direction2))
+                environmentVertices[i] = intersection;
+        }
+
+        for (int i = 0; i<environmentVertices.Length; i++)
+            Debug.DrawLine(environmentVertices[i], environmentVertices[(i + 1) % 3], Color.blue);
+
+        // 5) Set LineRenderer points (with extra points)
+        List<Vector3> newPositions = environmentVertices.ToList();
+        int insertCounter = 0;
+        for (int i = 1; i < environmentVertices.Length; i++)
+        {
+            // insert before
+            newPositions.Insert(i + insertCounter, environmentVertices[i]);
+            insertCounter++;
+            // insert after
+            newPositions.Insert(i + 1 + insertCounter, environmentVertices[i]);
+            insertCounter++;
+        }
+        newPositions.Add(environmentVertices[0]);
+        lineRenderer.positionCount = newPositions.Count;
+        lineRenderer.SetPositions(newPositions.ToArray());
     }
 
     // ----------------------- Events ----------------------
-    
+
 
     void GetInput()
     {
+        OnMouseUp_Right();
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
     }
 
     void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
-            mouseState = MouseState.move;
+            mouseState = MouseState.scaleRot;
             lastMousePos = mousePos;
         }
-        else if (!Input.GetMouseButton(0))
+        else if (Input.GetMouseButton(0))
+        {
+            mouseState = MouseState.scale;
+            lastMousePos = mousePos;
+        }
+        else if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
             mouseState = MouseState.hover;
     }
 
     void OnMouseExit()
     {
-        if (mouseState != MouseState.move)
+        if (mouseState != MouseState.scaleRot && mouseState != MouseState.scale)
             mouseState = MouseState.none;
     }
 
     void OnMouseUp()
     {
         mouseState = MouseState.none;
+    }
+
+    void OnMouseUp_Right()
+    {
+        if (Input.GetMouseButtonUp(1))
+        {
+            mouseState = MouseState.none;
+        }
     }
 
     void OnCollisionEnter(Collision collision)
@@ -190,19 +274,5 @@ public class Player : MonoBehaviour
             Mathf.Clamp(value.y, min, max),
             value.z);
         return clampedVector3;
-    }
-
-    public Vector2 FindNearestPointOnLine(Vector2 start, Vector2 end, Vector2 point)
-    {
-        //Get heading
-        Vector2 heading = (end - start);
-        float magnitudeMax = heading.magnitude;
-        heading.Normalize();
-
-        //Do projection from the point but clamp it
-        Vector2 lhs = point - start;
-        float dotP = Vector2.Dot(lhs, heading);
-        dotP = Mathf.Clamp(dotP, 0f, magnitudeMax);
-        return start + heading * dotP;
     }
 }
