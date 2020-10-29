@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     // public variables
     [Header("CONTROLS")]
+    public float slowFactor = 10f;
     [Header("Mouse")]
     public float rotationSpeed = 5f;
     public float scaleSpeed = 5f;
