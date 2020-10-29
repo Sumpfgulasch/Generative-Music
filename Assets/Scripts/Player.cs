@@ -169,7 +169,7 @@ public class Player : MonoBehaviour
                 Debug.DrawLine(triangleEdgeMid, hit.point, Color.red);
             }
         }
-        // 4) Construct environment triangle by new raycast intersections
+        // 4) Construct environment triangle by line intersections
         for (int i = 0; i < edgeHits.Length; i++)
         {
             Vector3 point1, point2;
@@ -184,13 +184,18 @@ public class Player : MonoBehaviour
             direction2.z = 0;
 
             if (ExtensionMethods.LineLineIntersection(out intersection, point1, direction1, point2, direction2))
+            {
+                // 5) Offset
+                intersection = intersection + (this.transform.position - intersection).normalized * offset;
                 environmentVertices[i] = intersection;
+            }
         }
 
         for (int i = 0; i<environmentVertices.Length; i++)
             Debug.DrawLine(environmentVertices[i], environmentVertices[(i + 1) % 3], Color.blue);
+        
 
-        // 5) Set LineRenderer points (with extra points)
+        // 6) Add extra points for LineRenderer
         List<Vector3> newPositions = environmentVertices.ToList();
         int insertCounter = 0;
         for (int i = 1; i < environmentVertices.Length; i++)
@@ -203,8 +208,13 @@ public class Player : MonoBehaviour
             insertCounter++;
         }
         newPositions.Add(environmentVertices[0]);
+
+        
+
+        // 7) Add to LineRenderer
         lineRenderer.positionCount = newPositions.Count;
         lineRenderer.SetPositions(newPositions.ToArray());
+
     }
 
     // ----------------------- Events ----------------------
