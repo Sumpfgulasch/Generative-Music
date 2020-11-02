@@ -62,10 +62,21 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\Move.cs" />
-    <Compile Include="Assets\Scripts\ObjectSpawner.cs" />
     <Compile Include="Assets\Scripts\ExtensionMethods.cs" />
+    <Compile Include="Assets\Scripts\ObjectSpawner.cs" />
+    <Compile Include="Assets\Wireframe\Examples\Scripts\AutoRotate.cs" />
+    <Compile Include="Assets\Wireframe\ImageEffect\WireframeImageEffect.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Wireframe\Shaders\WireframeTransparent.shader" />
+    <None Include="Assets\Wireframe\Shaders\WireframeShaded-Unlit.shader" />
+    <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparentCulled-Global.shader" />
+    <None Include="Assets\Wireframe\Shaders\WireframeTransparentCulled.shader" />
+    <None Include="Assets\Wireframe\Shaders\Wireframe.cginc" />
+    <None Include="Assets\Wireframe\Shaders\Wireframe.shader" />
+    <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparent-Global.shader" />
+    <None Include="Assets\Wireframe\Shaders\Resources\Wireframe-Global.shader" />
+    <None Include="Assets\Wireframe\Shaders\Resources\WireframeShaded-Unlit-Global.shader" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
