@@ -5,10 +5,8 @@ using UnityEngine;
 public static class ExtensionMethods
 {
 
-    public static bool LineLineIntersection(out Vector3 intersection, Vector3 linePoint1,
-        Vector3 lineVec1, Vector3 linePoint2, Vector3 lineVec2)
+    public static bool LineLineIntersection(out Vector3 intersection, Vector3 linePoint1, Vector3 lineVec1, Vector3 linePoint2, Vector3 lineVec2)
     {
-
         Vector3 lineVec3 = linePoint2 - linePoint1;
         Vector3 crossVec1and2 = Vector3.Cross(lineVec1, lineVec2);
         Vector3 crossVec3and2 = Vector3.Cross(lineVec3, lineVec2);
@@ -44,6 +42,18 @@ public static class ExtensionMethods
         float dotP = Vector2.Dot(lhs, heading);
         dotP = Mathf.Clamp(dotP, 0f, magnitudeMax);
         return start + heading * dotP;
+    }
+
+
+    public static void ClampVector3(this Vector3 value, float min, float max)
+    {
+        // only x & y!
+        Vector3 clampedVector3;
+        clampedVector3 = new Vector3(
+            Mathf.Clamp(value.x, min, max),
+            Mathf.Clamp(value.y, min, max),
+            value.z);
+        value = clampedVector3;
     }
 
 }

@@ -61,7 +61,8 @@ public class Player : MonoBehaviour
         MouseMovement();
         KeyboardMovement();
 
-        this.transform.localScale = ClampVector3(this.transform.localScale, scaleMin, scaleMax);
+        //this.transform.localScale = ClampVector3(this.transform.localScale, scaleMin, scaleMax);
+        this.transform.localScale.ClampVector3(scaleMin, scaleMax);
     }
 
     // MOUSE
@@ -194,13 +195,13 @@ public class Player : MonoBehaviour
 
     // ------------------- Extension Methods ---------------------
 
-    Vector3 ClampVector3(Vector3 value, float min, float max)
-    {
-        Vector3 clampedVector3;
-        clampedVector3 = new Vector3(
-            Mathf.Clamp(value.x, min, max),
-            Mathf.Clamp(value.y, min, max),
-            value.z);
-        return clampedVector3;
-    }
+    //Vector3 ClampVector3(Vector3 value, float min, float max)
+    //{
+    //    Vector3 clampedVector3;
+    //    clampedVector3 = new Vector3(
+    //        Mathf.Clamp(value.x, min, max),
+    //        Mathf.Clamp(value.y, min, max),
+    //        value.z);
+    //    return clampedVector3;
+    //}
 }

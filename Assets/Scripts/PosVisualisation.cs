@@ -10,13 +10,13 @@ public class PosVisualisation : MonoBehaviour
     public float offset = 1f;
 
     // private
-    private PolygonCollider2D collider;
+    private PolygonCollider2D playerCollider;
     private Vector3 playerMid;
     private LineRenderer lineRenderer;
 
     void Start()
     {
-        collider = this.GetComponent<PolygonCollider2D>();
+        playerCollider = GameObject.Find("Player").GetComponent<PolygonCollider2D>();
         //playerMid = Player.instance.transform.position;
         playerMid = GameObject.Find("Player").transform.position;
         lineRenderer = this.GetComponent<LineRenderer>();
@@ -39,7 +39,7 @@ public class PosVisualisation : MonoBehaviour
         Vector3 intersection;
 
         // 2) Prepare raycast
-        Vector2[] points = collider.points;
+        Vector2[] points = playerCollider.points;
         for (int i = 0; i < points.Length; i++)
             points[i] = this.transform.TransformPoint(points[i]);
         for (int i = 0; i < points.Length; i++)
