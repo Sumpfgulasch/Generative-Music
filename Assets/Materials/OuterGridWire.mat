@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: OuterGridWire
   m_Shader: {fileID: -6465566751694194690, guid: b5634101f6921d04d965f0224e823ce8, type: 3}
-  m_ShaderKeywords: _REMOVEDIAG_ON
+  m_ShaderKeywords: 
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -69,7 +69,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _RemoveDiag: 1
+    - _RemoveDiag: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -77,11 +77,11 @@ Material:
     - _V_WIRE_Size: 0.122
     - _WireSmoothness: 4.56
     - _WireThickness: 524
-    - _WireframeVal: 0.005
+    - _WireframeVal: 0.219
     - _ZWrite: 1
     m_Colors:
     - Color_F15F84FB: {r: 0.027486911, g: 0.15183246, b: 0.25, a: 0}
-    - Vector2_C75933F2: {r: 10.2, g: 10, b: 0, a: 0}
+    - Vector2_C75933F2: {r: 1, g: 1.015, b: 0, a: 0}
     - _BackColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
