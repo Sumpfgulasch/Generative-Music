@@ -13,11 +13,12 @@ public class PosVisualisation : MonoBehaviour
     private PolygonCollider2D playerCollider;
     private Vector3 playerMid;
     private LineRenderer lineRenderer;
+    private Vector2[] playerVertices;
+    private Vector3[] environmentVertices = new Vector3[3];
 
     void Start()
     {
         playerCollider = GameObject.Find("Player").GetComponent<PolygonCollider2D>();
-        //playerMid = Player.instance.transform.position;
         playerMid = GameObject.Find("Player").transform.position;
         lineRenderer = this.GetComponent<LineRenderer>();
     }
@@ -25,7 +26,9 @@ public class PosVisualisation : MonoBehaviour
 
     void Update()
     {
+        GetPlayerData();
         VisualizeCurrentPlane();
+        CalcStates();
     }
 
 
@@ -35,16 +38,13 @@ public class PosVisualisation : MonoBehaviour
     {
         // 1) init
         RaycastHit[] edgeHits = new RaycastHit[3];
-        Vector3[] environmentVertices = new Vector3[3];
+        environmentVertices = new Vector3[3];
         Vector3 intersection;
 
         // 2) Prepare raycast
-        Vector2[] points = playerCollider.points;
-        for (int i = 0; i < points.Length; i++)
-            points[i] = this.transform.TransformPoint(points[i]);
-        for (int i = 0; i < points.Length; i++)
+        for (int i = 0; i < playerVertices.Length; i++)
         {
-            Vector3 triangleEdgeMid = points[i] + ((points[(i + 1) % 3] - points[i]) / 2f);
+            Vector3 triangleEdgeMid = playerVertices[i] + ((playerVertices[(i + 1) % 3] - playerVertices[i]) / 2f);
             triangleEdgeMid.z = this.transform.position.z;
             Vector3 directionOut = (triangleEdgeMid - playerMid).normalized;
             RaycastHit hit;
@@ -100,6 +100,66 @@ public class PosVisualisation : MonoBehaviour
         // 7) Add to LineRenderer
         lineRenderer.positionCount = newPositions.Count;
         lineRenderer.SetPositions(newPositions.ToArray());
+    }
 
+    void CalcStates()
+    {
+        Vector3[,] outerTriangles = new Vector3[3,3];
+        Vector3[,] innerTriangles = new Vector3[3,3];
+        int counter = 0;
+
+        // 1) Inner triangles
+        for (int i=0; i<environmentVertices.Length; i++)
+        {
+            // 1.1. Checke ob die erste environmentEdge zwei der drei playerEdges schneidet
+            counter = 0;
+            Vector2 intersection;
+            Vector3 environmentPoint1 = environmentVertices[i];
+            Vector3 environmentPoint2 = environmentVertices[(i + 1) % 3];
+            
+            for (int j = 0; j<playerCollider.points.Length; j++)
+            {
+                Vector3 playerPoint1 = playerCollider.points[j];
+                Vector3 playerPoint2 = playerCollider.points[(j+1)%3];
+
+                if (ExtensionMethods.LineSegmentsIntersection(out intersection, environmentPoint1, environmentPoint2, playerPoint1, playerPoint2))
+                {
+                    // STATE: OUTSIDE
+                    Player.instance.state = Player.State.outside;
+
+                    // create outer triangle
+                    outerTriangles[i,j] = new Vector3(intersection.x, intersection.y, Player.instance.transform.position.z);
+                    counter++;
+
+                    // set missing vertex of outer triangle
+                    if (counter == 2)
+                    {
+                        if (outerTriangles[i,j-1] == null)
+                           outerTriangles[i,j-1] = playerPoint2;
+                        else
+                            outerTriangles[i,(j+1)%3] = playerPoint1;
+                    }
+                }
+
+                // create inner triangle
+            }
+        }
+        if (counter == 0)
+        {
+            // STATE: INSIDE
+            Player.instance.state = Player.State.outside;
+        }
+        // TO DO: States und intersections debuggen
+
+        //print("State: " + Player.instance.state);
+    }
+
+
+
+    void GetPlayerData()
+    {
+        playerVertices = playerCollider.points;
+        for (int i = 0; i < playerVertices.Length; i++)
+            playerVertices[i] = this.transform.TransformPoint(playerVertices[i]);
     }
 }

@@ -13,6 +13,7 @@ public class ObjectSpawner : MonoBehaviour
     public float spawnRhythm = 5f;
     public int objectCount = 3;
     [Header("Grid")]
+    public bool useOuterGrid = false;
     public GameObject grid;
     //[Header("General")]
     //public Move moveScript;
@@ -55,7 +56,7 @@ public class ObjectSpawner : MonoBehaviour
             newObj = Instantiate(newObj, new Vector3(0, 0, zSpawn + objectCount * moveSpeed * spawnRhythm * 120), Quaternion.identity);
             newObj.AddComponent<Move>();
             activeObjects.Add(newObj);
-            if (newObj.tag == "EnvScale")
+            if (useOuterGrid && newObj.tag == "EnvScale")
             {
                 GameObject newGrid = Instantiate(grid, new Vector3(0, 0, zSpawn + objectCount * moveSpeed * spawnRhythm * 120), Quaternion.identity);
                 newGrid.AddComponent<Move>();

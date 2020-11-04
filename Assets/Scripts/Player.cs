@@ -6,6 +6,8 @@ public class Player : MonoBehaviour
 {
     // public variables
     public static Player instance;
+    public enum State { inside, outside, perfect};
+    public State state;
 
     [Header("Mouse")]
     public float rotationSpeed = 5f;
