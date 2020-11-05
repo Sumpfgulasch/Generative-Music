@@ -7,7 +7,11 @@ public class PosVisualisation : MonoBehaviour
 {
     // public
     [Header("Distance to environment visualisation")]
-    [Tooltip("ACHTUNG! Führt zu ungenauen States")]
+    public GameObject perfectTriangle;
+    public GameObject surface_inside;
+    public GameObject surface_outside;
+
+    [Header("Führt zu ungenauen States")]
     public float offset = 1f;
     [Header("to be replaced...")]
     public Transform[] playerVertices_hack;
@@ -18,13 +22,13 @@ public class PosVisualisation : MonoBehaviour
     private LineRenderer lineRenderer_perfectTriangle;
     private Vector2[] playerVertices;
     private Vector3[] environmentVertices = new Vector3[3];
-    private GameObject perfectTriangle;
+
 
     void Start()
     {
         playerCollider = GameObject.Find("Player").GetComponent<PolygonCollider2D>();
         playerMid = GameObject.Find("Player").transform.position;
-        perfectTriangle = GameObject.Find("Perfect");
+        //perfectTriangle = GameObject.Find("Perfect");
         lineRenderer_perfectTriangle = perfectTriangle.GetComponent<LineRenderer>();
     }
 
@@ -181,6 +185,7 @@ public class PosVisualisation : MonoBehaviour
 
     void DrawSurface_inside()
     {
+        
 
     }
 
@@ -196,6 +201,7 @@ public class PosVisualisation : MonoBehaviour
         playerVertices = playerCollider.points;
         for (int i = 0; i < playerVertices.Length; i++)
         {
+            // hack
             //playerVertices[i] = this.transform.TransformPoint(playerVertices[i]);
             playerVertices[i] = playerVertices_hack[i].position;
         }
