@@ -14,7 +14,6 @@ public static class ExtensionMethods
 
         float planarFactor = Vector3.Dot(lineVec3, crossVec1and2);
 
-        //is coplanar, and not parallel
         if (Mathf.Approximately(planarFactor, 0f) &&
             !Mathf.Approximately(crossVec1and2.sqrMagnitude, 0f))
         {
@@ -72,7 +71,7 @@ public static class ExtensionMethods
     }
 
 
-    public static void ClampVector3(this Vector3 value, float min, float max)
+    public static void ClampVector3_2D(this Vector3 value, float min, float max)
     {
         // only x & y!
         Vector3 clampedVector3;

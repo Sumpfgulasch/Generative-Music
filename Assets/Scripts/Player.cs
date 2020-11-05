@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     // public variables
     public static Player instance;
-    public enum State { inside, outside, perfect};
+    public enum State { inside, outside, perfect, noTunnel};
     public State state;
 
     [Header("Mouse")]
@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
         KeyboardMovement();
 
         //this.transform.localScale = ClampVector3(this.transform.localScale, scaleMin, scaleMax);
-        this.transform.localScale.ClampVector3(scaleMin, scaleMax);
+        this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);
     }
 
     // MOUSE
@@ -128,7 +128,7 @@ public class Player : MonoBehaviour
         // SCALE
         float verticalAxis = Input.GetAxis("Vertical");
         float slowScaleFactor = slowAxis + 1 - (2 * slowAxis * kb_slowScale);
-        float scaleValue = verticalAxis * kb_scaleSpeed * slowScaleFactor;
+        float scaleValue = -verticalAxis * kb_scaleSpeed * slowScaleFactor;
         if (verticalAxis != 0)
         {
             this.transform.localScale += new Vector3(scaleValue, scaleValue, 0);
@@ -192,18 +192,4 @@ public class Player : MonoBehaviour
     {
         print("triggerEnter");
     }
-
-
-
-    // ------------------- Extension Methods ---------------------
-
-    //Vector3 ClampVector3(Vector3 value, float min, float max)
-    //{
-    //    Vector3 clampedVector3;
-    //    clampedVector3 = new Vector3(
-    //        Mathf.Clamp(value.x, min, max),
-    //        Mathf.Clamp(value.y, min, max),
-    //        value.z);
-    //    return clampedVector3;
-    //}
 }

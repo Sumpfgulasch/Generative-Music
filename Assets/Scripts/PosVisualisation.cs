@@ -7,7 +7,10 @@ public class PosVisualisation : MonoBehaviour
 {
     // public
     [Header("Distance to environment visualisation")]
+    [Tooltip("ACHTUNG! Führt zu ungenauen States")]
     public float offset = 1f;
+    [Header("to be replaced...")]
+    public Transform[] playerVertices_hack;
 
     // private
     private PolygonCollider2D playerCollider;
@@ -29,8 +32,9 @@ public class PosVisualisation : MonoBehaviour
     void Update()
     {
         GetPlayerData();
-        DrawPerfectTriangle();
         CalcStates();
+        DrawPerfectTriangle();
+        DrawSurfaces();
     }
 
 
@@ -108,58 +112,79 @@ public class PosVisualisation : MonoBehaviour
 
     void CalcStates()
     {
-        Vector3[,] outerTriangles = new Vector3[3,3];
-        Vector3[,] innerTriangles = new Vector3[3,3];
-        int counter = 0;
-
-        // 1) Inner triangles
-        for (int i=0; i<environmentVertices.Length; i++)
+        if (environmentVertices[0] == Vector3.zero)
         {
-            // 1.1. Checke ob die erste environmentEdge zwei der drei playerEdges schneidet
-            counter = 0;
-            Vector2 intersection;
-            Vector3 environmentPoint1 = environmentVertices[i];
-            Vector3 environmentPoint2 = environmentVertices[(i + 1) % 3];
-            
-            for (int j = 0; j<playerCollider.points.Length; j++)
+            // STATE: NO TUNNEL
+            Player.instance.state = Player.State.noTunnel;
+        }
+        else
+        {
+            int counter = 0;
+
+            // 1) Inner triangles
+            for (int i = 0; i < environmentVertices.Length; i++)
             {
-                Vector3 playerPoint1 = playerCollider.points[j];
-                Vector3 playerPoint2 = playerCollider.points[(j+1)%3];
+                // 1.1. Checke ob die erste environmentEdge zwei der drei playerEdges schneidet
+                counter = 0;
+                Vector2 intersection;
+                Vector3 environmentPoint1 = environmentVertices[i];
+                Vector3 environmentPoint2 = environmentVertices[(i + 1) % 3];
 
-                if (ExtensionMethods.LineSegmentsIntersection(out intersection, environmentPoint1, environmentPoint2, playerPoint1, playerPoint2))
+                for (int j = 0; j < playerVertices.Length; j++)
                 {
-                    // STATE: OUTSIDE
-                    Player.instance.state = Player.State.outside;
+                    Vector3 playerPoint1 = playerVertices[j];
+                    Vector3 playerPoint2 = playerVertices[(j + 1) % 3];
 
-                    // create outer triangle
-                    outerTriangles[i,j] = new Vector3(intersection.x, intersection.y, Player.instance.transform.position.z);
-                    counter++;
-
-                    // set missing vertex of outer triangle
-                    if (counter == 2)
+                    if (ExtensionMethods.LineSegmentsIntersection(out intersection, environmentPoint1, environmentPoint2, playerPoint1, playerPoint2))
                     {
-                        if (outerTriangles[i,j-1] == null)
-                           outerTriangles[i,j-1] = playerPoint2;
-                        else
-                            outerTriangles[i,(j+1)%3] = playerPoint1;
+                        // STATE: OUTSIDE
+                        Player.instance.state = Player.State.outside;
+                        counter++;
+
+                        #region OuterTringle vertices setzen
+                        // create outer triangle
+                        //outerTriangles[i,j] = new Vector3(intersection.x, intersection.y, Player.instance.transform.position.z);
+
+                        // set missing vertex of outer triangle
+                        //if (counter == 2)
+                        //{
+                        //    if (outerTriangles[i,j-1] == null)
+                        //       outerTriangles[i,j-1] = playerPoint2;
+                        //    else
+                        //        outerTriangles[i,(j+1)%3] = playerPoint1;
+                        //}
+                        #endregion
                     }
                 }
+            }
 
-                // create inner triangle
+            // TO DO: perfect state
+            //if (playerToEnvironment_distance <= x)
+            //    {
+            //    Player.instance.state = Player.State.perfect;
+            //}
+
+            if (counter == 0) // else hinzu
+            {
+                // STATE: INSIDE
+                Player.instance.state = Player.State.inside;
             }
         }
-        if (counter == 0)
-        {
-            // STATE: INSIDE
-            Player.instance.state = Player.State.outside;
-        }
-        // TO DO: States und intersections debuggen
-
-        //print("State: " + Player.instance.state);
     }
 
 
     void DrawSurfaces()
+    {
+        DrawSurface_inside();
+        DrawSurface_outside();
+    }
+
+    void DrawSurface_inside()
+    {
+
+    }
+
+    void DrawSurface_outside()
     {
 
     }
@@ -170,6 +195,9 @@ public class PosVisualisation : MonoBehaviour
     {
         playerVertices = playerCollider.points;
         for (int i = 0; i < playerVertices.Length; i++)
-            playerVertices[i] = this.transform.TransformPoint(playerVertices[i]);
+        {
+            //playerVertices[i] = this.transform.TransformPoint(playerVertices[i]);
+            playerVertices[i] = playerVertices_hack[i].position;
+        }
     }
 }
