@@ -6,12 +6,14 @@ using System.Linq;
 public class PosVisualisation : MonoBehaviour
 {
     // public
+    [Header("General references")]
+    public Transform playerMesh;
     [Header("Distance to environment visualisation")]
     public GameObject perfectTriangle;
-    public MeshFilter surfaceInside_mf;
-    public MeshFilter maskInside_mf;
-    public MeshFilter surfaceOutside_mf;
-    public MeshFilter maskOutside_mf;
+    public MeshFilter innerSurface_mf;
+    public MeshFilter innerMask_mf;
+    public GameObject outerSurface_obj;
+    public MeshFilter outerMask_mf;
 
     [Header("Führt zu ungenauen States")]
     public float offset = 1f;
@@ -46,7 +48,7 @@ public class PosVisualisation : MonoBehaviour
         CalcStates();
         
         DrawPerfectTriangle();
-        UpdateSurfacePositions();
+        UpdateSurfacesTransforms();
     }
 
 
@@ -121,8 +123,8 @@ public class PosVisualisation : MonoBehaviour
     }
 
 
-
-    // Check for intersections of environmentVertices and playerVertices
+    // STATES
+    // (Check for intersections of environmentVertices and playerVertices)
     void CalcStates()
     {
         if (environmentVertices[0] == Vector3.zero)
@@ -168,12 +170,13 @@ public class PosVisualisation : MonoBehaviour
                     }
                 }
             }
-
+            #region TO DO: perfect state
             // TO DO: perfect state
             //if (playerToEnvironment_distance <= x)
             //    {
             //    Player.instance.state = Player.State.perfect;
             //}
+            #endregion
 
             if (counter == 0) // else hinzu
             {
@@ -184,31 +187,31 @@ public class PosVisualisation : MonoBehaviour
     }
 
 
-    void UpdateSurfacePositions()
+    void UpdateSurfacesTransforms()
     {
-        // INSIDE
-        // Surface
-        surfaceInside_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
+        // Inner surface
+        innerSurface_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
+        innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(playerVertices, this.transform);
 
-        // Mask
-        maskInside_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(playerVertices, this.transform);
-
-        // OUTSIDE
-        // Surface
-
-        // Mask
+        // Outer surface
+        outerSurface_obj.transform.localScale = new Vector3(
+            playerMesh.localScale.x * Player.instance.transform.localScale.x,
+            playerMesh.localScale.y * Player.instance.transform.localScale.y,
+            playerMesh.localScale.z * Player.instance.transform.localScale.z);
+        outerSurface_obj.transform.eulerAngles = Player.instance.transform.eulerAngles; // TO DO: unnötige scheiße; später nicht mehr nötig wenn playerMesh generiert wird (und dessen scale 1 ist)
+        outerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
     }
 
    
 
     void InitMeshes()
     {
-        // inside mesh
-        InitMesh(ref surfaceInside_mf, environmentVertices);
+        // Inner surface
+        InitMesh(ref innerSurface_mf, environmentVertices);
+        InitMesh(ref innerMask_mf, playerVertices);
 
-        // inside mask
-        InitMesh(ref maskInside_mf, playerVertices);
-
+        // Outside
+        InitMesh(ref outerMask_mf, environmentVertices);
     }
 
     void InitMesh(ref MeshFilter mf, Vector3[] vertices)
