@@ -12,29 +12,31 @@ public class PosVisualisation : MonoBehaviour
     // private
     private PolygonCollider2D playerCollider;
     private Vector3 playerMid;
-    private LineRenderer lineRenderer;
+    private LineRenderer lineRenderer_perfectTriangle;
     private Vector2[] playerVertices;
     private Vector3[] environmentVertices = new Vector3[3];
+    private GameObject perfectTriangle;
 
     void Start()
     {
         playerCollider = GameObject.Find("Player").GetComponent<PolygonCollider2D>();
         playerMid = GameObject.Find("Player").transform.position;
-        lineRenderer = this.GetComponent<LineRenderer>();
+        perfectTriangle = GameObject.Find("Perfect");
+        lineRenderer_perfectTriangle = perfectTriangle.GetComponent<LineRenderer>();
     }
 
 
     void Update()
     {
         GetPlayerData();
-        VisualizeCurrentPlane();
+        DrawPerfectTriangle();
         CalcStates();
     }
 
 
 
 
-    void VisualizeCurrentPlane()
+    void DrawPerfectTriangle()
     {
         // 1) init
         RaycastHit[] edgeHits = new RaycastHit[3];
@@ -45,7 +47,7 @@ public class PosVisualisation : MonoBehaviour
         for (int i = 0; i < playerVertices.Length; i++)
         {
             Vector3 triangleEdgeMid = playerVertices[i] + ((playerVertices[(i + 1) % 3] - playerVertices[i]) / 2f);
-            triangleEdgeMid.z = this.transform.position.z;
+            triangleEdgeMid.z = perfectTriangle.transform.position.z;
             Vector3 directionOut = (triangleEdgeMid - playerMid).normalized;
             RaycastHit hit;
 
@@ -73,7 +75,7 @@ public class PosVisualisation : MonoBehaviour
             if (ExtensionMethods.LineLineIntersection(out intersection, point1, direction1, point2, direction2))
             {
                 // 5) Offset
-                intersection = intersection + (this.transform.position - intersection).normalized * offset;
+                intersection = intersection + (perfectTriangle.transform.position - intersection).normalized * offset;
                 environmentVertices[i] = intersection;
             }
         }
@@ -98,9 +100,11 @@ public class PosVisualisation : MonoBehaviour
 
         
         // 7) Add to LineRenderer
-        lineRenderer.positionCount = newPositions.Count;
-        lineRenderer.SetPositions(newPositions.ToArray());
+        lineRenderer_perfectTriangle.positionCount = newPositions.Count;
+        lineRenderer_perfectTriangle.SetPositions(newPositions.ToArray());
     }
+
+
 
     void CalcStates()
     {
@@ -152,6 +156,12 @@ public class PosVisualisation : MonoBehaviour
         // TO DO: States und intersections debuggen
 
         //print("State: " + Player.instance.state);
+    }
+
+
+    void DrawSurfaces()
+    {
+
     }
 
 
