@@ -62,9 +62,6 @@ public class Player : MonoBehaviour
         GetInput();
         MouseMovement();
         KeyboardMovement();
-
-        //this.transform.localScale = ClampVector3(this.transform.localScale, scaleMin, scaleMax);
-        this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);
     }
 
     // MOUSE
@@ -91,6 +88,7 @@ public class Player : MonoBehaviour
             scaleTargetValue = (mouseToMid.magnitude - lastMouseToMid.magnitude) * scaleSensitivity;
             if (mouseToMid.magnitude < scaleMax)
                 this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
+            this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);
         }
 
         else if (mouseState == MouseState.scale)
@@ -105,6 +103,7 @@ public class Player : MonoBehaviour
             scaleTargetValue = (mouseToMid.magnitude - lastMouseToMid.magnitude) * scaleSensitivity;
             if (mouseToMid.magnitude < scaleMax)
                 this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
+            this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);
         }
 
         else

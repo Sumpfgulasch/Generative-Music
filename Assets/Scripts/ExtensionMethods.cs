@@ -82,4 +82,13 @@ public static class ExtensionMethods
         value = clampedVector3;
     }
 
+    public static Vector3[] ConvertArrayFromWorldToLocal(Vector3[] array, Transform localSpace)
+    {
+        Vector3[] convertedVertices = new Vector3[array.Length];
+        for (int i = 0; i < array.Length; i++)
+            convertedVertices[i] = localSpace.InverseTransformPoint(array[i]);
+
+        return convertedVertices;
+    }
+
 }

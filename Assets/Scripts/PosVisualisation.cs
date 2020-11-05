@@ -8,8 +8,10 @@ public class PosVisualisation : MonoBehaviour
     // public
     [Header("Distance to environment visualisation")]
     public GameObject perfectTriangle;
-    public GameObject surface_inside;
-    public GameObject surface_outside;
+    public MeshFilter surfaceInside_mf;
+    public MeshFilter maskInside_mf;
+    public MeshFilter surfaceOutside_mf;
+    public MeshFilter maskOutside_mf;
 
     [Header("Führt zu ungenauen States")]
     public float offset = 1f;
@@ -20,31 +22,35 @@ public class PosVisualisation : MonoBehaviour
     private PolygonCollider2D playerCollider;
     private Vector3 playerMid;
     private LineRenderer lineRenderer_perfectTriangle;
-    private Vector2[] playerVertices;
+    private Vector3[] playerVertices = new Vector3[3];
     private Vector3[] environmentVertices = new Vector3[3];
+    //private Mesh insideSurface_mesh;
+    //private Mesh insideSurface_mask;
 
 
     void Start()
     {
         playerCollider = GameObject.Find("Player").GetComponent<PolygonCollider2D>();
         playerMid = GameObject.Find("Player").transform.position;
-        //perfectTriangle = GameObject.Find("Perfect");
         lineRenderer_perfectTriangle = perfectTriangle.GetComponent<LineRenderer>();
+
+        InitMeshes();
     }
 
 
     void Update()
     {
         GetPlayerData();
+        GetEnvironmentTriangle();
+
         CalcStates();
+        
         DrawPerfectTriangle();
-        DrawSurfaces();
+        UpdateSurfacePositions();
     }
 
 
-
-
-    void DrawPerfectTriangle()
+    void GetEnvironmentTriangle()
     {
         // 1) init
         RaycastHit[] edgeHits = new RaycastHit[3];
@@ -90,9 +96,11 @@ public class PosVisualisation : MonoBehaviour
 
         for (int i = 0; i < environmentVertices.Length; i++)
             Debug.DrawLine(environmentVertices[i], environmentVertices[(i + 1) % 3], Color.blue);
+    }
 
-
-        // 6) Add extra points for LineRenderer
+    void DrawPerfectTriangle()
+    {
+        // 1) Add extra points for LineRenderer
         List<Vector3> newPositions = environmentVertices.ToList();
         int insertCounter = 0;
         for (int i = 1; i < environmentVertices.Length; i++)
@@ -107,13 +115,14 @@ public class PosVisualisation : MonoBehaviour
         newPositions.Add(environmentVertices[0]);
 
         
-        // 7) Add to LineRenderer
+        // 2) Add to LineRenderer
         lineRenderer_perfectTriangle.positionCount = newPositions.Count;
         lineRenderer_perfectTriangle.SetPositions(newPositions.ToArray());
     }
 
 
 
+    // Check for intersections of environmentVertices and playerVertices
     void CalcStates()
     {
         if (environmentVertices[0] == Vector3.zero)
@@ -124,8 +133,6 @@ public class PosVisualisation : MonoBehaviour
         else
         {
             int counter = 0;
-
-            // 1) Inner triangles
             for (int i = 0; i < environmentVertices.Length; i++)
             {
                 // 1.1. Checke ob die erste environmentEdge zwei der drei playerEdges schneidet
@@ -177,32 +184,50 @@ public class PosVisualisation : MonoBehaviour
     }
 
 
-    void DrawSurfaces()
+    void UpdateSurfacePositions()
     {
-        DrawSurface_inside();
-        DrawSurface_outside();
+        // INSIDE
+        // Surface
+        surfaceInside_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
+
+        // Mask
+        maskInside_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(playerVertices, this.transform);
+
+        // OUTSIDE
+        // Surface
+
+        // Mask
     }
 
-    void DrawSurface_inside()
+   
+
+    void InitMeshes()
     {
-        
+        // inside mesh
+        InitMesh(ref surfaceInside_mf, environmentVertices);
+
+        // inside mask
+        InitMesh(ref maskInside_mf, playerVertices);
 
     }
 
-    void DrawSurface_outside()
+    void InitMesh(ref MeshFilter mf, Vector3[] vertices)
     {
-
+        Mesh newMesh = new Mesh();
+        newMesh.vertices = vertices;
+        newMesh.triangles = new int[3] { 0, 1, 2 };
+        newMesh.normals = new Vector3[3] { Vector3.back, Vector3.back, Vector3.back };
+        mf.mesh = newMesh;
+        // no UVs
     }
 
 
 
     void GetPlayerData()
     {
-        playerVertices = playerCollider.points;
         for (int i = 0; i < playerVertices.Length; i++)
         {
             // hack
-            //playerVertices[i] = this.transform.TransformPoint(playerVertices[i]);
             playerVertices[i] = playerVertices_hack[i].position;
         }
     }
