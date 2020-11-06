@@ -71,7 +71,18 @@ public static class ExtensionMethods
     }
 
 
-    public static void ClampVector3_2D(this Vector3 value, float min, float max)
+    //public static void ClampVector3_2D(this Vector3 value, float min, float max)
+    //{
+    //    // only x & y!
+    //    Vector3 clampedVector3;
+    //    clampedVector3 = new Vector3(
+    //        Mathf.Clamp(value.x, min, max),
+    //        Mathf.Clamp(value.y, min, max),
+    //        value.z);
+    //    value = clampedVector3;
+    //}
+
+    public static Vector3 ClampVector3_2D(Vector3 value, float min, float max)
     {
         // only x & y!
         Vector3 clampedVector3;
@@ -79,7 +90,7 @@ public static class ExtensionMethods
             Mathf.Clamp(value.x, min, max),
             Mathf.Clamp(value.y, min, max),
             value.z);
-        value = clampedVector3;
+        return clampedVector3;
     }
 
     public static Vector3[] ConvertArrayFromWorldToLocal(Vector3[] array, Transform localSpace)

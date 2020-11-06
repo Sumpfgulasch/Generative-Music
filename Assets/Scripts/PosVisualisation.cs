@@ -26,8 +26,6 @@ public class PosVisualisation : MonoBehaviour
     private LineRenderer lineRenderer_perfectTriangle;
     private Vector3[] playerVertices = new Vector3[3];
     private Vector3[] environmentVertices = new Vector3[3];
-    //private Mesh insideSurface_mesh;
-    //private Mesh insideSurface_mask;
 
 
     void Start()
@@ -71,7 +69,7 @@ public class PosVisualisation : MonoBehaviour
             if (Physics.Raycast(playerMid, directionOut, out hit))
             {
                 edgeHits[i] = hit;
-                Debug.DrawLine(triangleEdgeMid, hit.point, Color.red);
+                //Debug.DrawLine(triangleEdgeMid, hit.point, Color.red);
             }
         }
         // 4) Final: Construct environment triangle by line intersections
@@ -197,8 +195,8 @@ public class PosVisualisation : MonoBehaviour
         outerSurface_obj.transform.localScale = new Vector3(
             playerMesh.localScale.x * Player.instance.transform.localScale.x,
             playerMesh.localScale.y * Player.instance.transform.localScale.y,
-            playerMesh.localScale.z * Player.instance.transform.localScale.z);
-        outerSurface_obj.transform.eulerAngles = Player.instance.transform.eulerAngles; // TO DO: unnötige scheiße; später nicht mehr nötig wenn playerMesh generiert wird (und dessen scale 1 ist)
+            playerMesh.localScale.z * Player.instance.transform.localScale.z); // TO DO: unnötige scheiße; später nicht mehr nötig wenn playerMesh generiert wird (und dessen scale 1 ist)
+        outerSurface_obj.transform.eulerAngles = Player.instance.transform.eulerAngles;
         outerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
     }
 

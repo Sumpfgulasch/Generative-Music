@@ -7,11 +7,16 @@ public class Player : MonoBehaviour
     // public variables
     public static Player instance;
     public enum State { inside, outside, perfect, noTunnel};
+    [Header("General stuff")]
+    public Transform[] outerVertices_hack;
     public State state;
 
     [Header("Mouse")]
-    public float rotationSpeed = 5f;
-    public float scaleSpeed = 5f;
+    public float rotationMaxSpeed = 5f;
+    public float rotationTargetVectorFactor = 0.1f;
+    public float scaleTargetVectorFactor = 0.05f;
+    public float scaleAcc = 0.005f;
+    public float scaleMaxSpeed = 0.05f;
     public float scaleMax = 2.7f;
     public float scaleMin = 1f;
     public float scaleSensitivity = 0.3f;
@@ -29,8 +34,8 @@ public class Player : MonoBehaviour
     private Color defaultColor;
     private Color moveColor;
 
-    private enum MouseState { hover, scale, scaleRot, none };
-    private MouseState mouseState = MouseState.none;
+    public enum MouseState { hover, scale, rotate, StickToWall, none };
+    public MouseState mouseState = MouseState.none;
     private bool mouseIsActive;
     private Vector3 mouseStartPos;
     private Vector3 mousePos;
@@ -38,6 +43,14 @@ public class Player : MonoBehaviour
     private Vector3 midPoint;
     private float rotationTargetAngle;
     private float scaleTargetValue;
+    private float lastScaleTargetValue;
+    private float scaleDifferenceToLastFrame;
+    private float curPlayerAngle;
+    private float curMouseAngle;
+    private float angleTargetValue;
+    private float lastAngleTargetValue;
+
+    private Vector3[] outerVertices = new Vector3[3];
 
 
     void Start()
@@ -52,6 +65,8 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        GetInput();
+        GetData();
         ManageMovement();
     }
 
@@ -59,7 +74,7 @@ public class Player : MonoBehaviour
 
     void ManageMovement()
     {
-        GetInput();
+        
         MouseMovement();
         KeyboardMovement();
     }
@@ -72,44 +87,72 @@ public class Player : MonoBehaviour
             meshRenderer.material.color = Color.white;
         }
 
-        else if (mouseState == MouseState.scaleRot)
+        else if (mouseState == MouseState.StickToWall)
         {
-            meshRenderer.material.color = moveColor;
             
-            Vector2 mouseToMid = mousePos - midPoint;
-            Vector2 lastMouseToMid = lastMousePos - midPoint;
-            lastMousePos = mousePos;
-
-            // ROTATION
-            rotationTargetAngle = Vector2.SignedAngle(lastMouseToMid, mouseToMid);
-            this.transform.eulerAngles += new Vector3(0, 0, rotationTargetAngle);
-
-            // SCALE
-            scaleTargetValue = (mouseToMid.magnitude - lastMouseToMid.magnitude) * scaleSensitivity;
-            if (mouseToMid.magnitude < scaleMax)
-                this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
-            this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);
         }
 
         else if (mouseState == MouseState.scale)
         {
-            meshRenderer.material.color = moveColor;
-
-            Vector2 mouseToMid = mousePos - midPoint;
-            Vector2 lastMouseToMid = lastMousePos - midPoint;
-            lastMousePos = mousePos;
-
-            // SCALE
-            scaleTargetValue = (mouseToMid.magnitude - lastMouseToMid.magnitude) * scaleSensitivity;
-            if (mouseToMid.magnitude < scaleMax)
-                this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
-            this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);
+            
         }
 
         else
         {
             meshRenderer.material.color = defaultColor;
         }
+
+
+
+        // SCALE
+        // 1) Get mouse to player-distance
+        float mouseToPlayerDistance = 0;
+        Vector2 intersection;
+        Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
+        for (int i = 0; i < outerVertices.Length; i++)
+        {
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
+            {
+                mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
+                if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
+                    // Maus ist innerhalb Dreieck
+                    mouseToPlayerDistance *= -1;
+
+                Debug.DrawLine(new Vector3(mousePos.x, mousePos.y, this.transform.position.z), new Vector3(intersection.x, intersection.y, this.transform.position.z), Color.green);
+            }
+        }
+
+        // 2) Add scale
+        scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
+        // max speed
+        scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+        // max acceleration
+        scaleDifferenceToLastFrame = scaleTargetValue - lastScaleTargetValue;
+        if (scaleDifferenceToLastFrame >= scaleAcc)
+            scaleTargetValue = lastScaleTargetValue + Mathf.Sign(scaleDifferenceToLastFrame) * scaleAcc;
+        // last scale
+        lastScaleTargetValue = scaleTargetValue;
+        // apply & clamp
+        this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
+        this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
+
+
+        // ROTATION
+        Vector2 mouseToMid = mousePos - midPoint;
+        Vector2 playerAngleVec = outerVertices[0] - midPoint;
+        curPlayerAngle = Vector2.SignedAngle(mouseToMid, playerAngleVec);
+        // max speed
+        curPlayerAngle = Mathf.Clamp(curPlayerAngle, -rotationMaxSpeed, rotationMaxSpeed);
+
+        angleTargetValue = rotationTargetVectorFactor * curPlayerAngle;
+        print("targetAngle: " + angleTargetValue);
+        // last rot
+        lastScaleTargetValue = scaleTargetValue;
+        this.transform.eulerAngles += new Vector3(0, 0, angleTargetValue);
+
+        Debug.DrawLine(outerVertices[0], midPoint, Color.green);
+        Debug.DrawLine(mousePos, midPoint, Color.blue); // HIER WEITERMACHEN
+
     }
 
     // KEYBOARD
@@ -133,6 +176,8 @@ public class Player : MonoBehaviour
             this.transform.localScale += new Vector3(scaleValue, scaleValue, 0);
         }
 
+        this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
+
     }
 
     
@@ -140,38 +185,39 @@ public class Player : MonoBehaviour
     // ----------------------- Events ----------------------
 
 
-    void GetInput()
+    
+
+    void OnMouseDown()
     {
-        OnMouseUp_Right();
-        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f);
-        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+        
     }
 
     void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(1))
-        {
-            mouseState = MouseState.scaleRot;
-            lastMousePos = mousePos;
-        }
-        else if (Input.GetMouseButton(0))
-        {
-            mouseState = MouseState.scale;
-            lastMousePos = mousePos;
-        }
-        else if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
-            mouseState = MouseState.hover;
+        //print("mousehover");
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    mouseState = MouseState.StickToWall;
+        //    lastMousePos = mousePos;
+        //}
+        //else if (Input.GetMouseButton(0))
+        //{
+        //    mouseState = MouseState.scale;
+        //    lastMousePos = mousePos;
+        //}
+        //else if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+        //    mouseState = MouseState.hover;
     }
 
     void OnMouseExit()
     {
-        if (mouseState != MouseState.scaleRot && mouseState != MouseState.scale)
-            mouseState = MouseState.none;
+        //if (mouseState != MouseState.StickToWall && mouseState != MouseState.scale)
+        //    mouseState = MouseState.none;
     }
 
     void OnMouseUp()
     {
-        mouseState = MouseState.none;
+        //mouseState = MouseState.none;
     }
 
     void OnMouseUp_Right()
@@ -190,5 +236,18 @@ public class Player : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         print("triggerEnter");
+    }
+
+    void GetData()
+    {
+        for (int i = 0; i < 3; i++)
+            outerVertices[i] = outerVertices_hack[i].position;
+    }
+
+    void GetInput()
+    {
+        OnMouseUp_Right();
+        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, this.transform.position.z);
+        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
     }
 }

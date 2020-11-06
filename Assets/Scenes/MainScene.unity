@@ -1365,16 +1365,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d39725e4f66d5e9439d8112c0608a40c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  outerVertices_hack:
+  - {fileID: 1961482326}
+  - {fileID: 394251607}
+  - {fileID: 94007260}
   state: 0
   rotationSpeed: 10
-  scaleSpeed: 0.1
-  scaleMax: 2.7
-  scaleMin: 0.5
-  scaleSensitivity: 1
+  scaleTargetVectorFactor: 0.1
+  scaleAcc: 1
+  scaleMaxSpeed: 1
+  scaleMax: 1.7
+  scaleMin: 0.15
+  scaleSensitivity: 0.7
   kb_scaleSpeed: 0.02
   kb_slowScale: 0.9
   kb_rotationSpeed: 1
   kb_slowRotation: 0.9
+  mouseState: 3
 --- !u!4 &1240982958
 Transform:
   m_ObjectHideFlags: 0
@@ -1418,9 +1425,9 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.6695453, y: 0.26503086}
-      - {x: 0.10611534, y: -0.71163404}
-      - {x: 0.5636015, y: 0.4480801}
+    - - {x: -0.7145224, y: 0.00025722384}
+      - {x: 0.35630134, y: -0.6241954}
+      - {x: 0.36147076, y: 0.6220443}
 --- !u!1 &1557100708
 GameObject:
   m_ObjectHideFlags: 0
