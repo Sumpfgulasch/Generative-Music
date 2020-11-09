@@ -18,13 +18,14 @@ public class Player : MonoBehaviour
     public float rotationTargetVectorFactor = 0.1f;
     public float scaleTargetVectorFactor = 0.05f;
     public float scaleAcc = 0.005f;
-    public float scaleMaxSpeed = 0.05f;
     public float scaleMax = 2.7f;
     public float scaleMin = 1f;
     public float scaleSensitivity = 0.3f;
     [Header("Mouse V2")]
     public float scaleAcc2 = 0.05f;
     public float scaleBreak = 0.1f;
+    public float scaleMaxSpeed = 0.05f;
+    public float scaleDamp = 0.2f;
 
     [Header("Keyboard")]
     public float kb_scaleSpeed = 1f;
@@ -50,7 +51,8 @@ public class Player : MonoBehaviour
     private float scaleTargetValue;
     private float lastScaleTargetValue;
     private float scaleDifferenceToLastFrame;
-    private float scaleSpeed;
+    [HideInInspector]
+    public float curScaleSpeed = 0;
     private float curPlayerRot;
     private float curMouseRot;
     private float rotTargetValue;
@@ -90,51 +92,6 @@ public class Player : MonoBehaviour
     // MOUSE
     void MouseMovement()
     {
-        // SCALE
-        // V1
-        // 1) Get mouse to player-distance
-        float mouseToPlayerDistance = 0;
-        Vector2 intersection;
-        Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
-        for (int i = 0; i < outerVertices.Length; i++)
-        {
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
-            {
-                mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
-                if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
-                    // Maus ist innerhalb Dreieck
-                    mouseToPlayerDistance *= -1;
-            }
-        }
-
-        //// 2) Add scale
-        scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
-        // max speed
-        scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-        // max acceleration
-        scaleDifferenceToLastFrame = scaleTargetValue - lastScaleTargetValue;
-        if (scaleDifferenceToLastFrame >= scaleAcc)
-            scaleTargetValue = lastScaleTargetValue + Mathf.Sign(scaleDifferenceToLastFrame) * scaleAcc;
-        // last scale
-        lastScaleTargetValue = scaleTargetValue;
-        // apply & clamp
-        this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
-        this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
-
-        // SCALE
-        // V2
-        //if (mouseToPlayerDistance > 0)
-        //    scaleSpeed += scaleAcc2;
-        //else if (mouseToPlayerDistance < 0)
-        //    scaleSpeed -= scaleAcc2;
-        //// clamp
-        //scaleSpeed = Mathf.Clamp(scaleSpeed, -scaleMaxSpeed, scaleMaxSpeed);
-
-        ////// apply & clamp
-        //this.transform.localScale += new Vector3(scaleSpeed, scaleSpeed, 0);
-        //this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
-
-
         // ROTATION
         Vector2 mouseToMid = mousePos - midPoint;
         Vector2 playerAngleVec = outerVertices[0] - midPoint;
@@ -154,18 +111,85 @@ public class Player : MonoBehaviour
             }
             //else
             //    rotTargetValue = lastRotDifferenceToLastFrame * rotationAcc;
-            
+
             //print("ACC! lastDiff:: " + lastRotDifferenceToLastFrame + ", curDiff: " + rotDifferenceToLastFrame);
         }
         // last rot
         lastRotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue;
-        lastRotTargetValue = rotTargetValue; 
+        lastRotTargetValue = rotTargetValue;
         // apply
         this.transform.eulerAngles += new Vector3(0, 0, rotTargetValue);
 
 
-        // SCALE V2
 
+
+        // SCALE
+        // V1
+        // 1) Get mouse to player-distance
+        float mouseToPlayerDistance = 0;
+        Vector2 intersection = Vector2.zero;
+        Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
+        for (int i = 0; i < outerVertices.Length; i++)
+        {
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
+            {
+                mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
+                if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
+                    // Maus ist innerhalb Dreieck
+                    mouseToPlayerDistance *= -1;
+            }
+        }
+
+        #region old scale
+        //// 2) Add scale
+        //scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
+        //// max speed
+        //scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+        //// max acceleration
+        ////scaleDifferenceToLastFrame = scaleTargetValue - lastScaleTargetValue;
+        ////if (scaleDifferenceToLastFrame >= scaleAcc)
+        ////    scaleTargetValue = lastScaleTargetValue + Mathf.Sign(scaleDifferenceToLastFrame) * scaleAcc;
+        //// last scale
+        //lastScaleTargetValue = scaleTargetValue;
+        //// apply & clamp
+        //this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
+        //this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
+        #endregion
+
+        if (state == State.outside)
+        {
+            //curScaleSpeed = -Mathf.Abs(Player.instance.curScaleSpeed);
+            //curScaleSpeed = 0;
+            Vector3 envPlayerIntersection;
+            
+            RaycastHit hit;
+            if (Physics.Raycast(midPoint, outerVertices[0], out hit))
+            {
+                Debug.DrawLine(hit.point, outerVertices[0], Color.yellow);
+                float playerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
+                float envDistance = ((Vector2)hit.point - (Vector2)midPoint).magnitude;
+                float borderTargetScaleFactor = playerRadius / envDistance;
+                print("borderFac: " + borderTargetScaleFactor);
+                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+            }
+            else
+                print("ERROR: no env hit");
+
+        }
+        else
+        {
+            // INSIDE
+
+            scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
+            // max speed
+            scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+            curScaleSpeed += scaleTargetValue;
+            curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
+        }
+
+        // apply & clamp
+        this.transform.localScale += new Vector3(curScaleSpeed, curScaleSpeed, 0);
+        this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
     }
 
 
