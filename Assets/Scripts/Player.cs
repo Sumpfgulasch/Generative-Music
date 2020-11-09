@@ -13,6 +13,8 @@ public class Player : MonoBehaviour
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
+    public float rotationAccLimit = 5f;
+    public float rotationAcc = 1f;
     public float rotationTargetVectorFactor = 0.1f;
     public float scaleTargetVectorFactor = 0.05f;
     public float scaleAcc = 0.005f;
@@ -20,6 +22,9 @@ public class Player : MonoBehaviour
     public float scaleMax = 2.7f;
     public float scaleMin = 1f;
     public float scaleSensitivity = 0.3f;
+    [Header("Mouse V2")]
+    public float scaleAcc2 = 0.05f;
+    public float scaleBreak = 0.1f;
 
     [Header("Keyboard")]
     public float kb_scaleSpeed = 1f;
@@ -45,10 +50,13 @@ public class Player : MonoBehaviour
     private float scaleTargetValue;
     private float lastScaleTargetValue;
     private float scaleDifferenceToLastFrame;
-    private float curPlayerAngle;
-    private float curMouseAngle;
-    private float angleTargetValue;
-    private float lastAngleTargetValue;
+    private float scaleSpeed;
+    private float curPlayerRot;
+    private float curMouseRot;
+    private float rotTargetValue;
+    private float lastRotTargetValue;
+    private float rotDifferenceToLastFrame;
+    private float lastRotDifferenceToLastFrame = 0;
 
     private Vector3[] outerVertices = new Vector3[3];
 
@@ -82,29 +90,8 @@ public class Player : MonoBehaviour
     // MOUSE
     void MouseMovement()
     {
-        if (mouseState == MouseState.hover)
-        {
-            meshRenderer.material.color = Color.white;
-        }
-
-        else if (mouseState == MouseState.StickToWall)
-        {
-            
-        }
-
-        else if (mouseState == MouseState.scale)
-        {
-            
-        }
-
-        else
-        {
-            meshRenderer.material.color = defaultColor;
-        }
-
-
-
         // SCALE
+        // V1
         // 1) Get mouse to player-distance
         float mouseToPlayerDistance = 0;
         Vector2 intersection;
@@ -117,12 +104,10 @@ public class Player : MonoBehaviour
                 if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
                     // Maus ist innerhalb Dreieck
                     mouseToPlayerDistance *= -1;
-
-                Debug.DrawLine(new Vector3(mousePos.x, mousePos.y, this.transform.position.z), new Vector3(intersection.x, intersection.y, this.transform.position.z), Color.green);
             }
         }
 
-        // 2) Add scale
+        //// 2) Add scale
         scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
         // max speed
         scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
@@ -136,24 +121,54 @@ public class Player : MonoBehaviour
         this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
         this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
 
+        // SCALE
+        // V2
+        //if (mouseToPlayerDistance > 0)
+        //    scaleSpeed += scaleAcc2;
+        //else if (mouseToPlayerDistance < 0)
+        //    scaleSpeed -= scaleAcc2;
+        //// clamp
+        //scaleSpeed = Mathf.Clamp(scaleSpeed, -scaleMaxSpeed, scaleMaxSpeed);
+
+        ////// apply & clamp
+        //this.transform.localScale += new Vector3(scaleSpeed, scaleSpeed, 0);
+        //this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
+
 
         // ROTATION
         Vector2 mouseToMid = mousePos - midPoint;
         Vector2 playerAngleVec = outerVertices[0] - midPoint;
-        curPlayerAngle = Vector2.SignedAngle(mouseToMid, playerAngleVec);
+        curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
         // max speed
-        curPlayerAngle = Mathf.Clamp(curPlayerAngle, -rotationMaxSpeed, rotationMaxSpeed);
-
-        angleTargetValue = rotationTargetVectorFactor * curPlayerAngle;
-        print("targetAngle: " + angleTargetValue);
+        curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed);
+        rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
+        // acc
+        rotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue;
+        if (Mathf.Abs(rotDifferenceToLastFrame) >= rotationAccLimit && rotDifferenceToLastFrame > 0)
+        {
+            if (Mathf.Abs(rotTargetValue) <= 0.01)
+            {
+                rotTargetValue = 0.01f * Mathf.Sign(rotTargetValue);
+                //lastRotTargetValue = rotTargetValue;
+                //lastRotDifferenceToLastFrame = 0.01f  * rotationAcc;
+            }
+            //else
+            //    rotTargetValue = lastRotDifferenceToLastFrame * rotationAcc;
+            
+            //print("ACC! lastDiff:: " + lastRotDifferenceToLastFrame + ", curDiff: " + rotDifferenceToLastFrame);
+        }
         // last rot
-        lastScaleTargetValue = scaleTargetValue;
-        this.transform.eulerAngles += new Vector3(0, 0, angleTargetValue);
+        lastRotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue;
+        lastRotTargetValue = rotTargetValue; 
+        // apply
+        this.transform.eulerAngles += new Vector3(0, 0, rotTargetValue);
 
-        Debug.DrawLine(outerVertices[0], midPoint, Color.green);
-        Debug.DrawLine(mousePos, midPoint, Color.blue); // HIER WEITERMACHEN
+
+        // SCALE V2
 
     }
+
+
 
     // KEYBOARD
     void KeyboardMovement()

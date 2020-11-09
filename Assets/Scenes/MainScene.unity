@@ -216,11 +216,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objects:
   - {fileID: 932645579671377797, guid: 7b66b79fc2544e145b8b7fea2036e205, type: 3}
-  - {fileID: 8772878073658639277, guid: 86c6987f1af80514e91aa7650cd08b31, type: 3}
-  - {fileID: 2627614679418061523, guid: a1892e6eb2522064faa1e0ae26f155d5, type: 3}
   zSpawn: 3
   moveSpeed: 0.01
-  spawnRhythm: 4
+  spawnRhythm: 3
   objectCount: 6
   useOuterGrid: 0
   grid: {fileID: 8997859866396797294, guid: 8d70c1ff44bc3624c896948fe152187d, type: 3}
@@ -1346,6 +1344,7 @@ GameObject:
   - component: {fileID: 1240982958}
   - component: {fileID: 1240982957}
   - component: {fileID: 1240982959}
+  - component: {fileID: 1240982960}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1370,13 +1369,18 @@ MonoBehaviour:
   - {fileID: 394251607}
   - {fileID: 94007260}
   state: 0
-  rotationSpeed: 10
-  scaleTargetVectorFactor: 0.1
+  rotationMaxSpeed: 20
+  rotationAccLimit: 0.3
+  rotationAcc: 1.01
+  rotationTargetVectorFactor: 0.05
+  scaleTargetVectorFactor: 0.05
   scaleAcc: 1
   scaleMaxSpeed: 1
   scaleMax: 1.7
   scaleMin: 0.15
   scaleSensitivity: 0.7
+  scaleAcc2: 0.05
+  scaleBreak: 0.1
   kb_scaleSpeed: 0.02
   kb_slowScale: 0.9
   kb_rotationSpeed: 1
@@ -1428,6 +1432,27 @@ PolygonCollider2D:
     - - {x: -0.7145224, y: 0.00025722384}
       - {x: 0.35630134, y: -0.6241954}
       - {x: 0.36147076, y: 0.6220443}
+--- !u!50 &1240982960
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240982956}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 3
 --- !u!1 &1557100708
 GameObject:
   m_ObjectHideFlags: 0
