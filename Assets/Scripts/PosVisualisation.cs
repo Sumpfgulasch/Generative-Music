@@ -43,7 +43,7 @@ public class PosVisualisation : MonoBehaviour
         GetPlayerData();
         GetEnvironmentTriangle();
 
-        CalcStates();
+        SetPositionalStates();
         
         DrawPerfectTriangle();
         UpdateSurfacesTransforms();
@@ -122,13 +122,13 @@ public class PosVisualisation : MonoBehaviour
 
 
     // STATES
-    // (Check for intersections of environmentVertices and playerVertices)
-    void CalcStates()
+    // (= Check for intersections of environmentVertices and playerVertices)
+    void SetPositionalStates()
     {
         if (environmentVertices[0] == Vector3.zero)
         {
             // STATE: NO TUNNEL
-            Player.instance.state = Player.State.noTunnel;
+            Player.instance.positionState = Player.PositionState.noTunnel;
         }
         else
         {
@@ -149,7 +149,7 @@ public class PosVisualisation : MonoBehaviour
                     if (ExtensionMethods.LineSegmentsIntersection(out intersection, environmentPoint1, environmentPoint2, playerPoint1, playerPoint2))
                     {
                         // STATE: OUTSIDE
-                        Player.instance.state = Player.State.outside;
+                        Player.instance.positionState = Player.PositionState.outside;
                         counter++;
 
                         if (counter == 1)
@@ -174,7 +174,7 @@ public class PosVisualisation : MonoBehaviour
                     }
                 }
             }
-            #region TO DO: perfect state
+            #region TO DO: edge state
             // TO DO: perfect state
             //if (playerToEnvironment_distance <= x)
             //    {
@@ -185,7 +185,7 @@ public class PosVisualisation : MonoBehaviour
             if (counter == 0) // else hinzu
             {
                 // STATE: INSIDE
-                Player.instance.state = Player.State.inside;
+                Player.instance.positionState = Player.PositionState.inside;
             }
         }
     }

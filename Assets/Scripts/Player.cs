@@ -6,10 +6,10 @@ public class Player : MonoBehaviour
 {
     // public variables
     public static Player instance;
-    public enum State { inside, outside, edge, noTunnel};
+    public enum PositionState { inside, outside, edge, noTunnel};
     [Header("General stuff")]
     public Transform[] outerVertices_hack;
-    public State state;
+    public PositionState positionState;
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
@@ -26,7 +26,9 @@ public class Player : MonoBehaviour
     public float scaleBreak = 0.1f;
     public float scaleMaxSpeed = 0.05f;
     public float scaleDamp = 0.2f;
-    public float breakoutSpeed = 2f;
+    public float breakoutSpeedMin = 2f;
+    public float breakoutSlowFac = 0.3f;
+    public float scaleEdgeAcc = 0.05f;
 
     [Header("Keyboard")]
     public float kb_scaleSpeed = 1f;
@@ -41,8 +43,8 @@ public class Player : MonoBehaviour
     private Color defaultColor;
     private Color moveColor;
 
-    public enum MouseState { bounce, stickToWall, letOutside };
-    public MouseState mouseState = MouseState.bounce;
+    public enum ActionState { bounceInside, stickToWall, letOutside };
+    public ActionState actionState = ActionState.bounceInside;
     private bool mouseIsActive;
     private Vector3 mouseStartPos;
     private Vector3 mousePos;
@@ -63,6 +65,9 @@ public class Player : MonoBehaviour
 
     private Vector3[] outerVertices = new Vector3[3];
     float mouseToPlayerDistance;
+    float playerRadius;
+    float envDistance;
+    RaycastHit envPlayerIntersection;
 
 
     void Start()
@@ -77,10 +82,6 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        SetMouseStates();
-
-        GetInput();
-        GetData();
         ManageMovement();
     }
 
@@ -88,40 +89,42 @@ public class Player : MonoBehaviour
 
     void ManageMovement()
     {
-        CalcMouseMovement();
+        SetPlayerActionStates();
+        CalcMovementData();
         KeyboardMovement();
 
-        ManageStates();
+        PerformMovement();
     }
 
     // MOUSE
-    void CalcMouseMovement()
+    void CalcMovementData()
     {
+        // Input & data
+        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, this.transform.position.z);
+        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+        for (int i = 0; i < 3; i++)
+            outerVertices[i] = outerVertices_hack[i].position;
+
+
         // ROTATION
         Vector2 mouseToMid = mousePos - midPoint;
         Vector2 playerAngleVec = outerVertices[0] - midPoint;
         curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
-        // max speed
-        curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed);
+        curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // max speed
         rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
         // acc
-        rotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue;
-        if (Mathf.Abs(rotDifferenceToLastFrame) >= rotationAccLimit && rotDifferenceToLastFrame > 0)
-        {
-            if (Mathf.Abs(rotTargetValue) <= 0.01)
-            {
-                rotTargetValue = 0.01f * Mathf.Sign(rotTargetValue);
-            }
-        }
-        // last rot
-        lastRotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue;
+        //rotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue;
+        //if (Mathf.Abs(rotDifferenceToLastFrame) >= rotationAccLimit && rotDifferenceToLastFrame > 0)
+        //{
+        //    if (Mathf.Abs(rotTargetValue) <= 0.01)
+        //        rotTargetValue = 0.01f * Mathf.Sign(rotTargetValue);
+        //}
+        lastRotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue; // last rot
         lastRotTargetValue = rotTargetValue;
 
         
 
         // SCALE
-        // V1
-        // 1) Get mouse to player-distance
         mouseToPlayerDistance = 0;
         Vector2 intersection = Vector2.zero;
         Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
@@ -131,27 +134,20 @@ public class Player : MonoBehaviour
             {
                 mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
                 if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
-                    // Maus ist innerhalb Dreieck
-                    mouseToPlayerDistance *= -1;
+                    mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
             }
         }
-        #region old scale
-        //// 2) Add scale
-        //scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
-        //// max speed
-        //scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-        //// max acceleration
-        ////scaleDifferenceToLastFrame = scaleTargetValue - lastScaleTargetValue;
-        ////if (scaleDifferenceToLastFrame >= scaleAcc)
-        ////    scaleTargetValue = lastScaleTargetValue + Mathf.Sign(scaleDifferenceToLastFrame) * scaleAcc;
-        //// last scale
-        //lastScaleTargetValue = scaleTargetValue;
-        //// apply & clamp
-        //this.transform.localScale += new Vector3(scaleTargetValue, scaleTargetValue, 0);
-        //this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
-        #endregion
 
-        // apply scale LATER!!!
+        scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
+        scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+
+        if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
+        {
+            playerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
+            envDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
+        }
+        else
+            print("ERROR: no env hit");
     }
 
 
@@ -176,85 +172,85 @@ public class Player : MonoBehaviour
         {
             this.transform.localScale += new Vector3(scaleValue, scaleValue, 0);
         }
-
-        //this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
-
     }
 
 
-    void ManageStates()
-    {
-        if (mouseState == MouseState.bounce)
-        {
-            // usual inside stuff
-        }
-        else if (mouseState == MouseState.stickToWall)
-        {
-            if (state == State.edge)
-            {
 
+    void PerformMovement()
+    {
+        // = manage states
+
+
+        // BOUNCE INSIDE
+        if (actionState == ActionState.bounceInside)
+        {
+            if (positionState == PositionState.edge)
+            {
+                // perform bounce
             }
             else
             {
-
+                curScaleSpeed += scaleTargetValue;
             }
         }
-        else if (mouseState == MouseState.letOutside)
+
+        // STICK TO WALL
+        else if (actionState == ActionState.stickToWall)
         {
-
-        }
-
-
-        // wenn stickToWall & Edge
-        if (state == State.outside)
-        {
-            // change only scale
-            RaycastHit envPlayerIntersection;
-            if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
+            // STICK TO EDGE
+            if (positionState == PositionState.edge)
             {
-                float playerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
-                float envDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
                 float borderTargetScaleFactor = envDistance / playerRadius;
                 this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+                curScaleSpeed = 0; // unschön
+            }
+            // MOVE PLAYER TOWARDS EDGE
+            else
+            {
+                float scaleAdd = scaleEdgeAcc;
+                if (playerRadius > envDistance)
+                    scaleAdd *= -1; // (outside)
+                curScaleSpeed += scaleAdd;
+            }
+        }
+
+        // LET OUTSIDE
+        else if (actionState == ActionState.letOutside)
+        {
+            if (positionState == PositionState.outside)
+            {
+                // verlangsamen
+                curScaleSpeed = scaleTargetValue * breakoutSlowFac;
             }
             else
-                print("ERROR: no env hit");
-        }
-        else if (mouseState == MouseState.stickToWall)
-        {
-
-        }
-        else if (state == State.inside)
-        {
-            // INSIDE
-
-            scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
-            // max speed
-            scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-            curScaleSpeed += scaleTargetValue;
-            curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
+            {
+                // normal wie bei bounce
+                curScaleSpeed += scaleTargetValue;
+            }
         }
 
-        // apply & clamp (scale & rot)
+        // APPLY & clamp (scale & rot)
+        curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
         this.transform.localScale += new Vector3(curScaleSpeed, curScaleSpeed, 0);
         this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
         this.transform.eulerAngles += new Vector3(0, 0, rotTargetValue);
     }
 
 
-    void SetMouseStates()
+    void SetPlayerActionStates()
     {
+        // Spieleraktions-States
         if (Input.GetMouseButtonDown(0))
-            mouseState = MouseState.stickToWall;
+            actionState = ActionState.stickToWall;
 
         if (Input.GetMouseButtonUp(0))
-            mouseState = MouseState.bounce;
+            actionState = ActionState.bounceInside;
 
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
         float mouseDelta = Mathf.Sqrt(mouseX * mouseX + mouseY * mouseY);
-        if (mouseDelta > breakoutSpeed)
-            mouseState = MouseState.letOutside;
+        if (mouseDelta > breakoutSpeedMin)
+            actionState = ActionState.letOutside;
     }
     
 
@@ -291,17 +287,5 @@ public class Player : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         print("triggerEnter");
-    }
-
-    void GetData()
-    {
-        for (int i = 0; i < 3; i++)
-            outerVertices[i] = outerVertices_hack[i].position;
-    }
-
-    void GetInput()
-    {
-        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, this.transform.position.z);
-        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
     }
 }
