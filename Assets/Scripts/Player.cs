@@ -10,25 +10,24 @@ public class Player : MonoBehaviour
     [Header("General stuff")]
     public Transform[] outerVertices_hack;
     public PositionState positionState;
+    public float edgeTolerance = 0.01f;
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
-    public float rotationAccLimit = 5f;
-    public float rotationAcc = 1f;
     public float rotationTargetVectorFactor = 0.1f;
     public float scaleTargetVectorFactor = 0.05f;
-    public float scaleAcc = 0.005f;
     public float scaleMax = 2.7f;
     public float scaleMin = 1f;
-    public float scaleSensitivity = 0.3f;
-    [Header("Mouse V2")]
-    public float scaleAcc2 = 0.05f;
-    public float scaleBreak = 0.1f;
     public float scaleMaxSpeed = 0.05f;
     public float scaleDamp = 0.2f;
     public float breakoutSpeedMin = 2f;
     public float breakoutSlowFac = 0.3f;
     public float scaleEdgeAcc = 0.05f;
+    [Header("Bounce")]
+    public float maxBounceSpeed = 0.01f;
+    public float bounceTime = 2f;
+    public float bounceFactor = 10f;
+    public float bounceRecoverTime = 0.5f;
 
     [Header("Keyboard")]
     public float kb_scaleSpeed = 1f;
@@ -67,6 +66,10 @@ public class Player : MonoBehaviour
     float playerRadius;
     float envDistance;
     RaycastHit envPlayerIntersection;
+    private float bounceWeight = 0f;
+    private float bounceRecoverWeight;
+    private float curBounceSpeed;
+
 
 
     void Start()
@@ -112,13 +115,6 @@ public class Player : MonoBehaviour
         curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // max speed
         rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
         curRotSpeed = rotTargetValue;
-        // acc
-        //rotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue;
-        //if (Mathf.Abs(rotDifferenceToLastFrame) >= rotationAccLimit && rotDifferenceToLastFrame > 0)
-        //{
-        //    if (Mathf.Abs(rotTargetValue) <= 0.01)
-        //        rotTargetValue = 0.01f * Mathf.Sign(rotTargetValue);
-        //}
         lastRotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue; // last rot
         lastRotTargetValue = rotTargetValue;
 
@@ -186,7 +182,7 @@ public class Player : MonoBehaviour
         {
             if (positionState == PositionState.edge)
             {
-                // perform bounce
+                StartCoroutine(BounceForce());
             }
             else
             {
@@ -208,9 +204,12 @@ public class Player : MonoBehaviour
             else
             {
                 float scaleAdd = scaleEdgeAcc;
-                if (playerRadius > envDistance)
-                    scaleAdd *= -1; // (outside)
-                curScaleSpeed += scaleAdd;
+                if (curScaleSpeed < 0.0001f)
+                    curScaleSpeed = 0.0001f;
+                if (playerRadius < envDistance)
+                    curScaleSpeed = Mathf.Pow(curScaleSpeed, scaleEdgeAcc);
+                else
+                    curScaleSpeed = Mathf.Pow(curScaleSpeed, 1 + (1 - scaleEdgeAcc));
             }
         }
 
@@ -230,13 +229,38 @@ public class Player : MonoBehaviour
             }
         }
 
+
+
         // APPLY & clamp (scale & rot)
         curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
+        curScaleSpeed = curScaleSpeed * (1 - bounceRecoverWeight) + curBounceSpeed * bounceWeight; // add bounce force
         this.transform.localScale += new Vector3(curScaleSpeed, curScaleSpeed, 0);
         this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
+
         this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed);
     }
 
+    
+    IEnumerator BounceForce()
+    {
+        float time = 0;
+        bounceRecoverWeight = 1;
+        while (time < bounceTime)
+        {
+            time += Time.deltaTime;
+            bounceWeight = 1 - time / bounceTime;
+            curBounceSpeed = -maxBounceSpeed;
+            yield return null;
+        }
+        time = 0;
+        while (time < bounceRecoverTime)
+        {
+            time += Time.deltaTime;
+            bounceRecoverWeight = 1 - time / bounceRecoverTime;
+            yield return null;
+        }
+
+    }
 
     void SetPlayerActionStates()
     {
@@ -252,41 +276,5 @@ public class Player : MonoBehaviour
             actionState = ActionState.bounceInside;
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
             actionState = ActionState.stickToWall;
-    }
-    
-
-    // ----------------------- Events ----------------------
-
-
-    
-
-    void OnMouseDown()
-    {
-        
-    }
-
-    void OnMouseOver()
-    {
-
-    }
-
-    void OnMouseExit()
-    {
-
-    }
-
-    void OnMouseUp()
-    {
-        
-    }
-
-    void OnCollisionEnter(Collision collision)
-    {
-        print("Collisionenter");
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        print("triggerEnter");
     }
 }

@@ -122,66 +122,26 @@ public class PosVisualisation : MonoBehaviour
 
 
     // STATES
-    // (= Check for intersections of environmentVertices and playerVertices)
     void SetPositionalStates()
     {
-        if (environmentVertices[0] == Vector3.zero)
+        RaycastHit hit;
+        if (Physics.Raycast(playerMid, playerVertices[0] - playerMid, out hit))
         {
-            // STATE: NO TUNNEL
-            Player.instance.positionState = Player.PositionState.noTunnel;
+            // calc data
+            float playerRadius = (playerVertices[0] - playerMid).magnitude;
+            float envDistance = (hit.point - playerMid).magnitude;
+            float playerToEnvDistance = playerRadius - envDistance;
+
+            // states
+            if (Mathf.Abs(playerToEnvDistance) < Player.instance.edgeTolerance)
+                Player.instance.positionState = Player.PositionState.edge;
+            else if (playerRadius < envDistance)
+                Player.instance.positionState = Player.PositionState.inside;
+            else
+                Player.instance.positionState = Player.PositionState.outside;
         }
         else
-        {
-            int counter = 0;
-            for (int i = 0; i < environmentVertices.Length; i++)
-            {
-                // 1.1. Checke ob die erste environmentEdge zwei der drei playerEdges schneidet
-                counter = 0;
-                Vector2 intersection;
-                Vector3 environmentPoint1 = environmentVertices[i];
-                Vector3 environmentPoint2 = environmentVertices[(i + 1) % 3];
-
-                for (int j = 0; j < playerVertices.Length; j++)
-                {
-                    Vector3 playerPoint1 = playerVertices[j];
-                    Vector3 playerPoint2 = playerVertices[(j + 1) % 3];
-
-                    if (ExtensionMethods.LineSegmentsIntersection(out intersection, environmentPoint1, environmentPoint2, playerPoint1, playerPoint2))
-                    {
-                        // STATE: OUTSIDE
-                        Player.instance.positionState = Player.PositionState.outside;
-                        counter++;
-
-                        #region OuterTringle vertices setzen
-                        // create outer triangle
-                        //outerTriangles[i,j] = new Vector3(intersection.x, intersection.y, Player.instance.transform.position.z);
-
-                        // set missing vertex of outer triangle
-                        //if (counter == 2)
-                        //{
-                        //    if (outerTriangles[i,j-1] == null)
-                        //       outerTriangles[i,j-1] = playerPoint2;
-                        //    else
-                        //        outerTriangles[i,(j+1)%3] = playerPoint1;
-                        //}
-                        #endregion
-                    }
-                }
-            }
-            #region TO DO: edge state
-            // TO DO: perfect state
-            //if (playerToEnvironment_distance <= x)
-            //    {
-            //    Player.instance.state = Player.State.perfect;
-            //}
-            #endregion
-
-            if (counter == 0) // else hinzu
-            {
-                // STATE: INSIDE
-                Player.instance.positionState = Player.PositionState.inside;
-            }
-        }
+            Player.instance.positionState = Player.PositionState.noTunnel;
     }
 
 

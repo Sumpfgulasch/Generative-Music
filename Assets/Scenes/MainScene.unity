@@ -1367,6 +1367,7 @@ MonoBehaviour:
   - {fileID: 394251607}
   - {fileID: 94007260}
   positionState: 0
+  edgeStateDistance: 0.01
   rotationMaxSpeed: 20
   rotationAccLimit: 0.3
   rotationAcc: 1.01
@@ -1382,7 +1383,11 @@ MonoBehaviour:
   scaleDamp: 0.8
   breakoutSpeedMin: 3
   breakoutSlowFac: 0.3
-  scaleEdgeAcc: 0.001
+  scaleEdgeAcc: 0.9
+  maxBounceSpeed: 0.008
+  bounceTime: 0.5
+  bounceFactor: 10
+  bounceRecoverTime: 0.5
   kb_scaleSpeed: 0.02
   kb_slowScale: 0.9
   kb_rotationSpeed: 1
