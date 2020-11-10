@@ -156,7 +156,6 @@ public class PosVisualisation : MonoBehaviour
                         {
                             //Player.instance.curScaleSpeed *= -1;
                             //Player.instance.curScaleSpeed = -Mathf.Abs(Player.instance.curScaleSpeed);
-                            print("collision; speed: " + Player.instance.curScaleSpeed);
                         }
 
                         #region OuterTringle vertices setzen

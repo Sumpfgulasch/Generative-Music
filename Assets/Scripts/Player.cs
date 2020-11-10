@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     // public variables
     public static Player instance;
-    public enum State { inside, outside, perfect, noTunnel};
+    public enum State { inside, outside, edge, noTunnel};
     [Header("General stuff")]
     public Transform[] outerVertices_hack;
     public State state;
@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
     public float scaleBreak = 0.1f;
     public float scaleMaxSpeed = 0.05f;
     public float scaleDamp = 0.2f;
+    public float breakoutSpeed = 2f;
 
     [Header("Keyboard")]
     public float kb_scaleSpeed = 1f;
@@ -40,8 +41,8 @@ public class Player : MonoBehaviour
     private Color defaultColor;
     private Color moveColor;
 
-    public enum MouseState { hover, scale, rotate, StickToWall, none };
-    public MouseState mouseState = MouseState.none;
+    public enum MouseState { bounce, stickToWall, letOutside };
+    public MouseState mouseState = MouseState.bounce;
     private bool mouseIsActive;
     private Vector3 mouseStartPos;
     private Vector3 mousePos;
@@ -61,6 +62,7 @@ public class Player : MonoBehaviour
     private float lastRotDifferenceToLastFrame = 0;
 
     private Vector3[] outerVertices = new Vector3[3];
+    float mouseToPlayerDistance;
 
 
     void Start()
@@ -75,6 +77,8 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        SetMouseStates();
+
         GetInput();
         GetData();
         ManageMovement();
@@ -84,13 +88,14 @@ public class Player : MonoBehaviour
 
     void ManageMovement()
     {
-        
-        MouseMovement();
+        CalcMouseMovement();
         KeyboardMovement();
+
+        ManageStates();
     }
 
     // MOUSE
-    void MouseMovement()
+    void CalcMouseMovement()
     {
         // ROTATION
         Vector2 mouseToMid = mousePos - midPoint;
@@ -106,27 +111,18 @@ public class Player : MonoBehaviour
             if (Mathf.Abs(rotTargetValue) <= 0.01)
             {
                 rotTargetValue = 0.01f * Mathf.Sign(rotTargetValue);
-                //lastRotTargetValue = rotTargetValue;
-                //lastRotDifferenceToLastFrame = 0.01f  * rotationAcc;
             }
-            //else
-            //    rotTargetValue = lastRotDifferenceToLastFrame * rotationAcc;
-
-            //print("ACC! lastDiff:: " + lastRotDifferenceToLastFrame + ", curDiff: " + rotDifferenceToLastFrame);
         }
         // last rot
         lastRotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue;
         lastRotTargetValue = rotTargetValue;
-        // apply
-        this.transform.eulerAngles += new Vector3(0, 0, rotTargetValue);
 
-
-
+        
 
         // SCALE
         // V1
         // 1) Get mouse to player-distance
-        float mouseToPlayerDistance = 0;
+        mouseToPlayerDistance = 0;
         Vector2 intersection = Vector2.zero;
         Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
         for (int i = 0; i < outerVertices.Length; i++)
@@ -139,7 +135,6 @@ public class Player : MonoBehaviour
                     mouseToPlayerDistance *= -1;
             }
         }
-
         #region old scale
         //// 2) Add scale
         //scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
@@ -156,40 +151,7 @@ public class Player : MonoBehaviour
         //this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
         #endregion
 
-        if (state == State.outside)
-        {
-            //curScaleSpeed = -Mathf.Abs(Player.instance.curScaleSpeed);
-            //curScaleSpeed = 0;
-            Vector3 envPlayerIntersection;
-            
-            RaycastHit hit;
-            if (Physics.Raycast(midPoint, outerVertices[0], out hit))
-            {
-                Debug.DrawLine(hit.point, outerVertices[0], Color.yellow);
-                float playerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
-                float envDistance = ((Vector2)hit.point - (Vector2)midPoint).magnitude;
-                float borderTargetScaleFactor = playerRadius / envDistance;
-                print("borderFac: " + borderTargetScaleFactor);
-                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
-            }
-            else
-                print("ERROR: no env hit");
-
-        }
-        else
-        {
-            // INSIDE
-
-            scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
-            // max speed
-            scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-            curScaleSpeed += scaleTargetValue;
-            curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
-        }
-
-        // apply & clamp
-        this.transform.localScale += new Vector3(curScaleSpeed, curScaleSpeed, 0);
-        this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
+        // apply scale LATER!!!
     }
 
 
@@ -215,10 +177,85 @@ public class Player : MonoBehaviour
             this.transform.localScale += new Vector3(scaleValue, scaleValue, 0);
         }
 
-        this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
+        //this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
 
     }
 
+
+    void ManageStates()
+    {
+        if (mouseState == MouseState.bounce)
+        {
+            // usual inside stuff
+        }
+        else if (mouseState == MouseState.stickToWall)
+        {
+            if (state == State.edge)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+        else if (mouseState == MouseState.letOutside)
+        {
+
+        }
+
+
+        // wenn stickToWall & Edge
+        if (state == State.outside)
+        {
+            // change only scale
+            RaycastHit envPlayerIntersection;
+            if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
+            {
+                float playerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
+                float envDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
+                float borderTargetScaleFactor = envDistance / playerRadius;
+                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+            }
+            else
+                print("ERROR: no env hit");
+        }
+        else if (mouseState == MouseState.stickToWall)
+        {
+
+        }
+        else if (state == State.inside)
+        {
+            // INSIDE
+
+            scaleTargetValue = scaleTargetVectorFactor * mouseToPlayerDistance;
+            // max speed
+            scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+            curScaleSpeed += scaleTargetValue;
+            curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
+        }
+
+        // apply & clamp (scale & rot)
+        this.transform.localScale += new Vector3(curScaleSpeed, curScaleSpeed, 0);
+        this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
+        this.transform.eulerAngles += new Vector3(0, 0, rotTargetValue);
+    }
+
+
+    void SetMouseStates()
+    {
+        if (Input.GetMouseButtonDown(0))
+            mouseState = MouseState.stickToWall;
+
+        if (Input.GetMouseButtonUp(0))
+            mouseState = MouseState.bounce;
+
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
+        float mouseDelta = Mathf.Sqrt(mouseX * mouseX + mouseY * mouseY);
+        if (mouseDelta > breakoutSpeed)
+            mouseState = MouseState.letOutside;
+    }
     
 
     // ----------------------- Events ----------------------
@@ -233,38 +270,17 @@ public class Player : MonoBehaviour
 
     void OnMouseOver()
     {
-        //print("mousehover");
-        //if (Input.GetMouseButtonDown(1))
-        //{
-        //    mouseState = MouseState.StickToWall;
-        //    lastMousePos = mousePos;
-        //}
-        //else if (Input.GetMouseButton(0))
-        //{
-        //    mouseState = MouseState.scale;
-        //    lastMousePos = mousePos;
-        //}
-        //else if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
-        //    mouseState = MouseState.hover;
+
     }
 
     void OnMouseExit()
     {
-        //if (mouseState != MouseState.StickToWall && mouseState != MouseState.scale)
-        //    mouseState = MouseState.none;
+
     }
 
     void OnMouseUp()
     {
-        //mouseState = MouseState.none;
-    }
-
-    void OnMouseUp_Right()
-    {
-        if (Input.GetMouseButtonUp(1))
-        {
-            mouseState = MouseState.none;
-        }
+        
     }
 
     void OnCollisionEnter(Collision collision)
@@ -285,7 +301,6 @@ public class Player : MonoBehaviour
 
     void GetInput()
     {
-        OnMouseUp_Right();
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, this.transform.position.z);
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
     }
