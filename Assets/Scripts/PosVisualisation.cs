@@ -152,12 +152,6 @@ public class PosVisualisation : MonoBehaviour
                         Player.instance.positionState = Player.PositionState.outside;
                         counter++;
 
-                        if (counter == 1)
-                        {
-                            //Player.instance.curScaleSpeed *= -1;
-                            //Player.instance.curScaleSpeed = -Mathf.Abs(Player.instance.curScaleSpeed);
-                        }
-
                         #region OuterTringle vertices setzen
                         // create outer triangle
                         //outerTriangles[i,j] = new Vector3(intersection.x, intersection.y, Player.instance.transform.position.z);

@@ -1366,7 +1366,7 @@ MonoBehaviour:
   - {fileID: 1961482326}
   - {fileID: 394251607}
   - {fileID: 94007260}
-  state: 0
+  positionState: 0
   rotationMaxSpeed: 20
   rotationAccLimit: 0.3
   rotationAcc: 1.01
@@ -1380,12 +1380,14 @@ MonoBehaviour:
   scaleBreak: 0.1
   scaleMaxSpeed: 0.05
   scaleDamp: 0.8
+  breakoutSpeedMin: 3
+  breakoutSlowFac: 0.3
+  scaleEdgeAcc: 0.001
   kb_scaleSpeed: 0.02
   kb_slowScale: 0.9
   kb_rotationSpeed: 1
   kb_slowRotation: 0.9
-  mouseState: 3
-  curScaleSpeed: 0
+  actionState: 0
 --- !u!4 &1240982958
 Transform:
   m_ObjectHideFlags: 0

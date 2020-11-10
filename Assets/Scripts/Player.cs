@@ -54,15 +54,14 @@ public class Player : MonoBehaviour
     private float scaleTargetValue;
     private float lastScaleTargetValue;
     private float scaleDifferenceToLastFrame;
-    [HideInInspector]
-    public float curScaleSpeed = 0;
+    private float curScaleSpeed = 0;
     private float curPlayerRot;
+    private float curRotSpeed;
     private float curMouseRot;
     private float rotTargetValue;
     private float lastRotTargetValue;
     private float rotDifferenceToLastFrame;
     private float lastRotDifferenceToLastFrame = 0;
-
     private Vector3[] outerVertices = new Vector3[3];
     float mouseToPlayerDistance;
     float playerRadius;
@@ -99,7 +98,7 @@ public class Player : MonoBehaviour
     // MOUSE
     void CalcMovementData()
     {
-        // Input & data
+        // General
         mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, this.transform.position.z);
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
         for (int i = 0; i < 3; i++)
@@ -112,6 +111,7 @@ public class Player : MonoBehaviour
         curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
         curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // max speed
         rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
+        curRotSpeed = rotTargetValue;
         // acc
         //rotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue;
         //if (Mathf.Abs(rotDifferenceToLastFrame) >= rotationAccLimit && rotDifferenceToLastFrame > 0)
@@ -221,6 +221,7 @@ public class Player : MonoBehaviour
             {
                 // verlangsamen
                 curScaleSpeed = scaleTargetValue * breakoutSlowFac;
+                curRotSpeed = rotTargetValue * breakoutSlowFac;
             }
             else
             {
@@ -233,24 +234,24 @@ public class Player : MonoBehaviour
         curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
         this.transform.localScale += new Vector3(curScaleSpeed, curScaleSpeed, 0);
         this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
-        this.transform.eulerAngles += new Vector3(0, 0, rotTargetValue);
+        this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed);
     }
 
 
     void SetPlayerActionStates()
     {
         // Spieleraktions-States
-        if (Input.GetMouseButtonDown(0))
-            actionState = ActionState.stickToWall;
-
-        if (Input.GetMouseButtonUp(0))
-            actionState = ActionState.bounceInside;
 
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
         float mouseDelta = Mathf.Sqrt(mouseX * mouseX + mouseY * mouseY);
-        if (mouseDelta > breakoutSpeedMin)
+
+        if (positionState == PositionState.outside || mouseDelta > breakoutSpeedMin)
             actionState = ActionState.letOutside;
+        else
+            actionState = ActionState.bounceInside;
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
+            actionState = ActionState.stickToWall;
     }
     
 
