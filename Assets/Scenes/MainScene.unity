@@ -716,7 +716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerMesh: {fileID: 3572240476142762088}
-  perfectTriangle: {fileID: 919132149068698479}
+  environmentEdges: {fileID: 919132149068698479}
   innerSurface_mf: {fileID: 967280005}
   innerMask_mf: {fileID: 1129972158}
   outerSurface_obj: {fileID: 1217124481}
@@ -777,13 +777,13 @@ LineRenderer:
   - {x: -0.5797251, y: 0.29464105, z: 2.1781714}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 0.1
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.0034157634
+        value: 0.029401481
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1367,23 +1367,20 @@ MonoBehaviour:
   - {fileID: 394251607}
   - {fileID: 94007260}
   positionState: 0
-  edgeStateDistance: 0.01
+  edgeTolerance: 0.01
   rotationMaxSpeed: 20
-  rotationAccLimit: 0.3
-  rotationAcc: 1.01
   rotationTargetVectorFactor: 0.05
   scaleTargetVectorFactor: 0.05
-  scaleAcc: 1
   scaleMax: 1.7
   scaleMin: 0.15
-  scaleSensitivity: 0.7
-  scaleAcc2: 0.001
-  scaleBreak: 0.1
   scaleMaxSpeed: 0.05
   scaleDamp: 0.8
   breakoutSpeedMin: 3
   breakoutSlowFac: 0.3
-  scaleEdgeAcc: 0.9
+  scaleEdgeAcc: 0.8
+  fastFactor: 3
+  bounceEntrySpeedScale: 0.005
+  bounceEntrySpeedRot: 0.4
   maxBounceSpeed: 0.008
   bounceTime: 0.5
   bounceFactor: 10
@@ -1906,7 +1903,7 @@ GameObject:
   - component: {fileID: 543450652719827413}
   - component: {fileID: 842566487}
   m_Layer: 0
-  m_Name: PerfectTriangle
+  m_Name: EnvEdges
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

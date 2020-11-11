@@ -9,7 +9,7 @@ public class PosVisualisation : MonoBehaviour
     [Header("General references")]
     public Transform playerMesh;
     [Header("Distance to environment visualisation")]
-    public GameObject perfectTriangle;
+    public GameObject environmentEdges;
     public MeshFilter innerSurface_mf;
     public MeshFilter innerMask_mf;
     public GameObject outerSurface_obj;
@@ -23,7 +23,7 @@ public class PosVisualisation : MonoBehaviour
     // private
     private PolygonCollider2D playerCollider;
     private Vector3 playerMid;
-    private LineRenderer lineRenderer_perfectTriangle;
+    private LineRenderer lineRenderer_envEdges;
     private Vector3[] playerVertices = new Vector3[3];
     private Vector3[] environmentVertices = new Vector3[3];
 
@@ -32,7 +32,7 @@ public class PosVisualisation : MonoBehaviour
     {
         playerCollider = GameObject.Find("Player").GetComponent<PolygonCollider2D>();
         playerMid = GameObject.Find("Player").transform.position;
-        lineRenderer_perfectTriangle = perfectTriangle.GetComponent<LineRenderer>();
+        lineRenderer_envEdges = environmentEdges.GetComponent<LineRenderer>();
 
         InitMeshes();
     }
@@ -45,7 +45,7 @@ public class PosVisualisation : MonoBehaviour
 
         SetPositionalStates();
         
-        DrawPerfectTriangle();
+        DrawEnvironmentEdges();
         UpdateSurfacesTransforms();
     }
 
@@ -61,7 +61,7 @@ public class PosVisualisation : MonoBehaviour
         for (int i = 0; i < playerVertices.Length; i++)
         {
             Vector3 triangleEdgeMid = playerVertices[i] + ((playerVertices[(i + 1) % 3] - playerVertices[i]) / 2f);
-            triangleEdgeMid.z = perfectTriangle.transform.position.z;
+            triangleEdgeMid.z = environmentEdges.transform.position.z;
             Vector3 directionOut = (triangleEdgeMid - playerMid).normalized;
             RaycastHit hit;
 
@@ -89,7 +89,7 @@ public class PosVisualisation : MonoBehaviour
             if (ExtensionMethods.LineLineIntersection(out intersection, point1, direction1, point2, direction2))
             {
                 // 5) Offset
-                intersection = intersection + (perfectTriangle.transform.position - intersection).normalized * offset;
+                intersection = intersection + (environmentEdges.transform.position - intersection).normalized * offset;
                 environmentVertices[i] = intersection;
             }
         }
@@ -98,7 +98,7 @@ public class PosVisualisation : MonoBehaviour
             Debug.DrawLine(environmentVertices[i], environmentVertices[(i + 1) % 3], Color.blue);
     }
 
-    void DrawPerfectTriangle()
+    void DrawEnvironmentEdges()
     {
         // 1) Add extra points for LineRenderer
         List<Vector3> newPositions = environmentVertices.ToList();
@@ -116,8 +116,8 @@ public class PosVisualisation : MonoBehaviour
 
         
         // 2) Add to LineRenderer
-        lineRenderer_perfectTriangle.positionCount = newPositions.Count;
-        lineRenderer_perfectTriangle.SetPositions(newPositions.ToArray());
+        lineRenderer_envEdges.positionCount = newPositions.Count;
+        lineRenderer_envEdges.SetPositions(newPositions.ToArray());
     }
 
 

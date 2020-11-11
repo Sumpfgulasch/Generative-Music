@@ -14,18 +14,29 @@ public class Player : MonoBehaviour
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
+    [Range(0,1f)]
     public float rotationTargetVectorFactor = 0.1f;
+    [Range(0, 1f)]
     public float scaleTargetVectorFactor = 0.05f;
     public float scaleMax = 2.7f;
     public float scaleMin = 1f;
     public float scaleMaxSpeed = 0.05f;
+    [Range(0, 1f)]
     public float scaleDamp = 0.2f;
     public float breakoutSpeedMin = 2f;
+    [Range(0, 1f)]
     public float breakoutSlowFac = 0.3f;
+    [Range(0, 1f)]
     public float scaleEdgeAcc = 0.05f;
+    [Range(1, 20f)]
+    public float fastFactor = 3f;
     [Header("Bounce")]
+    [Range(0.001f, 0.05f)]
+    public float bounceEntrySpeedScale = 0.005f;
+    public float bounceEntrySpeedRot = 0.1f;
     public float maxBounceSpeed = 0.01f;
     public float bounceTime = 2f;
+    [Range(1, 20f)]
     public float bounceFactor = 10f;
     public float bounceRecoverTime = 0.5f;
 
@@ -69,7 +80,8 @@ public class Player : MonoBehaviour
     private float bounceWeight = 0f;
     private float bounceRecoverWeight;
     private float curBounceSpeed;
-
+    private float fastWeight = 1f;
+    private float mouseX, mouseY, mouseDelta;
 
 
     void Start()
@@ -91,8 +103,10 @@ public class Player : MonoBehaviour
 
     void ManageMovement()
     {
+        GetInput();
         SetPlayerActionStates();
         CalcMovementData();
+
         KeyboardMovement();
 
         PerformMovement();
@@ -175,14 +189,24 @@ public class Player : MonoBehaviour
     void PerformMovement()
     {
         // = manage states
-
-
+        
         // BOUNCE INSIDE
         if (actionState == ActionState.bounceInside)
         {
-            if (positionState == PositionState.edge)
+            if (positionState == PositionState.edge) // 2. bedingung V2
             {
-                StartCoroutine(BounceForce());
+                if (curScaleSpeed > bounceEntrySpeedScale || curRotSpeed > bounceEntrySpeedRot)
+                {
+                    StartCoroutine(BounceForce());
+                }
+                else if (mouseToPlayerDistance > 0)
+                {
+                    float borderTargetScaleFactor = envDistance / playerRadius;
+                    this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+                    curScaleSpeed = 0; // unschön
+                }
+                else
+                    curScaleSpeed += scaleTargetValue;
             }
             else
             {
@@ -233,11 +257,12 @@ public class Player : MonoBehaviour
 
         // APPLY & clamp (scale & rot)
         curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
-        curScaleSpeed = curScaleSpeed * (1 - bounceRecoverWeight) + curBounceSpeed * bounceWeight; // add bounce force
-        this.transform.localScale += new Vector3(curScaleSpeed, curScaleSpeed, 0);
+        curScaleSpeed = curScaleSpeed * (1 - bounceRecoverWeight) + curBounceSpeed * bounceWeight; // add bounce force & fast speed
+        
+        this.transform.localScale += new Vector3(curScaleSpeed * fastWeight, curScaleSpeed * fastWeight, 0);
         this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
 
-        this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed);
+        this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
     }
 
     
@@ -261,15 +286,24 @@ public class Player : MonoBehaviour
         }
 
     }
+    
+
+    void GetInput()
+    {
+        mouseX = Input.GetAxis("Mouse X");
+        mouseY = Input.GetAxis("Mouse Y");
+        mouseDelta = Mathf.Sqrt(mouseX * mouseX + mouseY * mouseY);
+        if (Input.GetMouseButtonDown(1) || Input.GetMouseButton(1))
+            fastWeight = fastFactor;
+        else if (Input.GetMouseButtonUp(1))
+            fastWeight = 1f;
+
+    }
+
 
     void SetPlayerActionStates()
     {
         // Spieleraktions-States
-
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
-        float mouseDelta = Mathf.Sqrt(mouseX * mouseX + mouseY * mouseY);
-
         if (positionState == PositionState.outside || mouseDelta > breakoutSpeedMin)
             actionState = ActionState.letOutside;
         else

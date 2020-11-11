@@ -74,12 +74,12 @@ Material:
     - _GlossyReflections: 0
     - _IntersectionDamper: 0
     - _IntersectionMax: 1.99
-    - _Metallic: 0
+    - _Metallic: 1
     - _OcclusionStrength: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _SampleGI: 0
-    - _Smoothness: 0.5
+    - _Smoothness: 0.227
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -87,9 +87,9 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.09119487, g: 0.5666445, b: 1, a: 1}
+    - _BaseColor: {r: 1, g: 0.8349333, b: 0.11764705, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0, g: 0.041227937, b: 0.31132078, a: 1}
+    - _EmissionColor: {r: 0.93333334, g: 0.26788995, b: 0, a: 1}
     - _IntersectionColor: {r: 1, g: 0, b: 0, a: 1}
     - _MainColor: {r: 1, g: 1, b: 1, a: 0.25}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
