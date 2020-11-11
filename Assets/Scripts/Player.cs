@@ -7,9 +7,13 @@ public class Player : MonoBehaviour
     // public variables
     public static Player instance;
     public enum PositionState { inside, outside, edge, noTunnel};
+    public enum ActionState { bounceInside, stickToWall, letOutside };
     [Header("General stuff")]
     public Transform[] outerVertices_hack;
-    public PositionState positionState;
+    public PositionState positionState = PositionState.noTunnel;
+    public ActionState actionState = ActionState.bounceInside;
+    [HideInInspector]
+    public PositionState lastPosState;
     public float edgeTolerance = 0.01f;
 
     [Header("Mouse")]
@@ -47,14 +51,17 @@ public class Player : MonoBehaviour
     public float kb_rotationSpeed = 1f;
     [Range(0.1f, 1f)]
     public float kb_slowRotation = 0.9f;
+
+    [HideInInspector]
+    public bool startedBounce = false;
+
     
     // private variables
     private MeshRenderer meshRenderer;
     private Color defaultColor;
     private Color moveColor;
 
-    public enum ActionState { bounceInside, stickToWall, letOutside };
-    public ActionState actionState = ActionState.bounceInside;
+
     private bool mouseIsActive;
     private Vector3 mouseStartPos;
     private Vector3 mousePos;
@@ -82,6 +89,7 @@ public class Player : MonoBehaviour
     private float curBounceSpeed;
     private float fastWeight = 1f;
     private float mouseX, mouseY, mouseDelta;
+
 
 
     void Start()
@@ -193,9 +201,9 @@ public class Player : MonoBehaviour
         // BOUNCE INSIDE
         if (actionState == ActionState.bounceInside)
         {
-            if (positionState == PositionState.edge) // 2. bedingung V2
+            if (positionState == PositionState.edge)
             {
-                if (curScaleSpeed > bounceEntrySpeedScale || curRotSpeed > bounceEntrySpeedRot)
+                if ((curScaleSpeed > bounceEntrySpeedScale || curRotSpeed > bounceEntrySpeedRot) && lastPosState != PositionState.edge)
                 {
                     StartCoroutine(BounceForce());
                 }
@@ -206,7 +214,9 @@ public class Player : MonoBehaviour
                     curScaleSpeed = 0; // unschön
                 }
                 else
+                {
                     curScaleSpeed += scaleTargetValue;
+                }
             }
             else
             {
@@ -268,6 +278,7 @@ public class Player : MonoBehaviour
     
     IEnumerator BounceForce()
     {
+        startedBounce = true;
         float time = 0;
         bounceRecoverWeight = 1;
         while (time < bounceTime)
@@ -284,7 +295,7 @@ public class Player : MonoBehaviour
             bounceRecoverWeight = 1 - time / bounceRecoverTime;
             yield return null;
         }
-
+        startedBounce = false;
     }
     
 

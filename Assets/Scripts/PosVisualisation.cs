@@ -124,6 +124,7 @@ public class PosVisualisation : MonoBehaviour
     // STATES
     void SetPositionalStates()
     {
+        Player.instance.lastPosState = Player.instance.positionState;
         RaycastHit hit;
         if (Physics.Raycast(playerMid, playerVertices[0] - playerMid, out hit))
         {
@@ -133,7 +134,7 @@ public class PosVisualisation : MonoBehaviour
             float playerToEnvDistance = playerRadius - envDistance;
 
             // states
-            if (Mathf.Abs(playerToEnvDistance) < Player.instance.edgeTolerance)
+            if (Mathf.Abs(playerToEnvDistance) < Player.instance.edgeTolerance && !Player.instance.startedBounce)
                 Player.instance.positionState = Player.PositionState.edge;
             else if (playerRadius < envDistance)
                 Player.instance.positionState = Player.PositionState.inside;
