@@ -4,6 +4,7 @@ Build/
 Builds/
 Logs/
 Temp/
+Assets/Plugins/FMOD/
 
 # Never ignore Asset meta data
 !/Assets/**/*.meta

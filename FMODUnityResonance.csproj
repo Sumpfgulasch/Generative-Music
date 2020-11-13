@@ -9,10 +9,10 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{094C5E05-DC00-1772-CE67-73F6A687ECF3}</ProjectGuid>
+    <ProjectGuid>{F910FE05-6B1B-07B5-96B2-3873E6FC0601}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>FMODUnityResonance</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -60,33 +60,11 @@
     <UnityVersion>2020.1.10f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Assets\Wireframe\Examples\Scripts\AutoRotate.cs" />
-    <Compile Include="Assets\Scripts\Player.cs" />
-    <Compile Include="Assets\Scripts\SetRenderQueue.cs" />
-    <Compile Include="Assets\Scripts\Move.cs" />
-    <Compile Include="Assets\Scripts\PosVisualisation.cs" />
-    <Compile Include="Assets\Wireframe\ImageEffect\WireframeImageEffect.cs" />
-    <Compile Include="Assets\Scripts\ExtensionMethods.cs" />
-    <Compile Include="Assets\Scripts\ObjectSpawner.cs" />
+    <Compile Include="Assets\Plugins\FMOD\addons\ResonanceAudio\Scripts\FmodResonanceAudio.cs" />
+    <Compile Include="Assets\Plugins\FMOD\addons\ResonanceAudio\Scripts\FmodResonanceAudioRoom.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Wireframe\Shaders\WireframeTransparent.shader" />
-    <None Include="Assets\Wireframe\Shaders\WireframeShaded-Unlit.shader" />
-    <None Include="Assets\Shaders\Custom\Wireframe_Quad.shader" />
-    <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparentCulled-Global.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Texture_Rim_Bumped.shader" />
-    <None Include="Assets\Wireframe\Shaders\WireframeTransparentCulled.shader" />
-    <None Include="Assets\Wireframe\Shaders\Wireframe.cginc" />
-    <None Include="Assets\Wireframe\Shaders\Wireframe.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Texture.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Color_Rim.shader" />
-    <None Include="Assets\Shaders\Custom\DepthMask.shader" />
-    <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparent-Global.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Color.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Color_Rim_Bumped.shader" />
-    <None Include="Assets\Wireframe\Shaders\Resources\Wireframe-Global.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Texture_Rim.shader" />
-    <None Include="Assets\Wireframe\Shaders\Resources\WireframeShaded-Unlit-Global.shader" />
+    <None Include="Assets\Plugins\FMOD\addons\ResonanceAudio\Scripts\FMODUnityResonance.asmdef" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -275,6 +253,18 @@
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\Managed\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Graphs">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\15.0\Editor\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>Library\PackageCache\com.unity.render-pipelines.core@8.2.0\Editor\ShaderGenerator\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
@@ -621,80 +611,17 @@
     <Reference Include="System.Xml.Serialization">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\NetStandard\compat\2.0.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Shaders">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VSCode.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Editor.dll</HintPath>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Searcher.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Searcher.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rider.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ShaderGraph.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.ShaderGraph.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="FMODUnity.csproj">
       <Project>{9AD87D2A-1330-6AE4-A6D9-41CE8E020C23}</Project>
       <Name>FMODUnity</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnityResonance.csproj">
-      <Project>{F910FE05-6B1B-07B5-96B2-3873E6FC0601}</Project>
-      <Name>FMODUnityResonance</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnityResonanceEditor.csproj">
-      <Project>{20E818A2-E6FF-937B-C0B2-C65EB2DCBBA7}</Project>
-      <Name>FMODUnityResonanceEditor</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnityEditor.csproj">
-      <Project>{E371F61F-B896-72BB-E087-C6519E64C185}</Project>
-      <Name>FMODUnityEditor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
