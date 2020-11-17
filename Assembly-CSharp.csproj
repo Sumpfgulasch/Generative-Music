@@ -68,6 +68,7 @@
     <Compile Include="Assets\Wireframe\ImageEffect\WireframeImageEffect.cs" />
     <Compile Include="Assets\Scripts\ExtensionMethods.cs" />
     <Compile Include="Assets\Scripts\ObjectSpawner.cs" />
+    <Compile Include="Assets\Scripts\Crap.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Wireframe\Shaders\WireframeTransparent.shader" />

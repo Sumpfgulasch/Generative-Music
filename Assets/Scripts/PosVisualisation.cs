@@ -69,7 +69,6 @@ public class PosVisualisation : MonoBehaviour
             if (Physics.Raycast(playerMid, directionOut, out hit))
             {
                 edgeHits[i] = hit;
-                //Debug.DrawLine(triangleEdgeMid, hit.point, Color.red);
             }
         }
         // 4) Final: Construct environment triangle by line intersections
@@ -93,9 +92,6 @@ public class PosVisualisation : MonoBehaviour
                 environmentVertices[i] = intersection;
             }
         }
-
-        for (int i = 0; i < environmentVertices.Length; i++)
-            Debug.DrawLine(environmentVertices[i], environmentVertices[(i + 1) % 3], Color.blue);
     }
 
     void DrawEnvironmentEdges()

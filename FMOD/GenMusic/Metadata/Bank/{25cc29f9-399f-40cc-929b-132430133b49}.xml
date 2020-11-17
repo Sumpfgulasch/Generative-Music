@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.01.00">
 	<object class="Bank" id="{25cc29f9-399f-40cc-929b-132430133b49}">
+		<property name="note" />
 		<property name="name">
 			<value>Master</value>
 		</property>
