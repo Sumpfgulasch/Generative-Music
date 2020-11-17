@@ -52,6 +52,9 @@ public class Player : MonoBehaviour
     [Range(0.1f, 1f)]
     public float kb_slowRotation = 0.9f;
 
+    [Header("Music")]
+    public AudioHelm.HelmController helmController;
+
     [HideInInspector]
     public bool startedBounce = false;
 
@@ -206,16 +209,22 @@ public class Player : MonoBehaviour
                 if ((curScaleSpeed > bounceEntrySpeedScale || curRotSpeed > bounceEntrySpeedRot) && lastPosState != PositionState.edge)
                 {
                     StartCoroutine(BounceForce());
+
+                    if (!helmController.IsNoteOn(50))
+                        helmController.NoteOn(50, 0.5f, 0.2f);
                 }
                 else if (mouseToPlayerDistance > 0)
                 {
                     float borderTargetScaleFactor = envDistance / playerRadius;
                     this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
                     curScaleSpeed = 0; // unschön
+
+                    helmController.NoteOn(50, 0.5f);
                 }
                 else
                 {
                     curScaleSpeed += scaleTargetValue;
+                    helmController.NoteOff(50);
                 }
             }
             else
@@ -233,6 +242,9 @@ public class Player : MonoBehaviour
                 float borderTargetScaleFactor = envDistance / playerRadius;
                 this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
                 curScaleSpeed = 0; // unschön
+
+                if (!helmController.IsNoteOn(50))
+                    helmController.NoteOn(50, 0.5f, 0.2f);
             }
             // MOVE PLAYER TOWARDS EDGE
             else
@@ -244,6 +256,8 @@ public class Player : MonoBehaviour
                     curScaleSpeed = Mathf.Pow(curScaleSpeed, scaleEdgeAcc);
                 else
                     curScaleSpeed = Mathf.Pow(curScaleSpeed, 1 + (1 - scaleEdgeAcc));
+
+                helmController.NoteOff(50);
             }
         }
 

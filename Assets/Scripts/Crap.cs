@@ -29,16 +29,13 @@ public class Crap : MonoBehaviour
             {
                 fmodInstance.setParameterByName("Parameter 1", paramValue);
                 change = false;
-                //print("true; param val: " + paramValue);
             }
             else
             {
                 fmodInstance.setParameterByName("Parameter 1", 0);
                 change = true;
-                //print("false; param val: " + paramValue);
             }
             fmodInstance.getParameterByName("Parameter 1", out testValue);
-            print("param value: " + testValue);
 
         }
     }
