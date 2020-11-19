@@ -20,13 +20,6 @@ Shader "Universal Render Pipeline/Custom/Stencil_mask"
 			}
 
 			CGINCLUDE
-
-
-			
-			
-
-
-
 			struct appdata {
 				float4 vertex : POSITION;
 				};

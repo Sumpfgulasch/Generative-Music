@@ -6,14 +6,15 @@ using System.Linq;
 public class PosVisualisation : MonoBehaviour
 {
     // public
-    [Header("General references")]
-    public Transform playerMesh;
+
     [Header("Distance to environment visualisation")]
-    public GameObject environmentEdges;
+    public Transform innerPlayerSurface;
+    public MeshFilter innerPlayerMask_mf;
     public MeshFilter innerSurface_mf;
-    public MeshFilter innerMask_mf;
-    public GameObject outerSurface_obj;
-    public MeshFilter outerMask_mf;
+    public MeshFilter innerSurfaceMask_mf;
+    public GameObject outerPlayerSurface_obj;
+    public MeshFilter outerPlayerMask_mf;
+    public GameObject environmentEdges;
 
     [Header("Führt zu ungenauen States")]
     public float offset = 1f;
@@ -146,15 +147,15 @@ public class PosVisualisation : MonoBehaviour
     {
         // Inner surface
         innerSurface_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
-        innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(playerVertices, this.transform);
+        innerSurfaceMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(playerVertices, this.transform);
 
-        // Outer surface
-        outerSurface_obj.transform.localScale = new Vector3(
-            playerMesh.localScale.x * Player.instance.transform.localScale.x,
-            playerMesh.localScale.y * Player.instance.transform.localScale.y,
-            playerMesh.localScale.z * Player.instance.transform.localScale.z); // TO DO: unnötige scheiße; später nicht mehr nötig wenn playerMesh generiert wird (und dessen scale 1 ist)
-        outerSurface_obj.transform.eulerAngles = Player.instance.transform.eulerAngles;
-        outerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
+        // Outer player
+        outerPlayerSurface_obj.transform.localScale = new Vector3(
+            innerPlayerSurface.localScale.x * Player.instance.transform.localScale.x,
+            innerPlayerSurface.localScale.y * Player.instance.transform.localScale.y,
+            innerPlayerSurface.localScale.z * Player.instance.transform.localScale.z); // TO DO: unnötige scheiße; später nicht mehr nötig wenn playerMesh generiert wird (und dessen scale 1 ist)
+        outerPlayerSurface_obj.transform.eulerAngles = Player.instance.transform.eulerAngles;
+        outerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
     }
 
    
@@ -163,10 +164,11 @@ public class PosVisualisation : MonoBehaviour
     {
         // Inner surface
         InitMesh(ref innerSurface_mf, environmentVertices);
-        InitMesh(ref innerMask_mf, playerVertices);
+        InitMesh(ref innerSurfaceMask_mf, playerVertices);
+        InitMesh(ref innerPlayerMask_mf, environmentVertices);
 
-        // Outside
-        InitMesh(ref outerMask_mf, environmentVertices);
+        // Outer player
+        InitMesh(ref outerPlayerMask_mf, environmentVertices);
     }
 
     void InitMesh(ref MeshFilter mf, Vector3[] vertices)

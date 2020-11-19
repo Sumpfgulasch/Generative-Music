@@ -167,8 +167,8 @@ public class Player : MonoBehaviour
             playerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
             envDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
         }
-        else
-            print("ERROR: no env hit");
+        //else
+        //    print("ERROR: no env hit");
     }
 
 
