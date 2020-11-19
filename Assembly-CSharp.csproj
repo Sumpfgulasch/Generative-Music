@@ -113,9 +113,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Wireframe\Shaders\WireframeTransparent.shader" />
-    <None Include="Assets\Shaders\Custom\Stencil_mask.shader" />
+    <None Include="Assets\Shaders\Custom\Mask.shader" />
     <None Include="Assets\Wireframe\Shaders\WireframeShaded-Unlit.shader" />
     <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparentCulled-Global.shader" />
+    <None Include="Assets\Shaders\Custom\MaskedObj.shader" />
     <None Include="Assets\Wireframe\Shaders\WireframeTransparentCulled.shader" />
     <None Include="Assets\Wireframe\Shaders\Wireframe.cginc" />
     <None Include="Assets\AudioHelm\Plugins\UWP\x86_64\AudioPluginHelm.dll" />
@@ -124,7 +125,7 @@
     <None Include="Assets\AudioHelm\Plugins\UWP\ARM\AudioPluginHelm.dll" />
     <None Include="Assets\AudioHelm\Plugins\UWP\x86\AudioPluginHelm.dll" />
     <None Include="Assets\AudioHelm\Plugins\x86_64\AudioPluginHelm.dll" />
-    <None Include="Assets\Shaders\Custom\Stencil_maskedObj.shader" />
+    <None Include="Assets\Shaders\Custom\InverseMaskedObj.shader" />
     <None Include="Assets\Shaders\Custom\DepthMask.shader" />
     <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparent-Global.shader" />
     <None Include="Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll" />

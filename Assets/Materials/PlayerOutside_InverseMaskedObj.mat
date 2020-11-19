@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1285984360646029583
+--- !u!114 &-7386729283708910873
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,13 +20,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PlayerInside_MaskedObj
-  m_Shader: {fileID: 4800000, guid: 55648cb8b462f9d4191cb8bc485f4dad, type: 3}
-  m_ShaderKeywords: _EMISSION
-  m_LightmapFlags: 2
+  m_Name: PlayerOutside_InverseMaskedObj
+  m_Shader: {fileID: 4800000, guid: 8cfeef8735422e443a63a0221b5c3062, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2003
+  m_CustomRenderQueue: 2002
   stringTagMap:
     RenderType: Opaque
   disabledShaderPasses: []
@@ -70,13 +70,13 @@ Material:
     - _DstBlend: 0
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
-    - _Glossiness: 0.352
+    - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Metallic: 1
+    - _Metallic: 0
     - _OcclusionStrength: 1
-    - _QueueOffset: 3
+    - _QueueOffset: 2
     - _ReceiveShadows: 1
-    - _Smoothness: 0.227
+    - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -84,8 +84,8 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 1, g: 0.8352941, b: 0.11764706, a: 1}
-    - _Color: {r: 0.9056604, g: 0.10822348, b: 0.10822348, a: 1}
-    - _EmissionColor: {r: 0.93333334, g: 0.26666668, b: 0, a: 1}
+    - _BaseColor: {r: 0.8784314, g: 0.039215688, b: 0.14901961, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []

@@ -2,7 +2,7 @@
 //
 // muss als erstes gerendert werden (vor obj mit read-shader)
 
-Shader "Universal Render Pipeline/Custom/Stencil_mask"
+Shader "Universal Render Pipeline/Custom/Mask"
 {
     SubShader
 	{

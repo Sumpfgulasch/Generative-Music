@@ -7,11 +7,11 @@ public class PosVisualisation : MonoBehaviour
 {
     // public
 
-    [Header("Distance to environment visualisation")]
+    [Header("References")]
     public Transform innerPlayerSurface;
     public MeshFilter innerPlayerMask_mf;
     public MeshFilter innerSurface_mf;
-    public MeshFilter innerSurfaceMask_mf;
+    public MeshFilter innerMask_mf;
     public GameObject outerPlayerSurface_obj;
     public MeshFilter outerPlayerMask_mf;
     public GameObject environmentEdges;
@@ -125,7 +125,6 @@ public class PosVisualisation : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(playerMid, playerVertices[0] - playerMid, out hit))
         {
-            // calc data
             float playerRadius = (playerVertices[0] - playerMid).magnitude;
             float envDistance = (hit.point - playerMid).magnitude;
             float playerToEnvDistance = playerRadius - envDistance;
@@ -147,7 +146,7 @@ public class PosVisualisation : MonoBehaviour
     {
         // Inner surface
         innerSurface_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
-        innerSurfaceMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(playerVertices, this.transform);
+        innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(playerVertices, this.transform);
 
         // Outer player
         outerPlayerSurface_obj.transform.localScale = new Vector3(
@@ -156,6 +155,7 @@ public class PosVisualisation : MonoBehaviour
             innerPlayerSurface.localScale.z * Player.instance.transform.localScale.z); // TO DO: unnötige scheiße; später nicht mehr nötig wenn playerMesh generiert wird (und dessen scale 1 ist)
         outerPlayerSurface_obj.transform.eulerAngles = Player.instance.transform.eulerAngles;
         outerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
+        innerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
     }
 
    
@@ -164,7 +164,7 @@ public class PosVisualisation : MonoBehaviour
     {
         // Inner surface
         InitMesh(ref innerSurface_mf, environmentVertices);
-        InitMesh(ref innerSurfaceMask_mf, playerVertices);
+        InitMesh(ref innerMask_mf, playerVertices);
         InitMesh(ref innerPlayerMask_mf, environmentVertices);
 
         // Outer player
