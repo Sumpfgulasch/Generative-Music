@@ -60,42 +60,40 @@
     <UnityVersion>2020.1.10f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Assets\Wireframe\Examples\Scripts\AutoRotate.cs" />
-    <Compile Include="Assets\Scripts\Player.cs" />
-    <Compile Include="Assets\Scripts\SetRenderQueue.cs" />
-    <Compile Include="Assets\Scripts\Move.cs" />
-    <Compile Include="Assets\Scripts\PosVisualisation.cs" />
-    <Compile Include="Assets\Wireframe\ImageEffect\WireframeImageEffect.cs" />
-    <Compile Include="Assets\Scripts\ExtensionMethods.cs" />
-    <Compile Include="Assets\Scripts\Crap.cs" />
-    <Compile Include="Assets\Scripts\ObjectSpawner.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\RepetitiveSpawner.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\MaterialOnOff.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Note.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Sampler.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmAudioInit.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Utils.cs" />
+    <Compile Include="Assets\Wireframe\Examples\Scripts\AutoRotate.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\Oscillate.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetAnimationParameter.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\GroundKeyboard.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\PulseImageOnNote.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\DestroyAfterTime.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteRow.cs" />
+    <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Sequencer.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SyncAudioAndSequencers.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmParameter.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlJump.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\BounceAudio2d.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetHelmParameter.cs" />
+    <Compile Include="Assets\Scripts\SetRenderQueue.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ToggleParameter.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\MaterialPulse.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmPatch.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteHandler.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\PlatformCreator.cs" />
+    <Compile Include="Assets\Scripts\Move.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\TriggerVisibleNotes.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\SampleSequencer.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmAudioReceive.cs" />
+    <Compile Include="Assets\Scripts\PosVisualisation.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmSequencer.cs" />
+    <Compile Include="Assets\Wireframe\ImageEffect\WireframeImageEffect.cs" />
+    <Compile Include="Assets\Scripts\ExtensionMethods.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\AudioHelmClock.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Keyzone.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\CameraMan.cs" />
@@ -106,17 +104,18 @@
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlTorque.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\NoteBlaster.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmPatchFormat.cs" />
+    <Compile Include="Assets\Scripts\MusicTest.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetSleepThreshold.cs" />
+    <Compile Include="Assets\Scripts\Crap.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Native.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
-    <Compile Include="Assets\Scripts\MusicTest.cs" />
+    <Compile Include="Assets\Scripts\ObjectSpawner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Wireframe\Shaders\WireframeTransparent.shader" />
+    <None Include="Assets\Shaders\Custom\Stencil_mask.shader" />
     <None Include="Assets\Wireframe\Shaders\WireframeShaded-Unlit.shader" />
-    <None Include="Assets\Shaders\Custom\Wireframe_Quad.shader" />
     <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparentCulled-Global.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Texture_Rim_Bumped.shader" />
     <None Include="Assets\Wireframe\Shaders\WireframeTransparentCulled.shader" />
     <None Include="Assets\Wireframe\Shaders\Wireframe.cginc" />
     <None Include="Assets\AudioHelm\Plugins\UWP\x86_64\AudioPluginHelm.dll" />
@@ -125,15 +124,11 @@
     <None Include="Assets\AudioHelm\Plugins\UWP\ARM\AudioPluginHelm.dll" />
     <None Include="Assets\AudioHelm\Plugins\UWP\x86\AudioPluginHelm.dll" />
     <None Include="Assets\AudioHelm\Plugins\x86_64\AudioPluginHelm.dll" />
-    <None Include="Assets\Shaders\Custom\Intersection_Texture.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Color_Rim.shader" />
+    <None Include="Assets\Shaders\Custom\Stencil_maskedObj.shader" />
     <None Include="Assets\Shaders\Custom\DepthMask.shader" />
     <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparent-Global.shader" />
     <None Include="Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll" />
-    <None Include="Assets\Shaders\Custom\Intersection_Color.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Color_Rim_Bumped.shader" />
     <None Include="Assets\Wireframe\Shaders\Resources\Wireframe-Global.shader" />
-    <None Include="Assets\Shaders\Custom\Intersection_Texture_Rim.shader" />
     <None Include="Assets\Wireframe\Shaders\Resources\WireframeShaded-Unlit-Global.shader" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
