@@ -8,7 +8,7 @@ public class PosVisualisation : MonoBehaviour
     // public
 
     [Header("References")]
-    public Transform innerPlayerSurface;
+    public MeshFilter innerPlayerMesh_mf;
     public MeshFilter innerPlayerMask_mf;
     public MeshFilter innerSurface_mf;
     public MeshFilter innerMask_mf;
@@ -22,26 +22,28 @@ public class PosVisualisation : MonoBehaviour
     public Transform[] playerVertices_hack;
 
     // private
-    private PolygonCollider2D playerCollider;
     private Vector3 playerMid;
     private LineRenderer lineRenderer_envEdges;
     private Vector3[] playerVertices = new Vector3[3];
     private Vector3[] environmentVertices = new Vector3[3];
 
+    // get set
+    Player player { get { return Player.instance; } }
 
     void Start()
     {
-        playerCollider = GameObject.Find("Player").GetComponent<PolygonCollider2D>();
+        GetPlayerData();
+        
+        CreateMeshes();
+
         playerMid = GameObject.Find("Player").transform.position;
         lineRenderer_envEdges = environmentEdges.GetComponent<LineRenderer>();
-
-        CreateMeshes();
     }
 
 
     void Update()
     {
-        GetPlayerData();
+        //GetPlayerData();
         GetEnvironmentTriangle();
 
         SetPositionalStates();
@@ -59,11 +61,11 @@ public class PosVisualisation : MonoBehaviour
         Vector3 intersection;
 
         // 2) Prepare raycast
-        for (int i = 0; i < playerVertices.Length; i++)
+        for (int i = 0; i < player.verticesCount; i++)
         {
-            Vector3 triangleEdgeMid = playerVertices[i] + ((playerVertices[(i + 1) % 3] - playerVertices[i]) / 2f);
-            triangleEdgeMid.z = environmentEdges.transform.position.z;
-            Vector3 directionOut = (triangleEdgeMid - playerMid).normalized;
+            Vector3 playerEdgeMid = player.outerVertices[i] + ((player.outerVertices[(i + 1) % 3] - player.outerVertices[i]) / 2f);
+            playerEdgeMid.z = environmentEdges.transform.position.z;
+            Vector3 directionOut = (playerEdgeMid - playerMid).normalized;
             RaycastHit hit;
 
             // 3) Raycasts from player to environment
@@ -111,8 +113,9 @@ public class PosVisualisation : MonoBehaviour
         }
         newPositions.Add(environmentVertices[0]);
 
-        
+
         // 2) Add to LineRenderer
+        print("lineRend_envEdg: " + lineRenderer_envEdges);
         lineRenderer_envEdges.positionCount = newPositions.Count;
         lineRenderer_envEdges.SetPositions(newPositions.ToArray());
     }
@@ -121,24 +124,24 @@ public class PosVisualisation : MonoBehaviour
     // STATES
     void SetPositionalStates()
     {
-        Player.instance.lastPosState = Player.instance.positionState;
+        player.lastPosState = player.positionState;
         RaycastHit hit;
-        if (Physics.Raycast(playerMid, playerVertices[0] - playerMid, out hit))
+        if (Physics.Raycast(playerMid, player.outerVertices[0] - playerMid, out hit))
         {
-            float playerRadius = (playerVertices[0] - playerMid).magnitude;
+            float playerRadius = (player.outerVertices[0] - playerMid).magnitude;
             float envDistance = (hit.point - playerMid).magnitude;
             float playerToEnvDistance = playerRadius - envDistance;
 
             // states
-            if (Mathf.Abs(playerToEnvDistance) < Player.instance.edgeTolerance && !Player.instance.startedBounce)
-                Player.instance.positionState = Player.PositionState.edge;
+            if (Mathf.Abs(playerToEnvDistance) < player.edgeTolerance && !player.startedBounce)
+                player.positionState = Player.PositionState.edge;
             else if (playerRadius < envDistance)
-                Player.instance.positionState = Player.PositionState.inside;
+                player.positionState = Player.PositionState.inside;
             else
-                Player.instance.positionState = Player.PositionState.outside;
+                player.positionState = Player.PositionState.outside;
         }
         else
-            Player.instance.positionState = Player.PositionState.noTunnel;
+            player.positionState = Player.PositionState.noTunnel;
     }
 
 
@@ -146,15 +149,15 @@ public class PosVisualisation : MonoBehaviour
     {
         // Inner surface
         innerSurface_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
-        innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(playerVertices, this.transform);
-        innerPlayerSurface.transform.localPosition = Vector3.zero;
+        innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(player.outerVertices, this.transform);
+        innerPlayerMesh_mf.transform.localPosition = Vector3.zero;
 
         // Outer player
         outerPlayerSurface_obj.transform.localScale = new Vector3(
-            innerPlayerSurface.localScale.x * Player.instance.transform.localScale.x,
-            innerPlayerSurface.localScale.y * Player.instance.transform.localScale.y,
-            innerPlayerSurface.localScale.z * Player.instance.transform.localScale.z); // TO DO: unnötige scheiße; später nicht mehr nötig wenn playerMesh generiert wird (und dessen scale 1 ist)
-        outerPlayerSurface_obj.transform.eulerAngles = Player.instance.transform.eulerAngles;
+            innerPlayerMesh_mf.transform.localScale.x * player.transform.localScale.x,
+            innerPlayerMesh_mf.transform.localScale.y * player.transform.localScale.y,
+            innerPlayerMesh_mf.transform.localScale.z * player.transform.localScale.z); // TO DO: unnötige scheiße; später nicht mehr nötig wenn playerMesh generiert wird (und dessen scale 1 ist)
+        outerPlayerSurface_obj.transform.eulerAngles = player.transform.eulerAngles;
         outerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
         innerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
     }
@@ -163,9 +166,12 @@ public class PosVisualisation : MonoBehaviour
 
     void CreateMeshes()
     {
+        // Data & inner player
+        CreatePlayerMesh(ref innerPlayerMesh_mf);
+
         // Inner surface
         CreateMesh(ref innerSurface_mf, environmentVertices);
-        CreateMesh(ref innerMask_mf, playerVertices);
+        CreateMesh(ref innerMask_mf, player.outerVertices);
         CreateMesh(ref innerPlayerMask_mf, environmentVertices);
 
         // Outer player
@@ -182,14 +188,40 @@ public class PosVisualisation : MonoBehaviour
         // no UVs
     }
 
+    void CreatePlayerMesh(ref MeshFilter mf)
+    {
+        
+        List<Vector3> vertices = new List<Vector3>(); //[player.verticesCount * 2];
+        List<int> triangles = new List<int>(); //[player.verticesCount * 6];
+        List<Vector3> normals = new List<Vector3>();
+        
+        for (int i=0; i < player.verticesCount; i++)
+        {
+            vertices.AddRange(new Vector3[2] { player.outerVertices[i], player.innerVertices[i] });
+            triangles.AddRange(new int[6] { i*2, i*2+1, i*2+2, i*2+2, i*2+3, i*2+1 });
+            normals.AddRange(new Vector3[2] { Vector3.back, Vector3.back });
+        }
+        
+        Mesh newMesh = new Mesh();
+        newMesh.vertices = vertices.ToArray();
+        newMesh.triangles = triangles.ToArray();
+        newMesh.normals = normals.ToArray();
+        mf.mesh = newMesh;
+        // no UVs
+    }
+
 
 
     void GetPlayerData()
     {
-        for (int i = 0; i < playerVertices.Length; i++)
+        for (int i = 0; i < player.verticesCount; i++)
         {
-            // hack
-            playerVertices[i] = playerVertices_hack[i].position;
+            Quaternion rot = Quaternion.AngleAxis(120f * i, Vector3.up);
+            Vector3 nextDirection = rot * Vector3.up;
+            Vector3 nextOuterVertex = player.transform.position + nextDirection.normalized;
+            Vector3 nextInnerVertex = player.transform.position + nextDirection.normalized * (1 - player.width);
+            player.outerVertices[i] = nextOuterVertex;
+            player.innerVertices[i] = nextInnerVertex;
         }
     }
 }

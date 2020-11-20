@@ -10,6 +10,9 @@ public class Player : MonoBehaviour
     public enum ActionState { bounceInside, stickToWall, letOutside };
     [Header("General stuff")]
     public Transform[] outerVertices_hack;
+    public int verticesCount = 3;
+    [Range(0,1f)]
+    public float width = 0.2f;
     public PositionState positionState = PositionState.noTunnel;
     public ActionState actionState = ActionState.bounceInside;
     [HideInInspector]
@@ -57,8 +60,12 @@ public class Player : MonoBehaviour
 
     [HideInInspector]
     public bool startedBounce = false;
+    [HideInInspector]
+    public Vector3[] outerVertices = new Vector3[3];
+    [HideInInspector]
+    public Vector3[] innerVertices = new Vector3[3];
 
-    
+
     // private variables
     private MeshRenderer meshRenderer;
     private Color defaultColor;
@@ -82,7 +89,6 @@ public class Player : MonoBehaviour
     private float lastRotTargetValue;
     private float rotDifferenceToLastFrame;
     private float lastRotDifferenceToLastFrame = 0;
-    private Vector3[] outerVertices = new Vector3[3];
     float mouseToPlayerDistance;
     float playerRadius;
     float envDistance;
