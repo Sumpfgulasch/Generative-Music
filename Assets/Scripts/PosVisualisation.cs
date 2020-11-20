@@ -35,7 +35,7 @@ public class PosVisualisation : MonoBehaviour
         playerMid = GameObject.Find("Player").transform.position;
         lineRenderer_envEdges = environmentEdges.GetComponent<LineRenderer>();
 
-        InitMeshes();
+        CreateMeshes();
     }
 
 
@@ -147,6 +147,7 @@ public class PosVisualisation : MonoBehaviour
         // Inner surface
         innerSurface_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
         innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(playerVertices, this.transform);
+        innerPlayerSurface.transform.localPosition = Vector3.zero;
 
         // Outer player
         outerPlayerSurface_obj.transform.localScale = new Vector3(
@@ -160,18 +161,18 @@ public class PosVisualisation : MonoBehaviour
 
    
 
-    void InitMeshes()
+    void CreateMeshes()
     {
         // Inner surface
-        InitMesh(ref innerSurface_mf, environmentVertices);
-        InitMesh(ref innerMask_mf, playerVertices);
-        InitMesh(ref innerPlayerMask_mf, environmentVertices);
+        CreateMesh(ref innerSurface_mf, environmentVertices);
+        CreateMesh(ref innerMask_mf, playerVertices);
+        CreateMesh(ref innerPlayerMask_mf, environmentVertices);
 
         // Outer player
-        InitMesh(ref outerPlayerMask_mf, environmentVertices);
+        CreateMesh(ref outerPlayerMask_mf, environmentVertices);
     }
 
-    void InitMesh(ref MeshFilter mf, Vector3[] vertices)
+    void CreateMesh(ref MeshFilter mf, Vector3[] vertices)
     {
         Mesh newMesh = new Mesh();
         newMesh.vertices = vertices;
