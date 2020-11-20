@@ -75,7 +75,10 @@
 		/////////////////////////////////////////////////////////////////////////////////////////////////////
 		// I added this code
 
-		// READ
+		// Stencil buffer shader - READ
+		//
+		// muss als Zweites gerendert werden (nach dem mask-write-shader)
+
 		Stencil{
 		Ref 1
 		Comp Equal
