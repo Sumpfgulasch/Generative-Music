@@ -32,7 +32,7 @@ public class PosVisualisation : MonoBehaviour
 
     void Start()
     {
-        GetPlayerData();
+        SetPlayerData();
         
         CreateMeshes();
 
@@ -43,7 +43,7 @@ public class PosVisualisation : MonoBehaviour
 
     void Update()
     {
-        //GetPlayerData();
+        SetPlayerWidth();
         GetEnvironmentTriangle();
 
         SetPositionalStates();
@@ -199,46 +199,92 @@ public class PosVisualisation : MonoBehaviour
         for (int i=0; i < player.verticesCount; i++)
         {
             vertices.AddRange(new Vector3[2] {
-                player.outerVertices[i],
-                player.innerVertices[i] });
+                player.outerMeshVertices[i],
+                player.innerMeshVertices[i] });
             triangles.AddRange(new int[6] {
-                i *2,                                   // outer triangle
+                // outer triangle
+                i *2,                                   
                 i *2+1,
-                (i*2+2) % (player.verticesCount*2),     
-                (i*2+2) % (player.verticesCount*2),     // inner triangle
+                (i*2+2) % (player.verticesCount*2),
+                // inner triangle
+                i *2+1 ,     
                 (i*2+3) % (player.verticesCount*2),
-                i *2+1 });
+                (i*2+2) % (player.verticesCount*2) });
             normals.AddRange(new Vector3[2] {
                 Vector3.back,
                 Vector3.back });
         }
 
-        //print("vertices.count: " + vertices.ToArray().Length + "; triangles.count: " + triangles.ToArray().Length + ", normals.count: " + normals.ToArray().Length);
-        //for (int i = 0; i < triangles.Count; i++)
-        //    print(i + ", triangle index: " + triangles[i]);
-
         Mesh newMesh = new Mesh();
         newMesh.vertices = vertices.ToArray();
         newMesh.triangles = triangles.ToArray();
         newMesh.normals = normals.ToArray();
+        newMesh.MarkDynamic();
         mf.mesh = newMesh;
         // no UVs
+    }
 
-        
+    void SetPlayerWidth()
+    {
+        Vector3 convertedVert = innerPlayerMesh_mf.transform.TransformPoint(player.innerMeshVertices[0]);
+        //this.transform.trans
+        float neededWidthPerc = (1 / player.transform.localScale.x) * player.innerWidth;
+        //player.curInnerWidth
+        Vector3[] newVertices = innerPlayerMesh_mf.mesh.vertices;
+
+        Debug.DrawLine(convertedVert, player.transform.position, Color.magenta);
+        if ((player.outerVertices[0] - player.innerVertices[0]).magnitude != player.innerWidth)
+        {
+            //TO DO: if draußen auf wand skalieren ist nicht aktiv
+            for (int i=0; i<player.verticesCount; i++)
+            {
+                // change innerVertices only
+                newVertices[(i * 2) + 1] = (player.outerMeshVertices[i * 1] - Vector3.zero).normalized * (1-neededWidthPerc);
+                // TO DO: testen
+            }
+
+        }
+
+        innerPlayerMesh_mf.mesh.vertices = newVertices;
+
+
+        // TO DO: mesh.recalculatenormals, -bounds, -tangents
     }
 
 
 
-    void GetPlayerData()
+    void SetPlayerData()
     {
+        // Create Container
+        GameObject vertices = new GameObject("Vertices");
+        GameObject outside = new GameObject("Outside");
+        GameObject inside = new GameObject("Inside");
+        vertices.transform.parent = player.transform;
+        outside.transform.parent = vertices.transform;
+        inside.transform.parent = vertices.transform;
+        vertices.transform.localPosition = Vector3.zero;
+
         for (int i = 0; i < player.verticesCount; i++)
         {
-            Quaternion rot = Quaternion.AngleAxis(120f * i, Vector3.up);
+            // Calc vertex positions
+            Quaternion rot = Quaternion.Euler(0, 0, i * 120);
             Vector3 nextDirection = rot * Vector3.up;
-            Vector3 nextOuterVertex = player.transform.position + nextDirection.normalized;
-            Vector3 nextInnerVertex = player.transform.position + nextDirection.normalized * (1 - player.width);
-            player.outerVertices[i] = nextOuterVertex;
-            player.innerVertices[i] = nextInnerVertex;
+            Vector3 nextOuterVertex = nextDirection.normalized;
+            Vector3 nextInnerVertex = nextDirection.normalized * (1 - player.innerWidth);
+
+            // assign
+            player.outerMeshVertices[i] = nextOuterVertex;
+            player.innerMeshVertices[i] = nextInnerVertex;
+
+            GameObject newOuterVert = new GameObject("Vert" + (i + 1));
+            GameObject newInnerVert = new GameObject("Vert" + (i + 1));
+            newOuterVert.transform.parent = outside.transform;
+            newInnerVert.transform.parent = inside.transform;
+            newOuterVert.transform.position = player.transform.position + nextOuterVertex;
+            newInnerVert.transform.position = player.transform.position + nextInnerVertex;
+
+            player.outerVertices_obj[i] = newOuterVert.transform;
+            player.innerVertices_obj[i] = newInnerVert.transform;
         }
     }
 }

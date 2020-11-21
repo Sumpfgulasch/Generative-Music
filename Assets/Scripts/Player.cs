@@ -8,11 +8,16 @@ public class Player : MonoBehaviour
     public static Player instance;
     public enum PositionState { inside, outside, edge, noTunnel};
     public enum ActionState { bounceInside, stickToWall, letOutside };
-    [Header("General stuff")]
+    [Header("References")]
     public Transform[] outerVertices_hack;
+    [HideInInspector]
+    public Transform[] outerVertices_obj;
+    [HideInInspector]
+    public Transform[] innerVertices_obj;
+    [Header("General stuff")]
     public int verticesCount = 3;
     [Range(0,1f)]
-    public float width = 0.2f;
+    public float innerWidth = 0.2f;
     public PositionState positionState = PositionState.noTunnel;
     public ActionState actionState = ActionState.bounceInside;
     [HideInInspector]
@@ -64,6 +69,12 @@ public class Player : MonoBehaviour
     public Vector3[] outerVertices = new Vector3[3];
     [HideInInspector]
     public Vector3[] innerVertices = new Vector3[3];
+    [HideInInspector]
+    public Vector3[] outerMeshVertices = new Vector3[3];
+    [HideInInspector]
+    public Vector3[] innerMeshVertices = new Vector3[3];
+    [HideInInspector]
+    public float curInnerWidth;
 
 
     // private variables
@@ -121,6 +132,8 @@ public class Player : MonoBehaviour
     void ManageMovement()
     {
         GetInput();
+        GetData();
+
         SetPlayerActionStates();
         CalcMovementData();
 
@@ -132,13 +145,6 @@ public class Player : MonoBehaviour
     // MOUSE
     void CalcMovementData()
     {
-        // General
-        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, this.transform.position.z);
-        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-        for (int i = 0; i < 3; i++)
-            outerVertices[i] = outerVertices_hack[i].position;
-
-
         // ROTATION
         Vector2 mouseToMid = mousePos - midPoint;
         Vector2 playerAngleVec = outerVertices[0] - midPoint;
@@ -321,14 +327,28 @@ public class Player : MonoBehaviour
 
     void GetInput()
     {
+        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, this.transform.position.z);
+        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
         mouseDelta = Mathf.Sqrt(mouseX * mouseX + mouseY * mouseY);
+
         if (Input.GetMouseButtonDown(1) || Input.GetMouseButton(1))
             fastWeight = fastFactor;
         else if (Input.GetMouseButtonUp(1))
             fastWeight = 1f;
+    }
 
+    void GetData()
+    {
+        // get positions from childed vertex-gameobjects
+        for (int i=0; i<verticesCount; i++)
+        {
+            outerVertices[i] = outerVertices_obj[i].position;
+            innerVertices[i] = innerVertices_obj[i].position;
+        }
+        
     }
 
 
