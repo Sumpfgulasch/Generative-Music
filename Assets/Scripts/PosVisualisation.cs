@@ -175,6 +175,8 @@ public class PosVisualisation : MonoBehaviour
 
         // Outer player
         CreateMesh(ref outerPlayerMask_mf, environmentVertices);
+
+        
     }
 
     void CreateMesh(ref MeshFilter mf, Vector3[] vertices)
