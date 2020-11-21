@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{1FC8FA55-423B-6FA3-D624-9C4D0F59E7AE}</ProjectGuid>
+    <ProjectGuid>{315DBE55-EBB9-660B-E7DE-057396A6CEEF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp-Editor</AssemblyName>
@@ -48,13 +48,6 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <UnityProjectGenerator>Package</UnityProjectGenerator>
     <UnityProjectGeneratorVersion>2.0.3</UnityProjectGeneratorVersion>
-    <UnityProjectType>Editor:5</UnityProjectType>
-    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
-    <UnityVersion>2020.1.10f1</UnityVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
     <UnityProjectType>Editor:5</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2020.1.10f1</UnityVersion>
@@ -272,9 +265,6 @@
     </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
-      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\15.0\Editor\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
     <Reference Include="Sanford.Multimedia.Midi">
       <HintPath>Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll</HintPath>
@@ -696,28 +686,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp.csproj">
-      <Project>{094C5E05-DC00-1772-CE67-73F6A687ECF3}</Project>
+      <Project>{873614EE-742A-51B8-17AB-43CD63BED3CA}</Project>
       <Name>Assembly-CSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnity.csproj">
-      <Project>{9AD87D2A-1330-6AE4-A6D9-41CE8E020C23}</Project>
-      <Name>FMODUnity</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnityResonance.csproj">
-      <Project>{F910FE05-6B1B-07B5-96B2-3873E6FC0601}</Project>
-      <Name>FMODUnityResonance</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnityResonanceEditor.csproj">
-      <Project>{20E818A2-E6FF-937B-C0B2-C65EB2DCBBA7}</Project>
-      <Name>FMODUnityResonanceEditor</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnityEditor.csproj">
-      <Project>{E371F61F-B896-72BB-E087-C6519E64C185}</Project>
-      <Name>FMODUnityEditor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -115,7 +115,6 @@ public class PosVisualisation : MonoBehaviour
 
 
         // 2) Add to LineRenderer
-        print("lineRend_envEdg: " + lineRenderer_envEdges);
         lineRenderer_envEdges.positionCount = newPositions.Count;
         lineRenderer_envEdges.SetPositions(newPositions.ToArray());
     }
@@ -191,23 +190,39 @@ public class PosVisualisation : MonoBehaviour
     void CreatePlayerMesh(ref MeshFilter mf)
     {
         
-        List<Vector3> vertices = new List<Vector3>(); //[player.verticesCount * 2];
-        List<int> triangles = new List<int>(); //[player.verticesCount * 6];
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangles = new List<int>();
         List<Vector3> normals = new List<Vector3>();
         
         for (int i=0; i < player.verticesCount; i++)
         {
-            vertices.AddRange(new Vector3[2] { player.outerVertices[i], player.innerVertices[i] });
-            triangles.AddRange(new int[6] { i*2, i*2+1, i*2+2, i*2+2, i*2+3, i*2+1 });
-            normals.AddRange(new Vector3[2] { Vector3.back, Vector3.back });
+            vertices.AddRange(new Vector3[2] {
+                player.outerVertices[i],
+                player.innerVertices[i] });
+            triangles.AddRange(new int[6] {
+                i *2,                                   // outer triangle
+                i *2+1,
+                (i*2+2) % (player.verticesCount*2),     
+                (i*2+2) % (player.verticesCount*2),     // inner triangle
+                (i*2+3) % (player.verticesCount*2),
+                i *2+1 });
+            normals.AddRange(new Vector3[2] {
+                Vector3.back,
+                Vector3.back });
         }
-        
+
+        //print("vertices.count: " + vertices.ToArray().Length + "; triangles.count: " + triangles.ToArray().Length + ", normals.count: " + normals.ToArray().Length);
+        //for (int i = 0; i < triangles.Count; i++)
+        //    print(i + ", triangle index: " + triangles[i]);
+
         Mesh newMesh = new Mesh();
         newMesh.vertices = vertices.ToArray();
         newMesh.triangles = triangles.ToArray();
         newMesh.normals = normals.ToArray();
         mf.mesh = newMesh;
         // no UVs
+
+        
     }
 
 

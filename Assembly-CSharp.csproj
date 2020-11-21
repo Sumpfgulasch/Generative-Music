@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{094C5E05-DC00-1772-CE67-73F6A687ECF3}</ProjectGuid>
+    <ProjectGuid>{873614EE-742A-51B8-17AB-43CD63BED3CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -52,13 +52,6 @@
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2020.1.10f1</UnityVersion>
   </PropertyGroup>
-  <PropertyGroup>
-    <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
-    <UnityProjectType>Game:1</UnityProjectType>
-    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
-    <UnityVersion>2020.1.10f1</UnityVersion>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\RepetitiveSpawner.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\MaterialOnOff.cs" />
@@ -66,7 +59,6 @@
     <Compile Include="Assets\AudioHelm\Scripts\Sampler.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmAudioInit.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Utils.cs" />
-    <Compile Include="Assets\Wireframe\Examples\Scripts\AutoRotate.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\Oscillate.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetAnimationParameter.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\GroundKeyboard.cs" />
@@ -92,7 +84,6 @@
     <Compile Include="Assets\AudioHelm\Scripts\HelmAudioReceive.cs" />
     <Compile Include="Assets\Scripts\PosVisualisation.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmSequencer.cs" />
-    <Compile Include="Assets\Wireframe\ImageEffect\WireframeImageEffect.cs" />
     <Compile Include="Assets\Scripts\ExtensionMethods.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\AudioHelmClock.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Keyzone.cs" />
@@ -106,31 +97,21 @@
     <Compile Include="Assets\AudioHelm\Scripts\HelmPatchFormat.cs" />
     <Compile Include="Assets\Scripts\MusicTest.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetSleepThreshold.cs" />
-    <Compile Include="Assets\Scripts\Crap.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Native.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\ObjectSpawner.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Wireframe\Shaders\WireframeTransparent.shader" />
-    <None Include="Assets\Shaders\Custom\Mask.shader" />
-    <None Include="Assets\Wireframe\Shaders\WireframeShaded-Unlit.shader" />
-    <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparentCulled-Global.shader" />
-    <None Include="Assets\Shaders\Custom\MaskedObj.shader" />
-    <None Include="Assets\Wireframe\Shaders\WireframeTransparentCulled.shader" />
-    <None Include="Assets\Wireframe\Shaders\Wireframe.cginc" />
-    <None Include="Assets\AudioHelm\Plugins\UWP\x86_64\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\x86\AudioPluginHelm.dll" />
-    <None Include="Assets\Wireframe\Shaders\Wireframe.shader" />
-    <None Include="Assets\AudioHelm\Plugins\UWP\ARM\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\UWP\x86\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\x86_64\AudioPluginHelm.dll" />
-    <None Include="Assets\Shaders\Custom\InverseMaskedObj.shader" />
-    <None Include="Assets\Shaders\Custom\DepthMask.shader" />
-    <None Include="Assets\Wireframe\Shaders\Resources\WireframeTransparent-Global.shader" />
-    <None Include="Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll" />
-    <None Include="Assets\Wireframe\Shaders\Resources\Wireframe-Global.shader" />
-    <None Include="Assets\Wireframe\Shaders\Resources\WireframeShaded-Unlit-Global.shader" />
+     <None Include="Assets\Shaders\Custom\Mask.shader" />
+     <None Include="Assets\Shaders\Custom\MaskedObj.shader" />
+     <None Include="Assets\AudioHelm\Plugins\UWP\x86_64\AudioPluginHelm.dll" />
+     <None Include="Assets\AudioHelm\Plugins\x86\AudioPluginHelm.dll" />
+     <None Include="Assets\AudioHelm\Plugins\UWP\ARM\AudioPluginHelm.dll" />
+     <None Include="Assets\AudioHelm\Plugins\UWP\x86\AudioPluginHelm.dll" />
+     <None Include="Assets\AudioHelm\Plugins\x86_64\AudioPluginHelm.dll" />
+     <None Include="Assets\Shaders\Custom\InverseMaskedObj.shader" />
+     <None Include="Assets\Shaders\Custom\DepthMask.shader" />
+     <None Include="Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -727,25 +708,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="FMODUnity.csproj">
-      <Project>{9AD87D2A-1330-6AE4-A6D9-41CE8E020C23}</Project>
-      <Name>FMODUnity</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnityResonance.csproj">
-      <Project>{F910FE05-6B1B-07B5-96B2-3873E6FC0601}</Project>
-      <Name>FMODUnityResonance</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnityResonanceEditor.csproj">
-      <Project>{20E818A2-E6FF-937B-C0B2-C65EB2DCBBA7}</Project>
-      <Name>FMODUnityResonanceEditor</Name>
-    </ProjectReference>
-    <ProjectReference Include="FMODUnityEditor.csproj">
-      <Project>{E371F61F-B896-72BB-E087-C6519E64C185}</Project>
-      <Name>FMODUnityEditor</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
