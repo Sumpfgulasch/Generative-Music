@@ -95,6 +95,8 @@ public static class ExtensionMethods
 
     public static Vector3[] ConvertArrayFromWorldToLocal(Vector3[] array, Transform localSpace)
     {
+        // für vertices konvertieren
+        // macht nur Sinn, wenn beim Mesh der zu konvertierenden Vertices scale = 1 und rotation = 0 sind
         Vector3[] convertedVertices = new Vector3[array.Length];
         for (int i = 0; i < array.Length; i++)
             convertedVertices[i] = localSpace.InverseTransformPoint(array[i]);

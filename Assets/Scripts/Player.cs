@@ -64,9 +64,9 @@ public class Player : MonoBehaviour
     [HideInInspector]
     public Vector3[] innerVertices = new Vector3[3];
     [HideInInspector]
-    public Vector3[] outerMeshVertices = new Vector3[3];
+    public Vector3[] outerVertices_mesh = new Vector3[3];
     [HideInInspector]
-    public Vector3[] innerMeshVertices = new Vector3[3];
+    public Vector3[] innerVertices_mesh = new Vector3[3];
     [HideInInspector]
     public float curInnerWidth;
     [HideInInspector]

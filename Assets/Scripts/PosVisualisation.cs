@@ -12,7 +12,7 @@ public class PosVisualisation : MonoBehaviour
     public MeshFilter innerPlayerMask_mf;
     public MeshFilter innerSurface_mf;
     public MeshFilter innerMask_mf;
-    public GameObject outerPlayerSurface_obj;
+    public MeshFilter outerPlayerMesh_mf;
     public MeshFilter outerPlayerMask_mf;
     public GameObject environmentEdges;
 
@@ -152,11 +152,9 @@ public class PosVisualisation : MonoBehaviour
         innerPlayerMesh_mf.transform.localPosition = Vector3.zero;
 
         // Outer player
-        outerPlayerSurface_obj.transform.localScale = new Vector3(
-            innerPlayerMesh_mf.transform.localScale.x * player.transform.localScale.x,
-            innerPlayerMesh_mf.transform.localScale.y * player.transform.localScale.y,
-            innerPlayerMesh_mf.transform.localScale.z * player.transform.localScale.z); // TO DO: unnötige scheiße; später nicht mehr nötig wenn playerMesh generiert wird (und dessen scale 1 ist)
-        outerPlayerSurface_obj.transform.eulerAngles = player.transform.eulerAngles;
+        outerPlayerMesh_mf.transform.localScale = player.transform.localScale;
+        outerPlayerMesh_mf.transform.eulerAngles = player.transform.eulerAngles;
+        
         outerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
         innerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(environmentVertices, this.transform);
     }
@@ -174,6 +172,7 @@ public class PosVisualisation : MonoBehaviour
         CreateMesh(ref innerPlayerMask_mf, environmentVertices);
 
         // Outer player
+        CreatePlayerMesh(ref outerPlayerMesh_mf);
         CreateMesh(ref outerPlayerMask_mf, environmentVertices);
 
         
@@ -183,7 +182,7 @@ public class PosVisualisation : MonoBehaviour
     {
         Mesh newMesh = new Mesh();
         newMesh.vertices = vertices;
-        newMesh.triangles = new int[3] { 0, 1, 2 };
+        newMesh.triangles = new int[3] { 2, 1, 0 };
         newMesh.normals = new Vector3[3] { Vector3.back, Vector3.back, Vector3.back };
         mf.mesh = newMesh;
         // no UVs
@@ -199,8 +198,8 @@ public class PosVisualisation : MonoBehaviour
         for (int i=0; i < player.verticesCount; i++)
         {
             vertices.AddRange(new Vector3[2] {
-                player.outerMeshVertices[i],
-                player.innerMeshVertices[i] });
+                player.outerVertices_mesh[i],
+                player.innerVertices_mesh[i] });
             triangles.AddRange(new int[6] {
                 // outer triangle
                 i *2,                                   
@@ -235,10 +234,13 @@ public class PosVisualisation : MonoBehaviour
             for (int i=0; i<player.verticesCount; i++)
             {
                 // change innerVertices only
-                newVertices[(i * 2) + 1] = (player.outerMeshVertices[i * 1] - Vector3.zero).normalized * (1-neededWidthPerc);
+                Vector3 newVertex = (player.outerVertices_mesh[i] - Vector3.zero).normalized * (1 - neededWidthPerc);
+                newVertices[(i * 2) + 1] = newVertex;
+                player.innerVertices_mesh[i] = newVertex;
             }
         }
         innerPlayerMesh_mf.mesh.vertices = newVertices;
+        outerPlayerMesh_mf.mesh.vertices = newVertices;
 
         // TO DO: mesh.recalculatenormals, -bounds, -tangents
     }
@@ -277,8 +279,8 @@ public class PosVisualisation : MonoBehaviour
             player.outerVertices_obj[i] = newOuterVert.transform;
             player.innerVertices_obj[i] = newInnerVert.transform;
 
-            player.outerMeshVertices[i] = nextOuterVertex;
-            player.innerMeshVertices[i] = nextInnerVertex;
+            player.outerVertices_mesh[i] = nextOuterVertex;
+            player.innerVertices_mesh[i] = nextInnerVertex;
         }
     }
 }
