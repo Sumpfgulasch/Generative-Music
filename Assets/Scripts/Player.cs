@@ -8,12 +8,6 @@ public class Player : MonoBehaviour
     public static Player instance;
     public enum PositionState { inside, outside, edge, noTunnel};
     public enum ActionState { bounceInside, stickToWall, letOutside };
-    [Header("References")]
-    public Transform[] outerVertices_hack;
-    [HideInInspector]
-    public Transform[] outerVertices_obj;
-    [HideInInspector]
-    public Transform[] innerVertices_obj;
     [Header("General stuff")]
     public int verticesCount = 3;
     [Range(0,1f)]
@@ -75,6 +69,10 @@ public class Player : MonoBehaviour
     public Vector3[] innerMeshVertices = new Vector3[3];
     [HideInInspector]
     public float curInnerWidth;
+    [HideInInspector]
+    public Transform[] outerVertices_obj;
+    [HideInInspector]
+    public Transform[] innerVertices_obj;
 
 
     // private variables

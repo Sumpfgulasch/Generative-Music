@@ -226,13 +226,9 @@ public class PosVisualisation : MonoBehaviour
 
     void SetPlayerWidth()
     {
-        Vector3 convertedVert = innerPlayerMesh_mf.transform.TransformPoint(player.innerMeshVertices[0]);
-        //this.transform.trans
-        float neededWidthPerc = (1 / player.transform.localScale.x) * player.innerWidth;
-        //player.curInnerWidth
+        float neededWidthPerc = Mathf.Clamp01(player.innerWidth / player.transform.localScale.x);
         Vector3[] newVertices = innerPlayerMesh_mf.mesh.vertices;
 
-        Debug.DrawLine(convertedVert, player.transform.position, Color.magenta);
         if ((player.outerVertices[0] - player.innerVertices[0]).magnitude != player.innerWidth)
         {
             //TO DO: if draußen auf wand skalieren ist nicht aktiv
@@ -240,13 +236,9 @@ public class PosVisualisation : MonoBehaviour
             {
                 // change innerVertices only
                 newVertices[(i * 2) + 1] = (player.outerMeshVertices[i * 1] - Vector3.zero).normalized * (1-neededWidthPerc);
-                // TO DO: testen
             }
-
         }
-
         innerPlayerMesh_mf.mesh.vertices = newVertices;
-
 
         // TO DO: mesh.recalculatenormals, -bounds, -tangents
     }
@@ -255,7 +247,7 @@ public class PosVisualisation : MonoBehaviour
 
     void SetPlayerData()
     {
-        // Create Container
+        // Create containers
         GameObject vertices = new GameObject("Vertices");
         GameObject outside = new GameObject("Outside");
         GameObject inside = new GameObject("Inside");
@@ -266,6 +258,12 @@ public class PosVisualisation : MonoBehaviour
 
         for (int i = 0; i < player.verticesCount; i++)
         {
+            // containers
+            GameObject newOuterVert = new GameObject("Vert" + (i + 1));
+            GameObject newInnerVert = new GameObject("Vert" + (i + 1));
+            newOuterVert.transform.parent = outside.transform;
+            newInnerVert.transform.parent = inside.transform;
+
             // Calc vertex positions
             Quaternion rot = Quaternion.Euler(0, 0, i * 120);
             Vector3 nextDirection = rot * Vector3.up;
@@ -273,18 +271,14 @@ public class PosVisualisation : MonoBehaviour
             Vector3 nextInnerVertex = nextDirection.normalized * (1 - player.innerWidth);
 
             // assign
-            player.outerMeshVertices[i] = nextOuterVertex;
-            player.innerMeshVertices[i] = nextInnerVertex;
-
-            GameObject newOuterVert = new GameObject("Vert" + (i + 1));
-            GameObject newInnerVert = new GameObject("Vert" + (i + 1));
-            newOuterVert.transform.parent = outside.transform;
-            newInnerVert.transform.parent = inside.transform;
             newOuterVert.transform.position = player.transform.position + nextOuterVertex;
             newInnerVert.transform.position = player.transform.position + nextInnerVertex;
 
             player.outerVertices_obj[i] = newOuterVert.transform;
             player.innerVertices_obj[i] = newInnerVert.transform;
+
+            player.outerMeshVertices[i] = nextOuterVertex;
+            player.innerMeshVertices[i] = nextInnerVertex;
         }
     }
 }
