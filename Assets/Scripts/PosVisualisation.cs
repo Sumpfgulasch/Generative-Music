@@ -6,7 +6,6 @@ using System.Linq;
 public class PosVisualisation : MonoBehaviour
 {
     // public
-
     [Header("References")]
     public MeshFilter innerPlayerMesh_mf;
     public MeshFilter innerPlayerMask_mf;
@@ -15,11 +14,6 @@ public class PosVisualisation : MonoBehaviour
     public MeshFilter outerPlayerMesh_mf;
     public MeshFilter outerPlayerMask_mf;
     public GameObject environmentEdges;
-
-    [Header("Führt zu ungenauen States")]
-    public float offset = 1f;
-    [Header("to be replaced...")]
-    public Transform[] playerVertices_hack;
 
     // private
     private Vector3 playerMid;
@@ -90,8 +84,6 @@ public class PosVisualisation : MonoBehaviour
 
             if (ExtensionMethods.LineLineIntersection(out intersection, point1, direction1, point2, direction2))
             {
-                // 5) Offset
-                intersection = intersection + (environmentEdges.transform.position - intersection).normalized * offset;
                 environmentVertices[i] = intersection;
             }
         }
@@ -163,7 +155,7 @@ public class PosVisualisation : MonoBehaviour
 
     void CreateMeshes()
     {
-        // Data & inner player
+        // Inner player
         CreatePlayerMesh(ref innerPlayerMesh_mf);
 
         // Inner surface
@@ -225,24 +217,27 @@ public class PosVisualisation : MonoBehaviour
 
     void SetPlayerWidth()
     {
-        float neededWidthPerc = Mathf.Clamp01(player.innerWidth / player.transform.localScale.x);
-        Vector3[] newVertices = innerPlayerMesh_mf.mesh.vertices;
-
-        if ((player.outerVertices[0] - player.innerVertices[0]).magnitude != player.innerWidth)
+        if (player.constantInnerWidth)
         {
-            //TO DO: if draußen auf wand skalieren ist nicht aktiv
-            for (int i=0; i<player.verticesCount; i++)
-            {
-                // change innerVertices only
-                Vector3 newVertex = (player.outerVertices_mesh[i] - Vector3.zero).normalized * (1 - neededWidthPerc);
-                newVertices[(i * 2) + 1] = newVertex;
-                player.innerVertices_mesh[i] = newVertex;
-            }
-        }
-        innerPlayerMesh_mf.mesh.vertices = newVertices;
-        outerPlayerMesh_mf.mesh.vertices = newVertices;
+            float neededWidthPerc = Mathf.Clamp01(player.innerWidth / player.transform.localScale.x);
+            Vector3[] newVertices = innerPlayerMesh_mf.mesh.vertices;
 
-        // TO DO: mesh.recalculatenormals, -bounds, -tangents
+            if ((player.outerVertices[0] - player.innerVertices[0]).magnitude != player.innerWidth)
+            {
+                //TO DO: if draußen auf wand skalieren ist nicht aktiv
+                for (int i = 0; i < player.verticesCount; i++)
+                {
+                    // change innerVertices only
+                    Vector3 newVertex = (player.outerVertices_mesh[i] - Vector3.zero).normalized * (1 - neededWidthPerc);
+                    newVertices[(i * 2) + 1] = newVertex;
+                    player.innerVertices_mesh[i] = newVertex;
+                }
+            }
+            innerPlayerMesh_mf.mesh.vertices = newVertices;
+            outerPlayerMesh_mf.mesh.vertices = newVertices;
+
+            // TO DO: mesh.recalculatenormals, -bounds, -tangents
+        }
     }
 
 

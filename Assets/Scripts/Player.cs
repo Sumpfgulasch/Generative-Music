@@ -7,13 +7,14 @@ public class Player : MonoBehaviour
     // public variables
     public static Player instance;
     public enum PositionState { inside, outside, edge, noTunnel};
-    public enum ActionState { bounceInside, stickToWall, letOutside };
+    public enum ActionState { stickToWall_outer, stickToWall_inner, none };
     [Header("General stuff")]
     public int verticesCount = 3;
     [Range(0,1f)]
     public float innerWidth = 0.2f;
+    public bool constantInnerWidth = true;
     public PositionState positionState = PositionState.noTunnel;
-    public ActionState actionState = ActionState.bounceInside;
+    public ActionState actionState = ActionState.none;
     [HideInInspector]
     public PositionState lastPosState;
     public float edgeTolerance = 0.01f;
@@ -29,9 +30,9 @@ public class Player : MonoBehaviour
     public float scaleMaxSpeed = 0.05f;
     [Range(0, 1f)]
     public float scaleDamp = 0.2f;
-    public float breakoutSpeedMin = 2f;
+    public float outsideSpeedMin = 2f;
     [Range(0, 1f)]
-    public float breakoutSlowFac = 0.3f;
+    public float outsideSlowFac = 0.3f;
     [Range(0, 1f)]
     public float scaleEdgeAcc = 0.05f;
     [Range(1, 20f)]
@@ -210,41 +211,69 @@ public class Player : MonoBehaviour
     void PerformMovement()
     {
         // = manage states
-        
-        // BOUNCE INSIDE
-        if (actionState == ActionState.bounceInside)
-        {
-            if (positionState == PositionState.edge)
-            {
-                if ((curScaleSpeed > bounceEntrySpeedScale || curRotSpeed > bounceEntrySpeedRot) && lastPosState != PositionState.edge)
-                {
-                    StartCoroutine(BounceForce());
 
-                    if (!helmController.IsNoteOn(50))
-                        helmController.NoteOn(50, 0.5f, 0.2f);
-                }
-                else if (mouseToPlayerDistance > 0)
+        if (actionState == ActionState.none)
+        {
+            if (positionState == PositionState.inside)
+                curScaleSpeed += scaleTargetValue;
+            else if (positionState == PositionState.outside)
+            {
+                curScaleSpeed = scaleTargetValue * outsideSlowFac;
+                curRotSpeed = rotTargetValue * outsideSlowFac;
+            }
+            else if (positionState == PositionState.edge)
+            {
+                if (mouseToPlayerDistance > 0)
                 {
                     float borderTargetScaleFactor = envDistance / playerRadius;
                     this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
                     curScaleSpeed = 0; // unschön
-
-                    helmController.NoteOn(50, 0.5f);
                 }
                 else
-                {
                     curScaleSpeed += scaleTargetValue;
-                    helmController.NoteOff(50);
-                }
+
+            }
+        }
+        else if (actionState == ActionState.stickToWall_outer)
+        {
+            //if (positionState == PositionState.edge)
+        }
+
+        // BOUNCE INSIDE
+        if (positionState == PositionState.edge)
+        {
+            // bounce
+            if ((curScaleSpeed > bounceEntrySpeedScale || curRotSpeed > bounceEntrySpeedRot) && lastPosState != PositionState.edge)
+            {
+                StartCoroutine(BounceForce());
+
+                if (!helmController.IsNoteOn(50))
+                    helmController.NoteOn(50, 0.5f, 0.2f);
+            }
+            // stick to wall
+            else if (mouseToPlayerDistance > 0)
+            {
+                float borderTargetScaleFactor = envDistance / playerRadius;
+                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+                curScaleSpeed = 0; // unschön
+
+                if (!helmController.IsNoteOn(50))
+                    helmController.NoteOn(50);
             }
             else
             {
                 curScaleSpeed += scaleTargetValue;
+
+                helmController.NoteOff(50);
             }
+        }
+        else
+        {
+            curScaleSpeed += scaleTargetValue;
         }
 
         // STICK TO WALL
-        else if (actionState == ActionState.stickToWall)
+        if (actionState == ActionState.stickToWall_outer)
         {
             // STICK TO EDGE
             if (positionState == PositionState.edge)
@@ -254,7 +283,7 @@ public class Player : MonoBehaviour
                 curScaleSpeed = 0; // unschön
 
                 if (!helmController.IsNoteOn(50))
-                    helmController.NoteOn(50, 0.5f, 0.2f);
+                    helmController.NoteOn(50);
             }
             // MOVE PLAYER TOWARDS EDGE
             else
@@ -272,19 +301,16 @@ public class Player : MonoBehaviour
         }
 
         // LET OUTSIDE
-        else if (actionState == ActionState.letOutside)
+        if (positionState == PositionState.outside)
         {
-            if (positionState == PositionState.outside)
-            {
-                // verlangsamen
-                curScaleSpeed = scaleTargetValue * breakoutSlowFac;
-                curRotSpeed = rotTargetValue * breakoutSlowFac;
-            }
-            else
-            {
-                // normal wie bei bounce
-                curScaleSpeed += scaleTargetValue;
-            }
+            // verlangsamen
+            curScaleSpeed = scaleTargetValue * outsideSlowFac;
+            curRotSpeed = rotTargetValue * outsideSlowFac;
+        }
+        else
+        {
+            // normal wie bei bounce
+            curScaleSpeed += scaleTargetValue;
         }
 
 
@@ -353,11 +379,12 @@ public class Player : MonoBehaviour
     void SetPlayerActionStates()
     {
         // Spieleraktions-States
-        if (positionState == PositionState.outside || mouseDelta > breakoutSpeedMin)
+        if (positionState == PositionState.outside || mouseDelta > outsideSpeedMin)
             actionState = ActionState.letOutside;
+            
         else
             actionState = ActionState.bounceInside;
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
-            actionState = ActionState.stickToWall;
+            actionState = ActionState.stickToWall_outer;
     }
 }
