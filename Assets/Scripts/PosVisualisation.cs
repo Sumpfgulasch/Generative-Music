@@ -121,15 +121,21 @@ public class PosVisualisation : MonoBehaviour
         {
             float playerRadius = (player.outerVertices[0] - playerMid).magnitude;
             float envDistance = (hit.point - playerMid).magnitude;
-            float playerToEnvDistance = playerRadius - envDistance;
-
-            // states
-            if (Mathf.Abs(playerToEnvDistance) < player.edgeTolerance && !player.startedBounce)
-                player.positionState = Player.PositionState.edge;
+            float playerToEnvDistance = Mathf.Abs(playerRadius - envDistance);
+            float innerVertexToEnvDistance = (player.innerVertices[0] - (hit.point + (player.innerVertices[0] - hit.point).normalized * player.stickToOuterEdge_holeSize)).magnitude;
+            
+            if (playerToEnvDistance < player.stickToEdgeTolerance && !player.startedBounce)
+                player.positionState = Player.PositionState.innerEdge;
+            else if (innerVertexToEnvDistance < player.stickToEdgeTolerance && !player.startedBounce)
+                player.positionState = Player.PositionState.outerEdge;
             else if (playerRadius < envDistance)
                 player.positionState = Player.PositionState.inside;
             else
                 player.positionState = Player.PositionState.outside;
+            
+
+        // overwrite / hack
+            // TO DO: if curState == outside && lastState == inside && mouseSpeed < x ----> StickToInnerEdge
         }
         else
             player.positionState = Player.PositionState.noTunnel;
@@ -231,6 +237,8 @@ public class PosVisualisation : MonoBehaviour
                     Vector3 newVertex = (player.outerVertices_mesh[i] - Vector3.zero).normalized * (1 - neededWidthPerc);
                     newVertices[(i * 2) + 1] = newVertex;
                     player.innerVertices_mesh[i] = newVertex;
+                    player.innerVertices_obj[i].position = playerMid + (player.outerVertices[i] - playerMid) * (1 - neededWidthPerc);
+                    player.innerVertices[i] = player.innerVertices_obj[i].position;
                 }
             }
             innerPlayerMesh_mf.mesh.vertices = newVertices;

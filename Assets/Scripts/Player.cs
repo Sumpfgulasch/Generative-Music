@@ -6,18 +6,19 @@ public class Player : MonoBehaviour
 {
     // public variables
     public static Player instance;
-    public enum PositionState { inside, outside, edge, noTunnel };
-    public enum ActionState { bounceInside, stickToWall, letOutside };
+    public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
+    public enum ActionState { stickToEdge, none };
     [Header("General stuff")]
     public int verticesCount = 3;
     [Range(0, 1f)]
     public float innerWidth = 0.2f;
     public bool constantInnerWidth = true;
     public PositionState positionState = PositionState.noTunnel;
-    public ActionState actionState = ActionState.bounceInside;
+    public ActionState actionState = ActionState.none;
     [HideInInspector]
     public PositionState lastPosState;
-    public float edgeTolerance = 0.01f;
+    public float stickToEdgeTolerance = 0.01f;
+    public float stickToOuterEdge_holeSize = 0.05f;
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
@@ -77,11 +78,6 @@ public class Player : MonoBehaviour
 
 
     // private variables
-    private MeshRenderer meshRenderer;
-    private Color defaultColor;
-    private Color moveColor;
-
-
     private bool mouseIsActive;
     private Vector3 mouseStartPos;
     private Vector3 mousePos;
@@ -100,8 +96,8 @@ public class Player : MonoBehaviour
     private float rotDifferenceToLastFrame;
     private float lastRotDifferenceToLastFrame = 0;
     float mouseToPlayerDistance;
-    float playerRadius;
-    float envDistance;
+    float curPlayerRadius;
+    float tunnelToMidDistance;
     RaycastHit envPlayerIntersection;
     private float bounceWeight = 0f;
     private float bounceRecoverWeight;
@@ -114,9 +110,6 @@ public class Player : MonoBehaviour
     void Start()
     {
         instance = this;
-        meshRenderer = this.transform.GetComponentInChildren<MeshRenderer>();
-        defaultColor = meshRenderer.material.color;
-        moveColor = defaultColor * 1.2f;
         midPoint = this.transform.position;
     }
 
@@ -175,11 +168,9 @@ public class Player : MonoBehaviour
 
         if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
         {
-            playerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
-            envDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
+            curPlayerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
+            tunnelToMidDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
         }
-        //else
-        //    print("ERROR: no env hit");
     }
 
 
@@ -206,89 +197,64 @@ public class Player : MonoBehaviour
         }
     }
 
-
+    
 
     void PerformMovement()
     {
         // = manage states
 
-        // BOUNCE INSIDE
-        if (actionState == ActionState.bounceInside)
+        // regular move
+        if (actionState == ActionState.none)
         {
-            if (positionState == PositionState.edge)
+            if (positionState == PositionState.inside)
             {
-                if ((curScaleSpeed > bounceEntrySpeedScale || curRotSpeed > bounceEntrySpeedRot) && lastPosState != PositionState.edge)
-                {
-                    StartCoroutine(BounceForce());
-
-                    if (!helmController.IsNoteOn(50))
-                        helmController.NoteOn(50, 0.5f, 0.2f);
-                }
-                else if (mouseToPlayerDistance > 0)
-                {
-                    float borderTargetScaleFactor = envDistance / playerRadius;
-                    this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
-                    curScaleSpeed = 0; // unschön
-
-                    helmController.NoteOn(50, 0.5f);
-                }
+                MoveTowardsMouse("inner");
+            }
+            else if (positionState == PositionState.innerEdge)
+            {
+                if (mouseToPlayerDistance > 0)
+                    StickToEdge("inner");
                 else
-                {
-                    curScaleSpeed += scaleTargetValue;
-                    helmController.NoteOff(50);
-                }
+                    MoveTowardsMouse("inner");
             }
-            else
+            else if (positionState == PositionState.outside)
             {
-                curScaleSpeed += scaleTargetValue;
+                MoveTowardsMouse("outer");
             }
-        }
-
-        // STICK TO WALL
-        else if (actionState == ActionState.stickToWall)
-        {
-            // STICK TO EDGE
-            if (positionState == PositionState.edge)
+            else if (positionState == PositionState.outerEdge)
             {
-                float borderTargetScaleFactor = envDistance / playerRadius;
-                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
-                curScaleSpeed = 0; // unschön
-
-                if (!helmController.IsNoteOn(50))
-                    helmController.NoteOn(50, 0.5f, 0.2f);
-            }
-            // MOVE PLAYER TOWARDS EDGE
-            else
-            {
-                float scaleAdd = scaleEdgeAcc;
-                if (curScaleSpeed < 0.0001f)
-                    curScaleSpeed = 0.0001f;
-                if (playerRadius < envDistance)
-                    curScaleSpeed = Mathf.Pow(curScaleSpeed, scaleEdgeAcc);
+                if (mouseToPlayerDistance < 0)
+                    StickToEdge("outer");
                 else
-                    curScaleSpeed = Mathf.Pow(curScaleSpeed, 1 + (1 - scaleEdgeAcc));
-
-                helmController.NoteOff(50);
+                    MoveTowardsMouse("outer");
             }
         }
-
-        // LET OUTSIDE
-        else if (actionState == ActionState.letOutside)
+        // action: stick to edge
+        else if (actionState == ActionState.stickToEdge)
         {
-            if (positionState == PositionState.outside)
+            if (positionState == PositionState.inside)
             {
-                // verlangsamen
-                curScaleSpeed = scaleTargetValue * outsideSlowFac;
-                curRotSpeed = rotTargetValue * outsideSlowFac;
+                MoveTowardsEdge("inner");
             }
-            else
+            else if (positionState == PositionState.innerEdge)
             {
-                // normal wie bei bounce
-                curScaleSpeed += scaleTargetValue;
+                if (mouseToPlayerDistance < 0)
+                    StickToEdge("inner");
+                else
+                    StickToEdge("outer");
+            }
+            else if (positionState == PositionState.outside)
+            {
+                MoveTowardsEdge("outer");
+            }
+            else if (positionState == PositionState.outerEdge)
+            {
+                if (mouseToPlayerDistance > 0)
+                    StickToEdge("outer");
+                else
+                    StickToEdge("inner");
             }
         }
-
-
 
         // APPLY & clamp (scale & rot)
         curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
@@ -299,6 +265,94 @@ public class Player : MonoBehaviour
 
         this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
     }
+
+
+
+    void MoveTowardsEdge(string side)
+    {
+        if (side == "inner")
+        {
+            float scaleAdd = scaleEdgeAcc;
+            if (curScaleSpeed < 0.0001f)
+                curScaleSpeed = 0.0001f;
+
+        }
+        else if (side == "outer")
+        {
+            if (curScaleSpeed > -0.0001f)
+                curScaleSpeed = -0.0001f;
+        }
+        // TO DO: prüfen ob das stimmt
+        else
+            print("syntax error");
+
+        if (curPlayerRadius < tunnelToMidDistance)
+        {
+            curScaleSpeed = Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
+            print("1 , curScaleSpeed: " + curScaleSpeed);
+        }
+        //else
+        //{
+        //    curScaleSpeed = Mathf.Pow(curScaleSpeed, 1 + (1 - scaleEdgeAcc));
+        //    print("2 , curScaleSpeed: " + curScaleSpeed);
+        //}
+        else
+        {
+            curScaleSpeed = -Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
+            print("2 , curScaleSpeed: " + curScaleSpeed);
+        }
+    }
+
+
+
+    void MoveTowardsMouse(string side)
+    {
+        if (side == "inner")
+            // accalerate towards mouse
+            curScaleSpeed += scaleTargetValue;
+        else if (side == "outer")
+        {
+            curScaleSpeed = scaleTargetValue * outsideSlowFac;
+            curRotSpeed = rotTargetValue * outsideSlowFac;
+        }
+        else
+            print("syntax error");
+    }
+
+
+
+    void StickToEdge(string side)
+    {
+        if (side == "inner")
+        {
+            float borderTargetScaleFactor = tunnelToMidDistance / curPlayerRadius;
+            this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+            curScaleSpeed = 0; // unschön
+
+            // TO DO: bounce?
+        }
+
+        else if (side == "outer")
+        {
+            if (constantInnerWidth)
+            {
+                float innerVertexDistance = (innerVertices[0] - midPoint).magnitude;
+                float borderTargetScaleFactor = (tunnelToMidDistance + stickToOuterEdge_holeSize) / innerVertexDistance;
+                this.transform.localScale *= borderTargetScaleFactor;
+            }
+            else
+            {
+                float innerVertexDistance = (innerVertices[0] - midPoint).magnitude;
+                float borderTargetScaleFactor = (tunnelToMidDistance + stickToOuterEdge_holeSize) / innerVertexDistance;
+                this.transform.localScale *= borderTargetScaleFactor;
+                // TO DO: testen
+            }
+            curScaleSpeed = 0; // unschön
+        }
+        else
+            print("Syntax error");
+    }
+
 
 
     IEnumerator BounceForce()
@@ -347,18 +401,14 @@ public class Player : MonoBehaviour
             outerVertices[i] = outerVertices_obj[i].position;
             innerVertices[i] = innerVertices_obj[i].position;
         }
-
     }
 
 
     void SetPlayerActionStates()
     {
-        // Spieleraktions-States
-        if (positionState == PositionState.outside || mouseDelta > outsideSpeedMin)
-            actionState = ActionState.letOutside;
-        else
-            actionState = ActionState.bounceInside;
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
-            actionState = ActionState.stickToWall;
+            actionState = ActionState.stickToEdge;
+        else
+            actionState = ActionState.none;
     }
 }
