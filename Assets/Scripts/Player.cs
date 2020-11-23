@@ -6,22 +6,22 @@ public class Player : MonoBehaviour
 {
     // public variables
     public static Player instance;
-    public enum PositionState { inside, outside, edge, noTunnel};
-    public enum ActionState { stickToWall_outer, stickToWall_inner, none };
+    public enum PositionState { inside, outside, edge, noTunnel };
+    public enum ActionState { bounceInside, stickToWall, letOutside };
     [Header("General stuff")]
     public int verticesCount = 3;
-    [Range(0,1f)]
+    [Range(0, 1f)]
     public float innerWidth = 0.2f;
     public bool constantInnerWidth = true;
     public PositionState positionState = PositionState.noTunnel;
-    public ActionState actionState = ActionState.none;
+    public ActionState actionState = ActionState.bounceInside;
     [HideInInspector]
     public PositionState lastPosState;
     public float edgeTolerance = 0.01f;
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
-    [Range(0,1f)]
+    [Range(0, 1f)]
     public float rotationTargetVectorFactor = 0.1f;
     [Range(0, 1f)]
     public float scaleTargetVectorFactor = 0.05f;
@@ -154,7 +154,7 @@ public class Player : MonoBehaviour
         lastRotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue; // last rot
         lastRotTargetValue = rotTargetValue;
 
-        
+
 
         // SCALE
         mouseToPlayerDistance = 0;
@@ -212,68 +212,40 @@ public class Player : MonoBehaviour
     {
         // = manage states
 
-        if (actionState == ActionState.none)
+        // BOUNCE INSIDE
+        if (actionState == ActionState.bounceInside)
         {
-            if (positionState == PositionState.inside)
-                curScaleSpeed += scaleTargetValue;
-            else if (positionState == PositionState.outside)
+            if (positionState == PositionState.edge)
             {
-                curScaleSpeed = scaleTargetValue * outsideSlowFac;
-                curRotSpeed = rotTargetValue * outsideSlowFac;
-            }
-            else if (positionState == PositionState.edge)
-            {
-                if (mouseToPlayerDistance > 0)
+                if ((curScaleSpeed > bounceEntrySpeedScale || curRotSpeed > bounceEntrySpeedRot) && lastPosState != PositionState.edge)
+                {
+                    StartCoroutine(BounceForce());
+
+                    if (!helmController.IsNoteOn(50))
+                        helmController.NoteOn(50, 0.5f, 0.2f);
+                }
+                else if (mouseToPlayerDistance > 0)
                 {
                     float borderTargetScaleFactor = envDistance / playerRadius;
                     this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
                     curScaleSpeed = 0; // unschön
+
+                    helmController.NoteOn(50, 0.5f);
                 }
                 else
+                {
                     curScaleSpeed += scaleTargetValue;
-
-            }
-        }
-        else if (actionState == ActionState.stickToWall_outer)
-        {
-            //if (positionState == PositionState.edge)
-        }
-
-        // BOUNCE INSIDE
-        if (positionState == PositionState.edge)
-        {
-            // bounce
-            if ((curScaleSpeed > bounceEntrySpeedScale || curRotSpeed > bounceEntrySpeedRot) && lastPosState != PositionState.edge)
-            {
-                StartCoroutine(BounceForce());
-
-                if (!helmController.IsNoteOn(50))
-                    helmController.NoteOn(50, 0.5f, 0.2f);
-            }
-            // stick to wall
-            else if (mouseToPlayerDistance > 0)
-            {
-                float borderTargetScaleFactor = envDistance / playerRadius;
-                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
-                curScaleSpeed = 0; // unschön
-
-                if (!helmController.IsNoteOn(50))
-                    helmController.NoteOn(50);
+                    helmController.NoteOff(50);
+                }
             }
             else
             {
                 curScaleSpeed += scaleTargetValue;
-
-                helmController.NoteOff(50);
             }
-        }
-        else
-        {
-            curScaleSpeed += scaleTargetValue;
         }
 
         // STICK TO WALL
-        if (actionState == ActionState.stickToWall_outer)
+        else if (actionState == ActionState.stickToWall)
         {
             // STICK TO EDGE
             if (positionState == PositionState.edge)
@@ -283,7 +255,7 @@ public class Player : MonoBehaviour
                 curScaleSpeed = 0; // unschön
 
                 if (!helmController.IsNoteOn(50))
-                    helmController.NoteOn(50);
+                    helmController.NoteOn(50, 0.5f, 0.2f);
             }
             // MOVE PLAYER TOWARDS EDGE
             else
@@ -301,16 +273,19 @@ public class Player : MonoBehaviour
         }
 
         // LET OUTSIDE
-        if (positionState == PositionState.outside)
+        else if (actionState == ActionState.letOutside)
         {
-            // verlangsamen
-            curScaleSpeed = scaleTargetValue * outsideSlowFac;
-            curRotSpeed = rotTargetValue * outsideSlowFac;
-        }
-        else
-        {
-            // normal wie bei bounce
-            curScaleSpeed += scaleTargetValue;
+            if (positionState == PositionState.outside)
+            {
+                // verlangsamen
+                curScaleSpeed = scaleTargetValue * outsideSlowFac;
+                curRotSpeed = rotTargetValue * outsideSlowFac;
+            }
+            else
+            {
+                // normal wie bei bounce
+                curScaleSpeed += scaleTargetValue;
+            }
         }
 
 
@@ -318,14 +293,14 @@ public class Player : MonoBehaviour
         // APPLY & clamp (scale & rot)
         curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
         curScaleSpeed = curScaleSpeed * (1 - bounceRecoverWeight) + curBounceSpeed * bounceWeight; // add bounce force & fast speed
-        
+
         this.transform.localScale += new Vector3(curScaleSpeed * fastWeight, curScaleSpeed * fastWeight, 0);
         this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
 
         this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
     }
 
-    
+
     IEnumerator BounceForce()
     {
         startedBounce = true;
@@ -347,7 +322,7 @@ public class Player : MonoBehaviour
         }
         startedBounce = false;
     }
-    
+
 
     void GetInput()
     {
@@ -367,12 +342,12 @@ public class Player : MonoBehaviour
     void GetData()
     {
         // get positions from childed vertex-gameobjects
-        for (int i=0; i<verticesCount; i++)
+        for (int i = 0; i < verticesCount; i++)
         {
             outerVertices[i] = outerVertices_obj[i].position;
             innerVertices[i] = innerVertices_obj[i].position;
         }
-        
+
     }
 
 
@@ -381,10 +356,9 @@ public class Player : MonoBehaviour
         // Spieleraktions-States
         if (positionState == PositionState.outside || mouseDelta > outsideSpeedMin)
             actionState = ActionState.letOutside;
-            
         else
             actionState = ActionState.bounceInside;
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
-            actionState = ActionState.stickToWall_outer;
+            actionState = ActionState.stickToWall;
     }
 }
