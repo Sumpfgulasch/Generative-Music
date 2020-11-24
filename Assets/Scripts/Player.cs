@@ -56,8 +56,6 @@ public class Player : MonoBehaviour
     [Range(0.1f, 1f)]
     public float kb_slowRotation = 0.9f;
 
-    [Header("Music")]
-    public AudioHelm.HelmController helmController;
 
     [HideInInspector]
     public bool startedBounce = false;
@@ -92,9 +90,7 @@ public class Player : MonoBehaviour
     private float curRotSpeed;
     private float curMouseRot;
     private float rotTargetValue;
-    private float lastRotTargetValue;
     private float rotDifferenceToLastFrame;
-    private float lastRotDifferenceToLastFrame = 0;
     float mouseToPlayerDistance;
     float curPlayerRadius;
     float tunnelToMidDistance;
@@ -106,6 +102,9 @@ public class Player : MonoBehaviour
     private float mouseX, mouseY, mouseDelta;
     private float mouseToEnvDistance;
 
+
+    // get set
+    MusicManager musicManager { get { return MusicManager.instance; } }
 
 
     void Start()
@@ -142,11 +141,9 @@ public class Player : MonoBehaviour
         Vector2 mouseToMid = mousePos - midPoint;
         Vector2 playerAngleVec = outerVertices[0] - midPoint;
         curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
-        curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // max speed
+        curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
         rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
         curRotSpeed = rotTargetValue;
-        lastRotDifferenceToLastFrame = rotTargetValue - lastRotTargetValue; // last rot
-        lastRotTargetValue = rotTargetValue;
 
 
 
@@ -220,31 +217,23 @@ public class Player : MonoBehaviour
             if (positionState == PositionState.inside)
             {
                 MoveTowardsMouse("inner");
+
+                musicManager.StopSingleNote(musicManager.instruments[0], 60);
+                musicManager.StopSingleNote(musicManager.instruments[1], 60);
             }
             else if (positionState == PositionState.innerEdge)
             {
-                // V1
-                //if (mouseToPlayerDistance >= 0)
-                //    StickToEdge("inner");
-                //else
-                //    MoveTowardsMouse("inner");
-
-                // V2
                 MoveTowardsMouse("inner");
             }
             else if (positionState == PositionState.outside)
             {
                 MoveTowardsMouse("outer");
+
+                musicManager.StopSingleNote(musicManager.instruments[1], 60);
+                musicManager.StopSingleNote(musicManager.instruments[0], 60);
             }
             else if (positionState == PositionState.outerEdge)
             {
-                // V1
-                //if (mouseToPlayerDistance < 0)
-                //    StickToEdge("outer");
-                //else
-                //    MoveTowardsMouse("outer");
-
-                // V2
                 MoveTowardsMouse("outer");
             }
         }
@@ -254,17 +243,15 @@ public class Player : MonoBehaviour
             if (positionState == PositionState.inside)
             {
                 MoveTowardsEdge("inner");
+
+                
             }
             else if (positionState == PositionState.innerEdge)
             {
-                // V1
-                //if (mouseToEnvDistance < 0)
-                //    StickToEdge("inner");
-                //else
-                //    StickToEdge("outer");
-
-                // V2
                 StickToEdge("inner");
+
+                musicManager.StopSingleNote(musicManager.instruments[1], 60);
+                musicManager.PlaySingleNote(musicManager.instruments[0], 60, 1);
             }
             else if (positionState == PositionState.outside)
             {
@@ -272,14 +259,10 @@ public class Player : MonoBehaviour
             }
             else if (positionState == PositionState.outerEdge)
             {
-                // V1
-                //if (mouseToEnvDistance >= 0)
-                //    StickToEdge("outer");
-                //else
-                //    StickToEdge("inner");
-
-                // V2
                 StickToEdge("outer");
+
+                musicManager.StopSingleNote(musicManager.instruments[0], 60);
+                musicManager.PlaySingleNote(musicManager.instruments[1], 60, 1);
             }
         }
 
