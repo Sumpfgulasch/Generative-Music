@@ -119,14 +119,20 @@ public class PosVisualisation : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(playerMid, player.outerVertices[0] - playerMid, out hit))
         {
+            // Calculations
             float playerRadius = (player.outerVertices[0] - playerMid).magnitude;
             float envDistance = (hit.point - playerMid).magnitude;
             float playerToEnvDistance = Mathf.Abs(playerRadius - envDistance);
             float innerVertexToEnvDistance = (player.innerVertices[0] - (hit.point + (player.innerVertices[0] - hit.point).normalized * player.stickToOuterEdge_holeSize)).magnitude;
-            
-            if (playerToEnvDistance < player.stickToEdgeTolerance && !player.startedBounce)
+
+            float stickToEdgeTolerance = player.stickToEdgeTolerance;
+            if (player.actionState == Player.ActionState.stickToEdge)
+                stickToEdgeTolerance *= 3f;
+
+            // States
+            if (playerToEnvDistance < stickToEdgeTolerance && !player.startedBounce)
                 player.positionState = Player.PositionState.innerEdge;
-            else if (innerVertexToEnvDistance < player.stickToEdgeTolerance && !player.startedBounce)
+            else if (innerVertexToEnvDistance < stickToEdgeTolerance && !player.startedBounce)
                 player.positionState = Player.PositionState.outerEdge;
             else if (playerRadius < envDistance)
                 player.positionState = Player.PositionState.inside;

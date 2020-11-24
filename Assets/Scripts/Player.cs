@@ -104,6 +104,7 @@ public class Player : MonoBehaviour
     private float curBounceSpeed;
     private float fastWeight = 1f;
     private float mouseX, mouseY, mouseDelta;
+    private float mouseToEnvDistance;
 
 
 
@@ -159,9 +160,15 @@ public class Player : MonoBehaviour
             {
                 mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
                 if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
-                    mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
+                {
+                    // Maus ist innerhalb Dreieck
+                    mouseToPlayerDistance *= -1;
+                    
+                }
             }
         }
+       
+        // TO DO (irgendwann): Intersection und Raycast-Funktionen prüfen das gleiche, tun unterschiedliche dinge
 
         scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
         scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
@@ -170,7 +177,11 @@ public class Player : MonoBehaviour
         {
             curPlayerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
             tunnelToMidDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
+            mouseToEnvDistance = ((Vector2)mousePos - (Vector2)envPlayerIntersection.point).magnitude;
+            if (((Vector2)mousePos - (Vector2)midPoint).magnitude < ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude)
+                mouseToEnvDistance *= -1;
         }
+
     }
 
 
@@ -212,7 +223,7 @@ public class Player : MonoBehaviour
             }
             else if (positionState == PositionState.innerEdge)
             {
-                if (mouseToPlayerDistance > 0)
+                if (mouseToPlayerDistance >= 0)
                     StickToEdge("inner");
                 else
                     MoveTowardsMouse("inner");
@@ -238,7 +249,7 @@ public class Player : MonoBehaviour
             }
             else if (positionState == PositionState.innerEdge)
             {
-                if (mouseToPlayerDistance < 0)
+                if (mouseToEnvDistance < 0)
                     StickToEdge("inner");
                 else
                     StickToEdge("outer");
@@ -249,7 +260,7 @@ public class Player : MonoBehaviour
             }
             else if (positionState == PositionState.outerEdge)
             {
-                if (mouseToPlayerDistance > 0)
+                if (mouseToEnvDistance >= 0)
                     StickToEdge("outer");
                 else
                     StickToEdge("inner");
@@ -282,24 +293,14 @@ public class Player : MonoBehaviour
             if (curScaleSpeed > -0.0001f)
                 curScaleSpeed = -0.0001f;
         }
-        // TO DO: prüfen ob das stimmt
-        else
-            print("syntax error");
 
         if (curPlayerRadius < tunnelToMidDistance)
         {
             curScaleSpeed = Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
-            print("1 , curScaleSpeed: " + curScaleSpeed);
         }
-        //else
-        //{
-        //    curScaleSpeed = Mathf.Pow(curScaleSpeed, 1 + (1 - scaleEdgeAcc));
-        //    print("2 , curScaleSpeed: " + curScaleSpeed);
-        //}
         else
         {
             curScaleSpeed = -Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
-            print("2 , curScaleSpeed: " + curScaleSpeed);
         }
     }
 
@@ -315,8 +316,6 @@ public class Player : MonoBehaviour
             curScaleSpeed = scaleTargetValue * outsideSlowFac;
             curRotSpeed = rotTargetValue * outsideSlowFac;
         }
-        else
-            print("syntax error");
     }
 
 
@@ -336,21 +335,18 @@ public class Player : MonoBehaviour
         {
             if (constantInnerWidth)
             {
-                float innerVertexDistance = (innerVertices[0] - midPoint).magnitude;
-                float borderTargetScaleFactor = (tunnelToMidDistance + stickToOuterEdge_holeSize) / innerVertexDistance;
+                float borderTargetScaleFactor = (tunnelToMidDistance + innerWidth + stickToOuterEdge_holeSize) / curPlayerRadius;
                 this.transform.localScale *= borderTargetScaleFactor;
+                
             }
             else
             {
                 float innerVertexDistance = (innerVertices[0] - midPoint).magnitude;
                 float borderTargetScaleFactor = (tunnelToMidDistance + stickToOuterEdge_holeSize) / innerVertexDistance;
                 this.transform.localScale *= borderTargetScaleFactor;
-                // TO DO: testen
             }
             curScaleSpeed = 0; // unschön
         }
-        else
-            print("Syntax error");
     }
 
 
