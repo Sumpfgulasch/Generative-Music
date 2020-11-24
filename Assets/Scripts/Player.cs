@@ -223,10 +223,14 @@ public class Player : MonoBehaviour
             }
             else if (positionState == PositionState.innerEdge)
             {
-                if (mouseToPlayerDistance >= 0)
-                    StickToEdge("inner");
-                else
-                    MoveTowardsMouse("inner");
+                // V1
+                //if (mouseToPlayerDistance >= 0)
+                //    StickToEdge("inner");
+                //else
+                //    MoveTowardsMouse("inner");
+
+                // V2
+                MoveTowardsMouse("inner");
             }
             else if (positionState == PositionState.outside)
             {
@@ -234,10 +238,14 @@ public class Player : MonoBehaviour
             }
             else if (positionState == PositionState.outerEdge)
             {
-                if (mouseToPlayerDistance < 0)
-                    StickToEdge("outer");
-                else
-                    MoveTowardsMouse("outer");
+                // V1
+                //if (mouseToPlayerDistance < 0)
+                //    StickToEdge("outer");
+                //else
+                //    MoveTowardsMouse("outer");
+
+                // V2
+                MoveTowardsMouse("outer");
             }
         }
         // action: stick to edge
@@ -249,10 +257,14 @@ public class Player : MonoBehaviour
             }
             else if (positionState == PositionState.innerEdge)
             {
-                if (mouseToEnvDistance < 0)
-                    StickToEdge("inner");
-                else
-                    StickToEdge("outer");
+                // V1
+                //if (mouseToEnvDistance < 0)
+                //    StickToEdge("inner");
+                //else
+                //    StickToEdge("outer");
+
+                // V2
+                StickToEdge("inner");
             }
             else if (positionState == PositionState.outside)
             {
@@ -260,10 +272,14 @@ public class Player : MonoBehaviour
             }
             else if (positionState == PositionState.outerEdge)
             {
-                if (mouseToEnvDistance >= 0)
-                    StickToEdge("outer");
-                else
-                    StickToEdge("inner");
+                // V1
+                //if (mouseToEnvDistance >= 0)
+                //    StickToEdge("outer");
+                //else
+                //    StickToEdge("inner");
+
+                // V2
+                StickToEdge("outer");
             }
         }
 
