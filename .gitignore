@@ -55,5 +55,6 @@ crashlytics-build.properties
 
 Assets/AudioHelm/*
 !/Assets/AudioHelm/Scripts/
+!/Assets/AudioHelm/Presets/
 
 Assets/Plugins/FMOD/

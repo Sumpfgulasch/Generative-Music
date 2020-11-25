@@ -418,7 +418,6 @@ namespace AudioHelm
             pressedNotes[note] = number + 1;
             // Julian: habe ich hinzugefügt
             pressedNotesDurations[note].coroutine = StartCoroutine(CountNoteOnTime(note));
-
             Native.HelmNoteOn(channel, note, velocity);
         }
 
