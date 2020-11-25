@@ -10,6 +10,8 @@ public class MusicManager : MonoBehaviour
     enum Scale {Ionisch, Blues };
     Scale scale;
 
+    public float shortNotes_minPlayTime = 0.3f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +26,7 @@ public class MusicManager : MonoBehaviour
     void Update()
     {
         
+            print("note 60 duration: " + instruments[0].pressedNotesDurations[64].duration);
     }
 
     public void PlaySingleNote(AudioHelm.HelmController instrument, int note, float velocity)
@@ -40,14 +43,28 @@ public class MusicManager : MonoBehaviour
     {
         if (instrument.IsNoteOn(note))
         {
-            instrument.NoteOff(note);
-            instrument.NoteOff(note+4);
-            instrument.NoteOff(note+7);
+            float timeToPlay = shortNotes_minPlayTime - instrument.pressedNotesDurations[note].duration;
+            if (timeToPlay > 0)
+            {
+                instrument.WaitNoteOff(note, timeToPlay);
+                instrument.WaitNoteOff(note+4, timeToPlay);
+                instrument.WaitNoteOff(note+7, timeToPlay);
+            }
+            else
+            {
+                instrument.NoteOff(note);
+                instrument.NoteOff(note + 4);
+                instrument.NoteOff(note + 7);
+            }
+            
         }
+        
     }
 
     void GetRandomNoteFromScale(int rangeFrom, int rangeTo, Scale scale)
     {
-
+        
     }
+
+    // controller.setpitchwheel
 }
