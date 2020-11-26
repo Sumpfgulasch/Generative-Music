@@ -6,13 +6,20 @@ public class MusicManager : MonoBehaviour
 {
     public static MusicManager instance;
 
-    public List<AudioHelm.HelmController> instruments;
+    public List<AudioHelm.HelmController> controllers;
     enum Scale {Ionisch, Blues };
     Scale scale;
 
     public float shortNotes_minPlayTime = 0.3f;
+    public int maxEdgeIntervalRange = 14;
 
-    // Start is called before the first frame update
+    // private
+    float minPitch, maxPitch;
+
+    // get set
+    Player player { get { return Player.instance; } }
+
+    
     void Start()
     {
         if (instance == null)
@@ -21,12 +28,10 @@ public class MusicManager : MonoBehaviour
             Destroy(instance);
         
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
         
-            print("note 60 duration: " + instruments[0].pressedNotesDurations[64].duration);
     }
 
     public void PlaySingleNote(AudioHelm.HelmController instrument, int note, float velocity)
@@ -66,5 +71,43 @@ public class MusicManager : MonoBehaviour
         
     }
 
-    // controller.setpitchwheel
+    void GenerateMusicalRange(int note)
+    {
+        
+        minPitch = Random.Range(note - 7, note);
+        maxPitch = Random.Range(note, note + 7);
+    }
+
+    public void SetPitchOnEdge(int note, AudioHelm.HelmController controller)
+    {
+        float percentage;
+        percentage = (player.outerVertices[0] - player.curEnvEdge.Item1).magnitude / (player.curEnvEdge.Item2 - player.curEnvEdge.Item1).magnitude;
+
+        if (player.firstEdgeTouch)
+        {
+            minPitch = Random.Range(-maxEdgeIntervalRange, 0) * percentage;
+            float maxPitchVertex2playerVertex_dist = (player.curEnvEdge.Item2 - player.outerVertices[0]).magnitude;
+            float minPitchVertex2playerVertex_dist = (player.curEnvEdge.Item1 - player.outerVertices[0]).magnitude;
+            maxPitch = Mathf.Abs(minPitch) * (maxPitchVertex2playerVertex_dist / minPitchVertex2playerVertex_dist);
+            print("first Edge touch");
+        }
+        else if (player.edgeChange)
+        {
+            print("edgeChange");
+            if (player.curRotSpeed < 0)
+            {
+                // im Uhrzeigersinn
+                minPitch = maxPitch;
+                maxPitch = maxPitch + Random.Range(0, maxEdgeIntervalRange);
+            }
+            else
+            {
+                // gegen Uhrzeigersinn
+                maxPitch = minPitch;
+                minPitch = minPitch + Random.Range(0, -maxEdgeIntervalRange);
+            }
+        }
+        float pitch = percentage.Remap(0, 1, minPitch, maxPitch);
+        controller.SetPitchWheel(pitch);
+    }
 }

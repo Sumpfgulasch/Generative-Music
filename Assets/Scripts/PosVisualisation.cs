@@ -6,6 +6,8 @@ using System.Linq;
 public class PosVisualisation : MonoBehaviour
 {
     // public
+    public static PosVisualisation instance;
+
     [Header("References")]
     public MeshFilter innerPlayerMesh_mf;
     public MeshFilter innerPlayerMask_mf;
@@ -15,18 +17,23 @@ public class PosVisualisation : MonoBehaviour
     public MeshFilter outerPlayerMask_mf;
     public GameObject environmentEdges;
 
+    [HideInInspector]
+    public Vector3[] environmentVertices = new Vector3[3];
+
     // private
     private Vector3 playerMid;
     private LineRenderer lineRenderer_envEdges;
     private Vector3[] playerVertices = new Vector3[3];
-    private Vector3[] environmentVertices = new Vector3[3];
+    
 
     // get set
     Player player { get { return Player.instance; } }
 
     void Start()
     {
-        SetPlayerData();
+        instance = this;
+
+        InitPlayerData();
         
         CreateMeshes();
 
@@ -52,7 +59,7 @@ public class PosVisualisation : MonoBehaviour
         // 1) init
         RaycastHit[] edgeHits = new RaycastHit[3];
         environmentVertices = new Vector3[3];
-        Vector3 intersection;
+        Vector3 intersection = Vector3.zero;
 
         // 2) Prepare raycast
         for (int i = 0; i < player.verticesCount; i++)
@@ -138,6 +145,12 @@ public class PosVisualisation : MonoBehaviour
                 player.positionState = Player.PositionState.inside;
             else
                 player.positionState = Player.PositionState.outside;
+
+            if (player.positionState == Player.PositionState.innerEdge && player.lastPosState != Player.PositionState.innerEdge ||
+                player.positionState == Player.PositionState.outerEdge && player.lastPosState != Player.PositionState.outerEdge)
+                player.firstEdgeTouch = true;
+            else
+                player.firstEdgeTouch = false;
             
 
         // overwrite / hack
@@ -256,7 +269,7 @@ public class PosVisualisation : MonoBehaviour
 
 
 
-    void SetPlayerData()
+    void InitPlayerData()
     {
         // Create containers
         GameObject vertices = new GameObject("Vertices");

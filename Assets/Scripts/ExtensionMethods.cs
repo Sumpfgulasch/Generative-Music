@@ -70,18 +70,6 @@ public static class ExtensionMethods
         return start + heading * dotP;
     }
 
-
-    //public static void ClampVector3_2D(this Vector3 value, float min, float max)
-    //{
-    //    // only x & y!
-    //    Vector3 clampedVector3;
-    //    clampedVector3 = new Vector3(
-    //        Mathf.Clamp(value.x, min, max),
-    //        Mathf.Clamp(value.y, min, max),
-    //        value.z);
-    //    value = clampedVector3;
-    //}
-
     public static Vector3 ClampVector3_2D(Vector3 value, float min, float max)
     {
         // only x & y!
@@ -104,4 +92,8 @@ public static class ExtensionMethods
         return convertedVertices;
     }
 
+    public static float Remap(this float value, float from1, float to1, float from2, float to2)
+    {
+        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+    }
 }

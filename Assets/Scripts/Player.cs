@@ -15,8 +15,7 @@ public class Player : MonoBehaviour
     public bool constantInnerWidth = true;
     public PositionState positionState = PositionState.noTunnel;
     public ActionState actionState = ActionState.none;
-    [HideInInspector]
-    public PositionState lastPosState;
+
     public float stickToEdgeTolerance = 0.01f;
     public float stickToOuterEdge_holeSize = 0.05f;
 
@@ -56,7 +55,11 @@ public class Player : MonoBehaviour
     [Range(0.1f, 1f)]
     public float kb_slowRotation = 0.9f;
 
-
+    
+    [HideInInspector]
+    public PositionState lastPosState;
+    [HideInInspector]
+    public float curRotSpeed;
     [HideInInspector]
     public bool startedBounce = false;
     [HideInInspector]
@@ -73,6 +76,14 @@ public class Player : MonoBehaviour
     public Transform[] outerVertices_obj;
     [HideInInspector]
     public Transform[] innerVertices_obj;
+    [HideInInspector]
+    public bool firstEdgeTouch = false;
+    [HideInInspector]
+    public bool edgeChange;
+    [HideInInspector]
+    public (Vector3, Vector3) curEnvEdge;
+    [HideInInspector]
+    public (Vector3, Vector3) lastEnvEdge;
 
 
     // private variables
@@ -87,7 +98,7 @@ public class Player : MonoBehaviour
     private float scaleDifferenceToLastFrame;
     private float curScaleSpeed = 0;
     private float curPlayerRot;
-    private float curRotSpeed;
+
     private float curMouseRot;
     private float rotTargetValue;
     private float rotDifferenceToLastFrame;
@@ -101,10 +112,12 @@ public class Player : MonoBehaviour
     private float fastWeight = 1f;
     private float mouseX, mouseY, mouseDelta;
     private float mouseToEnvDistance;
+    private float timer;
 
 
     // get set
     MusicManager musicManager { get { return MusicManager.instance; } }
+    PosVisualisation posVisualize { get { return PosVisualisation.instance; } }
 
 
     void Start()
@@ -151,6 +164,7 @@ public class Player : MonoBehaviour
         mouseToPlayerDistance = 0;
         Vector2 intersection = Vector2.zero;
         Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
+        lastEnvEdge = curEnvEdge;
         for (int i = 0; i < outerVertices.Length; i++)
         {
             if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
@@ -160,11 +174,25 @@ public class Player : MonoBehaviour
                 {
                     // Maus ist innerhalb Dreieck
                     mouseToPlayerDistance *= -1;
-                    
+
                 }
             }
+
+            // get current edge
+            Vector3 playerMainVertex_extended = midPoint + (( outerVertices[0] - midPoint).normalized * 10f);
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, posVisualize.environmentVertices[i], posVisualize.environmentVertices[(i + 1) % 3]))
+            {
+                // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
+                curEnvEdge.Item1 = posVisualize.environmentVertices[(i + 1) % 3];
+                curEnvEdge.Item2 = posVisualize.environmentVertices[i];
+            }
         }
-       
+        if (curEnvEdge.Item1 == lastEnvEdge.Item1 && curEnvEdge.Item2 == lastEnvEdge.Item2)
+            edgeChange = false;
+        else
+            edgeChange = true;
+
+
         // TO DO (irgendwann): Intersection und Raycast-Funktionen prüfen das gleiche, tun unterschiedliche dinge
 
         scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
@@ -179,7 +207,13 @@ public class Player : MonoBehaviour
                 mouseToEnvDistance *= -1;
         }
 
+        // get current environment edge
+        for (int i = 0; i < outerVertices.Length; i++)
+        {
+
+        }
     }
+    
 
 
 
@@ -218,8 +252,8 @@ public class Player : MonoBehaviour
             {
                 MoveTowardsMouse("inner");
 
-                musicManager.StopSingleNote(musicManager.instruments[0], 60);
-                musicManager.StopSingleNote(musicManager.instruments[1], 60);
+                musicManager.StopSingleNote(musicManager.controllers[0], 60);
+                musicManager.StopSingleNote(musicManager.controllers[1], 60);
             }
             else if (positionState == PositionState.innerEdge)
             {
@@ -229,8 +263,8 @@ public class Player : MonoBehaviour
             {
                 MoveTowardsMouse("outer");
 
-                musicManager.StopSingleNote(musicManager.instruments[1], 60);
-                musicManager.StopSingleNote(musicManager.instruments[0], 60);
+                musicManager.StopSingleNote(musicManager.controllers[1], 60);
+                musicManager.StopSingleNote(musicManager.controllers[0], 60);
             }
             else if (positionState == PositionState.outerEdge)
             {
@@ -250,8 +284,13 @@ public class Player : MonoBehaviour
             {
                 StickToEdge("inner");
 
-                musicManager.StopSingleNote(musicManager.instruments[1], 60);
-                musicManager.PlaySingleNote(musicManager.instruments[0], 60, 1);
+                musicManager.SetPitchOnEdge(60, musicManager.controllers[0]);
+
+                musicManager.StopSingleNote(musicManager.controllers[1], 60);
+                musicManager.PlaySingleNote(musicManager.controllers[0], 60, 0.3f);
+
+                //musicManager.controllers[0].SetPitchWheel();
+                //print(musicManager.instruments[0].getpi)
             }
             else if (positionState == PositionState.outside)
             {
@@ -261,8 +300,8 @@ public class Player : MonoBehaviour
             {
                 StickToEdge("outer");
 
-                musicManager.StopSingleNote(musicManager.instruments[0], 60);
-                musicManager.PlaySingleNote(musicManager.instruments[1], 60, 1);
+                musicManager.StopSingleNote(musicManager.controllers[0], 60);
+                musicManager.PlaySingleNote(musicManager.controllers[1], 60, 0.3f);
             }
         }
 
