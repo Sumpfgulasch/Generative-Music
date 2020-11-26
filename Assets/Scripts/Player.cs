@@ -84,6 +84,8 @@ public class Player : MonoBehaviour
     public (Vector3, Vector3) curEnvEdge;
     [HideInInspector]
     public (Vector3, Vector3) lastEnvEdge;
+    [HideInInspector]
+    public float velocity;
 
 
     // private variables
@@ -113,6 +115,7 @@ public class Player : MonoBehaviour
     private float mouseX, mouseY, mouseDelta;
     private float mouseToEnvDistance;
     private float timer;
+    private float startScale;
 
 
     // get set
@@ -285,9 +288,10 @@ public class Player : MonoBehaviour
                 StickToEdge("inner");
 
                 musicManager.SetPitchOnEdge(60, musicManager.controllers[0]);
+                velocity = GetVelocityFromDistance();
 
                 musicManager.StopSingleNote(musicManager.controllers[1], 60);
-                musicManager.PlaySingleNote(musicManager.controllers[0], 60, 0.3f);
+                musicManager.PlaySingleNote(musicManager.controllers[0], 60, velocity);
 
                 //musicManager.controllers[0].SetPitchWheel();
                 //print(musicManager.instruments[0].getpi)
@@ -300,8 +304,10 @@ public class Player : MonoBehaviour
             {
                 StickToEdge("outer");
 
+                velocity = GetVelocityFromDistance();
+
                 musicManager.StopSingleNote(musicManager.controllers[0], 60);
-                musicManager.PlaySingleNote(musicManager.controllers[1], 60, 0.3f);
+                musicManager.PlaySingleNote(musicManager.controllers[1], 60, velocity);
             }
         }
 
@@ -425,6 +431,10 @@ public class Player : MonoBehaviour
             fastWeight = fastFactor;
         else if (Input.GetMouseButtonUp(1))
             fastWeight = 1f;
+        if (Input.GetMouseButtonDown(0))
+        {
+            startScale = this.transform.localScale.x;
+        }
     }
 
     void GetData()
@@ -444,5 +454,12 @@ public class Player : MonoBehaviour
             actionState = ActionState.stickToEdge;
         else
             actionState = ActionState.none;
+    }
+
+    float GetVelocityFromDistance()
+    {
+        float scaleSize = this.transform.localScale.x - startScale;
+        velocity = scaleSize.Remap(scaleMin, 0.4f, 0.3f, 0.7f);
+        return velocity;
     }
 }

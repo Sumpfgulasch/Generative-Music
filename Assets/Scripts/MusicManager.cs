@@ -89,22 +89,22 @@ public class MusicManager : MonoBehaviour
             float maxPitchVertex2playerVertex_dist = (player.curEnvEdge.Item2 - player.outerVertices[0]).magnitude;
             float minPitchVertex2playerVertex_dist = (player.curEnvEdge.Item1 - player.outerVertices[0]).magnitude;
             maxPitch = Mathf.Abs(minPitch) * (maxPitchVertex2playerVertex_dist / minPitchVertex2playerVertex_dist);
-            print("first Edge touch");
+            //print("first Edge touch");
         }
         else if (player.edgeChange)
         {
-            print("edgeChange");
+            //print("edgeChange");
             if (player.curRotSpeed < 0)
             {
                 // im Uhrzeigersinn
                 minPitch = maxPitch;
-                maxPitch = maxPitch + Random.Range(0, maxEdgeIntervalRange);
+                maxPitch = maxPitch + Random.Range(1, maxEdgeIntervalRange);
             }
             else
             {
                 // gegen Uhrzeigersinn
                 maxPitch = minPitch;
-                minPitch = minPitch + Random.Range(0, -maxEdgeIntervalRange);
+                minPitch = minPitch + Random.Range(-1, -maxEdgeIntervalRange);
             }
         }
         float pitch = percentage.Remap(0, 1, minPitch, maxPitch);
