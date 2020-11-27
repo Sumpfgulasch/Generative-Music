@@ -16,6 +16,13 @@ public class PosVisualisation : MonoBehaviour
     public MeshFilter outerPlayerMesh_mf;
     public MeshFilter outerPlayerMask_mf;
     public GameObject environmentEdges;
+    public LineRenderer curEdgePart_lr;
+    public List<LineRenderer> curEdgePart2nd_lr;
+
+
+    [Header("Settings")]
+    public int envGridLoops = 6;
+    public bool showCursor = true;
 
     [HideInInspector]
     public Vector3[] environmentVertices = new Vector3[3];
@@ -39,6 +46,9 @@ public class PosVisualisation : MonoBehaviour
 
         playerMid = GameObject.Find("Player").transform.position;
         lineRenderer_envEdges = environmentEdges.GetComponent<LineRenderer>();
+
+        if (!showCursor)
+            Cursor.visible = false;
     }
 
 
@@ -50,6 +60,7 @@ public class PosVisualisation : MonoBehaviour
         SetPositionalStates();
         
         DrawEnvironmentEdges();
+        DrawCurEdgePart();
         UpdateSurfacesTransforms();
     }
 
@@ -116,6 +127,55 @@ public class PosVisualisation : MonoBehaviour
         // 2) Add to LineRenderer
         lineRenderer_envEdges.positionCount = newPositions.Count;
         lineRenderer_envEdges.SetPositions(newPositions.ToArray());
+    }
+
+
+    void DrawCurEdgePart()
+    {
+        if (player.actionState == Player.ActionState.stickToEdge)
+        {
+            if (player.positionState == Player.PositionState.innerEdge || player.positionState == Player.PositionState.outerEdge)
+            {
+                // primary
+                Vector3 pos1 = player.curEnvEdge.Item1 + (player.curEnvEdge.Item2 - player.curEnvEdge.Item1) / envGridLoops * player.curEnvEdgePart;
+                Vector3 pos2 = player.curEnvEdge.Item1 + (player.curEnvEdge.Item2 - player.curEnvEdge.Item1) / envGridLoops * (player.curEnvEdgePart + 1);
+                pos1.z = playerMid.z - 0.001f;
+                pos2.z = playerMid.z - 0.001f;
+                curEdgePart_lr.positionCount = 2;
+                curEdgePart_lr.SetPosition(0, pos1);
+                curEdgePart_lr.SetPosition(1, pos2);
+
+                // secondary
+                pos1 = player.curEnvEdge_second.Item1 + (player.curEnvEdge_second.Item2 - player.curEnvEdge_second.Item1) / envGridLoops * player.curEnvEdgePart;
+                pos2 = player.curEnvEdge_second.Item1 + (player.curEnvEdge_second.Item2 - player.curEnvEdge_second.Item1) / envGridLoops * (player.curEnvEdgePart + 1);
+                pos1.z = playerMid.z - 0.001f;
+                pos2.z = playerMid.z - 0.001f;
+                curEdgePart2nd_lr[0].positionCount = 2;
+                curEdgePart2nd_lr[0].SetPosition(0, pos1);
+                curEdgePart2nd_lr[0].SetPosition(1, pos2);
+
+                pos1 = player.curEnvEdge_third.Item1 + (player.curEnvEdge_third.Item2 - player.curEnvEdge_third.Item1) / envGridLoops * player.curEnvEdgePart;
+                pos2 = player.curEnvEdge_third.Item1 + (player.curEnvEdge_third.Item2 - player.curEnvEdge_third.Item1) / envGridLoops * (player.curEnvEdgePart + 1);
+                pos1.z = playerMid.z - 0.001f;
+                pos2.z = playerMid.z - 0.001f;
+                curEdgePart2nd_lr[1].positionCount = 2;
+                curEdgePart2nd_lr[1].SetPosition(0, pos1);
+                curEdgePart2nd_lr[1].SetPosition(1, pos2);
+            }
+            else
+            {
+                curEdgePart_lr.positionCount = 0;
+                curEdgePart2nd_lr[0].positionCount = 0;
+                curEdgePart2nd_lr[1].positionCount = 0;
+            }
+        }
+        else
+        {
+            curEdgePart_lr.positionCount = 0;
+            curEdgePart2nd_lr[0].positionCount = 0;
+            curEdgePart2nd_lr[1].positionCount = 0;
+        }
+
     }
 
 

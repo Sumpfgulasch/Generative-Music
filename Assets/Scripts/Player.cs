@@ -81,11 +81,24 @@ public class Player : MonoBehaviour
     [HideInInspector]
     public bool edgeChange;
     [HideInInspector]
+    public bool edgePartChange;
+    [HideInInspector]
+    public float curEnvEdgePercentage; // cur percentage in 0 to 1; 0 = erster curEnvVertex, 1 = zweiter curEnvVertex (im Uhrzeigersinn)
+    [HideInInspector]
+    public int curEnvEdgePart;
+    [HideInInspector]
     public (Vector3, Vector3) curEnvEdge;
+    [HideInInspector]
+    public (Vector3, Vector3) curEnvEdge_second;
+    [HideInInspector]
+    public (Vector3, Vector3) curEnvEdge_third;
     [HideInInspector]
     public (Vector3, Vector3) lastEnvEdge;
     [HideInInspector]
+    public int lastEnvEdgePart;
+    [HideInInspector]
     public float velocity;
+
 
 
     // private variables
@@ -116,6 +129,7 @@ public class Player : MonoBehaviour
     private float mouseToEnvDistance;
     private float timer;
     private float startScale;
+
 
 
     // get set
@@ -164,43 +178,15 @@ public class Player : MonoBehaviour
 
 
         // SCALE
+
+        // last variables
+        lastEnvEdge = curEnvEdge;
+        
+
+        // Distances
         mouseToPlayerDistance = 0;
         Vector2 intersection = Vector2.zero;
         Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
-        lastEnvEdge = curEnvEdge;
-        for (int i = 0; i < outerVertices.Length; i++)
-        {
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
-            {
-                mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
-                if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
-                {
-                    // Maus ist innerhalb Dreieck
-                    mouseToPlayerDistance *= -1;
-
-                }
-            }
-
-            // get current edge
-            Vector3 playerMainVertex_extended = midPoint + (( outerVertices[0] - midPoint).normalized * 10f);
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, posVisualize.environmentVertices[i], posVisualize.environmentVertices[(i + 1) % 3]))
-            {
-                // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
-                curEnvEdge.Item1 = posVisualize.environmentVertices[(i + 1) % 3];
-                curEnvEdge.Item2 = posVisualize.environmentVertices[i];
-            }
-        }
-        if (curEnvEdge.Item1 == lastEnvEdge.Item1 && curEnvEdge.Item2 == lastEnvEdge.Item2)
-            edgeChange = false;
-        else
-            edgeChange = true;
-
-
-        // TO DO (irgendwann): Intersection und Raycast-Funktionen prüfen das gleiche, tun unterschiedliche dinge
-
-        scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
-        scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-
         if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
         {
             curPlayerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
@@ -209,12 +195,53 @@ public class Player : MonoBehaviour
             if (((Vector2)mousePos - (Vector2)midPoint).magnitude < ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude)
                 mouseToEnvDistance *= -1;
         }
-
-        // get current environment edge
         for (int i = 0; i < outerVertices.Length; i++)
         {
-
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
+            {
+                mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
+                if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
+                {
+                    mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
+                }
+            }
+            // Current edge
+            Vector3 playerMainVertex_extended = midPoint + (( outerVertices[0] - midPoint).normalized * 10f);
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, posVisualize.environmentVertices[i], posVisualize.environmentVertices[(i + 1) % 3]))
+            {
+                curEnvEdge.Item1 = posVisualize.environmentVertices[(i + 1) % 3]; // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
+                curEnvEdge.Item2 = posVisualize.environmentVertices[i];
+                curEnvEdge_second.Item1 = posVisualize.environmentVertices[(i + 2) % 3];
+                curEnvEdge_second.Item2 = posVisualize.environmentVertices[(i + 1) % 3];
+                curEnvEdge_third.Item1 = posVisualize.environmentVertices[(i + 3) % 3];
+                curEnvEdge_third.Item2 = posVisualize.environmentVertices[(i + 2) % 3];
+            }
         }
+        
+        // Scale value
+        scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
+        scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+        
+        // Edge change
+        if (curEnvEdge.Item1 == lastEnvEdge.Item1 && curEnvEdge.Item2 == lastEnvEdge.Item2)
+            edgeChange = false;
+        else
+            edgeChange = true;
+
+        // Edge part change
+        if (curEnvEdgePart != lastEnvEdgePart)
+            edgePartChange = true;
+        else
+            edgePartChange = false;
+        lastEnvEdgePart = curEnvEdgePart;
+
+        // Cur env edge
+        curEnvEdgePercentage = (outerVertices[0] - curEnvEdge.Item1).magnitude / (curEnvEdge.Item2 - curEnvEdge.Item1).magnitude;
+        curEnvEdgePart = (int) curEnvEdgePercentage.Remap(0, 1f, 0, posVisualize.envGridLoops);
+
+
+        // set last variables
+        
     }
     
 
@@ -255,8 +282,8 @@ public class Player : MonoBehaviour
             {
                 MoveTowardsMouse("inner");
 
-                musicManager.StopSingleNote(musicManager.controllers[0], 60);
-                musicManager.StopSingleNote(musicManager.controllers[1], 60);
+                musicManager.StopChord(musicManager.controllers[0]);
+                musicManager.StopChord(musicManager.controllers[1]);
             }
             else if (positionState == PositionState.innerEdge)
             {
@@ -266,8 +293,8 @@ public class Player : MonoBehaviour
             {
                 MoveTowardsMouse("outer");
 
-                musicManager.StopSingleNote(musicManager.controllers[1], 60);
-                musicManager.StopSingleNote(musicManager.controllers[0], 60);
+                musicManager.StopChord(musicManager.controllers[1]);
+                musicManager.StopChord(musicManager.controllers[0]);
             }
             else if (positionState == PositionState.outerEdge)
             {
@@ -290,8 +317,8 @@ public class Player : MonoBehaviour
                 musicManager.SetPitchOnEdge(60, musicManager.controllers[0]);
                 velocity = GetVelocityFromDistance();
 
-                musicManager.StopSingleNote(musicManager.controllers[1], 60);
-                musicManager.PlaySingleNote(musicManager.controllers[0], 60, velocity);
+                musicManager.StopChord(musicManager.controllers[1]);
+                musicManager.PlayChord(musicManager.controllers[0], velocity);
 
                 //musicManager.controllers[0].SetPitchWheel();
                 //print(musicManager.instruments[0].getpi)
@@ -306,8 +333,8 @@ public class Player : MonoBehaviour
 
                 velocity = GetVelocityFromDistance();
 
-                musicManager.StopSingleNote(musicManager.controllers[0], 60);
-                musicManager.PlaySingleNote(musicManager.controllers[1], 60, velocity);
+                musicManager.StopChord(musicManager.controllers[0]);
+                musicManager.PlayChord(musicManager.controllers[1], velocity);
             }
         }
 

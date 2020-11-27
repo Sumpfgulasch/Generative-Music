@@ -7,14 +7,18 @@ public class MusicManager : MonoBehaviour
     public static MusicManager instance;
 
     public List<AudioHelm.HelmController> controllers;
-    enum Scale {Ionisch, Blues };
-    Scale scale;
-
+    
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgeIntervalRange = 14;
 
+    [HideInInspector]
+    public int[] curChord = new int[3] { 60, 64, 67 };
+
     // private
-    float minPitch, maxPitch;
+    private enum Scale { Ionian, Blues };
+    private Scale scale;
+    private float minPitch, maxPitch;
+
 
     // get set
     Player player { get { return Player.instance; } }
@@ -34,36 +38,65 @@ public class MusicManager : MonoBehaviour
         
     }
 
-    public void PlaySingleNote(AudioHelm.HelmController instrument, int note, float velocity)
+    public void PlayChord(AudioHelm.HelmController instrument, float velocity)
     {
-        if (!instrument.IsNoteOn(note))
+        // 3-Klang
+        for (int i=0; i<3; i++)
         {
-            instrument.NoteOn(note, velocity);
-            instrument.NoteOn(note+4, velocity);
-            instrument.NoteOn(note+7, velocity);
+            if (!instrument.IsNoteOn(curChord[i]))
+                instrument.NoteOn(curChord[i], velocity);
         }
     }
 
-    public void StopSingleNote(AudioHelm.HelmController instrument, int note)
+    public void StopChord(AudioHelm.HelmController instrument)
     {
-        if (instrument.IsNoteOn(note))
+        // 3-Klang
+        float timeToPlay = shortNotes_minPlayTime - instrument.pressedNotesDurations[curChord[0]].duration;
+        for (int i = 0; i < 3; i++)
         {
-            float timeToPlay = shortNotes_minPlayTime - instrument.pressedNotesDurations[note].duration;
-            if (timeToPlay > 0)
+            if (instrument.IsNoteOn(curChord[i]))
             {
-                instrument.WaitNoteOff(note, timeToPlay);
-                instrument.WaitNoteOff(note+4, timeToPlay);
-                instrument.WaitNoteOff(note+7, timeToPlay);
+                if (timeToPlay > 0)
+                    instrument.WaitNoteOff(curChord[i], timeToPlay);
+                else
+                    instrument.NoteOff(curChord[i]);
             }
-            else
-            {
-                instrument.NoteOff(note);
-                instrument.NoteOff(note + 4);
-                instrument.NoteOff(note + 7);
-            }
-            
         }
-        
+    }
+
+    int[] ChordInCMajor()
+    {
+        int[] chord = new int[3];
+        int[] cMajorRange = new int[8] { 60, 62, 64, 65, 67, 69, 71, 72 };
+
+        // V2 - weniger veränderung
+        int chosenNote = Random.Range(0, 3);
+        int newNote = cMajorRange[Random.Range(0, 8)];
+        while (newNote == curChord[0] || newNote == curChord[1] || newNote == curChord[2])
+            newNote = cMajorRange[Random.Range(0, 8)];
+        chord[chosenNote] = newNote;
+        chord[(chosenNote + 1) % 3] = curChord[(chosenNote + 1) % 3];
+        chord[(chosenNote + 2) % 3] = curChord[(chosenNote + 2) % 3];
+        return chord;
+
+        // V1 - random innerhalb c-dur
+        //int randInt1, randInt2, randInt3;
+        //randInt1 = Random.Range(0, 8);
+        //randInt2 = Random.Range(0, 8);
+        //while (randInt2 == randInt1)
+        //    randInt2 = Random.Range(0, 8);
+        //randInt3 = Random.Range(0, 8);
+        //while (randInt3 == randInt2 || randInt3 == randInt1)
+        //    randInt3 = Random.Range(0, 8);
+        //chord[0] = cMajorRange[randInt1];
+        //chord[1] = cMajorRange[randInt2];
+        //chord[2] = cMajorRange[randInt3];
+        //return chord;
+    }
+
+    void RandomChord()
+    {
+
     }
 
     void GetRandomNoteFromScale(int rangeFrom, int rangeTo, Scale scale)
@@ -80,34 +113,51 @@ public class MusicManager : MonoBehaviour
 
     public void SetPitchOnEdge(int note, AudioHelm.HelmController controller)
     {
-        float percentage;
-        percentage = (player.outerVertices[0] - player.curEnvEdge.Item1).magnitude / (player.curEnvEdge.Item2 - player.curEnvEdge.Item1).magnitude;
-
         if (player.firstEdgeTouch)
         {
-            minPitch = Random.Range(-maxEdgeIntervalRange, 0) * percentage;
+            minPitch = Random.Range(-maxEdgeIntervalRange, 0) * player.curEnvEdgePercentage;
             float maxPitchVertex2playerVertex_dist = (player.curEnvEdge.Item2 - player.outerVertices[0]).magnitude;
             float minPitchVertex2playerVertex_dist = (player.curEnvEdge.Item1 - player.outerVertices[0]).magnitude;
             maxPitch = Mathf.Abs(minPitch) * (maxPitchVertex2playerVertex_dist / minPitchVertex2playerVertex_dist);
-            //print("first Edge touch");
         }
-        else if (player.edgeChange)
+
+        else if (player.edgePartChange)
         {
-            //print("edgeChange");
+            // Akkordwechsel
+            int[] newChord = ChordInCMajor();
+            for (int i=0; i< curChord.Length; i++)
+            {
+                if (newChord[i] != curChord[i])
+                {
+                    controller.NoteOff(curChord[i]);
+                    controller.NoteOn(newChord[i], 0.5f);
+                }
+            }
+            curChord = newChord;
+
+
             if (player.curRotSpeed < 0)
             {
-                // im Uhrzeigersinn
+                //im Uhrzeigersinn
                 minPitch = maxPitch;
-                maxPitch = maxPitch + Random.Range(1, maxEdgeIntervalRange);
+                if (Random.Range(0,2) == 0)
+                    maxPitch = maxPitch + Random.Range(1, maxEdgeIntervalRange);
+                else
+                    maxPitch = minPitch + Random.Range(-1, -maxEdgeIntervalRange);
             }
             else
             {
-                // gegen Uhrzeigersinn
+                //gegen Uhrzeigersinn
                 maxPitch = minPitch;
-                minPitch = minPitch + Random.Range(-1, -maxEdgeIntervalRange);
+                if (Random.Range(0, 2) == 0)
+                    minPitch = minPitch + Random.Range(-1, -maxEdgeIntervalRange);
+                else
+                    minPitch = maxPitch + Random.Range(1, maxEdgeIntervalRange);
             }
         }
-        float pitch = percentage.Remap(0, 1, minPitch, maxPitch);
-        controller.SetPitchWheel(pitch);
+
+        // Pitch
+        float pitch = player.curEnvEdgePercentage.Remap(0, 1, minPitch, maxPitch);
+        //controller.SetPitchWheel(pitch);
     }
 }
