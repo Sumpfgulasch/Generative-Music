@@ -146,16 +146,16 @@ public class PosVisualisation : MonoBehaviour
                 curEdgePart_lr.SetPosition(1, pos2);
 
                 // secondary
-                pos1 = player.curEnvEdge_second.Item1 + (player.curEnvEdge_second.Item2 - player.curEnvEdge_second.Item1) / envGridLoops * player.curEnvEdgePart;
-                pos2 = player.curEnvEdge_second.Item1 + (player.curEnvEdge_second.Item2 - player.curEnvEdge_second.Item1) / envGridLoops * (player.curEnvEdgePart + 1);
+                pos1 = player.curEnvEdge_2nd.Item1 + (player.curEnvEdge_2nd.Item2 - player.curEnvEdge_2nd.Item1) / envGridLoops * player.curEnvEdgePart;
+                pos2 = player.curEnvEdge_2nd.Item1 + (player.curEnvEdge_2nd.Item2 - player.curEnvEdge_2nd.Item1) / envGridLoops * (player.curEnvEdgePart + 1);
                 pos1.z = playerMid.z - 0.001f;
                 pos2.z = playerMid.z - 0.001f;
                 curEdgePart2nd_lr[0].positionCount = 2;
                 curEdgePart2nd_lr[0].SetPosition(0, pos1);
                 curEdgePart2nd_lr[0].SetPosition(1, pos2);
 
-                pos1 = player.curEnvEdge_third.Item1 + (player.curEnvEdge_third.Item2 - player.curEnvEdge_third.Item1) / envGridLoops * player.curEnvEdgePart;
-                pos2 = player.curEnvEdge_third.Item1 + (player.curEnvEdge_third.Item2 - player.curEnvEdge_third.Item1) / envGridLoops * (player.curEnvEdgePart + 1);
+                pos1 = player.curEnvEdge_3rd.Item1 + (player.curEnvEdge_3rd.Item2 - player.curEnvEdge_3rd.Item1) / envGridLoops * player.curEnvEdgePart;
+                pos2 = player.curEnvEdge_3rd.Item1 + (player.curEnvEdge_3rd.Item2 - player.curEnvEdge_3rd.Item1) / envGridLoops * (player.curEnvEdgePart + 1);
                 pos1.z = playerMid.z - 0.001f;
                 pos2.z = playerMid.z - 0.001f;
                 curEdgePart2nd_lr[1].positionCount = 2;

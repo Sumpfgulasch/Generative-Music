@@ -89,9 +89,9 @@ public class Player : MonoBehaviour
     [HideInInspector]
     public (Vector3, Vector3) curEnvEdge;
     [HideInInspector]
-    public (Vector3, Vector3) curEnvEdge_second;
+    public (Vector3, Vector3) curEnvEdge_2nd;
     [HideInInspector]
-    public (Vector3, Vector3) curEnvEdge_third;
+    public (Vector3, Vector3) curEnvEdge_3rd;
     [HideInInspector]
     public (Vector3, Vector3) lastEnvEdge;
     [HideInInspector]
@@ -211,10 +211,10 @@ public class Player : MonoBehaviour
             {
                 curEnvEdge.Item1 = posVisualize.environmentVertices[(i + 1) % 3]; // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
                 curEnvEdge.Item2 = posVisualize.environmentVertices[i];
-                curEnvEdge_second.Item1 = posVisualize.environmentVertices[(i + 2) % 3];
-                curEnvEdge_second.Item2 = posVisualize.environmentVertices[(i + 1) % 3];
-                curEnvEdge_third.Item1 = posVisualize.environmentVertices[(i + 3) % 3];
-                curEnvEdge_third.Item2 = posVisualize.environmentVertices[(i + 2) % 3];
+                curEnvEdge_2nd.Item1 = posVisualize.environmentVertices[(i + 2) % 3];
+                curEnvEdge_2nd.Item2 = posVisualize.environmentVertices[(i + 1) % 3];
+                curEnvEdge_3rd.Item1 = posVisualize.environmentVertices[(i + 3) % 3];
+                curEnvEdge_3rd.Item2 = posVisualize.environmentVertices[(i + 2) % 3];
             }
         }
         
