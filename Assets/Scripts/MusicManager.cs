@@ -18,6 +18,7 @@ public class MusicManager : MonoBehaviour
     private enum Scale { Ionian, Blues };
     private Scale scale;
     private float minPitch, maxPitch;
+    private float curPitch = 0;
 
 
     // get set
@@ -30,7 +31,8 @@ public class MusicManager : MonoBehaviour
             instance = this;
         else if (instance != null && instance != this)
             Destroy(instance);
-        
+
+        controllers[0].SetPitchWheel(0);
     }
     
     void Update()
@@ -115,13 +117,18 @@ public class MusicManager : MonoBehaviour
     {
         if (player.firstEdgeTouch)
         {
-            minPitch = Random.Range(-maxEdgeIntervalRange, 0) * player.curEnvEdgePercentage;
-            float maxPitchVertex2playerVertex_dist = (player.curEnvEdge.Item2 - player.outerVertices[0]).magnitude;
-            float minPitchVertex2playerVertex_dist = (player.curEnvEdge.Item1 - player.outerVertices[0]).magnitude;
-            maxPitch = Mathf.Abs(minPitch) * (maxPitchVertex2playerVertex_dist / minPitchVertex2playerVertex_dist);
+            // calc pitch
+            //minPitch = Random.Range(-maxEdgeIntervalRange, 0) * player.curEnvEdgePercentage;
+            //float maxPitchVertex2playerVertex_dist = (player.curEnvEdge.Item2 - player.outerVertices[0]).magnitude;
+            //float minPitchVertex2playerVertex_dist = (player.curEnvEdge.Item1 - player.outerVertices[0]).magnitude;
+            //maxPitch = Mathf.Abs(minPitch) * (maxPitchVertex2playerVertex_dist / minPitchVertex2playerVertex_dist);
+
+            float randRange = Random.Range(maxEdgeIntervalRange, 0);
+            minPitch = curPitch - randRange * player.curEnvEdgePercentage;
+            maxPitch = curPitch + randRange * (1 - player.curEnvEdgePercentage);
         }
 
-        else if (player.edgePartChange)
+        else if (player.edgePartChange && !Input.GetKey(KeyCode.Space))
         {
             // Akkordwechsel
             int[] newChord = ChordInCMajor();
@@ -134,13 +141,15 @@ public class MusicManager : MonoBehaviour
                 }
             }
             curChord = newChord;
+        }
 
-
+        if (player.edgeChange)
+        {
             if (player.curRotSpeed < 0)
             {
                 //im Uhrzeigersinn
                 minPitch = maxPitch;
-                if (Random.Range(0,2) == 0)
+                if (Random.Range(0, 2) == 0)
                     maxPitch = maxPitch + Random.Range(1, maxEdgeIntervalRange);
                 else
                     maxPitch = minPitch + Random.Range(-1, -maxEdgeIntervalRange);
@@ -157,7 +166,20 @@ public class MusicManager : MonoBehaviour
         }
 
         // Pitch
-        float pitch = player.curEnvEdgePercentage.Remap(0, 1, minPitch, maxPitch);
-        //controller.SetPitchWheel(pitch);
+        curPitch = player.curEnvEdgePercentage.Remap(0, 1, minPitch, maxPitch);
+        // quantize
+        //float quantizeSize = 0.5f;
+        //float quantize = curPitch % quantizeSize;
+        //if (quantize > 0.05f || quantize < -0.05f)
+        //{
+        //    if (quantize > quantizeSize / 2f)
+        //        curPitch += (quantizeSize - quantize);
+        //    else
+        //        curPitch -= quantize;
+        //}
+            
+
+        if (Input.GetKey(KeyCode.Space))
+            controller.SetPitchWheel(curPitch);
     }
 }
