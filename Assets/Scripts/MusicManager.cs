@@ -22,7 +22,7 @@ public class MusicManager : MonoBehaviour
 
 
     // get set
-    PlayerData player { get { return PlayerData.instance; } }
+    Player player { get { return Player.instance; } }
 
     
     void Start()

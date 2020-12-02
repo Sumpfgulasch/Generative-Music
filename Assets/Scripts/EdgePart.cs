@@ -18,7 +18,6 @@ public class EdgePart
     private LineRenderer lineRend;
     private Color color;
 
-
     // Contructor
     public EdgePart(int _ID, Type _type, Vector3 _start, Vector3 _end, bool _isCorner)
     {

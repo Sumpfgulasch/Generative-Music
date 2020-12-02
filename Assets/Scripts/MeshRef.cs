@@ -14,11 +14,11 @@ public class MeshRef : MonoBehaviour
     public MeshFilter outerPlayerMesh_mf;
     public MeshFilter outerPlayerMask_mf;
     public LineRenderer envEdges_lr;
-
-
     public LineRenderer curEdgePart_lr;
-    [HideInInspector] public List<LineRenderer> curEdgePart2nd_lr;
+    public List<LineRenderer> curEdgePart2nd_lr;
 
+    [HideInInspector]
+    public Vector3[] envVertices = new Vector3[3];
 
     // Start is called before the first frame update
     void Start()
