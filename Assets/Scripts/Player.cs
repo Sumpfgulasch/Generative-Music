@@ -134,7 +134,7 @@ public class Player : MonoBehaviour
 
     // get set
     MusicManager musicManager { get { return MusicManager.instance; } }
-    PosVisualisation posVisualize { get { return PosVisualisation.instance; } }
+    VisualsManager posVisualize { get { return VisualsManager.instance; } }
 
 
     void Start()

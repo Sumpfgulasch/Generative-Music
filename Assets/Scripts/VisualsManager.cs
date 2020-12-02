@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class PosVisualisation : MonoBehaviour
+public class VisualsManager : MonoBehaviour
 {
     // public
-    public static PosVisualisation instance;
+    public static VisualsManager instance;
 
     [Header("References")]
     public MeshFilter innerPlayerMesh_mf;
@@ -29,7 +29,7 @@ public class PosVisualisation : MonoBehaviour
 
     // private
     private Vector3 playerMid;
-    private LineRenderer lineRenderer_envEdges;
+    private LineRenderer envEdges_lr;
     private Vector3[] playerVertices = new Vector3[3];
     
 
@@ -40,12 +40,10 @@ public class PosVisualisation : MonoBehaviour
     {
         instance = this;
 
-        InitPlayerData();
-        
-        CreateMeshes();
+        MeshCreation.CreateMeshes();
 
         playerMid = GameObject.Find("Player").transform.position;
-        lineRenderer_envEdges = environmentEdges.GetComponent<LineRenderer>();
+        envEdges_lr = environmentEdges.GetComponent<LineRenderer>();
 
         if (!showCursor)
             Cursor.visible = false;
@@ -125,8 +123,8 @@ public class PosVisualisation : MonoBehaviour
 
 
         // 2) Add to LineRenderer
-        lineRenderer_envEdges.positionCount = newPositions.Count;
-        lineRenderer_envEdges.SetPositions(newPositions.ToArray());
+        envEdges_lr.positionCount = newPositions.Count;
+        envEdges_lr.SetPositions(newPositions.ToArray());
     }
 
 
@@ -211,10 +209,6 @@ public class PosVisualisation : MonoBehaviour
                 player.firstEdgeTouch = true;
             else
                 player.firstEdgeTouch = false;
-            
-
-        // overwrite / hack
-            // TO DO: if curState == outside && lastState == inside && mouseSpeed < x ----> StickToInnerEdge
         }
         else
             player.positionState = Player.PositionState.noTunnel;
@@ -237,68 +231,6 @@ public class PosVisualisation : MonoBehaviour
     }
 
    
-
-    void CreateMeshes()
-    {
-        // Inner player
-        CreatePlayerMesh(ref innerPlayerMesh_mf);
-
-        // Inner surface
-        CreateMesh(ref innerSurface_mf, environmentVertices);
-        CreateMesh(ref innerMask_mf, player.outerVertices);
-        CreateMesh(ref innerPlayerMask_mf, environmentVertices);
-
-        // Outer player
-        CreatePlayerMesh(ref outerPlayerMesh_mf);
-        CreateMesh(ref outerPlayerMask_mf, environmentVertices);
-
-        
-    }
-
-    void CreateMesh(ref MeshFilter mf, Vector3[] vertices)
-    {
-        Mesh newMesh = new Mesh();
-        newMesh.vertices = vertices;
-        newMesh.triangles = new int[3] { 2, 1, 0 };
-        newMesh.normals = new Vector3[3] { Vector3.back, Vector3.back, Vector3.back };
-        mf.mesh = newMesh;
-        // no UVs
-    }
-
-    void CreatePlayerMesh(ref MeshFilter mf)
-    {
-        
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
-        List<Vector3> normals = new List<Vector3>();
-        
-        for (int i=0; i < player.verticesCount; i++)
-        {
-            vertices.AddRange(new Vector3[2] {
-                player.outerVertices_mesh[i],
-                player.innerVertices_mesh[i] });
-            triangles.AddRange(new int[6] {
-                // outer triangle
-                i *2,                                   
-                i *2+1,
-                (i*2+2) % (player.verticesCount*2),
-                // inner triangle
-                i *2+1 ,     
-                (i*2+3) % (player.verticesCount*2),
-                (i*2+2) % (player.verticesCount*2) });
-            normals.AddRange(new Vector3[2] {
-                Vector3.back,
-                Vector3.back });
-        }
-
-        Mesh newMesh = new Mesh();
-        newMesh.vertices = vertices.ToArray();
-        newMesh.triangles = triangles.ToArray();
-        newMesh.normals = normals.ToArray();
-        newMesh.MarkDynamic();
-        mf.mesh = newMesh;
-        // no UVs
-    }
 
     void SetPlayerWidth()
     {
@@ -324,45 +256,6 @@ public class PosVisualisation : MonoBehaviour
             outerPlayerMesh_mf.mesh.vertices = newVertices;
 
             // TO DO: mesh.recalculatenormals, -bounds, -tangents
-        }
-    }
-
-
-
-    void InitPlayerData()
-    {
-        // Create containers
-        GameObject vertices = new GameObject("Vertices");
-        GameObject outside = new GameObject("Outside");
-        GameObject inside = new GameObject("Inside");
-        vertices.transform.parent = player.transform;
-        outside.transform.parent = vertices.transform;
-        inside.transform.parent = vertices.transform;
-        vertices.transform.localPosition = Vector3.zero;
-
-        for (int i = 0; i < player.verticesCount; i++)
-        {
-            // containers
-            GameObject newOuterVert = new GameObject("Vert" + (i + 1));
-            GameObject newInnerVert = new GameObject("Vert" + (i + 1));
-            newOuterVert.transform.parent = outside.transform;
-            newInnerVert.transform.parent = inside.transform;
-
-            // Calc vertex positions
-            Quaternion rot = Quaternion.Euler(0, 0, i * 120);
-            Vector3 nextDirection = rot * Vector3.up;
-            Vector3 nextOuterVertex = nextDirection.normalized;
-            Vector3 nextInnerVertex = nextDirection.normalized * (1 - player.innerWidth);
-
-            // assign
-            newOuterVert.transform.position = player.transform.position + nextOuterVertex;
-            newInnerVert.transform.position = player.transform.position + nextInnerVertex;
-
-            player.outerVertices_obj[i] = newOuterVert.transform;
-            player.innerVertices_obj[i] = newInnerVert.transform;
-
-            player.outerVertices_mesh[i] = nextOuterVertex;
-            player.innerVertices_mesh[i] = nextInnerVertex;
         }
     }
 }
