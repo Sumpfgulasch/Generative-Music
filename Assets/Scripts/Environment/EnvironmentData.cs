@@ -2,9 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshData : MonoBehaviour
+public class EnvironmentData : MonoBehaviour
 {
-    public static MeshData instance;
+    // = Calculate things only & store data
+    // calc edgeParts here e.g.
+
+
+    public static EnvironmentData instance;
+
+    // Public variables
+    [HideInInspector] public Vector3[] curVertices = new Vector3[3];
+
+
 
     // Private variables
     Vector3 playerMid;
@@ -12,7 +21,7 @@ public class MeshData : MonoBehaviour
     void Start()
     {
         instance = this;
-        playerMid = Player.instance.transform.position;
+        playerMid = PlayerData.instance.transform.position;
     }
 
     
@@ -32,13 +41,13 @@ public class MeshData : MonoBehaviour
     {
         // 1) init
         RaycastHit[] edgeHits = new RaycastHit[3];
-        MeshRef.instance.envVertices = new Vector3[3];
+        curVertices = new Vector3[3];
         Vector3 intersection = Vector3.zero;
 
         // 2) Prepare raycast
-        for (int i = 0; i < Player.instance.verticesCount; i++)
+        for (int i = 0; i < PlayerData.instance.verticesCount; i++)
         {
-            Vector3 playerEdgeMid = Player.instance.outerVertices[i] + ((Player.instance.outerVertices[(i + 1) % 3] - Player.instance.outerVertices[i]) / 2f);
+            Vector3 playerEdgeMid = PlayerData.instance.outerVertices[i] + ((PlayerData.instance.outerVertices[(i + 1) % 3] - PlayerData.instance.outerVertices[i]) / 2f);
             playerEdgeMid.z = MeshRef.instance.envEdges_lr.transform.position.z;
             Vector3 directionOut = (playerEdgeMid - playerMid).normalized;
             RaycastHit hit;
@@ -65,7 +74,7 @@ public class MeshData : MonoBehaviour
 
             if (ExtensionMethods.LineLineIntersection(out intersection, point1, direction1, point2, direction2))
             {
-                MeshRef.instance.envVertices[i] = intersection;
+                curVertices[i] = intersection;
             }
         }
     }
@@ -75,7 +84,7 @@ public class MeshData : MonoBehaviour
     // STATES
     void SetPositionalStates()
     {
-        Player player = Player.instance;
+        PlayerData player = PlayerData.instance;
         player.lastPosState = player.positionState;
         RaycastHit hit;
         if (Physics.Raycast(playerMid, player.outerVertices[0] - playerMid, out hit))
@@ -87,26 +96,26 @@ public class MeshData : MonoBehaviour
             float innerVertexToEnvDistance = (player.innerVertices[0] - (hit.point + (player.innerVertices[0] - hit.point).normalized * player.stickToOuterEdge_holeSize)).magnitude;
 
             float stickToEdgeTolerance = player.stickToEdgeTolerance;
-            if (player.actionState == Player.ActionState.stickToEdge)
+            if (player.actionState == PlayerData.ActionState.stickToEdge)
                 stickToEdgeTolerance *= 3f;
 
             // States
             if (playerToEnvDistance < stickToEdgeTolerance && !player.startedBounce)
-                player.positionState = Player.PositionState.innerEdge;
+                player.positionState = PlayerData.PositionState.innerEdge;
             else if (innerVertexToEnvDistance < stickToEdgeTolerance && !player.startedBounce)
-                player.positionState = Player.PositionState.outerEdge;
+                player.positionState = PlayerData.PositionState.outerEdge;
             else if (playerRadius < envDistance)
-                player.positionState = Player.PositionState.inside;
+                player.positionState = PlayerData.PositionState.inside;
             else
-                player.positionState = Player.PositionState.outside;
+                player.positionState = PlayerData.PositionState.outside;
 
-            if (player.positionState == Player.PositionState.innerEdge && player.lastPosState != Player.PositionState.innerEdge ||
-                player.positionState == Player.PositionState.outerEdge && player.lastPosState != Player.PositionState.outerEdge)
+            if (player.positionState == PlayerData.PositionState.innerEdge && player.lastPosState != PlayerData.PositionState.innerEdge ||
+                player.positionState == PlayerData.PositionState.outerEdge && player.lastPosState != PlayerData.PositionState.outerEdge)
                 player.firstEdgeTouch = true;
             else
                 player.firstEdgeTouch = false;
         }
         else
-            player.positionState = Player.PositionState.noTunnel;
+            player.positionState = PlayerData.PositionState.noTunnel;
     }
 }
