@@ -1,35 +1,51 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public static class MeshCreation
+public class MeshCreation : MonoBehaviour
 {
+    public static MeshCreation instance;
     
-    // MAIN METHOD
-    
-    public static void CreateMeshes()
+    // Private variables
+    private Vector3 playerMid;
+
+    private void Start()
+    {
+        instance = this;
+        playerMid = Player.instance.transform.position;
+    }
+
+
+
+
+    public void CreateMeshes()
     {
         // = Create all meshes
 
         InitPlayer();
 
         // Inner player
-        CreatePlayerMesh(ref VisualsManager.instance.innerPlayerMesh_mf);
+        CreatePlayerMesh(ref MeshRef.instance.innerPlayerMesh_mf);
 
         // Inner surface
-        CreateMesh(ref VisualsManager.instance.innerSurface_mf, VisualsManager.instance.environmentVertices);
-        CreateMesh(ref VisualsManager.instance.innerMask_mf, Player.instance.outerVertices);
-        CreateMesh(ref VisualsManager.instance.innerPlayerMask_mf, VisualsManager.instance.environmentVertices);
+        CreateMesh(ref MeshRef.instance.innerSurface_mf, MeshRef.instance.envVertices);
+        CreateMesh(ref MeshRef.instance.innerMask_mf, Player.instance.outerVertices);
+        CreateMesh(ref MeshRef.instance.innerPlayerMask_mf, MeshRef.instance.envVertices);
 
         // Outer player
-        CreatePlayerMesh(ref VisualsManager.instance.outerPlayerMesh_mf);
-        CreateMesh(ref VisualsManager.instance.outerPlayerMask_mf, VisualsManager.instance.environmentVertices); // ToDo: public variablen auf dieses script legen?
+        CreatePlayerMesh(ref MeshRef.instance.outerPlayerMesh_mf);
+        CreateMesh(ref MeshRef.instance.outerPlayerMask_mf, MeshRef.instance.envVertices);
     }
 
 
-    // --------------------------------------------
 
-    private static void InitPlayer()
+
+
+    // ----------------------------- private methods ----------------------------
+    
+
+    private void InitPlayer()
     {
         // = Create mesh form, create containers & set player variables
 
@@ -61,7 +77,8 @@ public static class MeshCreation
     }
 
 
-    private static void CreateMesh(ref MeshFilter mf, Vector3[] vertices)
+
+    private void CreateMesh(ref MeshFilter mf, Vector3[] vertices)
     {
         // = Used for any triangle mesh that is not the player
 
@@ -74,7 +91,8 @@ public static class MeshCreation
     }
 
 
-    private static void CreatePlayerMesh(ref MeshFilter mf)
+
+    private void CreatePlayerMesh(ref MeshFilter mf)
     {
         // Declarations
         List<Vector3> vertices = new List<Vector3>();
@@ -113,11 +131,10 @@ public static class MeshCreation
 
 
 
-    // -----------------------------------
 
     // Helper methods
 
-    private static GameObject CreateContainer(string name, Transform parent)
+    private GameObject CreateContainer(string name, Transform parent)
     {
         GameObject newObj = new GameObject(name);
         newObj.transform.parent = parent;

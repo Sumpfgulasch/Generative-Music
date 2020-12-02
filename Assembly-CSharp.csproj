@@ -110,7 +110,9 @@
     <Compile Include="Assets\Scripts\MusicUtil.cs" />
     <Compile Include="Assets\Scripts\EdgePart.cs" />
     <Compile Include="Assets\Scripts\MeshCreation.cs" />
-    <Compile Include="Assets\Scripts\VisualsCalc.cs" />
+    <Compile Include="Assets\Scripts\MeshData.cs" />
+    <Compile Include="Assets\Scripts\MeshRef.cs" />
+    <Compile Include="Assets\Scripts\MeshUpdate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Custom\Mask.shader" />
