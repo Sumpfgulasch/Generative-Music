@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class MeshData : MonoBehaviour
 {
+    // == calc stuff and store data in MeshRef and Player
+
+
     public static MeshData instance;
+
+    [HideInInspector] public Vector3[] envVertices = new Vector3[3];
 
     // Private variables
     Vector3 playerMid;

@@ -5,6 +5,9 @@ using System.Linq;
 
 public class MeshCreation : MonoBehaviour
 {
+    // = Create meshes
+
+
     public static MeshCreation instance;
     
     // Private variables

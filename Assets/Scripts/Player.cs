@@ -8,38 +8,32 @@ public class Player : MonoBehaviour
     public static Player instance;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
     public enum ActionState { stickToEdge, none };
-    [Header("General stuff")]
-    public int verticesCount = 3;
-    [Range(0, 1f)]
-    public float innerWidth = 0.2f;
-    public bool constantInnerWidth = true;
     public PositionState positionState = PositionState.noTunnel;
     public ActionState actionState = ActionState.none;
-
+    
+    [Header("General stuff")]
+    public int verticesCount = 3;
+    [Range(0, 1f)] public float innerWidth = 0.2f;
+    public bool constantInnerWidth = true;
+    
     public float stickToEdgeTolerance = 0.01f;
     public float stickToOuterEdge_holeSize = 0.05f;
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
-    [Range(0, 1f)]
-    public float rotationTargetVectorFactor = 0.1f;
-    [Range(0, 1f)]
-    public float scaleTargetVectorFactor = 0.05f;
+    [Range(0, 1f)] public float rotationTargetVectorFactor = 0.1f;
+    [Range(0, 1f)] public float scaleTargetVectorFactor = 0.05f;
     public float scaleMax = 2.7f;
     public float scaleMin = 1f;
     public float scaleMaxSpeed = 0.05f;
-    [Range(0, 1f)]
-    public float scaleDamp = 0.2f;
+    [Range(0, 1f)] public float scaleDamp = 0.2f;
     public float outsideSpeedMin = 2f;
-    [Range(0, 1f)]
-    public float outsideSlowFac = 0.3f;
-    [Range(0, 1f)]
-    public float scaleEdgeAcc = 0.05f;
-    [Range(1, 20f)]
-    public float fastFactor = 3f;
+    [Range(0, 1f)] public float outsideSlowFac = 0.3f;
+    [Range(0, 1f)] public float scaleEdgeAcc = 0.05f;
+    [Range(1, 20f)] public float fastFactor = 3f;
+
     [Header("Bounce")]
-    [Range(0.001f, 0.05f)]
-    public float bounceEntrySpeedScale = 0.005f;
+    [Range(0.001f, 0.05f)] public float bounceEntrySpeedScale = 0.005f;
     public float bounceEntrySpeedRot = 0.1f;
     public float maxBounceSpeed = 0.01f;
     public float bounceTime = 2f;
@@ -56,48 +50,27 @@ public class Player : MonoBehaviour
     public float kb_slowRotation = 0.9f;
 
     
-    [HideInInspector]
-    public PositionState lastPosState;
-    [HideInInspector]
-    public float curRotSpeed;
-    [HideInInspector]
-    public bool startedBounce = false;
-    [HideInInspector]
-    public Vector3[] outerVertices = new Vector3[3];
-    [HideInInspector]
-    public Vector3[] innerVertices = new Vector3[3];
-    [HideInInspector]
-    public Vector3[] outerVertices_mesh = new Vector3[3];
-    [HideInInspector]
-    public Vector3[] innerVertices_mesh = new Vector3[3];
-    [HideInInspector]
-    public float curInnerWidth;
-    [HideInInspector]
-    public Transform[] outerVertices_obj;
-    [HideInInspector]
-    public Transform[] innerVertices_obj;
-    [HideInInspector]
-    public bool firstEdgeTouch = false;
-    [HideInInspector]
-    public bool edgeChange;
-    [HideInInspector]
-    public bool edgePartChange;
-    [HideInInspector]
-    public float curEnvEdgePercentage; // cur percentage in 0 to 1; 0 = erster curEnvVertex, 1 = zweiter curEnvVertex (im Uhrzeigersinn)
-    [HideInInspector]
-    public int curEnvEdgePart;
-    [HideInInspector]
-    public (Vector3, Vector3) curEnvEdge;
-    [HideInInspector]
-    public (Vector3, Vector3) curEnvEdge_2nd;
-    [HideInInspector]
-    public (Vector3, Vector3) curEnvEdge_3rd;
-    [HideInInspector]
-    public (Vector3, Vector3) lastEnvEdge;
-    [HideInInspector]
-    public int lastEnvEdgePart;
-    [HideInInspector]
-    public float velocity;
+    [HideInInspector] public PositionState lastPosState;
+    [HideInInspector] public float curRotSpeed;
+    [HideInInspector] public bool startedBounce = false;
+    [HideInInspector] public Vector3[] outerVertices = new Vector3[3];
+    [HideInInspector] public Vector3[] innerVertices = new Vector3[3];
+    [HideInInspector] public Vector3[] outerVertices_mesh = new Vector3[3];
+    [HideInInspector] public Vector3[] innerVertices_mesh = new Vector3[3];
+    [HideInInspector] public float curInnerWidth;
+    [HideInInspector] public Transform[] outerVertices_obj;
+    [HideInInspector] public Transform[] innerVertices_obj;
+    [HideInInspector] public bool firstEdgeTouch = false;
+    [HideInInspector] public bool edgeChange;
+    [HideInInspector] public bool edgePartChange;
+    [HideInInspector] public float curEnvEdgePercentage; // cur percentage in 0 to 1; 0 = erster curEnvVertex, 1 = zweiter curEnvVertex (im Uhrzeigersinn)
+    [HideInInspector] public int curEnvEdgePart;
+    [HideInInspector] public (Vector3, Vector3) curEnvEdge;
+    [HideInInspector] public (Vector3, Vector3) curEnvEdge_2nd;
+    [HideInInspector] public (Vector3, Vector3) curEnvEdge_3rd;
+    [HideInInspector] public (Vector3, Vector3) lastEnvEdge;
+    [HideInInspector] public int lastEnvEdgePart;
+    [HideInInspector] public float velocity;
 
 
 
@@ -113,14 +86,13 @@ public class Player : MonoBehaviour
     private float scaleDifferenceToLastFrame;
     private float curScaleSpeed = 0;
     private float curPlayerRot;
-
     private float curMouseRot;
     private float rotTargetValue;
     private float rotDifferenceToLastFrame;
-    float mouseToPlayerDistance;
-    float curPlayerRadius;
-    float tunnelToMidDistance;
-    RaycastHit envPlayerIntersection;
+    private float mouseToPlayerDistance;
+    private float curPlayerRadius;
+    private float tunnelToMidDistance;
+    private RaycastHit envPlayerIntersection;
     private float bounceWeight = 0f;
     private float bounceRecoverWeight;
     private float curBounceSpeed;
@@ -153,15 +125,15 @@ public class Player : MonoBehaviour
 
     void ManageMovement()
     {
+        // 1. Handle Data
         GetInput();
-        GetData();
-
-        SetPlayerActionStates();
+        GetVertices();
+        SetActionStates();
         CalcMovementData();
 
+        // 2. Perform movement
         KeyboardMovement();
-
-        PerformMovement();
+        MouseMovement();
     }
 
     // MOUSE
@@ -271,7 +243,7 @@ public class Player : MonoBehaviour
 
     
 
-    void PerformMovement()
+    void MouseMovement()
     {
         // = manage states
 
@@ -319,9 +291,6 @@ public class Player : MonoBehaviour
 
                 musicManager.StopChord(musicManager.controllers[1]);
                 musicManager.PlayChord(musicManager.controllers[0], velocity);
-
-                //musicManager.controllers[0].SetPitchWheel();
-                //print(musicManager.instruments[0].getpi)
             }
             else if (positionState == PositionState.outside)
             {
@@ -464,7 +433,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void GetData()
+    void GetVertices()
     {
         // get positions from childed vertex-gameobjects
         for (int i = 0; i < verticesCount; i++)
@@ -475,7 +444,7 @@ public class Player : MonoBehaviour
     }
 
 
-    void SetPlayerActionStates()
+    void SetActionStates()
     {
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
             actionState = ActionState.stickToEdge;

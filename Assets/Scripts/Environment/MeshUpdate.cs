@@ -154,6 +154,4 @@ public class MeshUpdate: MonoBehaviour
             MeshRef.instance.curEdgePart2nd_lr[1].positionCount = 0;
         }
     }
-
-    
 }

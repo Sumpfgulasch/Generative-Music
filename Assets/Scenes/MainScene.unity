@@ -740,7 +740,7 @@ MonoBehaviour:
   curEdgePart2nd_lr:
   - {fileID: 1436961344}
   - {fileID: 906205772}
-  environmentVertices:
+  envVertices:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
@@ -2047,11 +2047,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d39725e4f66d5e9439d8112c0608a40c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  positionState: 0
+  actionState: 0
   verticesCount: 3
   innerWidth: 0.25
   constantInnerWidth: 0
-  positionState: 0
-  actionState: 0
   stickToEdgeTolerance: 0.01
   stickToOuterEdge_holeSize: 0.03
   rotationMaxSpeed: 100
