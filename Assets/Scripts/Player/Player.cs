@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public partial class Player : MonoBehaviour
 {
-    // public variables
+    // Public variables
     public static Player inst;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
     public enum ActionState { stickToEdge, none };
@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
     [Range(0.1f, 1f)]
     public float kb_slowRotation = 0.9f;
 
-    
+    // Public attributes
     [HideInInspector] public PositionState lastPosState;
     [HideInInspector] public float curRotSpeed;
     [HideInInspector] public bool startedBounce = false;
@@ -64,22 +64,24 @@ public class Player : MonoBehaviour
     [HideInInspector] public bool edgeChange;
     [HideInInspector] public bool edgePartChange;
     [HideInInspector] public float curEnvEdgePercentage; // cur percentage in 0 to 1; 0 = erster curEnvVertex, 1 = zweiter curEnvVertex (im Uhrzeigersinn)
-    [HideInInspector] public int curEnvEdgePart;
+    [HideInInspector] public int curEnvEdgePart; // TO DO: REPLACE
+    [HideInInspector] public int lastEnvEdgePart;
     [HideInInspector] public (Vector3, Vector3) curEnvEdge;
     [HideInInspector] public (Vector3, Vector3) curEnvEdge_2nd;
     [HideInInspector] public (Vector3, Vector3) curEnvEdge_3rd;
     [HideInInspector] public (Vector3, Vector3) lastEnvEdge;
-    [HideInInspector] public int lastEnvEdgePart;
     [HideInInspector] public float velocity;
+    [HideInInspector] public Vector3 mousePos;
+    [HideInInspector] public EdgePart curEdgePart;
+    [HideInInspector] public EdgePart[] curSecEdgeParts;
 
 
 
     // private variables
     private bool mouseIsActive;
     private Vector3 mouseStartPos;
-    private Vector3 mousePos;
     private Vector3 lastMousePos = Vector3.zero;
-    private Vector3 midPoint;
+    protected private Vector3 midPoint;
     private float rotationTargetAngle;
     private float scaleTargetValue;
     private float lastScaleTargetValue;
@@ -107,11 +109,14 @@ public class Player : MonoBehaviour
     MusicManager musicManager { get { return MusicManager.instance; } }
     VisualController visualController { get { return VisualController.inst; } }
 
+    
 
     void Start()
     {
         inst = this;
         midPoint = this.transform.position;
+
+        PlayerData.SetupEdgeParts();
     }
 
 
@@ -120,21 +125,27 @@ public class Player : MonoBehaviour
         ManageMovement();
     }
 
-    // -------------------- MOVEMENT ---------------------
+
+    // ----------------------------- Main method ----------------------------
 
     void ManageMovement()
     {
         // 1. Handle Data
         GetInput();
         GetVertices();
-        PlayerStates.SetPositionalStates();
-        PlayerStates.SetActionStates();
+        PlayerData.SetPositionStates();
+        PlayerData.SetActionStates();
         CalcMovementData();
+        PlayerData.CalcEdgeData();
 
         // 2. Perform movement
         KeyboardMovement();
         MouseMovement();
     }
+
+
+    // ----------------------------- Private methods ----------------------------
+
 
     // MOUSE
     void CalcMovementData()
@@ -147,14 +158,7 @@ public class Player : MonoBehaviour
         rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
         curRotSpeed = rotTargetValue;
 
-
-
         // SCALE
-
-        // last variables
-        lastEnvEdge = curEnvEdge;
-        
-
         // Distances
         mouseToPlayerDistance = 0;
         Vector2 intersection = Vector2.zero;
@@ -177,43 +181,11 @@ public class Player : MonoBehaviour
                     mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
                 }
             }
-            // Current edge
-            Vector3 playerMainVertex_extended = midPoint + (( outerVertices[0] - midPoint).normalized * 10f);
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, EnvironmentData.vertices[i], EnvironmentData.vertices[(i + 1) % 3]))
-            {
-                curEnvEdge.Item1 = EnvironmentData.vertices[(i + 1) % 3]; // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
-                curEnvEdge.Item2 = EnvironmentData.vertices[i];
-                curEnvEdge_2nd.Item1 = EnvironmentData.vertices[(i + 2) % 3];
-                curEnvEdge_2nd.Item2 = EnvironmentData.vertices[(i + 1) % 3];
-                curEnvEdge_3rd.Item1 = EnvironmentData.vertices[(i + 3) % 3];
-                curEnvEdge_3rd.Item2 = EnvironmentData.vertices[(i + 2) % 3];
-            }
         }
         
         // Scale value
         scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
         scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-        
-        // Edge change
-        if (curEnvEdge.Item1 == lastEnvEdge.Item1 && curEnvEdge.Item2 == lastEnvEdge.Item2)
-            edgeChange = false;
-        else
-            edgeChange = true;
-
-        // Edge part change
-        if (curEnvEdgePart != lastEnvEdgePart)
-            edgePartChange = true;
-        else
-            edgePartChange = false;
-        lastEnvEdgePart = curEnvEdgePart;
-
-        // Cur env edge
-        curEnvEdgePercentage = (outerVertices[0] - curEnvEdge.Item1).magnitude / (curEnvEdge.Item2 - curEnvEdge.Item1).magnitude;
-        curEnvEdgePart = (int) curEnvEdgePercentage.Remap(0, 1f, 0, visualController.envGridLoops);
-
-
-        // set last variables
-        
     }
     
 

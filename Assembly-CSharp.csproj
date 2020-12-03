@@ -113,7 +113,7 @@
     <Compile Include="Assets\AudioHelm\Scripts\Native.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\Environment\ObjectSpawner.cs" />
-    <Compile Include="Assets\Scripts\Player\PlayerStates.cs" />
+    <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Custom\Mask.shader" />
