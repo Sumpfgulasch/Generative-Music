@@ -97,7 +97,7 @@ public static class PlayerData
                     player.curEnvEdge_3rd.Item1 = EnvironmentData.vertices[(i + 3) % 3];
                     player.curEnvEdge_3rd.Item2 = EnvironmentData.vertices[(i + 2) % 3];
 
-                    
+                    //player.curEdgePart = new EdgePart()
                 }
         }
         
@@ -117,9 +117,6 @@ public static class PlayerData
         // Current edgePart & edgePartPercentage
         player.curEnvEdgePercentage = (player.outerVertices[0] - player.curEnvEdge.Item1).magnitude / (player.curEnvEdge.Item2 - player.curEnvEdge.Item1).magnitude;
         player.curEnvEdgePart = (int)player.curEnvEdgePercentage.Remap(0, 1f, 0, VisualController.inst.envGridLoops);
-        //Debug.Log("curEdgePart: " + player.curEnvEdgePart + ", lastEdgePart: " + player.lastEnvEdgePart);
-        if (player.edgePartChange)
-            Debug.Log("EDGE PART CHANGE;    edgePartPerc: " + player.curEnvEdgePercentage + ", edgePart: " + player.curEnvEdgePart);
     }
 
     public static void SetupEdgeParts()
