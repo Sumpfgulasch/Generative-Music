@@ -106,7 +106,7 @@ public class Player : MonoBehaviour
 
     // get set
     MusicManager musicManager { get { return MusicManager.instance; } }
-    VisualsManager posVisualize { get { return VisualsManager.instance; } }
+    VisualController visualController { get { return VisualController.inst; } }
 
 
     void Start()
@@ -209,7 +209,7 @@ public class Player : MonoBehaviour
 
         // Cur env edge
         curEnvEdgePercentage = (outerVertices[0] - curEnvEdge.Item1).magnitude / (curEnvEdge.Item2 - curEnvEdge.Item1).magnitude;
-        curEnvEdgePart = (int) curEnvEdgePercentage.Remap(0, 1f, 0, posVisualize.envGridLoops);
+        curEnvEdgePart = (int) curEnvEdgePercentage.Remap(0, 1f, 0, visualController.envGridLoops);
 
 
         // set last variables

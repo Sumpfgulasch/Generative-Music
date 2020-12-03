@@ -8,14 +8,14 @@ public class MeshCreation : MonoBehaviour
     // = Create meshes
 
 
-    public static MeshCreation instance;
+    public static MeshCreation inst;
     
     // Private variables
     private Vector3 playerMid;
 
     private void Start()
     {
-        instance = this;
+        inst = this;
         playerMid = Player.inst.transform.position;
     }
 

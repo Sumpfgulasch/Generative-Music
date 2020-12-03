@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class VisualsManager : MonoBehaviour
+public class VisualController : MonoBehaviour
 {
     // public
-    public static VisualsManager instance;
+    public static VisualController inst;
 
     [Header("Settings")]
     public int envGridLoops = 6;
@@ -16,18 +16,18 @@ public class VisualsManager : MonoBehaviour
 
     void Start()
     {
-        instance = this;
+        inst = this;
         if (!showCursor)
             Cursor.visible = false;
 
 
-        MeshCreation.instance.CreateMeshes();
+        MeshCreation.inst.CreateMeshes();
     }
 
 
     void Update()
     {
         EnvironmentData.HandleData();
-        MeshUpdate.instance.UpdateMeshes();
+        MeshUpdate.UpdateMeshes();
     }
 }

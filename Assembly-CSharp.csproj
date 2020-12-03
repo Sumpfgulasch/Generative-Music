@@ -94,7 +94,7 @@
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\TriggerVisibleNotes.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\SampleSequencer.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmAudioReceive.cs" />
-    <Compile Include="Assets\Scripts\Environment\VisualsManager.cs" />
+    <Compile Include="Assets\Scripts\Environment\VisualController.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmSequencer.cs" />
     <Compile Include="Assets\Scripts\Environment\EnvironmentData.cs" />
     <Compile Include="Assets\Scripts\Util\ExtensionMethods.cs" />

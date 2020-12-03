@@ -4,17 +4,19 @@ using UnityEngine;
 
 public static class EnvironmentData
 {
-    // == calc stuff and store data in MeshRef and Player
+    // == calc stuff and store data here and in Player
     
 
+    // Public attributes
     [HideInInspector] public static Vector3[] vertices = new Vector3[3];
 
     // Private variables
     private static Vector3 playerMid;
 
-    
 
-    
+
+
+    // ----------------------------- Public methods ----------------------------
 
     public static void HandleData()
     {
@@ -25,7 +27,7 @@ public static class EnvironmentData
 
 
 
-    // ----------------------------- private methods ----------------------------
+    // ----------------------------- Private methods ----------------------------
 
     private static void GetEnvironmentTriangle()
     {
