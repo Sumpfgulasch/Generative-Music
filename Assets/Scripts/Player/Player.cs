@@ -137,7 +137,7 @@ public partial class Player : MonoBehaviour
         PlayerData.SetPositionStates();
         PlayerData.SetActionStates();
         CalcMovementData();
-        //PlayerData.CalcEdgeData();
+        PlayerData.CalcEdgeData();
 
         // 2. Perform movement
         KeyboardMovement();
@@ -154,19 +154,12 @@ public partial class Player : MonoBehaviour
         // ROTATION
         Vector2 mouseToMid = mousePos - midPoint;
         Vector2 playerAngleVec = outerVertices[0] - midPoint;
-        curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
+        float curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
         curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
         rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
         curRotSpeed = rotTargetValue;
 
-
-
         // SCALE
-
-        // last variables
-        lastEnvEdge = curEnvEdge;
-
-
         // Distances
         mouseToPlayerDistance = 0;
         Vector2 intersection = Vector2.zero;
@@ -189,41 +182,13 @@ public partial class Player : MonoBehaviour
                     mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
                 }
             }
-            // Current edge
-            Vector3 playerMainVertex_extended = midPoint + ((outerVertices[0] - midPoint).normalized * 10f);
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, EnvironmentData.vertices[i], EnvironmentData.vertices[(i + 1) % 3]))
-            {
-                curEnvEdge.Item1 = EnvironmentData.vertices[(i + 1) % 3]; // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
-                curEnvEdge.Item2 = EnvironmentData.vertices[i];
-                curEnvEdge_2nd.Item1 = EnvironmentData.vertices[(i + 2) % 3];
-                curEnvEdge_2nd.Item2 = EnvironmentData.vertices[(i + 1) % 3];
-                curEnvEdge_3rd.Item1 = EnvironmentData.vertices[(i + 3) % 3];
-                curEnvEdge_3rd.Item2 = EnvironmentData.vertices[(i + 2) % 3];
-            }
         }
 
         // Scale value
         scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
         scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-
-        // Edge change
-        if (curEnvEdge.Item1 == lastEnvEdge.Item1 && curEnvEdge.Item2 == lastEnvEdge.Item2)
-            edgeChange = false;
-        else
-            edgeChange = true;
-
-        // Edge part change
-        if (curEnvEdgePart != lastEnvEdgePart)
-            edgePartChange = true;
-        else
-            edgePartChange = false;
-        lastEnvEdgePart = curEnvEdgePart;
-
-        // Cur env edge
-        curEnvEdgePercentage = (outerVertices[0] - curEnvEdge.Item1).magnitude / (curEnvEdge.Item2 - curEnvEdge.Item1).magnitude;
-        curEnvEdgePart = (int)curEnvEdgePercentage.Remap(0, 1f, 0, visualController.envGridLoops);
     }
-    
+
 
 
 

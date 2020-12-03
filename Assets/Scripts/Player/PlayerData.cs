@@ -86,8 +86,7 @@ public static class PlayerData
         Vector3 mousePos_extended = midPoint + (player.mousePos - midPoint).normalized * 10f;
         for (int i = 0; i < player.outerVertices.Length; i++)
         {
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, player.outerVertices[i], player.outerVertices[(i + 1) % 3])) // gleiche lineSegmentsIntersection wie in Player.CalcMovementData()
-            {
+            
                 Vector3 playerMainVertex_extended = midPoint + ((player.outerVertices[0] - midPoint).normalized * 10f);
                 if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, EnvironmentData.vertices[i], EnvironmentData.vertices[(i + 1) % 3]))
                 {
@@ -100,7 +99,6 @@ public static class PlayerData
 
                     
                 }
-            }
         }
         
         // Edge change?
@@ -119,7 +117,7 @@ public static class PlayerData
         // Current edgePart & edgePartPercentage
         player.curEnvEdgePercentage = (player.outerVertices[0] - player.curEnvEdge.Item1).magnitude / (player.curEnvEdge.Item2 - player.curEnvEdge.Item1).magnitude;
         player.curEnvEdgePart = (int)player.curEnvEdgePercentage.Remap(0, 1f, 0, VisualController.inst.envGridLoops);
-        Debug.Log("curEdgePart: " + player.curEnvEdgePart + ", lastEdgePart: " + player.lastEnvEdgePart);
+        //Debug.Log("curEdgePart: " + player.curEnvEdgePart + ", lastEdgePart: " + player.lastEnvEdgePart);
         if (player.edgePartChange)
             Debug.Log("EDGE PART CHANGE;    edgePartPerc: " + player.curEnvEdgePercentage + ", edgePart: " + player.curEnvEdgePart);
     }
