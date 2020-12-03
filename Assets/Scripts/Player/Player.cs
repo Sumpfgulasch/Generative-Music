@@ -85,7 +85,6 @@ public class Player : MonoBehaviour
     private float lastScaleTargetValue;
     private float scaleDifferenceToLastFrame;
     private float curScaleSpeed = 0;
-    private float curPlayerRot;
     private float curMouseRot;
     private float rotTargetValue;
     private float rotDifferenceToLastFrame;
@@ -128,7 +127,8 @@ public class Player : MonoBehaviour
         // 1. Handle Data
         GetInput();
         GetVertices();
-        SetActionStates();
+        PlayerStates.SetPositionalStates();
+        PlayerStates.SetActionStates();
         CalcMovementData();
 
         // 2. Perform movement
@@ -142,7 +142,7 @@ public class Player : MonoBehaviour
         // ROTATION
         Vector2 mouseToMid = mousePos - midPoint;
         Vector2 playerAngleVec = outerVertices[0] - midPoint;
-        curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
+        float curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
         curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
         rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
         curRotSpeed = rotTargetValue;
@@ -443,14 +443,6 @@ public class Player : MonoBehaviour
         }
     }
 
-
-    void SetActionStates()
-    {
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
-            actionState = ActionState.stickToEdge;
-        else
-            actionState = ActionState.none;
-    }
 
     float GetVelocityFromDistance()
     {

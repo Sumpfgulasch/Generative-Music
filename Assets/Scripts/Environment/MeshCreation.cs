@@ -6,6 +6,7 @@ using System.Linq;
 public static class MeshCreation
 {
     // = Create meshes
+    // Alle Vertices werden ENTGEGEN dem Uhrzeigersinn gezählt, weil Camera.z = -10; nur EnvironmentData.vertices werden IM Uhrzeigersinn gezählt
 
         
     

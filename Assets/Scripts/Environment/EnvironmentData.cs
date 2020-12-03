@@ -14,6 +14,7 @@ public static class EnvironmentData
 
     // Private variables
     private static Vector3 playerMid;
+    private static Player player;
 
 
 
@@ -21,6 +22,7 @@ public static class EnvironmentData
     static EnvironmentData()
     {
         playerMid = Player.inst.transform.position;
+        player = Player.inst;
     } 
 
     // ----------------------------- Public methods ----------------------------
@@ -28,7 +30,6 @@ public static class EnvironmentData
     public static void HandleData()
     {
         GetEnvironmentTriangle();
-        SetPositionalStates();
     }
 
 
@@ -78,43 +79,9 @@ public static class EnvironmentData
         }
     }
 
-
-
-    // STATES
-    private static void SetPositionalStates()
+    private static void GenerateEdgeParts()
     {
-        Player player = Player.inst;
-        player.lastPosState = player.positionState;
-        RaycastHit hit;
-        if (Physics.Raycast(playerMid, player.outerVertices[0] - playerMid, out hit))
-        {
-            // Calculations
-            float playerRadius = (player.outerVertices[0] - playerMid).magnitude;
-            float envDistance = (hit.point - playerMid).magnitude;
-            float playerToEnvDistance = Mathf.Abs(playerRadius - envDistance);
-            float innerVertexToEnvDistance = (player.innerVertices[0] - (hit.point + (player.innerVertices[0] - hit.point).normalized * player.stickToOuterEdge_holeSize)).magnitude;
 
-            float stickToEdgeTolerance = player.stickToEdgeTolerance;
-            if (player.actionState == Player.ActionState.stickToEdge)
-                stickToEdgeTolerance *= 3f;
-
-            // States
-            if (playerToEnvDistance < stickToEdgeTolerance && !player.startedBounce)
-                player.positionState = Player.PositionState.innerEdge;
-            else if (innerVertexToEnvDistance < stickToEdgeTolerance && !player.startedBounce)
-                player.positionState = Player.PositionState.outerEdge;
-            else if (playerRadius < envDistance)
-                player.positionState = Player.PositionState.inside;
-            else
-                player.positionState = Player.PositionState.outside;
-
-            if (player.positionState == Player.PositionState.innerEdge && player.lastPosState != Player.PositionState.innerEdge ||
-                player.positionState == Player.PositionState.outerEdge && player.lastPosState != Player.PositionState.outerEdge)
-                player.firstEdgeTouch = true;
-            else
-                player.firstEdgeTouch = false;
-        }
-        else
-            player.positionState = Player.PositionState.noTunnel;
     }
+
 }
