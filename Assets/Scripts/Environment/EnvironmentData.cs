@@ -2,23 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class EnvironmentData// : MonoBehaviour
+public static class EnvironmentData
 {
     // == calc stuff and store data in MeshRef and Player
+    
 
-
-    //public static EnvironmentData inst;
-
-    [HideInInspector] public static Vector3[] envVertices = new Vector3[3];
+    [HideInInspector] public static Vector3[] vertices = new Vector3[3];
 
     // Private variables
     private static Vector3 playerMid;
 
-    static void Start()
-    {
-        //inst = this;
-        //playerMid = Player.instance.transform.position;
-    }
+    
 
     
 
@@ -36,16 +30,16 @@ public static class EnvironmentData// : MonoBehaviour
     private static void GetEnvironmentTriangle()
     {
         // 1) init
-        playerMid = Player.instance.transform.position;
+        playerMid = Player.inst.transform.position;
         RaycastHit[] edgeHits = new RaycastHit[3];
-        envVertices = new Vector3[3];
+        vertices = new Vector3[3];
         Vector3 intersection = Vector3.zero;
 
         // 2) Prepare raycast
-        for (int i = 0; i < Player.instance.verticesCount; i++)
+        for (int i = 0; i < Player.inst.verticesCount; i++)
         {
-            Vector3 playerEdgeMid = Player.instance.outerVertices[i] + ((Player.instance.outerVertices[(i + 1) % 3] - Player.instance.outerVertices[i]) / 2f);
-            playerEdgeMid.z = MeshRef.instance.envEdges_lr.transform.position.z;
+            Vector3 playerEdgeMid = Player.inst.outerVertices[i] + ((Player.inst.outerVertices[(i + 1) % 3] - Player.inst.outerVertices[i]) / 2f);
+            playerEdgeMid.z = MeshRef.inst.envEdges_lr.transform.position.z;
             Vector3 directionOut = (playerEdgeMid - playerMid).normalized;
             RaycastHit hit;
 
@@ -71,7 +65,7 @@ public static class EnvironmentData// : MonoBehaviour
 
             if (ExtensionMethods.LineLineIntersection(out intersection, point1, direction1, point2, direction2))
             {
-                envVertices[i] = intersection;
+                vertices[i] = intersection;
             }
         }
     }
@@ -81,7 +75,7 @@ public static class EnvironmentData// : MonoBehaviour
     // STATES
     private static void SetPositionalStates()
     {
-        Player player = Player.instance;
+        Player player = Player.inst;
         player.lastPosState = player.positionState;
         RaycastHit hit;
         if (Physics.Raycast(playerMid, player.outerVertices[0] - playerMid, out hit))

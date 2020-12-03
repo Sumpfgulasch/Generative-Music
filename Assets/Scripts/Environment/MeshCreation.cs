@@ -16,7 +16,7 @@ public class MeshCreation : MonoBehaviour
     private void Start()
     {
         instance = this;
-        playerMid = Player.instance.transform.position;
+        playerMid = Player.inst.transform.position;
     }
 
 
@@ -29,16 +29,16 @@ public class MeshCreation : MonoBehaviour
         InitPlayer();
 
         // Inner player
-        CreatePlayerMesh(ref MeshRef.instance.innerPlayerMesh_mf);
+        CreatePlayerMesh(ref MeshRef.inst.innerPlayerMesh_mf);
 
         // Inner surface
-        CreateMesh(ref MeshRef.instance.innerSurface_mf, EnvironmentData.envVertices);
-        CreateMesh(ref MeshRef.instance.innerMask_mf, Player.instance.outerVertices);
-        CreateMesh(ref MeshRef.instance.innerPlayerMask_mf, EnvironmentData.envVertices);
+        CreateMesh(ref MeshRef.inst.innerSurface_mf, EnvironmentData.vertices);
+        CreateMesh(ref MeshRef.inst.innerMask_mf, Player.inst.outerVertices);
+        CreateMesh(ref MeshRef.inst.innerPlayerMask_mf, EnvironmentData.vertices);
 
         // Outer player
-        CreatePlayerMesh(ref MeshRef.instance.outerPlayerMesh_mf);
-        CreateMesh(ref MeshRef.instance.outerPlayerMask_mf, EnvironmentData.envVertices);
+        CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
+        CreateMesh(ref MeshRef.inst.outerPlayerMask_mf, EnvironmentData.vertices);
     }
 
 
@@ -53,29 +53,29 @@ public class MeshCreation : MonoBehaviour
         // = Create mesh form, create containers & set player variables
 
         // Create containers
-        GameObject vertices = CreateContainer("Vertices", Player.instance.transform);
+        GameObject vertices = CreateContainer("Vertices", Player.inst.transform);
         GameObject outside = CreateContainer("Outside", vertices.transform);
         GameObject inside = CreateContainer("Inside", vertices.transform);
 
-        for (int i = 0; i < Player.instance.verticesCount; i++)
+        for (int i = 0; i < Player.inst.verticesCount; i++)
         {
             // CREATE MESH FORM by calculating vertex positions
-            Quaternion rot = Quaternion.Euler(0, 0, i * (360 / Player.instance.verticesCount));
+            Quaternion rot = Quaternion.Euler(0, 0, i * (360 / Player.inst.verticesCount));
             Vector3 nextDirection = rot * Vector3.up;
             Vector3 nextOuterVertex = nextDirection.normalized;
-            Vector3 nextInnerVertex = nextDirection.normalized * (1 - Player.instance.innerWidth);
+            Vector3 nextInnerVertex = nextDirection.normalized * (1 - Player.inst.innerWidth);
 
             // More containers
             GameObject newOuterVert = CreateContainer("Vert" + (i + 1), outside.transform);
             GameObject newInnerVert = CreateContainer("Vert" + (i + 1), inside.transform);
-            newOuterVert.transform.position = Player.instance.transform.position + nextOuterVertex;
-            newInnerVert.transform.position = Player.instance.transform.position + nextInnerVertex;
+            newOuterVert.transform.position = Player.inst.transform.position + nextOuterVertex;
+            newInnerVert.transform.position = Player.inst.transform.position + nextInnerVertex;
 
             // Assign positions to Player
-            Player.instance.outerVertices_obj[i] = newOuterVert.transform;
-            Player.instance.innerVertices_obj[i] = newInnerVert.transform;
-            Player.instance.outerVertices_mesh[i] = nextOuterVertex;
-            Player.instance.innerVertices_mesh[i] = nextInnerVertex;
+            Player.inst.outerVertices_obj[i] = newOuterVert.transform;
+            Player.inst.innerVertices_obj[i] = newInnerVert.transform;
+            Player.inst.outerVertices_mesh[i] = nextOuterVertex;
+            Player.inst.innerVertices_mesh[i] = nextInnerVertex;
         }
     }
 
@@ -103,20 +103,20 @@ public class MeshCreation : MonoBehaviour
         List<Vector3> normals = new List<Vector3>();
 
         // Calculations
-        for (int i = 0; i < Player.instance.verticesCount; i++)
+        for (int i = 0; i < Player.inst.verticesCount; i++)
         {
             vertices.AddRange(new Vector3[2] {
-                Player.instance.outerVertices_mesh[i],
-                Player.instance.innerVertices_mesh[i] });
+                Player.inst.outerVertices_mesh[i],
+                Player.inst.innerVertices_mesh[i] });
             triangles.AddRange(new int[6] {
                 // outer triangle
                 i *2,
                 i *2+1,
-                (i*2+2) % (Player.instance.verticesCount*2),
+                (i*2+2) % (Player.inst.verticesCount*2),
                 // inner triangle
                 i *2+1 ,
-                (i*2+3) % (Player.instance.verticesCount*2),
-                (i*2+2) % (Player.instance.verticesCount*2) });
+                (i*2+3) % (Player.inst.verticesCount*2),
+                (i*2+2) % (Player.inst.verticesCount*2) });
             normals.AddRange(new Vector3[2] {
                 Vector3.back,
                 Vector3.back });

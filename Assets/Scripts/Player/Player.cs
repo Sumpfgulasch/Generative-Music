@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     // public variables
-    public static Player instance;
+    public static Player inst;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
     public enum ActionState { stickToEdge, none };
     public PositionState positionState = PositionState.noTunnel;
@@ -111,7 +111,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        instance = this;
+        inst = this;
         midPoint = this.transform.position;
     }
 
@@ -179,14 +179,14 @@ public class Player : MonoBehaviour
             }
             // Current edge
             Vector3 playerMainVertex_extended = midPoint + (( outerVertices[0] - midPoint).normalized * 10f);
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, EnvironmentData.envVertices[i], EnvironmentData.envVertices[(i + 1) % 3]))
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, EnvironmentData.vertices[i], EnvironmentData.vertices[(i + 1) % 3]))
             {
-                curEnvEdge.Item1 = EnvironmentData.envVertices[(i + 1) % 3]; // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
-                curEnvEdge.Item2 = EnvironmentData.envVertices[i];
-                curEnvEdge_2nd.Item1 = EnvironmentData.envVertices[(i + 2) % 3];
-                curEnvEdge_2nd.Item2 = EnvironmentData.envVertices[(i + 1) % 3];
-                curEnvEdge_3rd.Item1 = EnvironmentData.envVertices[(i + 3) % 3];
-                curEnvEdge_3rd.Item2 = EnvironmentData.envVertices[(i + 2) % 3];
+                curEnvEdge.Item1 = EnvironmentData.vertices[(i + 1) % 3]; // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
+                curEnvEdge.Item2 = EnvironmentData.vertices[i];
+                curEnvEdge_2nd.Item1 = EnvironmentData.vertices[(i + 2) % 3];
+                curEnvEdge_2nd.Item2 = EnvironmentData.vertices[(i + 1) % 3];
+                curEnvEdge_3rd.Item1 = EnvironmentData.vertices[(i + 3) % 3];
+                curEnvEdge_3rd.Item2 = EnvironmentData.vertices[(i + 2) % 3];
             }
         }
         

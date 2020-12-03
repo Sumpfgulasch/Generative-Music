@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MeshRef : MonoBehaviour
 {
-    public static MeshRef instance;
+    public static MeshRef inst;
 
     [Header("References")]
     public MeshFilter innerPlayerMesh_mf;
@@ -20,7 +20,7 @@ public class MeshRef : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        instance = this;
+        inst = this;
     }
 
     // Update is called once per frame
