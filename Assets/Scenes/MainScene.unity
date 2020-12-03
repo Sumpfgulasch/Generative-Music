@@ -642,7 +642,6 @@ GameObject:
   - component: {fileID: 802206880}
   - component: {fileID: 802206884}
   - component: {fileID: 802206883}
-  - component: {fileID: 802206882}
   - component: {fileID: 802206881}
   m_Layer: 0
   m_Name: Visualisations
@@ -693,18 +692,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a829eb2bbe00a4694d2a8cf9edfe66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &802206882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 802206878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 675b663a9fea05a4fbc01b374a36ade4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &802206883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -740,10 +727,6 @@ MonoBehaviour:
   curEdgePart2nd_lr:
   - {fileID: 1436961344}
   - {fileID: 906205772}
-  envVertices:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
 --- !u!1 &812451688
 GameObject:
   m_ObjectHideFlags: 0

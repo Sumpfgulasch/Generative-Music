@@ -41,7 +41,7 @@ public class MeshUpdate: MonoBehaviour
     void UpdateSurfacesTransforms()
     {
         // Inner surface
-        MeshRef.instance.innerSurface_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(EnvironmentData.inst.envVertices, this.transform);
+        MeshRef.instance.innerSurface_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(EnvironmentData.envVertices, this.transform);
         MeshRef.instance.innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(Player.instance.outerVertices, this.transform);
         MeshRef.instance.innerPlayerMesh_mf.transform.localPosition = Vector3.zero;
 
@@ -49,8 +49,8 @@ public class MeshUpdate: MonoBehaviour
         MeshRef.instance.outerPlayerMesh_mf.transform.localScale = Player.instance.transform.localScale;
         MeshRef.instance.outerPlayerMesh_mf.transform.eulerAngles = Player.instance.transform.eulerAngles;
 
-        MeshRef.instance.outerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(EnvironmentData.inst.envVertices, this.transform);
-        MeshRef.instance.innerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(EnvironmentData.inst.envVertices, this.transform);
+        MeshRef.instance.outerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(EnvironmentData.envVertices, this.transform);
+        MeshRef.instance.innerPlayerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(EnvironmentData.envVertices, this.transform);
     }
 
 
@@ -87,18 +87,18 @@ public class MeshUpdate: MonoBehaviour
     void DrawEnvironmentEdges()
     {
         // 1) Add extra points for LineRenderer
-        List<Vector3> newPositions = EnvironmentData.inst.envVertices.ToList();
+        List<Vector3> newPositions = EnvironmentData.envVertices.ToList();
         int insertCounter = 0;
-        for (int i = 1; i < EnvironmentData.inst.envVertices.Length; i++)
+        for (int i = 1; i < EnvironmentData.envVertices.Length; i++)
         {
             // insert before
-            newPositions.Insert(i + insertCounter, EnvironmentData.inst.envVertices[i]);
+            newPositions.Insert(i + insertCounter, EnvironmentData.envVertices[i]);
             insertCounter++;
             // insert after
-            newPositions.Insert(i + 1 + insertCounter, EnvironmentData.inst.envVertices[i]);
+            newPositions.Insert(i + 1 + insertCounter, EnvironmentData.envVertices[i]);
             insertCounter++;
         }
-        newPositions.Add(EnvironmentData.inst.envVertices[0]);
+        newPositions.Add(EnvironmentData.envVertices[0]);
 
 
         // 2) Add to LineRenderer

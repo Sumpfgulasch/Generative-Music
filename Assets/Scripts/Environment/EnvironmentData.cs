@@ -2,27 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnvironmentData : MonoBehaviour
+public static class EnvironmentData// : MonoBehaviour
 {
     // == calc stuff and store data in MeshRef and Player
 
 
-    public static EnvironmentData inst;
+    //public static EnvironmentData inst;
 
-    [HideInInspector] public Vector3[] envVertices = new Vector3[3];
+    [HideInInspector] public static Vector3[] envVertices = new Vector3[3];
 
     // Private variables
-    Vector3 playerMid;
+    private static Vector3 playerMid;
 
-    void Start()
+    static void Start()
     {
-        inst = this;
-        playerMid = Player.instance.transform.position;
+        //inst = this;
+        //playerMid = Player.instance.transform.position;
     }
 
     
 
-    public void HandleData()
+    public static void HandleData()
     {
         GetEnvironmentTriangle();
         SetPositionalStates();
@@ -33,9 +33,10 @@ public class EnvironmentData : MonoBehaviour
 
     // ----------------------------- private methods ----------------------------
 
-    void GetEnvironmentTriangle()
+    private static void GetEnvironmentTriangle()
     {
         // 1) init
+        playerMid = Player.instance.transform.position;
         RaycastHit[] edgeHits = new RaycastHit[3];
         envVertices = new Vector3[3];
         Vector3 intersection = Vector3.zero;
@@ -78,7 +79,7 @@ public class EnvironmentData : MonoBehaviour
 
 
     // STATES
-    void SetPositionalStates()
+    private static void SetPositionalStates()
     {
         Player player = Player.instance;
         player.lastPosState = player.positionState;

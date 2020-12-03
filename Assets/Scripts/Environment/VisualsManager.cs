@@ -27,7 +27,7 @@ public class VisualsManager : MonoBehaviour
 
     void Update()
     {
-        EnvironmentData.inst.HandleData();
+        EnvironmentData.HandleData();
         MeshUpdate.instance.UpdateMeshes();
     }
 }
