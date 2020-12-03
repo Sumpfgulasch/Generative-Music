@@ -21,7 +21,7 @@ public class VisualController : MonoBehaviour
             Cursor.visible = false;
 
 
-        MeshCreation.inst.CreateMeshes();
+        MeshCreation.CreateMeshes();
     }
 
 

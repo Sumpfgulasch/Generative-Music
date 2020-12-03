@@ -3,26 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class MeshCreation : MonoBehaviour
+public static class MeshCreation
 {
     // = Create meshes
 
-
-    public static MeshCreation inst;
+        
     
     // Private variables
-    private Vector3 playerMid;
+    private static Vector3 playerMid;
 
-    private void Start()
+
+
+    // Constructor
+    static MeshCreation()
     {
-        inst = this;
         playerMid = Player.inst.transform.position;
     }
 
 
+    // ----------------------------- Public methods ----------------------------
 
-
-    public void CreateMeshes()
+    public static void CreateMeshes()
     {
         // = Create all meshes
 
@@ -45,10 +46,10 @@ public class MeshCreation : MonoBehaviour
 
 
 
-    // ----------------------------- private methods ----------------------------
+    // ----------------------------- Private methods ----------------------------
     
 
-    private void InitPlayer()
+    private static void InitPlayer()
     {
         // = Create mesh form, create containers & set player variables
 
@@ -81,7 +82,7 @@ public class MeshCreation : MonoBehaviour
 
 
 
-    private void CreateMesh(ref MeshFilter mf, Vector3[] vertices)
+    private static void CreateMesh(ref MeshFilter mf, Vector3[] vertices)
     {
         // = Used for any triangle mesh that is not the player
 
@@ -95,7 +96,7 @@ public class MeshCreation : MonoBehaviour
 
 
 
-    private void CreatePlayerMesh(ref MeshFilter mf)
+    private static void CreatePlayerMesh(ref MeshFilter mf)
     {
         // Declarations
         List<Vector3> vertices = new List<Vector3>();
@@ -137,7 +138,7 @@ public class MeshCreation : MonoBehaviour
 
     // Helper methods
 
-    private GameObject CreateContainer(string name, Transform parent)
+    private static GameObject CreateContainer(string name, Transform parent)
     {
         GameObject newObj = new GameObject(name);
         newObj.transform.parent = parent;

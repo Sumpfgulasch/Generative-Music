@@ -10,11 +10,18 @@ public static class EnvironmentData
     // Public attributes
     [HideInInspector] public static Vector3[] vertices = new Vector3[3];
 
+
+
     // Private variables
     private static Vector3 playerMid;
 
 
 
+    // Constructor
+    static EnvironmentData()
+    {
+        playerMid = Player.inst.transform.position;
+    } 
 
     // ----------------------------- Public methods ----------------------------
 
@@ -32,7 +39,6 @@ public static class EnvironmentData
     private static void GetEnvironmentTriangle()
     {
         // 1) init
-        playerMid = Player.inst.transform.position;
         RaycastHit[] edgeHits = new RaycastHit[3];
         vertices = new Vector3[3];
         Vector3 intersection = Vector3.zero;
