@@ -75,6 +75,14 @@ public static class EnvironmentData
             if (ExtensionMethods.LineLineIntersection(out intersection, point1, direction1, point2, direction2))
             {
                 vertices[i] = intersection;
+
+                // 5) Sort (hack): start with upper vertex & go CLOCKWISE 
+                //if (intersection.y > 0.1f)
+                //    vertices[0] = intersection;
+                //else if (intersection.x < -0.1f)
+                //    vertices[2] = intersection;
+                //else
+                //    vertices[1] = intersection;
             }
         }
     }

@@ -43,14 +43,15 @@ public static class PlayerData
             float envDistance = (hit.point - midPoint).magnitude;
             float playerToEnvDistance = Mathf.Abs(playerRadius - envDistance);
             float innerVertexToEnvDistance = (player.innerVertices[0] - (hit.point + (player.innerVertices[0] - hit.point).normalized * player.stickToOuterEdge_holeSize)).magnitude;
-            
+
+            float stickToEdgeTolerance = player.stickToEdgeTolerance;
             if (player.actionState == Player.ActionState.stickToEdge)
-                player.stickToEdgeTolerance *= 3f;
+                stickToEdgeTolerance *= 3f;
 
             // States
-            if (playerToEnvDistance < player.stickToEdgeTolerance && !player.startedBounce)
+            if (playerToEnvDistance < stickToEdgeTolerance && !player.startedBounce)
                 player.positionState = Player.PositionState.innerEdge;
-            else if (innerVertexToEnvDistance < player.stickToEdgeTolerance && !player.startedBounce)
+            else if (innerVertexToEnvDistance < stickToEdgeTolerance && !player.startedBounce)
                 player.positionState = Player.PositionState.outerEdge;
             else if (playerRadius < envDistance)
                 player.positionState = Player.PositionState.inside;
@@ -96,10 +97,12 @@ public static class PlayerData
                     player.curEnvEdge_2nd.Item2 = EnvironmentData.vertices[(i + 1) % 3];
                     player.curEnvEdge_3rd.Item1 = EnvironmentData.vertices[(i + 3) % 3];
                     player.curEnvEdge_3rd.Item2 = EnvironmentData.vertices[(i + 2) % 3];
+
+                    
                 }
             }
         }
-
+        
         // Edge change?
         if (player.curEnvEdge.Item1 == player.lastEnvEdge.Item1 && player.curEnvEdge.Item2 == player.lastEnvEdge.Item2)
             player.edgeChange = false;
@@ -116,6 +119,9 @@ public static class PlayerData
         // Current edgePart & edgePartPercentage
         player.curEnvEdgePercentage = (player.outerVertices[0] - player.curEnvEdge.Item1).magnitude / (player.curEnvEdge.Item2 - player.curEnvEdge.Item1).magnitude;
         player.curEnvEdgePart = (int)player.curEnvEdgePercentage.Remap(0, 1f, 0, VisualController.inst.envGridLoops);
+        Debug.Log("curEdgePart: " + player.curEnvEdgePart + ", lastEdgePart: " + player.lastEnvEdgePart);
+        if (player.edgePartChange)
+            Debug.Log("EDGE PART CHANGE;    edgePartPerc: " + player.curEnvEdgePercentage + ", edgePart: " + player.curEnvEdgePart);
     }
 
     public static void SetupEdgeParts()
