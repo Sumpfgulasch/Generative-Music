@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshData : MonoBehaviour
+public class EnvironmentData : MonoBehaviour
 {
     // == calc stuff and store data in MeshRef and Player
 
 
-    public static MeshData instance;
+    public static EnvironmentData inst;
 
     [HideInInspector] public Vector3[] envVertices = new Vector3[3];
 
@@ -16,7 +16,7 @@ public class MeshData : MonoBehaviour
 
     void Start()
     {
-        instance = this;
+        inst = this;
         playerMid = Player.instance.transform.position;
     }
 
@@ -37,7 +37,7 @@ public class MeshData : MonoBehaviour
     {
         // 1) init
         RaycastHit[] edgeHits = new RaycastHit[3];
-        MeshRef.instance.envVertices = new Vector3[3];
+        envVertices = new Vector3[3];
         Vector3 intersection = Vector3.zero;
 
         // 2) Prepare raycast
@@ -70,7 +70,7 @@ public class MeshData : MonoBehaviour
 
             if (ExtensionMethods.LineLineIntersection(out intersection, point1, direction1, point2, direction2))
             {
-                MeshRef.instance.envVertices[i] = intersection;
+                envVertices[i] = intersection;
             }
         }
     }

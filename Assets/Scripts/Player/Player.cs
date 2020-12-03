@@ -179,14 +179,14 @@ public class Player : MonoBehaviour
             }
             // Current edge
             Vector3 playerMainVertex_extended = midPoint + (( outerVertices[0] - midPoint).normalized * 10f);
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, MeshRef.instance.envVertices[i], MeshRef.instance.envVertices[(i + 1) % 3]))
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, EnvironmentData.inst.envVertices[i], EnvironmentData.inst.envVertices[(i + 1) % 3]))
             {
-                curEnvEdge.Item1 = MeshRef.instance.envVertices[(i + 1) % 3]; // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
-                curEnvEdge.Item2 = MeshRef.instance.envVertices[i];
-                curEnvEdge_2nd.Item1 = MeshRef.instance.envVertices[(i + 2) % 3];
-                curEnvEdge_2nd.Item2 = MeshRef.instance.envVertices[(i + 1) % 3];
-                curEnvEdge_3rd.Item1 = MeshRef.instance.envVertices[(i + 3) % 3];
-                curEnvEdge_3rd.Item2 = MeshRef.instance.envVertices[(i + 2) % 3];
+                curEnvEdge.Item1 = EnvironmentData.inst.envVertices[(i + 1) % 3]; // im Uhrzeigersinn (anders als alle anderen Vertex-Arrays)
+                curEnvEdge.Item2 = EnvironmentData.inst.envVertices[i];
+                curEnvEdge_2nd.Item1 = EnvironmentData.inst.envVertices[(i + 2) % 3];
+                curEnvEdge_2nd.Item2 = EnvironmentData.inst.envVertices[(i + 1) % 3];
+                curEnvEdge_3rd.Item1 = EnvironmentData.inst.envVertices[(i + 3) % 3];
+                curEnvEdge_3rd.Item2 = EnvironmentData.inst.envVertices[(i + 2) % 3];
             }
         }
         

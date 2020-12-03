@@ -32,13 +32,13 @@ public class MeshCreation : MonoBehaviour
         CreatePlayerMesh(ref MeshRef.instance.innerPlayerMesh_mf);
 
         // Inner surface
-        CreateMesh(ref MeshRef.instance.innerSurface_mf, MeshRef.instance.envVertices);
+        CreateMesh(ref MeshRef.instance.innerSurface_mf, EnvironmentData.inst.envVertices);
         CreateMesh(ref MeshRef.instance.innerMask_mf, Player.instance.outerVertices);
-        CreateMesh(ref MeshRef.instance.innerPlayerMask_mf, MeshRef.instance.envVertices);
+        CreateMesh(ref MeshRef.instance.innerPlayerMask_mf, EnvironmentData.inst.envVertices);
 
         // Outer player
         CreatePlayerMesh(ref MeshRef.instance.outerPlayerMesh_mf);
-        CreateMesh(ref MeshRef.instance.outerPlayerMask_mf, MeshRef.instance.envVertices);
+        CreateMesh(ref MeshRef.instance.outerPlayerMask_mf, EnvironmentData.inst.envVertices);
     }
 
 
