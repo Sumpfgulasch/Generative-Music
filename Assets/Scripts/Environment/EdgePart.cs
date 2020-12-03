@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EdgePart
 {
-    public enum Type { MainKey, OutsideMainKey, NewMainKey };
+    public enum Type { InsideMainKey, OutsideMainKey, NewMainKey, PlayerMain, PlayerSec };
 
     // Properties
     public int ID;
@@ -19,23 +19,21 @@ public class EdgePart
     private Color color;
 
     // Contructor
-    public EdgePart(int _ID, Type _type, Vector3 _start, Vector3 _end, bool _isCorner)
+    public EdgePart(Type _type)
+    {
+        type = _type;
+    }
+
+    public EdgePart(int _ID, Vector3 _start, Vector3 _end, bool _isCorner)
     {
         ID = _ID;
 
         // set color, linerend
     }
     
-    public EdgePart(int _ID, Type _type, Vector3 _start, Vector3 _end, bool _isCorner, Vector3 _cornerMid)
-    {
-        ID = _ID;
-    }
 
+    
 
-    void Start()
-    {
-        
-    }
 
 
     void Update()
@@ -43,5 +41,11 @@ public class EdgePart
         // LOGIK
         // if (typeChanged || isPlayed)
         //      ChangeColor()
+    }
+
+    public void Set(int _ID, Vector3 _start, Vector3 _end, bool _isCorner)
+    {
+        ID = _ID;
+
     }
 }

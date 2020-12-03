@@ -9,6 +9,7 @@ public static class EnvironmentData
 
     // Public attributes
     [HideInInspector] public static Vector3[] vertices = new Vector3[3];
+    [HideInInspector] public static EdgePart[] edgeParts;
 
 
 
@@ -23,6 +24,9 @@ public static class EnvironmentData
     {
         playerMid = Player.inst.transform.position;
         player = Player.inst;
+
+        GetEnvironmentTriangle();
+        CreateEdgeParts();
     } 
 
     // ----------------------------- Public methods ----------------------------
@@ -30,6 +34,7 @@ public static class EnvironmentData
     public static void HandleData()
     {
         GetEnvironmentTriangle();
+        CreateEdgeParts();
     }
 
 
@@ -76,7 +81,7 @@ public static class EnvironmentData
             {
                 //vertices[i] = intersection;
 
-                // 5) Sort (hack): start with upper vertex & go COUNTER-CLOCKWISE 
+                // 5) Sort (hack): start with upper vertex & go COUNTER-CLOCKWISE (like every mesh-creation here)
                 if (intersection.y > 0.1f)
                     vertices[0] = intersection;
                 else if (intersection.x < -0.1f)
@@ -87,9 +92,31 @@ public static class EnvironmentData
         }
     }
 
-    private static void GenerateEdgeParts()
+    private static void CreateEdgeParts()
     {
+        int edgePartCount = vertices.Length * VisualController.inst.envGridLoops;
+        edgeParts = new EdgePart[edgePartCount];
 
+        for (int i = 0; i < VisualController.inst.envVertices; i++)
+        {
+            for (int j=0; j < VisualController.inst.envGridLoops; j++)
+            {
+                Vector3 start = vertices[i] + (((vertices[(i+1) % VisualController.inst.envVertices] - vertices[i]) / VisualController.inst.envGridLoops) * j);
+                Vector3 end = vertices[i] + (((vertices[(i+1) % VisualController.inst.envVertices] - vertices[i]) / VisualController.inst.envGridLoops) * ((j+1) % VisualController.inst.envGridLoops)); // #fun beim lesen
+                int ID = i * VisualController.inst.envVertices + j;
+                bool isCorner = false;
+                if (ID % VisualController.inst.envGridLoops == 0 || ID % (VisualController.inst.envGridLoops - 1) == 0)
+                    isCorner = true;
+                
+                
+                edgeParts[i] = new EdgePart(ID, start, end, isCorner);
+
+                Debug.Log("i: " + i + ", vertex: " + vertices[i]);
+                // vertices falsch: beginnt oben, zählt GEGEN uhrzeigersinn
+
+            // to do: nicht jeden frame generieren, nur bei erstem environment kontakt
+            }
+        }
     }
 
 }

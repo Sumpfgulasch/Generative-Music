@@ -10,6 +10,7 @@ public class VisualController : MonoBehaviour
 
     [Header("Settings")]
     public int envGridLoops = 6;
+    public int envVertices = 3;
     public bool showCursor = true;
     
     
