@@ -91,7 +91,7 @@ public static class MeshCreation
 
         Mesh newMesh = new Mesh();
         newMesh.vertices = vertices;
-        newMesh.triangles = new int[3] { 2, 1, 0 }; // count counter-clockwise!
+        newMesh.triangles = new int[3] { 0, 1, 2 }; // count clockwise!
         newMesh.normals = new Vector3[3] { Vector3.back, Vector3.back, Vector3.back };
         mf.mesh = newMesh;
         // no UVs
@@ -115,12 +115,12 @@ public static class MeshCreation
             triangles.AddRange(new int[6] {
                 // outer triangle
                 i *2,
-                i *2+1,
                 (i*2+2) % (Player.inst.verticesCount*2),
+                i *2+1,
                 // inner triangle
                 i *2+1 ,
-                (i*2+3) % (Player.inst.verticesCount*2),
-                (i*2+2) % (Player.inst.verticesCount*2) });
+                (i*2+2) % (Player.inst.verticesCount*2),
+                (i*2+3) % (Player.inst.verticesCount*2) });
             normals.AddRange(new Vector3[2] {
                 Vector3.back,
                 Vector3.back });
