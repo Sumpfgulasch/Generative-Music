@@ -158,7 +158,6 @@ public partial class Player : MonoBehaviour
         curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
         rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
         curRotSpeed = rotTargetValue;
-        Debug.DrawLine(mousePos, midPoint, Color.green);
 
         // SCALE
         // Distances
