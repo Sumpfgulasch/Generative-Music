@@ -64,7 +64,7 @@ public static class MeshCreation
         for (int i = 0; i < Player.inst.verticesCount; i++)
         {
             // CREATE MESH FORM by calculating vertex positions
-            Quaternion rot = Quaternion.Euler(0, 0, -i * (360 / Player.inst.verticesCount));
+            Quaternion rot = Quaternion.Euler(0, 0, -i * (360 / Player.inst.verticesCount)); // negativ damit clockwise (object is not facing player)
             Vector3 nextDirection = rot * Vector3.up;
             Vector3 nextOuterVertex = nextDirection.normalized;
             Vector3 nextInnerVertex = nextDirection.normalized * (1 - Player.inst.innerWidth);
@@ -81,8 +81,6 @@ public static class MeshCreation
             Player.inst.outerVertices_mesh[i] = nextOuterVertex;
             Player.inst.innerVertices_mesh[i] = nextInnerVertex;
         }
-        Debug.DrawLine(Player.inst.outerVertices_obj[0].position, Vector3.zero, Color.green, 5f);
-        Debug.DrawLine(Player.inst.outerVertices_obj[1].position, Vector3.zero, Color.red, 5f);
     }
 
 
@@ -93,7 +91,7 @@ public static class MeshCreation
 
         Mesh newMesh = new Mesh();
         newMesh.vertices = vertices;
-        newMesh.triangles = new int[3] { 0, 1, 2 }; // count counter-clockwise!
+        newMesh.triangles = new int[3] { 0, 1, 2 }; // count clockwise!
         newMesh.normals = new Vector3[3] { -Vector3.forward, -Vector3.forward, -Vector3.forward };
         mf.mesh = newMesh;
         // no UVs
@@ -114,7 +112,7 @@ public static class MeshCreation
             vertices.AddRange(new Vector3[2] {
                 Player.inst.outerVertices_mesh[i],
                 Player.inst.innerVertices_mesh[i] });
-            triangles.AddRange(new int[6] {
+            triangles.AddRange(new int[6] {         // count clockwise!
                 // outer triangle
                 i *2,
                 (i*2+2) % (Player.inst.verticesCount*2),

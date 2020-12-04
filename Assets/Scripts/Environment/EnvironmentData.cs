@@ -78,10 +78,10 @@ public static class EnvironmentData
             {
                 //vertices[i] = intersection;
 
-                // 5) Sort (hack): start with upper vertex & go CLOCKWISE (like every mesh-creation here)
-                if (intersection.y > 0.1f)
+                // 5) Sort: Start with lower-left vertex & go CLOCKWISE (like every mesh-creation here)
+                if (intersection.x < -0.1f)
                     vertices[0] = intersection;
-                else if (intersection.x > 0.1f)
+                else if (intersection.y > 0.1f)
                     vertices[1] = intersection;
                 else
                     vertices[2] = intersection;
