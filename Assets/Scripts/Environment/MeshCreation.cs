@@ -19,6 +19,8 @@ public static class MeshCreation
     static MeshCreation()
     {
         playerMid = Player.inst.transform.position;
+
+        CreateEdgeParts();
     }
 
 
@@ -135,6 +137,40 @@ public static class MeshCreation
     }
 
 
+    private static void CreateEdgeParts()
+    {
+        int edgePartCount = EnvironmentData.vertices.Length * VisualController.inst.envGridLoops;
+        EnvironmentData.edgeParts = new EdgePart[edgePartCount];
+
+        for (int i = 0; i < VisualController.inst.envVertices; i++)
+        {
+            for (int j = 0; j < VisualController.inst.envGridLoops; j++)
+            {
+                //Vector3 start = EnvironmentData.vertices[i] + (((EnvironmentData.vertices[(i + 1) % VisualController.inst.envVertices] - EnvironmentData.vertices[i]) / VisualController.inst.envGridLoops) * j);
+                //Vector3 end = EnvironmentData.vertices[i] + (((EnvironmentData.vertices[(i + 1) % VisualController.inst.envVertices] - EnvironmentData.vertices[i]) / VisualController.inst.envGridLoops) * ((j + 1) % VisualController.inst.envGridLoops)); // #fun beim lesen
+
+                // Get data
+                int ID = i * VisualController.inst.envGridLoops + j;
+
+                bool isCorner = false;
+                if (ID % VisualController.inst.envGridLoops == 0 || ID % (VisualController.inst.envGridLoops - 1) == 0)
+                    isCorner = true;
+                
+                GameObject newObj = CreateContainer("EdgePart" + ID, MeshRef.inst.edgeParts_parent);
+                LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, 0.03f);
+
+                // Assign
+                EnvironmentData.edgeParts[i] = new EdgePart(ID, lineRend, isCorner);
+
+                //Debug.Log("i: " + i + ", vertex: " + EnvironmentData.vertices[i]);
+                // vertices falsch: beginnt oben, zählt GEGEN uhrzeigersinn
+
+                // to do: nicht jeden frame generieren, nur bei erstem environment kontakt
+            }
+        }
+    }
+
+
 
 
     // Helper methods
@@ -144,7 +180,18 @@ public static class MeshCreation
         GameObject newObj = new GameObject(name);
         newObj.transform.parent = parent;
         newObj.transform.localPosition = Vector3.zero;
-
+        
         return newObj;
+    }
+
+    private static LineRenderer AddLineRenderer(this GameObject obj, int positionCount, Material material, float width)
+    {
+        LineRenderer lineRend = obj.AddComponent<LineRenderer>();
+        lineRend.positionCount = positionCount;
+        lineRend.startWidth = width;
+        lineRend.endWidth = width;
+        lineRend.material = material;
+
+        return lineRend;
     }
 }

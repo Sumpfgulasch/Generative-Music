@@ -13,7 +13,9 @@ public class MeshRef : MonoBehaviour
     public MeshFilter innerMask_mf;
     public MeshFilter outerPlayerMesh_mf;
     public MeshFilter outerPlayerMask_mf;
-    public LineRenderer envEdges_lr;
+    public Transform edgeParts_parent;
+    public Material envEdgePart_mat;
+    public LineRenderer envEdges_lr; // to do: in mat umwandeln, player on runtime
     public LineRenderer curEdgePart_lr;
     public List<LineRenderer> curEdgePart2nd_lr;
     

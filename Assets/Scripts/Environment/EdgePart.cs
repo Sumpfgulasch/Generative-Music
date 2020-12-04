@@ -24,9 +24,11 @@ public class EdgePart
         type = _type;
     }
 
-    public EdgePart(int _ID, Vector3 _start, Vector3 _end, bool _isCorner)
+    public EdgePart(int _ID, LineRenderer _lineRend, bool _isCorner)
     {
         ID = _ID;
+        lineRend = _lineRend;
+        isCorner = _isCorner;
 
         // set color, linerend
     }
