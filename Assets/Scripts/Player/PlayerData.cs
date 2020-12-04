@@ -104,11 +104,6 @@ public static class PlayerData
                         player.curSecEdges[j].start = EnvironmentData.vertices[(i + 1 + j) % 3];
                         player.curSecEdges[j].end = EnvironmentData.vertices[(i + 2 + j) % 3];
                     }
-                    //player.curEdge_2nd.Item1 = EnvironmentData.vertices[(i + 1) % 3];
-                    //player.curEdge_2nd.Item2 = EnvironmentData.vertices[(i + 2) % 3];
-                    //player.curEdge_3rd.Item1 = EnvironmentData.vertices[(i + 2) % 3];
-                    //player.curEdge_3rd.Item2 = EnvironmentData.vertices[(i + 3) % 3];
-
                     curEdgeIndex = i; // for later edgePart-index
                 }
             }

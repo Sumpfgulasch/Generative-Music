@@ -15,7 +15,7 @@ public class EdgePart
     public Vector3 cornerMid;
 
     // Private variables
-    protected LineRenderer lineRend;
+    public LineRenderer lineRend;
     private Color color;
 
     

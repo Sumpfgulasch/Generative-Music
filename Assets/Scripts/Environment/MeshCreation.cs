@@ -141,7 +141,7 @@ public static class MeshCreation
         // no UVs
     }
 
-
+    // ENVIRONMENT
     private static void CreateEnvEdgeParts()
     {
         int edgePartCount = EnvironmentData.vertices.Length * VisualController.inst.envGridLoops;
@@ -161,11 +161,19 @@ public static class MeshCreation
                 LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, 0.01f);
 
                 // Assign
-                EnvironmentData.edgeParts[i* VisualController.inst.envGridLoops + j] = new EdgePart(ID, lineRend, isCorner);
+                int index = i * VisualController.inst.envGridLoops + j;
+                EnvironmentData.edgeParts[index] = new EdgePart(ID, lineRend, isCorner);
+                Color randColor1 = new Color(0.8f, 0.3f + Random.Range(-0.2f, 0.2f), 0.5f);
+                Color randColor2 = Color.cyan;
+                if (Random.Range(0,1f) > 0.1f)
+                    EnvironmentData.edgeParts[index].lineRend.material.color = randColor1;
+                else
+                    EnvironmentData.edgeParts[index].lineRend.material.color = randColor2;
             }
         }
     }
 
+    // PLAYER
     private static void CreatePlayerEdgeParts()
     {
         // EDGE PARTS

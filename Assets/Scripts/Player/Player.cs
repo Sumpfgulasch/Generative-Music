@@ -15,10 +15,8 @@ public partial class Player : MonoBehaviour
     public int verticesCount = 3;
     [Range(0, 1f)] public float innerWidth = 0.2f;
     public bool constantInnerWidth = true;
-    
     public float stickToEdgeTolerance = 0.01f;
     public float stickToOuterEdge_holeSize = 0.05f;
-
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
     [Range(0, 1f)] public float rotationTargetVectorFactor = 0.1f;
@@ -31,7 +29,6 @@ public partial class Player : MonoBehaviour
     [Range(0, 1f)] public float outsideSlowFac = 0.3f;
     [Range(0, 1f)] public float scaleEdgeAcc = 0.05f;
     [Range(1, 20f)] public float fastFactor = 3f;
-
     [Header("Bounce")]
     [Range(0.001f, 0.05f)] public float bounceEntrySpeedScale = 0.005f;
     public float bounceEntrySpeedRot = 0.1f;
@@ -40,7 +37,6 @@ public partial class Player : MonoBehaviour
     [Range(1, 20f)]
     public float bounceFactor = 10f;
     public float bounceRecoverTime = 0.5f;
-
     [Header("Keyboard")]
     public float kb_scaleSpeed = 1f;
     [Range(0.1f, 1f)]
