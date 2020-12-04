@@ -21,7 +21,7 @@ public class VisualController : MonoBehaviour
         if (!showCursor)
             Cursor.visible = false;
 
-
+        //MeshCreation.CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
         MeshCreation.CreateMeshes();
     }
 
