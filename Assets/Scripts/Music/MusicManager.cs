@@ -80,20 +80,6 @@ public class MusicManager : MonoBehaviour
         chord[(chosenNote + 1) % 3] = curChord[(chosenNote + 1) % 3];
         chord[(chosenNote + 2) % 3] = curChord[(chosenNote + 2) % 3];
         return chord;
-
-        // V1 - random innerhalb c-dur
-        //int randInt1, randInt2, randInt3;
-        //randInt1 = Random.Range(0, 8);
-        //randInt2 = Random.Range(0, 8);
-        //while (randInt2 == randInt1)
-        //    randInt2 = Random.Range(0, 8);
-        //randInt3 = Random.Range(0, 8);
-        //while (randInt3 == randInt2 || randInt3 == randInt1)
-        //    randInt3 = Random.Range(0, 8);
-        //chord[0] = cMajorRange[randInt1];
-        //chord[1] = cMajorRange[randInt2];
-        //chord[2] = cMajorRange[randInt3];
-        //return chord;
     }
 
     void RandomChord()
@@ -115,20 +101,15 @@ public class MusicManager : MonoBehaviour
 
     public void SetPitchOnEdge(int note, AudioHelm.HelmController controller)
     {
-        if (player.firstEdgeTouch)
+        if (player.curEdge.firstTouch)
         {
             // calc pitch
-            //minPitch = Random.Range(-maxEdgeIntervalRange, 0) * player.curEnvEdgePercentage;
-            //float maxPitchVertex2playerVertex_dist = (player.curEnvEdge.Item2 - player.outerVertices[0]).magnitude;
-            //float minPitchVertex2playerVertex_dist = (player.curEnvEdge.Item1 - player.outerVertices[0]).magnitude;
-            //maxPitch = Mathf.Abs(minPitch) * (maxPitchVertex2playerVertex_dist / minPitchVertex2playerVertex_dist);
-
             float randRange = Random.Range(maxEdgeIntervalRange, 0);
-            minPitch = curPitch - randRange * player.curEnvEdgePercentage;
-            maxPitch = curPitch + randRange * (1 - player.curEnvEdgePercentage);
+            minPitch = curPitch - randRange * player.curEdge.percentage;
+            maxPitch = curPitch + randRange * (1 - player.curEdge.percentage);
         }
 
-        else if (player.edgePartChange && !Input.GetKey(KeyCode.Space))
+        else if (player.curEdgePart.changed && !Input.GetKey(KeyCode.Space))
         {
             // Akkordwechsel
             int[] newChord = ChordInCMajor();
@@ -143,7 +124,7 @@ public class MusicManager : MonoBehaviour
             curChord = newChord;
         }
 
-        if (player.edgeChange)
+        if (player.curEdge.changed)
         {
             if (player.curRotSpeed < 0)
             {
@@ -166,7 +147,8 @@ public class MusicManager : MonoBehaviour
         }
 
         // Pitch
-        curPitch = player.curEnvEdgePercentage.Remap(0, 1, minPitch, maxPitch);
+        curPitch = player.curEdge.percentage.Remap(0, 1, minPitch, maxPitch);
+
         // quantize
         //float quantizeSize = 0.5f;
         //float quantize = curPitch % quantizeSize;
@@ -177,7 +159,6 @@ public class MusicManager : MonoBehaviour
         //    else
         //        curPitch -= quantize;
         //}
-            
 
         if (Input.GetKey(KeyCode.Space))
             controller.SetPitchWheel(curPitch);

@@ -6,10 +6,14 @@ using System.Linq;
 public static class MeshCreation
 {
     // = Create meshes
-    // Alle Vertices werden ENTGEGEN dem Uhrzeigersinn gezählt, weil Camera.z = -10; nur EnvironmentData.vertices werden IM Uhrzeigersinn gezählt
+    // Alle Vertices werden IM Uhrzeigersinn gezählt
 
-        
-    
+
+    // Get/set
+    static Player player { get { return Player.inst; } }
+
+
+
     // Private variables
     private static Vector3 playerMid;
 
@@ -20,7 +24,8 @@ public static class MeshCreation
     {
         playerMid = Player.inst.transform.position;
 
-        CreateEdgeParts();
+        CreateEnvEdgeParts();
+        CreatePlayerEdgeParts();
     }
 
 
@@ -64,7 +69,7 @@ public static class MeshCreation
         for (int i = 0; i < Player.inst.verticesCount; i++)
         {
             // CREATE MESH FORM by calculating vertex positions
-            Quaternion rot = Quaternion.Euler(0, 0, -i * (360 / Player.inst.verticesCount)); // negativ damit clockwise (object is not facing player)
+            Quaternion rot = Quaternion.Euler(0, 0, -i * (360 / Player.inst.verticesCount)); // negativ damit clockwise (object-z zeigt weg von spieler, ist sozusag. um 180° gedreht)
             Vector3 nextDirection = rot * Vector3.up;
             Vector3 nextOuterVertex = nextDirection.normalized;
             Vector3 nextInnerVertex = nextDirection.normalized * (1 - Player.inst.innerWidth);
@@ -131,43 +136,58 @@ public static class MeshCreation
         newMesh.vertices = vertices.ToArray();
         newMesh.triangles = triangles.ToArray();
         newMesh.normals = normals.ToArray();
-        newMesh.MarkDynamic();
+        newMesh.MarkDynamic();                      // for better performance
         mf.mesh = newMesh;
         // no UVs
     }
 
 
-    private static void CreateEdgeParts()
+    private static void CreateEnvEdgeParts()
     {
         int edgePartCount = EnvironmentData.vertices.Length * VisualController.inst.envGridLoops;
         EnvironmentData.edgeParts = new EdgePart[edgePartCount];
+        Debug.Log("MESH CREATION; edgePartcount: " + edgePartCount);
 
         for (int i = 0; i < VisualController.inst.envVertices; i++)
         {
             for (int j = 0; j < VisualController.inst.envGridLoops; j++)
             {
-                //Vector3 start = EnvironmentData.vertices[i] + (((EnvironmentData.vertices[(i + 1) % VisualController.inst.envVertices] - EnvironmentData.vertices[i]) / VisualController.inst.envGridLoops) * j);
-                //Vector3 end = EnvironmentData.vertices[i] + (((EnvironmentData.vertices[(i + 1) % VisualController.inst.envVertices] - EnvironmentData.vertices[i]) / VisualController.inst.envGridLoops) * ((j + 1) % VisualController.inst.envGridLoops)); // #fun beim lesen
-
                 // Get data
                 int ID = i * VisualController.inst.envGridLoops + j;
-
                 bool isCorner = false;
                 if (ID % VisualController.inst.envGridLoops == 0 || ID % (VisualController.inst.envGridLoops - 1) == 0)
                     isCorner = true;
-                
-                GameObject newObj = CreateContainer("EdgePart" + ID, MeshRef.inst.edgeParts_parent);
-                LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, 0.03f);
+                GameObject newObj = CreateContainer("EdgePart" + ID, MeshRef.inst.envEdgeParts_parent);
+                LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, 0.01f);
 
                 // Assign
-                EnvironmentData.edgeParts[i] = new EdgePart(ID, lineRend, isCorner);
-
-                //Debug.Log("i: " + i + ", vertex: " + EnvironmentData.vertices[i]);
-                // vertices falsch: beginnt oben, zählt GEGEN uhrzeigersinn
-
-                // to do: nicht jeden frame generieren, nur bei erstem environment kontakt
+                EnvironmentData.edgeParts[i* VisualController.inst.envGridLoops + j] = new EdgePart(ID, lineRend, isCorner);
             }
         }
+    }
+
+    private static void CreatePlayerEdgeParts()
+    {
+        // EDGE PARTS
+        // Primary
+        GameObject newObj = CreateContainer("Primary", MeshRef.inst.curEdgeParts_parent);
+        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.curEdgePart_mat, 0.03f);
+        player.curEdgePart = new PlayerEdgePart(PlayerEdgePart.Type.Main, lineRend);
+
+        // Seoncdary
+        player.curSecEdgeParts = new PlayerEdgePart[player.verticesCount - 1];
+        for (int i = 0; i < player.curSecEdgeParts.Length; i++)
+        {
+            GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.curEdgeParts_parent);
+            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.curSecEdgePart_mat, 0.03f);
+            player.curSecEdgeParts[i] = new PlayerEdgePart(PlayerEdgePart.Type.Second, lineRend2);
+        }
+
+        // EDGES
+        player.curEdge = new Edge();
+        player.curSecEdges = new Edge[player.verticesCount - 1];
+        for (int i = 0; i < player.curSecEdges.Length; i++)
+            player.curSecEdges[i] = new Edge();
     }
 
 

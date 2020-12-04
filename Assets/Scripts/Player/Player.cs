@@ -60,22 +60,12 @@ public partial class Player : MonoBehaviour
     [HideInInspector] public float curInnerWidth;
     [HideInInspector] public Transform[] outerVertices_obj;
     [HideInInspector] public Transform[] innerVertices_obj;
-    [HideInInspector] public bool firstEdgeTouch = false;
-    [HideInInspector] public bool edgeChange;
-    [HideInInspector] public bool edgePartChange;
-    [HideInInspector] public float curEnvEdgePercentage; // cur percentage in 0 to 1; 0 = erster curEnvVertex, 1 = zweiter curEnvVertex (im Uhrzeigersinn)
-    [HideInInspector] public int curEnvEdgePart; // TO DO: REPLACE
-    [HideInInspector] public int lastEnvEdgePart;
-    [HideInInspector] public int edgePartID;
-    [HideInInspector] public int lastEdgePartID;
-    [HideInInspector] public (Vector3, Vector3) curEdge;
-    [HideInInspector] public (Vector3, Vector3) curEdge_2nd;
-    [HideInInspector] public (Vector3, Vector3) curEdge_3rd;
-    [HideInInspector] public (Vector3, Vector3) lastEnvEdge;
     [HideInInspector] public float velocity;
     [HideInInspector] public Vector3 mousePos;
-    [HideInInspector] public EdgePart curEdgePart;
-    [HideInInspector] public EdgePart[] curSecEdgeParts;
+    [HideInInspector] public PlayerEdgePart curEdgePart;
+    [HideInInspector] public PlayerEdgePart[] curSecEdgeParts;
+    [HideInInspector] public Edge curEdge;
+    [HideInInspector] public Edge[] curSecEdges;
 
 
 
@@ -118,8 +108,6 @@ public partial class Player : MonoBehaviour
     {
         inst = this;
         midPoint = this.transform.position;
-
-        PlayerData.SetupEdgeParts();
     }
 
 

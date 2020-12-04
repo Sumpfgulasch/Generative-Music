@@ -88,12 +88,4 @@ public static class EnvironmentData
             }
         }
     }
-
-    
-
-    private static void UpdateEdgeParts()
-    {
-
-    }
-
 }

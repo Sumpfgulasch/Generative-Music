@@ -24,7 +24,7 @@ public static class MeshUpdate
     {
         SetPlayerWidth();
         DrawEnvironmentEdges();
-        DrawCurEdgePart();
+        UpdateEnvironmentEdgeParts();
         UpdateSurfacesTransforms();
     }
 
@@ -104,51 +104,17 @@ public static class MeshUpdate
     }
 
 
-
-    private static void DrawCurEdgePart()
+    private static void UpdateEnvironmentEdgeParts()
     {
-        if (Player.inst.actionState == Player.ActionState.stickToEdge)
+        for (int i = 0; i < EnvironmentData.vertices.Length; i++)
         {
-            if (Player.inst.positionState == Player.PositionState.innerEdge || Player.inst.positionState == Player.PositionState.outerEdge)
+            for (int j = 0; j < VisualController.inst.envGridLoops; j++)
             {
-                // primary
-                Vector3 pos1 = Player.inst.curEdge.Item1 + (Player.inst.curEdge.Item2 - Player.inst.curEdge.Item1) / VisualController.inst.envGridLoops * Player.inst.curEnvEdgePart;
-                Vector3 pos2 = Player.inst.curEdge.Item1 + (Player.inst.curEdge.Item2 - Player.inst.curEdge.Item1) / VisualController.inst.envGridLoops * (Player.inst.curEnvEdgePart + 1);
-                pos1.z = playerMid.z - 0.001f;
-                pos2.z = playerMid.z - 0.001f;
-                MeshRef.inst.curEdgePart_lr.positionCount = 2;
-                MeshRef.inst.curEdgePart_lr.SetPosition(0, pos1);
-                MeshRef.inst.curEdgePart_lr.SetPosition(1, pos2);
-
-                // secondary
-                pos1 = Player.inst.curEdge_2nd.Item1 + (Player.inst.curEdge_2nd.Item2 - Player.inst.curEdge_2nd.Item1) / VisualController.inst.envGridLoops * Player.inst.curEnvEdgePart;
-                pos2 = Player.inst.curEdge_2nd.Item1 + (Player.inst.curEdge_2nd.Item2 - Player.inst.curEdge_2nd.Item1) / VisualController.inst.envGridLoops * (Player.inst.curEnvEdgePart + 1);
-                pos1.z = playerMid.z - 0.001f;
-                pos2.z = playerMid.z - 0.001f;
-                MeshRef.inst.curEdgePart2nd_lr[0].positionCount = 2;
-                MeshRef.inst.curEdgePart2nd_lr[0].SetPosition(0, pos1);
-                MeshRef.inst.curEdgePart2nd_lr[0].SetPosition(1, pos2);
-
-                pos1 = Player.inst.curEdge_3rd.Item1 + (Player.inst.curEdge_3rd.Item2 - Player.inst.curEdge_3rd.Item1) / VisualController.inst.envGridLoops * Player.inst.curEnvEdgePart;
-                pos2 = Player.inst.curEdge_3rd.Item1 + (Player.inst.curEdge_3rd.Item2 - Player.inst.curEdge_3rd.Item1) / VisualController.inst.envGridLoops * (Player.inst.curEnvEdgePart + 1);
-                pos1.z = playerMid.z - 0.001f;
-                pos2.z = playerMid.z - 0.001f;
-                MeshRef.inst.curEdgePart2nd_lr[1].positionCount = 2;
-                MeshRef.inst.curEdgePart2nd_lr[1].SetPosition(0, pos1);
-                MeshRef.inst.curEdgePart2nd_lr[1].SetPosition(1, pos2);
+                Vector3 start = EnvironmentData.vertices[i] + (((EnvironmentData.vertices[(i + 1) % EnvironmentData.vertices.Length] - EnvironmentData.vertices[i]) / VisualController.inst.envGridLoops) * j);
+                Vector3 end = EnvironmentData.vertices[i] + (((EnvironmentData.vertices[(i + 1) % EnvironmentData.vertices.Length] - EnvironmentData.vertices[i]) / VisualController.inst.envGridLoops) * (j+1));
+                
+                EnvironmentData.edgeParts[i * VisualController.inst.envGridLoops + j].Set(start, end);
             }
-            else
-            {
-                MeshRef.inst.curEdgePart_lr.positionCount = 0;
-                MeshRef.inst.curEdgePart2nd_lr[0].positionCount = 0;
-                MeshRef.inst.curEdgePart2nd_lr[1].positionCount = 0;
-            }
-        }
-        else
-        {
-            MeshRef.inst.curEdgePart_lr.positionCount = 0;
-            MeshRef.inst.curEdgePart2nd_lr[0].positionCount = 0;
-            MeshRef.inst.curEdgePart2nd_lr[1].positionCount = 0;
         }
     }
 }
