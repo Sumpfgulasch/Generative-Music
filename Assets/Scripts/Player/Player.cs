@@ -95,7 +95,7 @@ public partial class Player : MonoBehaviour
 
 
     // get set
-    MusicManager musicManager { get { return MusicManager.instance; } }
+    MusicManager musicManager { get { return MusicManager.inst; } }
     VisualController visualController { get { return VisualController.inst; } }
 
     

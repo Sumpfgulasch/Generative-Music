@@ -4,21 +4,27 @@ using UnityEngine;
 
 public class MusicManager : MonoBehaviour
 {
-    public static MusicManager instance;
+    public static MusicManager inst;
 
+    // Public properties
     public List<AudioHelm.HelmController> controllers;
-    
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgeIntervalRange = 14;
+    public int highestNote = 72;
+    public int lowestNote = 48;
+    public bool closeChordInversions = true;
 
-    [HideInInspector]
-    public int[] curChord = new int[3] { 60, 64, 67 };
+    // Public variables
+    //[HideInInspector] public int[] curChord = new int[3] { 60, 64, 67 };
+    [HideInInspector] public Chord curChord;
+    [HideInInspector] public Scale curScale;
+    [HideInInspector] public List<int> curCadence;
+    [HideInInspector] public List<int> curSequence;
 
     // private
-    private enum Scale { Ionian, Blues };
-    private Scale scale;
     private float minPitch, maxPitch;
     private float curPitch = 0;
+    private int nextIntervalDirection = 1;
 
 
     // get set
@@ -27,10 +33,10 @@ public class MusicManager : MonoBehaviour
     
     void Start()
     {
-        if (instance == null)
-            instance = this;
-        else if (instance != null && instance != this)
-            Destroy(instance);
+        if (inst == null)
+            inst = this;
+        else if (inst != null && inst != this)
+            Destroy(inst);
 
         controllers[0].SetPitchWheel(0);
     }
@@ -82,25 +88,10 @@ public class MusicManager : MonoBehaviour
         return chord;
     }
 
-    void RandomChord()
-    {
-
-    }
-
-    void GetRandomNoteFromScale(int rangeFrom, int rangeTo, Scale scale)
-    {
-        
-    }
-
-    void GenerateMusicalRange(int note)
-    {
-        
-        minPitch = Random.Range(note - 7, note);
-        maxPitch = Random.Range(note, note + 7);
-    }
 
     public void SetPitchOnEdge(int note, AudioHelm.HelmController controller)
     {
+        // First edge touch
         if (player.curEdge.firstTouch)
         {
             // calc pitch
@@ -109,6 +100,7 @@ public class MusicManager : MonoBehaviour
             maxPitch = curPitch + randRange * (1 - player.curEdge.percentage);
         }
 
+        // Edge part change
         else if (player.curEdgePart.changed && !Input.GetKey(KeyCode.Space))
         {
             // Akkordwechsel
@@ -149,7 +141,7 @@ public class MusicManager : MonoBehaviour
         // Pitch
         curPitch = player.curEdge.percentage.Remap(0, 1, minPitch, maxPitch);
 
-        // quantize
+        #region Quantize Pitch
         //float quantizeSize = 0.5f;
         //float quantize = curPitch % quantizeSize;
         //if (quantize > 0.05f || quantize < -0.05f)
@@ -159,6 +151,7 @@ public class MusicManager : MonoBehaviour
         //    else
         //        curPitch -= quantize;
         //}
+        #endregion
 
         if (Input.GetKey(KeyCode.Space))
             controller.SetPitchWheel(curPitch);
