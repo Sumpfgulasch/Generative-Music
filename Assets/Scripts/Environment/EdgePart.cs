@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// ----------------------------- Edge Part ----------------------------
+
 public class EdgePart
 {
     public enum Type { InsideMainKey, OutsideMainKey, NewMainKey};
@@ -18,6 +21,10 @@ public class EdgePart
     public LineRenderer lineRend;
     private Color color;
 
+
+
+
+
     
     // Contructors
     public EdgePart()
@@ -25,16 +32,16 @@ public class EdgePart
         
     }
 
-    public EdgePart(Type _type)
+    public EdgePart(Type type)
     {
-        type = _type;
+        this.type = type;
     }
 
-    public EdgePart(int _ID, LineRenderer _lineRend, bool _isCorner)
+    public EdgePart(int ID, LineRenderer lineRend, bool isCorner)
     {
-        ID = _ID;
-        lineRend = _lineRend;
-        isCorner = _isCorner;
+        this.ID = ID;
+        this.lineRend = lineRend;
+        this.isCorner = isCorner;
     }
     
 
@@ -49,48 +56,63 @@ public class EdgePart
         //      ChangeColor()
     }
 
-    public void Set(Vector3 _start, Vector3 _end)
+
+
+    // Functions
+
+    public void Set(Vector3 start, Vector3 end)
     {
         //ID = _ID;
-        start = _start;
-        end = _end;
+        this.start = start;
+        this.end = end;
         //isCorner = _isCorner;
 
-        start.z = Player.inst.transform.position.z - 0.001f;
-        end.z = Player.inst.transform.position.z - 0.001f;
+        this.start.z = Player.inst.transform.position.z - 0.001f;
+        this.end.z = Player.inst.transform.position.z - 0.001f;
 
-        lineRend.SetPosition(0, start);
-        lineRend.SetPosition(1, end);
+        lineRend.SetPosition(0, this.start);
+        lineRend.SetPosition(1, this.end);
     }
 
-    public void Set(int _ID, Vector3 _start, Vector3 _end, bool _isCorner)
+    public void Set(int ID, Vector3 start, Vector3 end, bool isCorner)
     {
-        ID = _ID;
-        start = _start;
-        end = _end;
-        isCorner = _isCorner;
+        this.ID = ID;
+        this.start = start;
+        this.end = end;
+        this.isCorner = isCorner;
 
-        start.z = Player.inst.transform.position.z - 0.001f;
-        end.z = Player.inst.transform.position.z - 0.001f;
+        this.start.z = Player.inst.transform.position.z - 0.001f;
+        this.end.z = Player.inst.transform.position.z - 0.001f;
 
-        lineRend.SetPosition(0, start);
-        lineRend.SetPosition(1, end);
+        lineRend.SetPosition(0, this.start);
+        lineRend.SetPosition(1, this.end);
+    }
+
+    public bool IsCorner(int ID)
+    {
+        if (ID % VisualController.inst.envGridLoops == 0 || (ID + 1) % VisualController.inst.envGridLoops == 0)
+        {
+            isCorner = true;
+            return true;
+        }
+        else
+            return false;
     }
 }
 
 
 
-// ---------------------------------------------------------------------------------------
+// -------------------------- Player Edge Part -------------------------
 
-    
+
 
 public class PlayerEdgePart : EdgePart
 {
     // Contructor
-    public PlayerEdgePart(Type _type, LineRenderer _lineRend)
+    public PlayerEdgePart(Type type, LineRenderer lineRend)
     {
-        type = _type;
-        lineRend = _lineRend;
+        this.type = type;
+        base.lineRend = lineRend;
     }
 
     public new enum Type {Main, Second};
@@ -98,24 +120,22 @@ public class PlayerEdgePart : EdgePart
     public bool changed;
 
 
-    public new void Set(Vector3 _start, Vector3 _end)
+    public new void Set(Vector3 start, Vector3 end)
     {
-        //ID = _ID;
-        start = _start;
-        end = _end;
-        //isCorner = _isCorner;
+        base.start = start;
+        base.end = end;
 
-        start.z = Player.inst.transform.position.z - 0.002f;
-        end.z = Player.inst.transform.position.z - 0.002f;
+        base.start.z = Player.inst.transform.position.z - 0.002f;
+        base.end.z = Player.inst.transform.position.z - 0.002f;
 
-        lineRend.SetPosition(0, start);
-        lineRend.SetPosition(1, end);
+        lineRend.SetPosition(0, base.start);
+        lineRend.SetPosition(1, base.end);
     }
 
 }
 
 
-// ---------------------------------------------------------------------------------------
+// -------------------------------- Edge -------------------------------
 
 
 public class Edge
@@ -125,11 +145,11 @@ public class Edge
     public Vector3 start, end;
     public bool firstTouch;
 
-    public void Set (Vector3 _start, Vector3 _end, bool _changed, float _percentage)
+    public void Set (Vector3 start, Vector3 end, bool changed, float percentage)
     {
-        start = _start;
-        end = _end;
-        changed = _changed;
-        percentage = _percentage;
+        this.start = start;
+        this.end = end;
+        this.changed = changed;
+        this.percentage = percentage;
     }
 }

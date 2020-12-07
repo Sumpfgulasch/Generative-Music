@@ -39,6 +39,8 @@ public static class PlayerData
 
     public static void SetPositionStates()
     {
+        player.lastPosState = player.positionState;
+
         RaycastHit hit;
         if (Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit))
         {
@@ -70,22 +72,27 @@ public static class PlayerData
 
     public static void CalcEdgeData()
     {
+        // Berechne nur auf Edges
         if (player.positionState == Player.PositionState.innerEdge || player.positionState == Player.PositionState.outerEdge)
         {
             // Last-variables
             lastEdge_start = player.curEdge.start;
             lastEdge_end = player.curEdge.end;
+            lastEdgePartID = curEdgePartID;
 
             // First edge touch?
-            player.lastPosState = player.positionState;
             RaycastHit hit;
             if (Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit)) // gleicher raycast wie in SetPositionStates()
             {
                 if (player.positionState == Player.PositionState.innerEdge && player.lastPosState != Player.PositionState.innerEdge ||
                     player.positionState == Player.PositionState.outerEdge && player.lastPosState != Player.PositionState.outerEdge)
+                {
                     player.curEdge.firstTouch = true;
+                }
                 else
+                {
                     player.curEdge.firstTouch = false;
+                }
             }
 
             Vector2 intersection = Vector2.zero;
@@ -108,22 +115,6 @@ public static class PlayerData
                 }
             }
 
-            // Edge change?
-            if (player.curEdge.start == lastEdge_start && player.curEdge.end == lastEdge_end)
-                player.curEdge.changed = false;
-            else
-                player.curEdge.changed = true;
-
-            if (player.curEdge.changed)
-                Debug.Log("edgeChange");
-
-            // Edge part change?
-            if (player.curEdgePart.ID != lastEdgePartID)
-                player.curEdgePart.changed = true;
-            else
-                player.curEdgePart.changed = false;
-            lastEdgePartID = player.curEdgePart.ID;
-
             // Current edgePart & edgePartPercentage
             if (player.positionState == Player.PositionState.innerEdge)
                 player.curEdge.percentage = Mathf.Clamp01((player.outerVertices[0] - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
@@ -133,20 +124,32 @@ public static class PlayerData
             Vector3 curEdgePart_start = EnvironmentData.edgeParts[curEdgePartID].start;
             Vector3 curEdgePart_end = EnvironmentData.edgeParts[curEdgePartID].end;
 
+            // Edge part change?
+            if (curEdgePartID != lastEdgePartID)
+                player.curEdgePart.changed = true;
+            else
+                player.curEdgePart.changed = false;
+
+            // Edge change?
+            if (player.curEdge.start == lastEdge_start && player.curEdge.end == lastEdge_end)
+                player.curEdge.changed = false;
+            else
+                player.curEdge.changed = true;
+
             // Is corner?
             bool isCorner = false;
             if (curEdgePartID % VisualController.inst.envGridLoops == 0 || (curEdgePartID + 1) % VisualController.inst.envGridLoops == 0)
             {
                 isCorner = true;
-                if (lastEdgePartID % VisualController.inst.envGridLoops == 0 || (curEdgePartID + 1) % VisualController.inst.envGridLoops == 0)
-                {
-                    // to do: falsch
-                    player.curEdgePart.changed = false;
-                }
             }
-            if (player.curEdgePart.changed)
-                Debug.Log("curEdgePart.changed");
 
+            // No edgePartChange in corners
+            //if ((curEdgePartID % VisualController.inst.envGridLoops == 0 && (lastEdgePartID + 1) % VisualController.inst.envGridLoops == 0)
+            //|| ((curEdgePartID + 1) % VisualController.inst.envGridLoops == 0 && lastEdgePartID % VisualController.inst.envGridLoops == 0))
+            //{
+            //    player.curEdgePart.changed = false;
+            //}
+            
             // ASSIGN
             player.curEdgePart.Set(curEdgePartID, curEdgePart_start, curEdgePart_end, isCorner);
         }
