@@ -39,6 +39,7 @@ public class MusicManager : MonoBehaviour
             Destroy(inst);
 
         controllers[0].SetPitchWheel(0);
+
     }
     
     void Update()

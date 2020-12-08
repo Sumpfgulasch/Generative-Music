@@ -5,6 +5,7 @@ using UnityEngine;
 public static class MusicUtil
 {
     public const int allMidiNotes = 128;
+    public const int notesPerOctave = 12;
 
     public static void GetChordDegree(int[] chord, int keyNote, int[] scaleNotes)
     {
@@ -15,7 +16,7 @@ public static class MusicUtil
     {
         int newBaseNote = RandomNoteInScale(curChord, curScale); 
         int[] newChord = BasicChordInScale(newBaseNote, curScale);
-        int[] invertedChord = ClosestInversionToChord(newChord, curChord.notes);
+        int[] newChord_correctInversion = ClosestInversionToChord(newChord, curChord.notes);
     }
 
 
@@ -71,32 +72,77 @@ public class Chord
 public class Scale
 {
     // Public attributes
-    public Type name;           // Name, z.b. Major
-    public int keyNote;         // Grundton der Skala (Wert zwischen 0-127)
-    public int[] notes;         // Alle verfügbaren Midi-Noten der Skala aus 0-127
-    public int keyNoteIndex     // Index des Skala-Grundtons in notes
-    {
-        get { return System.Array.IndexOf(notes, keyNote); }
-    }
-    public int notesPerOctave;  // Anzahl der Noten innerhalb einer Oktave; meist 7
-
+    public Type name;               // Name, z.b. Major
+    public int keyNote;             // Grundton der Skala (Wert zwischen 0-127)
+    public int[] notes;             // Alle verfügbaren Midi-Noten der Skala aus 0-127 (length immer kleiner als 128!)
+    public int keyNoteIndex;        // Index des Skala-Grundtons in notes
+    public int notesPerOctave;      // Anzahl der Skala-Noten innerhalb einer Oktave; meist 7
 
 
     // Auxilliary / fields
+    private int[] stepsPerOctave;   // Alle Halbton-Schritte innerhalb einer Oktave vom Grundton aus
     public enum Type { Major, Minor, HexatonicBluesMinor };
-    private Dictionary<Type, int[]> scaleTypes;
-    //private int keyNoteIndex;
-
+    private Dictionary<Type, int[]> allScales;
+    
+    
 
     // Constructor: Create all scales
     public Scale()
     {
-        scaleTypes = new Dictionary<Type, int[]>()
+        allScales = new Dictionary<Type, int[]>()
         {
             { Type.Major, new int[7] { 0, 2, 4, 5, 7, 9, 11 } },
             { Type.Minor, new int[7] { 0, 2, 3, 5, 7, 8, 10 } },
             { Type.HexatonicBluesMinor, new int[6] { 0, 3, 5, 6, 7, 10} }
         };
+    }
+
+    // Public functions
+    public void Set(Type name, int keyNote)
+    {
+        this.name = name;
+        this.keyNote = keyNote;
+        this.stepsPerOctave = allScales[name];
+        this.notesPerOctave = allScales[name].Length;
+        
+
+        // Generate remaining data
+        // 1. NOTES
+        List<int> newScaleNotes = new List<int>();
+        int testNote = 0;
+        int lowestBaseNote = keyNote / MusicUtil.notesPerOctave;                // Wert ist immer 0 bis 11
+
+        // 1.1. Get lowest notes (below lowest key note)
+        if (lowestBaseNote != 0)
+        {
+            int negativeKeyNote = lowestBaseNote - MusicUtil.notesPerOctave;    // Wert zwischen -11 und -1
+            for (int i = 0; i < this.notesPerOctave; i++)
+            {
+                testNote = negativeKeyNote + stepsPerOctave[i];
+                if (testNote >= 0)
+                    newScaleNotes.Add(testNote);
+            }
+        }
+        // 1.2. Add all notes to highest key note                               // Wert zwischen 0 und 127, fast immer niedriger als 127
+        while (testNote + MusicUtil.notesPerOctave < MusicUtil.allMidiNotes)
+        {
+            for (int i=0; i < notesPerOctave; i++)
+            {
+                newScaleNotes.Add(testNote + stepsPerOctave[i]);
+            }
+            testNote += MusicUtil.notesPerOctave;
+        }
+        // 1.3. Add highest notes above highest key note                        // Werte zwischen 116 und 127
+        if (testNote < MusicUtil.allMidiNotes - 1)
+        {
+
+        }
+
+        
+
+        // 2. keynoteIndex
+        this.keyNoteIndex = System.Array.IndexOf(this.notes, this.keyNote);
+
     }
 }
 
