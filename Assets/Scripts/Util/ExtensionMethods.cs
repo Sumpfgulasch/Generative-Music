@@ -96,4 +96,37 @@ public static class ExtensionMethods
     {
         return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
     }
+
+    // Make first element to last element (chords: invert up)
+    public static int[] ShiftBackward(this int[] myArray)
+    {
+        int[] tArray = new int[myArray.Length];
+        for (int i = 0; i < myArray.Length; i++)
+        {
+            if (i < myArray.Length - 1)
+                tArray[i] = myArray[i + 1];
+            else
+                tArray[i] = myArray[0];
+        }
+        return tArray;
+    }
+
+    // Make last element to first element (chords: invert down)
+    public static int[] ShiftForward(this int[] myArray)
+    {
+        int[] tArray = new int[myArray.Length];
+        for (int i = 0; i < myArray.Length; i++)
+        {
+            if (i > 0)
+                tArray[i] = myArray[i - 1];
+            else
+                tArray[i] = myArray[myArray.Length - 1];
+        }
+        return tArray;
+    }
+
+    public static int Modulo(int value, int modulo)
+    {
+        return ((value % modulo) + modulo) % modulo;
+    }
 }
