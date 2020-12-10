@@ -24,8 +24,16 @@ public static class MusicUtil
         // 2. Basic chord
         Chord chord = BasicTriad(curKey, chordDegree);
 
-        //// 3. Correct inversion
-        //chord = InvertChord_stayInTonality(chord, Chords.fMajor); // sehr geil; einfach geil
+        // 3. Correct inversion
+        chord = InvertChord_stayInTonality(chord, Chords.fMajor); // sehr geil; einfach geil
+
+        //Debug.Log("chord before invertDown: degree: " + chord.degree + ", inversion: " + chord.inversion);
+        //foreach (int note in chord.notes)
+        //    Debug.Log("note: " + note);
+        //chord = chord.InvertChord_down();
+        //Debug.Log("chord.invertDown: degree: " + chord.degree + ", inversion: " + chord.inversion);
+        //foreach (int note in chord.notes)
+        //    Debug.Log("note: " + note);
 
         return chord;
     }
@@ -133,7 +141,7 @@ public static class MusicUtil
             do
             {
                 lastDistance = ChordDistance(invertedChord, relationChord);
-                invertedChord.InvertChord_down();
+                invertedChord = invertedChord.InvertChord_down();
             }
             while (invertedChord.notes[0] > relationChord.notes[0]);
 
@@ -173,6 +181,7 @@ public static class MusicUtil
     {
         // Move lowest note one octave up
         int[] newNotes = chord.notes.ShiftBackward();
+        newNotes[newNotes.Length - 1] += MusicUtil.notesPerOctave;
         int newInversion = (chord.inversion + 1) % 3;
         Chord invertedChord = new Chord(newNotes, chord.degree, newInversion, chord.baseNote);
         
@@ -184,6 +193,7 @@ public static class MusicUtil
     {
         // Move highestNote one octave down
         int[] newNotes = chord.notes.ShiftForward();
+        newNotes[0] -= MusicUtil.notesPerOctave;
         int newInversion = ExtensionMethods.Modulo(chord.inversion - 1, 3);
         Chord invertedChord = new Chord(newNotes, chord.degree, newInversion, chord.baseNote);
 
@@ -297,20 +307,20 @@ public class Key
     {
         List<int> newScaleNotes = new List<int>();
         int nextNote = keyNote % MusicUtil.notesPerOctave;                      // Wert ist immer 0 bis 11
-        Debug.Log("keyNote % notesPerOctave: " + keyNote + " % " + MusicUtil.notesPerOctave + " = " + nextNote);
+        //Debug.Log("keyNote % notesPerOctave: " + keyNote + " % " + MusicUtil.notesPerOctave + " = " + nextNote);
 
         // 1. Get lowest notes (below lowest key note)
         if (nextNote != 0)
         {
             int negativeKeyNote = nextNote - MusicUtil.notesPerOctave;          // Wert zwischen -11 und -1
-            Debug.Log("#1 negativeKeyNote: " + negativeKeyNote);
+            //Debug.Log("#1 negativeKeyNote: " + negativeKeyNote);
             for (int i = 0; i < notesPerOctave; i++)
             {
                 nextNote = negativeKeyNote + stepsInOctave[i];
                 if (nextNote >= 0)
                 {
                     newScaleNotes.Add(nextNote);
-                    Debug.Log("#1 nextNote beeing added: " + nextNote);
+                    //Debug.Log("#1 nextNote beeing added: " + nextNote);
                 }
             }
             nextNote = negativeKeyNote + MusicUtil.notesPerOctave;
@@ -321,7 +331,7 @@ public class Key
             for (int i = 0; i < notesPerOctave; i++)
             {
                 newScaleNotes.Add(nextNote + stepsInOctave[i]);
-                Debug.Log("#2 nextNote beeing added: " + (nextNote + stepsInOctave[i]));
+                //Debug.Log("#2 nextNote beeing added: " + (nextNote + stepsInOctave[i]));
             }
             nextNote += MusicUtil.notesPerOctave;
         }
@@ -335,7 +345,7 @@ public class Key
                 if (nextNote < MusicUtil.allMidiNotes)
                 {
                     newScaleNotes.Add(nextNote);
-                    Debug.Log("#3 nextNote beeing added: " + nextNote);
+                    //Debug.Log("#3 nextNote beeing added: " + nextNote);
                 }
             }
         }
