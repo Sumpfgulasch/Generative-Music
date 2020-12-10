@@ -16,10 +16,12 @@ public static class MusicUtil
 
     // PUBLIC METHODS
     
-    public static Chord RandomChordInKey(Key curKey)
+    public static Chord RandomChordInKey(Key curKey, Chord curChord)
     {
+        int[] preventDegrees = new int[] { curChord.degree };
+
         // 1. Degree of next chord
-        int chordDegree = RandomChordDegree(curKey);
+        int chordDegree = RandomChordDegree(curKey, preventDegrees);
 
         // 2. Basic chord
         Chord chord = BasicTriad(curKey, chordDegree);
@@ -137,39 +139,79 @@ public static class MusicUtil
         // Nähere von oben an
         if (chord.notes[0] > relationChord.notes[0])
         {
+            //Debug.Log("START inversion; relationChord: ");
+            //foreach (int note in relationChord.notes)
+            //    Debug.Log(note);
+            //int i = 0;
+
             // 1. invert downwards until lowestNote < relationChord.lowestNote
             do
             {
                 lastDistance = ChordDistance(invertedChord, relationChord);
+
+                //Debug.Log("i: " + i + ", distance: " + lastDistance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
+                //foreach (int note in invertedChord.notes)
+                //    Debug.Log("note: " + note);
+
                 invertedChord = invertedChord.InvertChord_down();
+
+                //i++;
             }
             while (invertedChord.notes[0] > relationChord.notes[0]);
 
             // InvertedChord ist jetzt niedriger als relationChord
             distance = ChordDistance(invertedChord, relationChord);
+            //Debug.Log("AFTER WHILE; distance: " + distance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
+            //foreach (int note in invertedChord.notes)
+            //    Debug.Log("note: " + note);
 
             // 2. Get final cloest chord: Maybe revert last inversion
-            if (distance > lastDistance)                                                  // ToDo: hier Sonderregel mit weiterem if für niemals-die-gleiche-umkehrung
-                invertedChord.InvertChord_up(); 
+            if (distance > lastDistance)
+            {                                                 // ToDo: hier Sonderregel mit weiterem if für niemals-die-gleiche-umkehrung
+                invertedChord = invertedChord.InvertChord_up();
+                //Debug.Log("REVERT last inversion; distance: " + distance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
+                //foreach (int note in invertedChord.notes)
+                //    Debug.Log("note: " + note);
+            }
         }
 
         // Nähere von unten an
         else
         {
+            //int i = 0;
+            //Debug.Log("START inversion; relationChord: ");
+            //foreach (int note in relationChord.notes)
+            //    Debug.Log(note);
+
             // 1. Invert upwards until lowestNote > relationChord.lowestNote
             do
             {
                 lastDistance = ChordDistance(invertedChord, relationChord);
-                invertedChord.InvertChord_up();
+
+                //Debug.Log("i: " + i + ", distance: " + lastDistance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
+                //foreach (int note in invertedChord.notes)
+                //    Debug.Log("note: " + note);
+
+                invertedChord = invertedChord.InvertChord_up();
+
+                //i++;
             }
             while (invertedChord.notes[0] < relationChord.notes[0]);
 
             // InvertedChord ist jetzt höher als relationChord
             distance = ChordDistance(invertedChord, relationChord);
+            //Debug.Log("AFTER WHILE; distance: " + distance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
+            //foreach (int note in invertedChord.notes)
+            //    Debug.Log("note: " + note);
 
             // 2. Get final cloest chord: Maybe revert last inversion
-            if (distance > lastDistance)                                                  // ToDo: hier Sonderregel mit weiterem if für niemals-die-gleiche-umkehrung
-                invertedChord.InvertChord_down();
+            if (distance > lastDistance)
+            {                                                  // ToDo: hier Sonderregel mit weiterem if für niemals-die-gleiche-umkehrung
+                invertedChord = invertedChord.InvertChord_down();
+                //Debug.Log("REVERT last inversion; distance: " + distance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
+                //foreach (int note in invertedChord.notes)
+                //    Debug.Log("note: " + note);
+            }
         }
 
         return invertedChord;
@@ -263,8 +305,18 @@ public class Chord
 public class Key
 {
     // Public attributes
-    public ScaleTypes.Name scale;   // Name, z.b. Major
-    public int keyNote;             // Grundton der Skala (Wert zwischen 0-127)                                                             // To do: Ich will keynote zwischen 0-127 nicht festlegen, sondern Name [C-H] oder Wert [0-11]
+    private ScaleTypes.Name scale;
+    public ScaleTypes.Name Scale   // Name, z.b. Major
+    {
+        get { return scale; }
+        private set { scale = value; }
+    }
+    private int keyNote;
+    public int KeyNote             // Grundton der Skala (Wert zwischen 0-127)                    // To do: Ich will keynote zwischen 0-127 nicht festlegen, sondern Name [C-H] oder Wert [0-11]
+    {
+        get { return keyNote; }
+        private set { keyNote = value; }
+    }
     public int[] notes;             // Alle verfügbaren Midi-Noten der Skala aus 0-127 (length immer kleiner als 128!)
     public int keyNoteIndex;        // Index des Skala-Grundtons in notes
     public int notesPerOctave;      // Anzahl der Skala-Noten innerhalb einer Oktave; meist 7
@@ -291,12 +343,12 @@ public class Key
 
     public void Set(int keyNote, ScaleTypes.Name scale)
     {
-        this.scale = scale;
-        this.keyNote = keyNote;
+        this.Scale = scale;
+        this.KeyNote = keyNote;
         this.stepsInOctave = ScaleTypes.list[scale];
         this.notesPerOctave = ScaleTypes.list[scale].Length;
         this.notes = GetScaleNotes(keyNote, stepsInOctave, notesPerOctave);
-        this.keyNoteIndex = System.Array.IndexOf(this.notes, this.keyNote);
+        this.keyNoteIndex = System.Array.IndexOf(this.notes, this.KeyNote);
     }
 
     
@@ -408,7 +460,7 @@ public static class Chords
 
     static Chords()
     {
-        fMajor = new Chord(new int[3] { 67, 71, 74 }, 1, 0, 67);
+        fMajor = new Chord(new int[3] { 53, 57, 60 }, 1, 0, 55);
         cMajor = new Chord(new int[3] { 60, 64, 67 }, 1, 0, 60);
     }
 }

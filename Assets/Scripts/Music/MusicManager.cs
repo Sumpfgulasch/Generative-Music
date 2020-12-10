@@ -40,7 +40,7 @@ public class MusicManager : MonoBehaviour
         else if (inst != null && inst != this)
             Destroy(inst);
 
-        curKey = new Key(50, ScaleTypes.Name.Minor);
+        curKey = new Key(53, ScaleTypes.Name.Minor);
         curChord = Chords.cMajor;
 
         controllers[0].SetPitchWheel(0);
@@ -55,6 +55,27 @@ public class MusicManager : MonoBehaviour
 
     public void ManageChordGeneration()
     {
+        // EDGE CHANGE
+        if (player.curEdge.changed)
+        {
+
+            print("edge Change!");
+            int newKeyNote = curKey.KeyNote + Random.Range(1, 7);
+            if (newKeyNote > highestNote || newKeyNote < lowestNote)
+                newKeyNote = 60;
+            ScaleTypes.Name newScale;
+            if (curKey.Scale == ScaleTypes.Name.Major)
+                newScale = ScaleTypes.Name.Minor;
+            else
+                newScale = ScaleTypes.Name.Major;
+            curKey.Set(newKeyNote, ScaleTypes.Name.Minor);
+
+
+            // Pitch
+            SetNextPitchRange(ref minPitch, ref maxPitch);
+        }
+
+
         //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curEdgePart.changed + ", leaveEdge: " + player.curEdge.leave + ", edgeChange: " + player.curEdge.changed);
         // FIRST EDGE TOUCH
         if (player.curEdge.firstTouch)
@@ -71,7 +92,7 @@ public class MusicManager : MonoBehaviour
             if (!Input.GetKey(KeyCode.Space)) // für eventuellen pitch
             {
                 StopChord(curChord, Instrument.inner);
-                curChord = MusicUtil.RandomChordInKey(curKey);
+                curChord = MusicUtil.RandomChordInKey(curKey, curChord);
                 PlayChord(curChord, Instrument.inner, 0.3f);
             }
         }
@@ -82,12 +103,7 @@ public class MusicManager : MonoBehaviour
             StopChord(curChord, Instrument.inner);
         }
 
-        // EDGE CHANGE
-        if (player.curEdge.changed)
-        {
-            // Pitch
-            SetNextPitchRange(ref minPitch, ref maxPitch);
-        }
+        
 
 
 
