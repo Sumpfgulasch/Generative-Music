@@ -29,10 +29,12 @@ public static class PlayerData
 
     public static void SetActionStates()
     {
+        player.lastActionState = player.actionState;
+
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
             player.actionState = Player.ActionState.stickToEdge;
         else
-            player.actionState = Player.ActionState.none;
+            player.actionState = Player.ActionState.move;
     }
 
 
@@ -55,9 +57,9 @@ public static class PlayerData
                 stickToEdgeTolerance *= 3f;
 
             // States
-            if (player.actionState == Player.ActionState.stickToEdge && (player.positionState == Player.PositionState.inside || player.positionState == Player.PositionState.innerEdge)) // playerToEnvDistance < stickToEdgeTolerance && !player.startedBounce
+            if (playerToEnvDistance < stickToEdgeTolerance && !player.startedBounce) // player.actionState == Player.ActionState.stickToEdge && (player.positionState == Player.PositionState.inside || player.positionState == Player.PositionState.innerEdge)
                 player.positionState = Player.PositionState.innerEdge;
-            else if (player.actionState == Player.ActionState.stickToEdge && (player.positionState == Player.PositionState.outside || player.positionState == Player.PositionState.outerEdge)) // innerVertexToEnvDistance < stickToEdgeTolerance && !player.startedBounce
+            else if (innerVertexToEnvDistance < stickToEdgeTolerance && !player.startedBounce) // player.actionState == Player.ActionState.stickToEdge && (player.positionState == Player.PositionState.outside || player.positionState == Player.PositionState.outerEdge)
                 player.positionState = Player.PositionState.outerEdge;
             else if (playerRadius < envDistance)
                 player.positionState = Player.PositionState.inside;
@@ -73,27 +75,13 @@ public static class PlayerData
     public static void CalcEdgeData()
     {
         // Berechne nur auf Edges
-        if (player.positionState == Player.PositionState.innerEdge || player.positionState == Player.PositionState.outerEdge)
+        if (player.actionState == Player.ActionState.stickToEdge)
         {
             // Last-variables
             lastEdge_start = player.curEdge.start;
             lastEdge_end = player.curEdge.end;
             lastEdgePartID = curEdgePartID;
 
-
-            // First edge touch?
-            //RaycastHit hit;
-            //if (Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit)) // gleicher raycast wie in SetPositionStates()
-            //{
-            //if (player.lastPosState != Player.PositionState.innerEdge || player.lastPosState != Player.PositionState.outerEdge)
-            //{
-            //    player.curEdge.firstTouch = true;
-            //}
-            //else
-            //{
-            //    player.curEdge.firstTouch = false;
-            //}
-            //}
 
             Vector2 intersection = Vector2.zero;
             Vector3 mousePos_extended = midPoint + (player.mousePos - midPoint).normalized * 10f;
@@ -116,15 +104,24 @@ public static class PlayerData
             }
 
             // Current edgePart & edgePartPercentage
-            if (player.positionState == Player.PositionState.innerEdge)
-                player.curEdge.percentage = Mathf.Clamp01((player.outerVertices[0] - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
-            else
-                player.curEdge.percentage = Mathf.Clamp01( (player.innerVertices[0] - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
-            curEdgePartID = (int)(player.curEdge.percentage.Remap(0, 1f, 0, VisualController.inst.envGridLoops) + curEdgeIndex * VisualController.inst.envGridLoops) % (EnvironmentData.vertices.Length * VisualController.inst.envGridLoops); // gar kein bock mehr
+            RaycastHit hit;
+            Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit);
+            Vector3 playerPointOnEnv = new Vector3(hit.point.x, hit.point.y, player.outerVertices[0].z);
+
+            player.curEdge.percentage = Mathf.Clamp01((playerPointOnEnv - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
+
+            //if (player.positionState == Player.PositionState.innerEdge)
+            //    player.curEdge.percentage = Mathf.Clamp01((player.outerVertices[0] - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
+            //else
+            //    player.curEdge.percentage = Mathf.Clamp01( (player.innerVertices[0] - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
+            curEdgePartID = ((int)(player.curEdge.percentage.
+                Remap(0, 1f, 0, VisualController.inst.envGridLoops)
+                + curEdgeIndex * VisualController.inst.envGridLoops)) % (EnvironmentData.vertices.Length * VisualController.inst.envGridLoops); // gar kein bock mehr
             Vector3 curEdgePart_start = EnvironmentData.edgeParts[curEdgePartID].start;
             Vector3 curEdgePart_end = EnvironmentData.edgeParts[curEdgePartID].end;
 
             // Edge part change?
+            //Debug.Log("curEdgePartID: " + curEdgePartID + ", lastEdgePartID: " + lastEdgePartID + ", percentage: " + player.curEdge.percentage + ", curEdgeIndex: " + curEdgeIndex);
             if (curEdgePartID != lastEdgePartID)
                 player.curEdgePart.changed = true;
             else
@@ -153,24 +150,27 @@ public static class PlayerData
             // ASSIGN
             player.curEdgePart.Set(curEdgePartID, curEdgePart_start, curEdgePart_end, isCorner);
         }
-        // Leave edge
-        if ((player.positionState == Player.PositionState.inside || player.positionState == Player.PositionState.outside) &&
-            player.lastPosState == Player.PositionState.innerEdge || player.lastPosState == Player.PositionState.outerEdge)
-        {
-            player.curEdge.leave = true;
-        }
-        else
-            player.curEdge.leave = false; // TO DO: test
-
+        
         // First edge touch
-        if ((player.positionState == Player.PositionState.innerEdge || player.positionState == Player.PositionState.outerEdge) &&
-            player.lastPosState == Player.PositionState.inside || player.lastPosState == Player.PositionState.outside)
+        if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.move)
         {
             player.curEdge.firstTouch = true;
+            //Debug.Log("firstTouch");
         }
         else
-        {
             player.curEdge.firstTouch = false;
+
+        // Leave edge // to rework
+        if (player.actionState == Player.ActionState.move && player.lastActionState == Player.ActionState.stickToEdge)
+        {
+            player.curEdge.leave = true;
+            player.curEdge.changed = false;
+            player.curEdgePart.changed = false;
+            //Debug.Log("curEdge.leave");
         }
+        else
+            player.curEdge.leave = false;
+        
+        
     }
 }

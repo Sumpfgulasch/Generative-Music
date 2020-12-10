@@ -44,9 +44,6 @@ public class MusicManager : MonoBehaviour
         curChord = Chords.fMajor;
 
         controllers[0].SetPitchWheel(0);
-
-        print("music man: " + Instrument.inner);
-
     }
     
     void Update()
@@ -75,6 +72,7 @@ public class MusicManager : MonoBehaviour
 
     public void ManageChordGeneration()
     {
+        //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curEdgePart.changed + ", leaveEdge: " + player.curEdge.leave + ", edgeChange: " + player.curEdge.changed);
         // FIRST EDGE TOUCH
         if (player.curEdge.firstTouch)
         {
@@ -83,7 +81,7 @@ public class MusicManager : MonoBehaviour
             // calc pitch
             SetFirstPitchRange(ref minPitch, ref maxPitch);
 
-            print("first edge touch");
+            //print("first edge touch");
         }
 
         // EDGE PART CHANGE
@@ -92,18 +90,19 @@ public class MusicManager : MonoBehaviour
             if (!Input.GetKey(KeyCode.Space)) // für eventuellen pitch
             {
                 StopChord(curChord, Instrument.inner);
-                curChord = MusicUtil.RandomChordInKey(curKey);
-                PlayChord(curChord, Instrument.inner, 0.3f); // HIER KEINEN PLAY, NUR NEUE AKKORDE; PLAY LOGIK ÜBER POSITION UND ACTION STATES ABFRAGEN
+                //curChord = MusicUtil.RandomChordInKey(curKey);
+                PlayChord(curChord, Instrument.inner, 0.3f);
 
-                print("edge part change");
+                //print("music: edge part change");
             }
         }
+
         // LEAVE EDGE
-        else if (player.curEdge.leave)
+        if (player.curEdge.leave)
         {
             StopChord(curChord, Instrument.inner);
 
-            print("leave edge");
+            //print("leave");
         }
 
         // EDGE CHANGE
@@ -112,7 +111,7 @@ public class MusicManager : MonoBehaviour
             // Pitch
             SetNextPitchRange(ref minPitch, ref maxPitch);
 
-            print("edge change");
+            //print("edge change");
         }
 
 
@@ -212,7 +211,9 @@ public class MusicManager : MonoBehaviour
             if (instrument.IsNoteOn(chord.notes[i]))
             {
                 if (timeToPlay > 0)
-                    instrument.WaitNoteOff(chord.notes[i], timeToPlay);
+                {
+                    StartCoroutine(instrument.WaitNoteOff(chord.notes[i], timeToPlay));
+                }
                 else
                     instrument.NoteOff(chord.notes[i]);
             }

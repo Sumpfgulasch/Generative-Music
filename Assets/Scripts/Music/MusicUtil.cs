@@ -25,7 +25,7 @@ public static class MusicUtil
         Chord chord = BasicTriad(curKey, chordDegree);
 
         // 3. Correct inversion
-        chord = InvertChord_stayInTonality(chord, Chords.fMajor);
+        chord = InvertChord_stayInTonality(chord, Chords.fMajor); // sehr geil; einfach geil
 
         return chord;
     }

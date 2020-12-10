@@ -7,9 +7,9 @@ public partial class Player : MonoBehaviour
     // Public variables
     public static Player inst;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
-    public enum ActionState { stickToEdge, none };
+    public enum ActionState { stickToEdge, move };
     public PositionState positionState = PositionState.noTunnel;
-    public ActionState actionState = ActionState.none;
+    public ActionState actionState = ActionState.move;
     
     [Header("General stuff")]
     public int verticesCount = 3;
@@ -47,6 +47,8 @@ public partial class Player : MonoBehaviour
 
     // Public attributes
     [HideInInspector] public PositionState lastPosState;
+    [HideInInspector] public ActionState lastActionState;
+    [HideInInspector] public PositionState startPosState;
     [HideInInspector] public float curRotSpeed;
     [HideInInspector] public bool startedBounce = false;
     [HideInInspector] public Vector3[] outerVertices = new Vector3[3];
@@ -120,14 +122,17 @@ public partial class Player : MonoBehaviour
         // 1. Handle Data
         GetInput();
         GetVertices();
-        PlayerData.SetPositionStates();
+        //PlayerData.SetPositionStates();
         PlayerData.SetActionStates();
         CalcMovementData();
-        PlayerData.CalcEdgeData();
+        //PlayerData.CalcEdgeData();
 
         // 2. Perform movement
         KeyboardMovement();
-        MouseMovement();
+        PerformMouseMovement();
+
+        PlayerData.SetPositionStates();
+        PlayerData.CalcEdgeData();
     }
 
 
@@ -202,19 +207,16 @@ public partial class Player : MonoBehaviour
 
     
 
-    void MouseMovement()
+    void PerformMouseMovement()
     {
         // = manage states
 
         // regular move
-        if (actionState == ActionState.none)
+        if (actionState == ActionState.move)
         {
             if (positionState == PositionState.inside)
             {
                 MoveTowardsMouse("inner");
-
-                //musicManager.StopChord(musicManager.controllers[0]);
-                //musicManager.StopChord(musicManager.controllers[1]);
             }
             else if (positionState == PositionState.innerEdge)
             {
@@ -223,9 +225,6 @@ public partial class Player : MonoBehaviour
             else if (positionState == PositionState.outside)
             {
                 MoveTowardsMouse("outer");
-
-                //musicManager.StopChord(musicManager.controllers[1]);
-                //musicManager.StopChord(musicManager.controllers[0]);
             }
             else if (positionState == PositionState.outerEdge)
             {
@@ -235,34 +234,28 @@ public partial class Player : MonoBehaviour
         // action: stick to edge
         else if (actionState == ActionState.stickToEdge)
         {
-            if (positionState == PositionState.inside)
+            if (startPosState == PositionState.inside)
             {
-                MoveTowardsEdge("inner");
-
-                
-            }
-            else if (positionState == PositionState.innerEdge)
-            {
+                //MoveTowardsEdge("inner");
                 StickToEdge("inner");
 
-                //musicManager.ManageChordGeneration(60, musicManager.controllers[0]);
-                velocity = GetVelocityFromDistance();
-
-                //musicManager.StopChord(musicManager.controllers[1]);
-                //musicManager.PlayChord(musicManager.controllers[0], velocity);
             }
-            else if (positionState == PositionState.outside)
+            else if (startPosState == PositionState.innerEdge)
             {
-                MoveTowardsEdge("outer");
+                StickToEdge("inner");
+                
+                velocity = GetVelocityFromDistance();
             }
-            else if (positionState == PositionState.outerEdge)
+            else if (startPosState == PositionState.outside)
+            {
+                //MoveTowardsEdge("outer");
+                StickToEdge("outer");
+            }
+            else if (startPosState == PositionState.outerEdge)
             {
                 StickToEdge("outer");
 
                 velocity = GetVelocityFromDistance();
-
-                //musicManager.StopChord(musicManager.controllers[0]);
-                //musicManager.PlayChord(musicManager.controllers[1], velocity);
             }
         }
 
@@ -389,6 +382,7 @@ public partial class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             startScale = this.transform.localScale.x;
+            startPosState = positionState;
         }
     }
 
