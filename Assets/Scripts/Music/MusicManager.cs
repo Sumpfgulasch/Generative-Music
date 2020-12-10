@@ -40,8 +40,8 @@ public class MusicManager : MonoBehaviour
         else if (inst != null && inst != this)
             Destroy(inst);
 
-        curKey = new Key(57, ScaleTypes.Name.Minor);
-        curChord = Chords.fMajor;
+        curKey = new Key(50, ScaleTypes.Name.Minor);
+        curChord = Chords.cMajor;
 
         controllers[0].SetPitchWheel(0);
     }
@@ -71,7 +71,7 @@ public class MusicManager : MonoBehaviour
             if (!Input.GetKey(KeyCode.Space)) // für eventuellen pitch
             {
                 StopChord(curChord, Instrument.inner);
-                //curChord = MusicUtil.RandomChordInKey(curKey);
+                curChord = MusicUtil.RandomChordInKey(curKey);
                 PlayChord(curChord, Instrument.inner, 0.3f);
             }
         }

@@ -16,7 +16,7 @@ public static class MusicUtil
 
     // PUBLIC METHODS
     
-    public  static Chord RandomChordInKey(Key curKey)
+    public static Chord RandomChordInKey(Key curKey)
     {
         // 1. Degree of next chord
         int chordDegree = RandomChordDegree(curKey);
@@ -24,8 +24,8 @@ public static class MusicUtil
         // 2. Basic chord
         Chord chord = BasicTriad(curKey, chordDegree);
 
-        // 3. Correct inversion
-        chord = InvertChord_stayInTonality(chord, Chords.fMajor); // sehr geil; einfach geil
+        //// 3. Correct inversion
+        //chord = InvertChord_stayInTonality(chord, Chords.fMajor); // sehr geil; einfach geil
 
         return chord;
     }
@@ -78,7 +78,7 @@ public static class MusicUtil
         }
         
         // 3. Generate random degree
-        int randDegreeIndex = Random.Range(0, degrees.Count - 1);
+        int randDegreeIndex = Random.Range(0, degrees.Count);
 
         return degrees[randDegreeIndex];
     }
@@ -283,8 +283,8 @@ public class Key
     {
         this.scale = scale;
         this.keyNote = keyNote;
-        this.stepsInOctave = ScaleTypes.all[scale];
-        this.notesPerOctave = ScaleTypes.all[scale].Length;
+        this.stepsInOctave = ScaleTypes.list[scale];
+        this.notesPerOctave = ScaleTypes.list[scale].Length;
         this.notes = GetScaleNotes(keyNote, stepsInOctave, notesPerOctave);
         this.keyNoteIndex = System.Array.IndexOf(this.notes, this.keyNote);
     }
@@ -296,18 +296,24 @@ public class Key
     private int[] GetScaleNotes(int keyNote, int[]stepsInOctave, int notesPerOctave)
     {
         List<int> newScaleNotes = new List<int>();
-        int nextNote = keyNote / MusicUtil.notesPerOctave;                      // Wert ist immer 0 bis 11
+        int nextNote = keyNote % MusicUtil.notesPerOctave;                      // Wert ist immer 0 bis 11
+        Debug.Log("keyNote % notesPerOctave: " + keyNote + " % " + MusicUtil.notesPerOctave + " = " + nextNote);
 
         // 1. Get lowest notes (below lowest key note)
         if (nextNote != 0)
         {
             int negativeKeyNote = nextNote - MusicUtil.notesPerOctave;          // Wert zwischen -11 und -1
+            Debug.Log("#1 negativeKeyNote: " + negativeKeyNote);
             for (int i = 0; i < notesPerOctave; i++)
             {
                 nextNote = negativeKeyNote + stepsInOctave[i];
                 if (nextNote >= 0)
+                {
                     newScaleNotes.Add(nextNote);
+                    Debug.Log("#1 nextNote beeing added: " + nextNote);
+                }
             }
+            nextNote = negativeKeyNote + MusicUtil.notesPerOctave;
         }
         // 2. Add all notes to highest key note                                 // Wert zwischen 0 und 127, fast immer niedriger als 127
         while (nextNote + MusicUtil.notesPerOctave < MusicUtil.allMidiNotes)
@@ -315,6 +321,7 @@ public class Key
             for (int i = 0; i < notesPerOctave; i++)
             {
                 newScaleNotes.Add(nextNote + stepsInOctave[i]);
+                Debug.Log("#2 nextNote beeing added: " + (nextNote + stepsInOctave[i]));
             }
             nextNote += MusicUtil.notesPerOctave;
         }
@@ -326,7 +333,10 @@ public class Key
             {
                 nextNote = highestKeyNote + stepsInOctave[i];
                 if (nextNote < MusicUtil.allMidiNotes)
+                {
                     newScaleNotes.Add(nextNote);
+                    Debug.Log("#3 nextNote beeing added: " + nextNote);
+                }
             }
         }
 
@@ -349,7 +359,7 @@ public class Key
 public static class ScaleTypes
 {
     public enum Name { Major, Minor, HexatonicBluesMinor };
-    public static Dictionary<Name, int[]> all;
+    public static Dictionary<Name, int[]> list;
 
     
 
@@ -359,7 +369,7 @@ public static class ScaleTypes
     // CONSTRUCTOR: Create all scales
     static ScaleTypes()
     {
-        all = new Dictionary<Name, int[]>()
+        list = new Dictionary<Name, int[]>()
         {
             { Name.Major, new int[7] { 0, 2, 4, 5, 7, 9, 11 } },
             { Name.Minor, new int[7] { 0, 2, 3, 5, 7, 8, 10 } },
@@ -384,10 +394,12 @@ public static class ScaleTypes
 public static class Chords
 {
     public static Chord fMajor;
+    public static Chord cMajor;
 
     static Chords()
     {
         fMajor = new Chord(new int[3] { 67, 71, 74 }, 1, 0, 67);
+        cMajor = new Chord(new int[3] { 60, 64, 67 }, 1, 0, 60);
     }
 }
 
