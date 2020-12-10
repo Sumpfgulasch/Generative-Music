@@ -146,7 +146,6 @@ public static class MeshCreation
     {
         int edgePartCount = EnvironmentData.vertices.Length * VisualController.inst.envGridLoops;
         EnvironmentData.edgeParts = new EdgePart[edgePartCount];
-        Debug.Log("MESH CREATION; edgePartcount: " + edgePartCount);
 
         for (int i = 0; i < VisualController.inst.envVertices; i++)
         {

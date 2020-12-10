@@ -213,8 +213,8 @@ public partial class Player : MonoBehaviour
             {
                 MoveTowardsMouse("inner");
 
-                musicManager.StopChord(musicManager.controllers[0]);
-                musicManager.StopChord(musicManager.controllers[1]);
+                //musicManager.StopChord(musicManager.controllers[0]);
+                //musicManager.StopChord(musicManager.controllers[1]);
             }
             else if (positionState == PositionState.innerEdge)
             {
@@ -224,8 +224,8 @@ public partial class Player : MonoBehaviour
             {
                 MoveTowardsMouse("outer");
 
-                musicManager.StopChord(musicManager.controllers[1]);
-                musicManager.StopChord(musicManager.controllers[0]);
+                //musicManager.StopChord(musicManager.controllers[1]);
+                //musicManager.StopChord(musicManager.controllers[0]);
             }
             else if (positionState == PositionState.outerEdge)
             {
@@ -245,11 +245,11 @@ public partial class Player : MonoBehaviour
             {
                 StickToEdge("inner");
 
-                musicManager.SetPitchOnEdge(60, musicManager.controllers[0]);
+                //musicManager.ManageChordGeneration(60, musicManager.controllers[0]);
                 velocity = GetVelocityFromDistance();
 
-                musicManager.StopChord(musicManager.controllers[1]);
-                musicManager.PlayChord(musicManager.controllers[0], velocity);
+                //musicManager.StopChord(musicManager.controllers[1]);
+                //musicManager.PlayChord(musicManager.controllers[0], velocity);
             }
             else if (positionState == PositionState.outside)
             {
@@ -261,8 +261,8 @@ public partial class Player : MonoBehaviour
 
                 velocity = GetVelocityFromDistance();
 
-                musicManager.StopChord(musicManager.controllers[0]);
-                musicManager.PlayChord(musicManager.controllers[1], velocity);
+                //musicManager.StopChord(musicManager.controllers[0]);
+                //musicManager.PlayChord(musicManager.controllers[1], velocity);
             }
         }
 

@@ -80,20 +80,20 @@ public static class PlayerData
             lastEdge_end = player.curEdge.end;
             lastEdgePartID = curEdgePartID;
 
+
             // First edge touch?
-            RaycastHit hit;
-            if (Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit)) // gleicher raycast wie in SetPositionStates()
-            {
-                if (player.positionState == Player.PositionState.innerEdge && player.lastPosState != Player.PositionState.innerEdge ||
-                    player.positionState == Player.PositionState.outerEdge && player.lastPosState != Player.PositionState.outerEdge)
-                {
-                    player.curEdge.firstTouch = true;
-                }
-                else
-                {
-                    player.curEdge.firstTouch = false;
-                }
-            }
+            //RaycastHit hit;
+            //if (Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit)) // gleicher raycast wie in SetPositionStates()
+            //{
+            //if (player.lastPosState != Player.PositionState.innerEdge || player.lastPosState != Player.PositionState.outerEdge)
+            //{
+            //    player.curEdge.firstTouch = true;
+            //}
+            //else
+            //{
+            //    player.curEdge.firstTouch = false;
+            //}
+            //}
 
             Vector2 intersection = Vector2.zero;
             Vector3 mousePos_extended = midPoint + (player.mousePos - midPoint).normalized * 10f;
@@ -152,6 +152,25 @@ public static class PlayerData
             
             // ASSIGN
             player.curEdgePart.Set(curEdgePartID, curEdgePart_start, curEdgePart_end, isCorner);
+        }
+        // Leave edge
+        if ((player.positionState == Player.PositionState.inside || player.positionState == Player.PositionState.outside) &&
+            player.lastPosState == Player.PositionState.innerEdge || player.lastPosState == Player.PositionState.outerEdge)
+        {
+            player.curEdge.leave = true;
+        }
+        else
+            player.curEdge.leave = false; // TO DO: test
+
+        // First edge touch
+        if ((player.positionState == Player.PositionState.innerEdge || player.positionState == Player.PositionState.outerEdge) &&
+            player.lastPosState == Player.PositionState.inside || player.lastPosState == Player.PositionState.outside)
+        {
+            player.curEdge.firstTouch = true;
+        }
+        else
+        {
+            player.curEdge.firstTouch = false;
         }
     }
 }

@@ -16,16 +16,18 @@ public static class MusicUtil
 
     // PUBLIC METHODS
     
-    public  static void RandomChordInScale(Chord curChord, Scale curScale)
+    public  static Chord RandomChordInKey(Key curKey)
     {
         // 1. Degree of next chord
-        int chordDegree = RandomChordDegree(curScale);
+        int chordDegree = RandomChordDegree(curKey);
 
         // 2. Basic chord
-        Chord chord = BasicTriad(curScale, chordDegree);
+        Chord chord = BasicTriad(curKey, chordDegree);
 
         // 3. Correct inversion
-        chord = InvertChord_stayInTonality(chord, ScaleTypes.fMajor);
+        chord = InvertChord_stayInTonality(chord, Chords.fMajor);
+
+        return chord;
     }
 
 
@@ -60,7 +62,7 @@ public static class MusicUtil
     /// </summary>
     /// <param name="scale">The wanted scale.</param>
     /// <param name="preventDegrees">Degrees you wanna exclude.</param>
-    private static int RandomChordDegree(Scale scale, int[] preventDegrees = null)
+    private static int RandomChordDegree(Key scale, int[] preventDegrees = null)
     {
         // 1. Get available degrees of scale
         int maxDegree = scale.notesPerOctave;
@@ -87,13 +89,13 @@ public static class MusicUtil
     /// </summary>
     /// <param name="degree">The wanted chord degree</param>
     /// <param name="chord">The given scale</param>
-    private static Chord BasicTriad(Scale scale, int degree)
+    private static Chord BasicTriad(Key key, int degree)
     {
         // Generate triad, no inversion
-        int baseNoteIndex = scale.keyNoteIndex + degree;
-        int baseNote = scale.notes[baseNoteIndex];
-        int third = scale.notes[baseNoteIndex + 2];
-        int fifth = scale.notes[baseNoteIndex + 4];
+        int baseNoteIndex = key.keyNoteIndex + degree;
+        int baseNote = key.notes[baseNoteIndex];
+        int third = key.notes[baseNoteIndex + 2];
+        int fifth = key.notes[baseNoteIndex + 4];
         int[] chordNotes = new int[3] { baseNote, third, fifth };
         Chord newChord = new Chord(chordNotes, degree, 0, baseNote);
 
@@ -211,12 +213,12 @@ public static class MusicUtil
 
 // -------------------------------------------------------------------------
 
-
+// Existieren immer nur innerhalb einer Skala
 public class Chord
 {
     // Public attributes
     public int[] notes;     // Noten des Akkords; erstmal immer 3; Werte zwischen 0-127
-    public int degree;      // Akkord-Stufe (I-VII)
+    public int degree;      // Akkord-Stufe (I-VII) innerhalb seiner Skala                          // brauche ich die Stufe wirklich?
     public int inversion;   // Akkord-Umkehrung; 0-2, 0 = keine Umkehrung
     public int baseNote;    // Grundton des Akkords ohne Umkehrung; Wert zwischen 0-127
 
@@ -248,29 +250,41 @@ public class Chord
 // -------------------------------------------------------------------------
 
 
-public class Scale
+public class Key
 {
     // Public attributes
-    public ScaleTypes.Name name;    // Name, z.b. Major
-    public int keyNote;             // Grundton der Skala (Wert zwischen 0-127)
+    public ScaleTypes.Name scale;   // Name, z.b. Major
+    public int keyNote;             // Grundton der Skala (Wert zwischen 0-127)                                                             // To do: Ich will keynote zwischen 0-127 nicht festlegen, sondern Name [C-H] oder Wert [0-11]
     public int[] notes;             // Alle verfügbaren Midi-Noten der Skala aus 0-127 (length immer kleiner als 128!)
     public int keyNoteIndex;        // Index des Skala-Grundtons in notes
     public int notesPerOctave;      // Anzahl der Skala-Noten innerhalb einer Oktave; meist 7
     
     // Auxilliary / fields
     private int[] stepsInOctave;    // Alle Intervalle von der Prim der Skala aus, die die Skala innerhalb einer Oktave ausmachen
+
+
+
+
+
+
+    // CONSTRUCTOR
+    public Key(int keyNote, ScaleTypes.Name scale)
+    {
+        Set(keyNote, scale);
+    }
     
 
-    
+
+
 
     // PUBLIC METHODS
 
-    public void Set(ScaleTypes.Name name, int keyNote)
+    public void Set(int keyNote, ScaleTypes.Name scale)
     {
-        this.name = name;
+        this.scale = scale;
         this.keyNote = keyNote;
-        this.stepsInOctave = ScaleTypes.all[name];
-        this.notesPerOctave = ScaleTypes.all[name].Length;
+        this.stepsInOctave = ScaleTypes.all[scale];
+        this.notesPerOctave = ScaleTypes.all[scale].Length;
         this.notes = GetScaleNotes(keyNote, stepsInOctave, notesPerOctave);
         this.keyNoteIndex = System.Array.IndexOf(this.notes, this.keyNote);
     }
@@ -337,7 +351,7 @@ public static class ScaleTypes
     public enum Name { Major, Minor, HexatonicBluesMinor };
     public static Dictionary<Name, int[]> all;
 
-    public static int[] fMajor = new int[3] { 67, 71, 74 };
+    
 
 
 
@@ -353,5 +367,41 @@ public static class ScaleTypes
         };
     }
 }
+
+
+
+
+
+
+// -------------------------------------------------------------------------
+
+
+
+
+
+
+
+public static class Chords
+{
+    public static Chord fMajor;
+
+    static Chords()
+    {
+        fMajor = new Chord(new int[3] { 67, 71, 74 }, 1, 0, 67);
+    }
+}
+
+
+
+
+
+// -------------------------------------------------------------------------
+
+
+
+
+
+
+
 
 

@@ -144,6 +144,7 @@ public class Edge
     public float percentage;
     public Vector3 start, end;
     public bool firstTouch;
+    public bool leave;
 
     public void Set (Vector3 start, Vector3 end, bool changed, float percentage)
     {
