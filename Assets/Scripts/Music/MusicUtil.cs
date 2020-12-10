@@ -126,7 +126,7 @@ public static class MusicUtil
         Chord invertedChord = chord;           
         int distance, lastDistance;                          // distance in semi-tones
 
-        // Nähere von oben an;
+        // Nähere von oben an
         if (chord.notes[0] > relationChord.notes[0])
         {
             // 1. invert downwards until lowestNote < relationChord.lowestNote

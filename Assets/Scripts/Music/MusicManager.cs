@@ -53,23 +53,6 @@ public class MusicManager : MonoBehaviour
 
     
 
-    //int[] ChordInCMajor()
-    //{
-    //    int[] chord = new int[3];
-    //    int[] cMajorRange = new int[8] { 60, 62, 64, 65, 67, 69, 71, 72 };
-
-    //    // V2 - weniger veränderung
-    //    int chosenNote = Random.Range(0, 3);
-    //    int newNote = cMajorRange[Random.Range(0, 8)];
-    //    while (newNote == curChord[0] || newNote == curChord[1] || newNote == curChord[2])
-    //        newNote = cMajorRange[Random.Range(0, 8)];
-    //    chord[chosenNote] = newNote;
-    //    chord[(chosenNote + 1) % 3] = curChord[(chosenNote + 1) % 3];
-    //    chord[(chosenNote + 2) % 3] = curChord[(chosenNote + 2) % 3];
-    //    return chord;
-    //}
-
-
     public void ManageChordGeneration()
     {
         //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curEdgePart.changed + ", leaveEdge: " + player.curEdge.leave + ", edgeChange: " + player.curEdge.changed);
@@ -80,8 +63,6 @@ public class MusicManager : MonoBehaviour
 
             // calc pitch
             SetFirstPitchRange(ref minPitch, ref maxPitch);
-
-            //print("first edge touch");
         }
 
         // EDGE PART CHANGE
@@ -92,8 +73,6 @@ public class MusicManager : MonoBehaviour
                 StopChord(curChord, Instrument.inner);
                 //curChord = MusicUtil.RandomChordInKey(curKey);
                 PlayChord(curChord, Instrument.inner, 0.3f);
-
-                //print("music: edge part change");
             }
         }
 
@@ -101,8 +80,6 @@ public class MusicManager : MonoBehaviour
         if (player.curEdge.leave)
         {
             StopChord(curChord, Instrument.inner);
-
-            //print("leave");
         }
 
         // EDGE CHANGE
@@ -110,8 +87,6 @@ public class MusicManager : MonoBehaviour
         {
             // Pitch
             SetNextPitchRange(ref minPitch, ref maxPitch);
-
-            //print("edge change");
         }
 
 

@@ -166,7 +166,6 @@ public static class PlayerData
             player.curEdge.leave = true;
             player.curEdge.changed = false;
             player.curEdgePart.changed = false;
-            //Debug.Log("curEdge.leave");
         }
         else
             player.curEdge.leave = false;
