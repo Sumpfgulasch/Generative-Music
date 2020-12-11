@@ -25,7 +25,7 @@ public class MusicManager : MonoBehaviour
     // private
     private float minPitch, maxPitch;
     private float curPitch = 0;
-    private int nextIntervalDirection = 1;
+    private int chordDirection = 1;
 
 
     // get set
@@ -55,11 +55,12 @@ public class MusicManager : MonoBehaviour
 
     public void ManageChordGeneration()
     {
+        //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curEdgePart.changed + ", leaveEdge: " + player.curEdge.leave + ", edgeChange: " + player.curEdge.changed);
+
+
         // EDGE CHANGE
         if (player.curEdge.changed)
         {
-
-            print("edge Change!");
             int newKeyNote = curKey.KeyNote + Random.Range(1, 7);
             if (newKeyNote > highestNote || newKeyNote < lowestNote)
                 newKeyNote = 60;
@@ -68,15 +69,13 @@ public class MusicManager : MonoBehaviour
                 newScale = ScaleTypes.Name.Minor;
             else
                 newScale = ScaleTypes.Name.Major;
-            curKey.Set(newKeyNote, ScaleTypes.Name.Minor);
+            //curKey.Set(newKeyNote, ScaleTypes.Name.Minor);
 
 
             // Pitch
             SetNextPitchRange(ref minPitch, ref maxPitch);
         }
 
-
-        //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curEdgePart.changed + ", leaveEdge: " + player.curEdge.leave + ", edgeChange: " + player.curEdge.changed);
         // FIRST EDGE TOUCH
         if (player.curEdge.firstTouch)
         {
@@ -92,7 +91,10 @@ public class MusicManager : MonoBehaviour
             if (!Input.GetKey(KeyCode.Space)) // für eventuellen pitch
             {
                 StopChord(curChord, Instrument.inner);
-                curChord = MusicUtil.RandomChordInKey(curKey, curChord);
+
+                SetChordDirection();
+                curChord = MusicUtil.RandomChordInKey_move(curKey, curChord, chordDirection);
+
                 PlayChord(curChord, Instrument.inner, 0.3f);
             }
         }
@@ -103,28 +105,32 @@ public class MusicManager : MonoBehaviour
             StopChord(curChord, Instrument.inner);
         }
 
-        
+        #region Pitch
+        //if (Input.GetKey(KeyCode.Space))
+        //{
+        //    curPitch = player.curEdge.percentage.Remap(0, 1, minPitch, maxPitch);
+        //    #region Quantize Pitch
+        //    //float quantizeSize = 0.5f;
+        //    //float quantize = curPitch % quantizeSize;
+        //    //if (quantize > 0.05f || quantize < -0.05f)
+        //    //{
+        //    //    if (quantize > quantizeSize / 2f)
+        //    //        curPitch += (quantizeSize - quantize);
+        //    //    else
+        //    //        curPitch -= quantize;
+        //    //}
+        //    Instrument.inner.SetPitchWheel(curPitch);
+        //}
+        #endregion
+    }
 
 
-
-
-        // Pitch
-        if (Input.GetKey(KeyCode.Space))
-        {
-            curPitch = player.curEdge.percentage.Remap(0, 1, minPitch, maxPitch);
-            #region Quantize Pitch
-            //float quantizeSize = 0.5f;
-            //float quantize = curPitch % quantizeSize;
-            //if (quantize > 0.05f || quantize < -0.05f)
-            //{
-            //    if (quantize > quantizeSize / 2f)
-            //        curPitch += (quantizeSize - quantize);
-            //    else
-            //        curPitch -= quantize;
-            //}
-            #endregion
-            Instrument.inner.SetPitchWheel(curPitch);
-        }
+    private void SetChordDirection()
+    {
+        if (curChord.notes[0] < lowestNote)
+            chordDirection = 1;
+        else if (curChord.notes[curChord.notes.Length - 1] > highestNote)
+            chordDirection = -1;
     }
 
 

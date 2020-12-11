@@ -14,9 +14,10 @@ public static class MusicUtil
     public const int notesPerOctave = 12; // Alle Halbton-Schritte innerhalb einer Oktave vom Grundton aus
 
 
+
     // PUBLIC METHODS
     
-    public static Chord RandomChordInKey(Key curKey, Chord curChord)
+    public static Chord RandomChordInKey_stay(Key curKey, Chord curChord)
     {
         int[] preventDegrees = new int[] { curChord.degree };
 
@@ -29,16 +30,25 @@ public static class MusicUtil
         // 3. Correct inversion
         chord = InvertChord_stayInTonality(chord, Chords.fMajor); // sehr geil; einfach geil
 
-        //Debug.Log("chord before invertDown: degree: " + chord.degree + ", inversion: " + chord.inversion);
-        //foreach (int note in chord.notes)
-        //    Debug.Log("note: " + note);
-        //chord = chord.InvertChord_down();
-        //Debug.Log("chord.invertDown: degree: " + chord.degree + ", inversion: " + chord.inversion);
-        //foreach (int note in chord.notes)
-        //    Debug.Log("note: " + note);
+        return chord;
+    }
+
+    public static Chord RandomChordInKey_move(Key curKey, Chord curChord, int direction)
+    {
+        int[] preventDegrees = new int[] { curChord.degree };
+
+        // 1. Degree of next chord
+        int chordDegree = RandomChordDegree(curKey, preventDegrees);
+
+        // 2. Basic chord
+        Chord chord = BasicTriad(curKey, chordDegree);
+
+        // 3. Correct inversion
+        chord = InvertChord_moveInDirection(chord, curChord, direction); // sehr geil; einfach geil
 
         return chord;
     }
+
 
 
 
@@ -112,19 +122,9 @@ public static class MusicUtil
         return newChord;
     }
 
+    
 
     // Inversion #1: Stay in tonality
-    private static int[] InvertChord_moveInDirection (int[] curChord, Chord relationChord)
-    {
-        // = Get inversion that is the closest to the start chord, in order to stay in its tonality
-
-        int[] invertedChord = new int[2]; // ToDo: Hier weiter
-        // Todo: Direction-Variable prüfen (die auch von Grenzen bestimmt wird)
-        return invertedChord;
-    }
-
-
-    // Inversion #2: Move up/down
     /// <summary>
     /// Get inversion that is the closest to the relation chord, in order to stay in its tonality.
     /// </summary>
@@ -139,83 +139,108 @@ public static class MusicUtil
         // Nähere von oben an
         if (chord.notes[0] > relationChord.notes[0])
         {
-            //Debug.Log("START inversion; relationChord: ");
-            //foreach (int note in relationChord.notes)
-            //    Debug.Log(note);
-            //int i = 0;
-
             // 1. invert downwards until lowestNote < relationChord.lowestNote
             do
             {
                 lastDistance = ChordDistance(invertedChord, relationChord);
-
-                //Debug.Log("i: " + i + ", distance: " + lastDistance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
-                //foreach (int note in invertedChord.notes)
-                //    Debug.Log("note: " + note);
-
                 invertedChord = invertedChord.InvertChord_down();
-
-                //i++;
             }
             while (invertedChord.notes[0] > relationChord.notes[0]);
 
             // InvertedChord ist jetzt niedriger als relationChord
             distance = ChordDistance(invertedChord, relationChord);
-            //Debug.Log("AFTER WHILE; distance: " + distance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
-            //foreach (int note in invertedChord.notes)
-            //    Debug.Log("note: " + note);
 
             // 2. Get final cloest chord: Maybe revert last inversion
-            if (distance > lastDistance)
-            {                                                 // ToDo: hier Sonderregel mit weiterem if für niemals-die-gleiche-umkehrung
+            if (distance > lastDistance)                                    // ToDo: hier Sonderregel mit weiterem if für niemals-die-gleiche-umkehrung
+            {                                                 
                 invertedChord = invertedChord.InvertChord_up();
-                //Debug.Log("REVERT last inversion; distance: " + distance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
-                //foreach (int note in invertedChord.notes)
-                //    Debug.Log("note: " + note);
             }
         }
 
         // Nähere von unten an
         else
         {
-            //int i = 0;
-            //Debug.Log("START inversion; relationChord: ");
-            //foreach (int note in relationChord.notes)
-            //    Debug.Log(note);
-
             // 1. Invert upwards until lowestNote > relationChord.lowestNote
             do
             {
                 lastDistance = ChordDistance(invertedChord, relationChord);
-
-                //Debug.Log("i: " + i + ", distance: " + lastDistance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
-                //foreach (int note in invertedChord.notes)
-                //    Debug.Log("note: " + note);
-
                 invertedChord = invertedChord.InvertChord_up();
-
-                //i++;
             }
             while (invertedChord.notes[0] < relationChord.notes[0]);
 
             // InvertedChord ist jetzt höher als relationChord
             distance = ChordDistance(invertedChord, relationChord);
-            //Debug.Log("AFTER WHILE; distance: " + distance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
-            //foreach (int note in invertedChord.notes)
-            //    Debug.Log("note: " + note);
 
             // 2. Get final cloest chord: Maybe revert last inversion
-            if (distance > lastDistance)
-            {                                                  // ToDo: hier Sonderregel mit weiterem if für niemals-die-gleiche-umkehrung
+            if (distance > lastDistance)                                    // ToDo: hier Sonderregel mit weiterem if für niemals-die-gleiche-umkehrung
+            {                                                  
                 invertedChord = invertedChord.InvertChord_down();
-                //Debug.Log("REVERT last inversion; distance: " + distance + ", chord.invertDown: degree: " + invertedChord.degree + ", inversion: " + invertedChord.inversion);
-                //foreach (int note in invertedChord.notes)
-                //    Debug.Log("note: " + note);
             }
         }
 
         return invertedChord;
     }
+
+
+
+    // Inversion #2: Move up/down
+    /// <summary>
+    /// Return the inversion that shifts the tonality slowly or fast up or down.
+    /// </summary>
+    /// <param name="direction">The direction to move to. Slowly up/down: [1 or -1], fast up/down: [2 or -2].</param>
+    /// <param name="chord">The chord to be inverted.</param>
+    /// <param name="lastChord">The chord that the inversion shall be the closest to. Should be the last chord.</param>
+    private static Chord InvertChord_moveInDirection(Chord chord, Chord lastChord, int direction)
+    {
+        Chord invertedChord = chord;
+
+        Debug.Log("1. START; direction = " + direction + ", lastChord: ");
+        foreach (int note in lastChord.notes)
+            Debug.Log("note: " + note);
+
+        // 1. Get the closest inversion to the relationChord as start point
+        invertedChord = InvertChord_stayInTonality(chord, lastChord);
+        Debug.Log("2. closestInversion: ");
+        foreach (int note in invertedChord.notes)
+            Debug.Log("note: " + note);
+
+        if (direction > 0)
+        {
+            // 2. Check if chord is already higher; skip one iteration then
+            bool chordIsHigher = ChordIsHigher(invertedChord, lastChord);
+            Debug.Log("3. chordIsHigher: " + chordIsHigher);
+
+            for (int i=0; i < Mathf.Abs(direction); i++)
+            {
+                if (i == 0 && chordIsHigher)
+                    continue;
+
+                invertedChord = InvertChord_up(invertedChord);
+                Debug.Log("for-loop; i: " + i + ", invertChordUp");
+            }
+        }
+        else if (direction < 0)
+        {
+            // 2. Check if chord is already higher; skip one iteration then
+            bool chordIsLower = !ChordIsHigher(invertedChord, lastChord);
+            Debug.Log("3. chordIsLower: " + chordIsLower);
+
+            for (int i = 0; i < Mathf.Abs(direction); i++)
+            {
+                if (i == 0 && chordIsLower)
+                    continue;
+
+                invertedChord = InvertChord_down(invertedChord);
+                Debug.Log("for-loop; i: " + i + ", invertChordDown");
+            }
+        }
+        Debug.Log("4. FINAL chord: ");
+        foreach (int note in invertedChord.notes)
+            Debug.Log("note: " + note);
+        
+        return invertedChord;
+    }
+
 
 
     // Inversion #3: Get next/prior
@@ -245,6 +270,7 @@ public static class MusicUtil
 
     private static int ChordDistance(Chord chord1, Chord chord2)
     {
+        // = Returns the distance between two chords. Always a positive value.
         int lowestNote1 = chord1.notes[0];
         int highestNote1 = chord1.notes[chord1.notes.Length - 1];
         int lowestNote2 = chord2.notes[0];
@@ -257,6 +283,36 @@ public static class MusicUtil
 
         return distance;
     }
+
+
+    private static bool ChordIsHigher(Chord chord, Chord relationChord)
+    {
+        int lowestNote1 = chord.notes[0];
+        int highestNote1 = chord.notes[chord.notes.Length - 1];
+        int lowestNote2 = relationChord.notes[0];
+        int highestNote2 = relationChord.notes[relationChord.notes.Length - 1];
+
+        int lowestNotesDistance = lowestNote1 - lowestNote2;
+        int highestNotesDistance = highestNote1 - highestNote2;
+
+        if (lowestNotesDistance > 0)
+        {
+            if (highestNotesDistance >= 0)
+                return true;
+            else
+                return false;
+        }
+        else if (lowestNotesDistance == 0)
+        {
+            if (highestNotesDistance > 0)
+                return true;
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+
 }
 
 
@@ -270,7 +326,7 @@ public class Chord
 {
     // Public attributes
     public int[] notes;     // Noten des Akkords; erstmal immer 3; Werte zwischen 0-127
-    public int degree;      // Akkord-Stufe (I-VII) innerhalb seiner Skala                          // brauche ich die Stufe wirklich?
+    public int degree;      // Akkord-Stufe (I-VII) innerhalb seiner Skala
     public int inversion;   // Akkord-Umkehrung; 0-2, 0 = keine Umkehrung
     public int baseNote;    // Grundton des Akkords ohne Umkehrung; Wert zwischen 0-127
 
@@ -464,18 +520,3 @@ public static class Chords
         cMajor = new Chord(new int[3] { 60, 64, 67 }, 1, 0, 60);
     }
 }
-
-
-
-
-
-// -------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
