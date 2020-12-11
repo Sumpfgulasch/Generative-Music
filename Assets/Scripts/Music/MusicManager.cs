@@ -69,7 +69,7 @@ public class MusicManager : MonoBehaviour
                 newScale = ScaleTypes.Name.Minor;
             else
                 newScale = ScaleTypes.Name.Major;
-            //curKey.Set(newKeyNote, ScaleTypes.Name.Minor);
+            curKey.Set(newKeyNote, ScaleTypes.Name.Minor);
 
 
             // Pitch

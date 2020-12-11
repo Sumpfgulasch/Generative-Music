@@ -193,22 +193,14 @@ public static class MusicUtil
     private static Chord InvertChord_moveInDirection(Chord chord, Chord lastChord, int direction)
     {
         Chord invertedChord = chord;
-
-        Debug.Log("1. START; direction = " + direction + ", lastChord: ");
-        foreach (int note in lastChord.notes)
-            Debug.Log("note: " + note);
-
+        
         // 1. Get the closest inversion to the relationChord as start point
         invertedChord = InvertChord_stayInTonality(chord, lastChord);
-        Debug.Log("2. closestInversion: ");
-        foreach (int note in invertedChord.notes)
-            Debug.Log("note: " + note);
 
         if (direction > 0)
         {
             // 2. Check if chord is already higher; skip one iteration then
             bool chordIsHigher = ChordIsHigher(invertedChord, lastChord);
-            Debug.Log("3. chordIsHigher: " + chordIsHigher);
 
             for (int i=0; i < Mathf.Abs(direction); i++)
             {
@@ -216,14 +208,12 @@ public static class MusicUtil
                     continue;
 
                 invertedChord = InvertChord_up(invertedChord);
-                Debug.Log("for-loop; i: " + i + ", invertChordUp");
             }
         }
         else if (direction < 0)
         {
-            // 2. Check if chord is already higher; skip one iteration then
+            // 2. Check if chord is already lower; skip one iteration then
             bool chordIsLower = !ChordIsHigher(invertedChord, lastChord);
-            Debug.Log("3. chordIsLower: " + chordIsLower);
 
             for (int i = 0; i < Mathf.Abs(direction); i++)
             {
@@ -231,12 +221,8 @@ public static class MusicUtil
                     continue;
 
                 invertedChord = InvertChord_down(invertedChord);
-                Debug.Log("for-loop; i: " + i + ", invertChordDown");
             }
         }
-        Debug.Log("4. FINAL chord: ");
-        foreach (int note in invertedChord.notes)
-            Debug.Log("note: " + note);
         
         return invertedChord;
     }
