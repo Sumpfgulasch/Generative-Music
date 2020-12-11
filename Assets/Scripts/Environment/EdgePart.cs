@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class EdgePart
 {
-    public enum Type { InsideMainKey, OutsideMainKey, NewMainKey};
+    public enum Type { MainKey, OutsideMainKey, NewMainKey, Corner, EdgeMid};
 
     // Properties
     public int ID;
@@ -16,6 +16,7 @@ public class EdgePart
     public Vector3 end;
     public bool isCorner;
     public Vector3 cornerMid;
+    public Chord chord;
 
     // Private variables
     public LineRenderer lineRend;
@@ -37,11 +38,12 @@ public class EdgePart
         this.type = type;
     }
 
-    public EdgePart(int ID, LineRenderer lineRend, bool isCorner)
+    public EdgePart(int ID, Type type, LineRenderer lineRend)
     {
         this.ID = ID;
+        this.type = type;
         this.lineRend = lineRend;
-        this.isCorner = isCorner;
+        //this.isCorner = isCorner;
     }
     
 
@@ -51,9 +53,7 @@ public class EdgePart
 
     void Update()
     {
-        // LOGIK
-        // if (typeChanged || isPlayed)
-        //      ChangeColor()
+         
     }
 
 
@@ -62,10 +62,8 @@ public class EdgePart
 
     public void Set(Vector3 start, Vector3 end)
     {
-        //ID = _ID;
         this.start = start;
         this.end = end;
-        //isCorner = _isCorner;
 
         this.start.z = Player.inst.transform.position.z - 0.001f;
         this.end.z = Player.inst.transform.position.z - 0.001f;
@@ -88,13 +86,20 @@ public class EdgePart
         lineRend.SetPosition(1, this.end);
     }
 
-    public bool IsCorner(int ID)
+    public static bool IsCorner(int ID)
     {
-        if (ID % VisualController.inst.envGridLoops == 0 || (ID + 1) % VisualController.inst.envGridLoops == 0)
-        {
-            isCorner = true;
+        if ((ID + 1) % VisualController.inst.envGridLoops == 0 || ID % VisualController.inst.envGridLoops == 0)
             return true;
-        }
+        else
+            return false;
+    }
+
+    public static bool isEdgeMid(int ID)
+    {
+        int testID = ID + (VisualController.inst.envGridLoops / 2);
+
+        if (testID % VisualController.inst.envGridLoops == 0)
+            return true;
         else
             return false;
     }

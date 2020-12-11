@@ -22,8 +22,12 @@ public class MeshRef : MonoBehaviour
     [Space]
     public Transform envEdgeParts_parent;
     public Material envEdgePart_mat;
+    public Color envEdgePart_mainKey;
+    //public Color envEdgePart_newMainKey;
+    public Color envEdgePart_corner;
+    public Color envEdgePart_edgeMid;
 
-    
+
     // Start is called before the first frame update
     void Start()
     {

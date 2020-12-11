@@ -107,13 +107,7 @@ public static class PlayerData
             RaycastHit hit;
             Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit);
             Vector3 playerPointOnEnv = new Vector3(hit.point.x, hit.point.y, player.outerVertices[0].z);
-
             player.curEdge.percentage = Mathf.Clamp01((playerPointOnEnv - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
-
-            //if (player.positionState == Player.PositionState.innerEdge)
-            //    player.curEdge.percentage = Mathf.Clamp01((player.outerVertices[0] - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
-            //else
-            //    player.curEdge.percentage = Mathf.Clamp01( (player.innerVertices[0] - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
             curEdgePartID = ((int)(player.curEdge.percentage.
                 Remap(0, 1f, 0, VisualController.inst.envGridLoops)
                 + curEdgeIndex * VisualController.inst.envGridLoops)) % (EnvironmentData.vertices.Length * VisualController.inst.envGridLoops); // gar kein bock mehr
@@ -134,28 +128,24 @@ public static class PlayerData
                 player.curEdge.changed = true;
 
             // Is corner?
-            bool isCorner = false;
-            if (curEdgePartID % VisualController.inst.envGridLoops == 0 || (curEdgePartID + 1) % VisualController.inst.envGridLoops == 0)
+            bool isCorner = (curEdgePartID + 1) % VisualController.inst.envGridLoops == 0 || curEdgePartID % VisualController.inst.envGridLoops == 0;
+            if (isCorner)
             {
-                isCorner = true;
+                // No edgePartChange in corners
+                bool lastIDisCorner = (lastEdgePartID + 1) % VisualController.inst.envGridLoops == 0 || lastEdgePartID % VisualController.inst.envGridLoops == 0;
+                if (lastIDisCorner)
+                    player.curEdgePart.changed = false;
             }
 
-            // No edgePartChange in corners
-            //if ((curEdgePartID % VisualController.inst.envGridLoops == 0 && (lastEdgePartID + 1) % VisualController.inst.envGridLoops == 0)
-            //|| ((curEdgePartID + 1) % VisualController.inst.envGridLoops == 0 && lastEdgePartID % VisualController.inst.envGridLoops == 0))
-            //{
-            //    player.curEdgePart.changed = false;
-            //}
-            
             // ASSIGN
             player.curEdgePart.Set(curEdgePartID, curEdgePart_start, curEdgePart_end, isCorner);
         }
+        
         
         // First edge touch
         if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.move)
         {
             player.curEdge.firstTouch = true;
-            //Debug.Log("firstTouch");
         }
         else
             player.curEdge.firstTouch = false;

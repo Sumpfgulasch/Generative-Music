@@ -17,9 +17,13 @@ public static class MusicUtil
 
     // PUBLIC METHODS
     
-    public static Chord RandomChordInKey_stay(Key curKey, Chord curChord)
+    public static Chord RandomChordInKey_stay(Key curKey, Chord curChord = null)
     {
-        int[] preventDegrees = new int[] { curChord.degree };
+        int[] preventDegrees;
+        if (curChord != null)
+            preventDegrees = new int[] { curChord.degree };
+        else
+            preventDegrees = new int[0];
 
         // 1. Degree of next chord
         int chordDegree = RandomChordDegree(curKey, preventDegrees);

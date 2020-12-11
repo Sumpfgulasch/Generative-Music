@@ -41,7 +41,7 @@ public class MusicManager : MonoBehaviour
             Destroy(inst);
 
         curKey = new Key(53, ScaleTypes.Name.Minor);
-        curChord = Chords.cMajor;
+        curChord = MusicUtil.RandomChordInKey_stay(curKey);
 
         controllers[0].SetPitchWheel(0);
     }
