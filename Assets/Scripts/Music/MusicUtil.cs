@@ -72,6 +72,7 @@ public static class MusicUtil
 
     // PRIVATE METHODS
 
+
     #region random note in scale, to rework
     // To rework (random range)
     //private static int RandomNoteInScale(int noteMin, int noteMax, Scale scale, int preventNote = -1)
@@ -95,6 +96,29 @@ public static class MusicUtil
     //}
     #endregion
 
+    /// <summary>
+    /// Returns any triad in a given key and in the given degree*. The tonality is 48-59. No inversion. (* Chords not containing the perfect unison are not supported yet.)
+    /// </summary>
+    /// <param name="key">The key in which you wanna have the chord.</param>
+    /// <param name="degree">The wanted degree within the key.</param>
+    /// <param name="interval1">Interval #1. [1 = perfect unison, 8 = octave]. Interval 1 has to be 1.</param>
+    /// <param name="interval2">Interval #2. [1 = perfect unison, 8 = octave]</param>
+    /// <param name="interval3">Interval #3. [1 = perfect unison, 8 = octave]</param>
+    public static Chord Triad(Key key, int degree, int interval1, int interval2, int interval3)
+    {
+        int baseNoteIndex = key.notesPerOctave * 4 + key.keyNoteIndex + degree;
+        int note1 = key.notes[baseNoteIndex + (interval1 - 1)];
+        int note2 = key.notes[baseNoteIndex + (interval2 - 1)];
+        int note3 = key.notes[baseNoteIndex + (interval3 - 1)];
+        int[] chordNotes = new int[3] { note1, note2, note3 };
+
+        Chord newChord = new Chord(chordNotes, degree, 0, note1);
+
+        if (interval1 != 1)
+            Debug.LogError("Chords different than 1-3-5 are not supported yet.");
+
+        return newChord;
+    }
 
     /// <summary>
     /// Returns a triad of thirds in a given key and in the given degree. The tonality is 48-59. No inversion.
@@ -103,13 +127,7 @@ public static class MusicUtil
     /// <param name="degree">The wanted degree within the key.</param>
     private static Chord BasicTriad(Key key, int degree)
     {
-        // Generate triad, no inversion
-        int baseNoteIndex = key.notesPerOctave * 4 + key.keyNoteIndex + (degree - 1);
-        int baseNote = key.notes[baseNoteIndex];
-        int third = key.notes[baseNoteIndex + 2];
-        int fifth = key.notes[baseNoteIndex + 4];
-        int[] chordNotes = new int[3] { baseNote, third, fifth };
-        Chord newChord = new Chord(chordNotes, degree, 0, baseNote);
+        Chord newChord = Triad(key, degree, 1, 3, 5);
 
         return newChord;
     }
@@ -218,6 +236,54 @@ public static class MusicUtil
     }
 
 
+    /// <summary>
+    /// Inverts a chord x times in always different ways. Orients to a relationChord. Forced to stay in a certain tonality. Ordered in distance to relationChord.
+    /// </summary>
+    /// <param name="chord">The chord to be inverted.</param>
+    /// <param name="count">The amount of inverted chords you wanna have.</param>
+    /// <param name="relationChord">The chord that the inversion shall be the closest to. Usually the last chord.</param>
+    /// <param name="minNote">Lowest possible note.</param>
+    /// <param name="maxNote">Highest possible note.</param>
+    public static Chord[] DifferentChordInversions(Chord chord, int count, Chord relationChord, int minNote, int maxNote)
+    {
+        Chord[] invertedChords = new Chord[count];
+
+        invertedChords[0] = InvertChord_stayInTonality(chord, relationChord);
+        Chord closestChord = invertedChords[0];
+        bool hitMaxNote = false, hitMinNote = false;
+        //int i = 1;
+        for (int i = 1; i < count; i++)
+        {
+            int invertDirection = 1;
+            Chord nextInversion = null;
+
+            nextInversion = InvertChord_moveInDirection(closestChord, invertDirection, closestChord);
+            bool chordIsWithinRange = ChordIsWithinRange(nextInversion, minNote, maxNote);
+            
+
+            if (chordIsWithinRange)
+            {
+                invertedChords[i] = nextInversion;
+
+                // Go alternatively up and down
+                if (i % 2 == 0)
+                {
+                    invertDirection++;
+                }
+                else
+                {
+                    invertDirection *= -1;
+                }
+            }
+            else
+            {
+                break;
+            }
+            
+        }
+    }
+
+
 
     private static Chord InvertChord_up(this Chord chord)
     {
@@ -286,6 +352,33 @@ public static class MusicUtil
         }
         else
             return false;
+    }
+
+
+    private static bool ChordIsWithinRange(Chord chord, int minNote, int maxNote, ref bool highIsHIgher)
+    {
+        int highestNote = chord.notes[chord.notes.Length - 1];
+        int lowestNote = chord.notes[0];
+
+        //if (highestNote <= maxNote && lowestNote >= minNote)
+        //    return true;
+        //else
+        //    return false;
+
+        if (highestNote > maxNote)
+        {
+            highIsHIgher = true;
+            return false;
+        }
+        else if( lowestNote < minNote)
+        {
+            highIsHIgher = false;
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
 }

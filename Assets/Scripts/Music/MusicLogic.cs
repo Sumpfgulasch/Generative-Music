@@ -43,7 +43,7 @@ public static class MusicLogic
 
     public static List<int> RandomChordDegrees(Key key, int count, bool preventTritonus = true)
     {
-        // = return x degrees within key; first is always I.
+        // = return x different degrees within key; first is always I.
 
         // 1. Get available degrees of scale
         List<int> degrees = new List<int>();

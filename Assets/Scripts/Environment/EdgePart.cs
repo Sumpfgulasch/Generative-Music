@@ -14,13 +14,14 @@ public class EdgePart
     public Type type;
     public Vector3 start;
     public Vector3 end;
-    //public bool isCorner;
-    public Vector3 cornerMid;
+    public bool isCorner;
+    public bool isEdgeMid;
+    public LineRenderer lineRend;
 
     public Chord chord;
 
     // Private variables
-    public LineRenderer lineRend;
+
     private Color color;
 
 
@@ -39,15 +40,17 @@ public class EdgePart
         this.type = type;
     }
 
-    public EdgePart(int ID, Type type, LineRenderer lineRend)
+    public EdgePart(int ID, LineRenderer lineRend, bool isCorner, bool isEdgeMid)
     {
         this.ID = ID;
-        this.type = type;
         this.lineRend = lineRend;
+        this.isCorner = isCorner;
+        this.isEdgeMid = isEdgeMid;
+        //this.type = type;
     }
-    
 
-    
+
+
 
 
 
@@ -89,9 +92,13 @@ public class EdgePart
     public static bool IsCorner(int ID)
     {
         if ((ID + 1) % VisualController.inst.envGridLoops == 0 || ID % VisualController.inst.envGridLoops == 0)
+        {
             return true;
+        }
         else
+        {
             return false;
+        }
     }
 
     public static bool IsEdgeMid(int ID)
@@ -99,9 +106,13 @@ public class EdgePart
         int testID = ID + (VisualController.inst.envGridLoops / 2 + 1);
 
         if (testID % VisualController.inst.envGridLoops == 0)
+        {
             return true;
+        }
         else
+        {
             return false;
+        }
     }
 }
 

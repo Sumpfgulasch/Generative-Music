@@ -6,11 +6,15 @@ public class MusicManager : MonoBehaviour
 {
     public static MusicManager inst;
 
+
     // Public properties
     [Header("References")]
     public List<AudioHelm.HelmController> controllers;
 
+
     [Header("Contraints")]
+    [Tooltip("Number of chord degrees that make up the edgeParts in the beginning.")]
+    public int startDegreesCount = 3;
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;
     public int highestNote = 72;
@@ -18,7 +22,11 @@ public class MusicManager : MonoBehaviour
     public float maxVelocity = 0.3f;
     public float minVelocity = 0.1f;
 
-    // Public variables
+    [Header("Stages")]
+    public StageData[] stageData;
+
+
+    // Private variables
     private Chord curChord;
     private Key curKey;
     private List<int> curCadence;
@@ -26,11 +34,12 @@ public class MusicManager : MonoBehaviour
     private int stage = 0;
     private List<int> availableDegrees;
 
-    // private
     private float velocity;
     private float minPitch, maxPitch;
     private float curPitch = 0;
     private int chordDirection = 1;
+
+    private int curStage = 0;
 
     // Calc variables
 
@@ -46,6 +55,7 @@ public class MusicManager : MonoBehaviour
             inst = this;
         else if (inst != null && inst != this)
             Destroy(inst);
+        InitEdgeParts();
 
         // key
         curKey = new Key(7, ScaleTypes.Name.Minor);
@@ -115,6 +125,7 @@ public class MusicManager : MonoBehaviour
             if (!Input.GetKey(KeyCode.Space)) // für eventuellen pitch
             {
                 SetChordDirection();
+
 
                 StopChord(curChord, Instrument.inner);
 
@@ -253,4 +264,70 @@ public class MusicManager : MonoBehaviour
             }
         }
     }
+
+
+
+    // ------------------------- Edge parts: types & colors -------------------------------
+
+    private void InitEdgeParts()
+    {
+
+        // 1. get 1-5-8 chord
+        // 2. get 3 different inversions of 1-5-8 (within current tonality range, if possible)
+        int[] unisonNotes = stageData[curStage].unison.chordStructure;
+        Chord unisonChord = MusicUtil.Triad(curKey, 1, unisonNotes[0], unisonNotes[1], unisonNotes[2]);
+
+        // first additional degree
+        // 1. get random degree
+        // 2. get 1-3-5 chord on degree
+        // 3. get (5x3 - 3) / 2 different inversions of 1-3-5 (within current tonality range, if possible)
+
+        // second additional degree
+        // 1. get new random degree
+        // 2. get 1-3-5 chord on degree
+        // 3. get (5x3 - 3) / 2 different inversions of 1-3-5 (within current tonality range, if possible)
+
+        for (int i = 0; i < EnvironmentData.edgeParts.Length; i++)
+        {
+            if (EnvironmentData.edgeParts[i].isCorner)
+            {
+                // Degree = I.
+
+            }
+
+            bool probability50 = Random.Range(0,1f) > 0.5f;
+
+        }
+    }
+
+
+
+}
+
+[System.Serializable]
+public class StageData
+{
+    [Header("General")]
+    public string name;
+    public int toneRangeMin;
+    public int toneRangeMax;
+    [Space]
+    public ChordData unison;
+    [Space]
+    public ChordData[] additionalDegrees;
+
+  
+
+    [System.Serializable]
+    public class ChordData
+    {
+        public string name;
+        public int[] chordStructure = new int[3];
+    }
+
+    // Constructor
+    //StageData()
+    //{
+    //    additionalDegrees = new ChordData[degrees];
+    //}
 }

@@ -155,53 +155,11 @@ public static class MeshCreation
                 int ID = i * VisualController.inst.envGridLoops + j;
                 bool isCorner = EdgePart.IsCorner(ID);
                 bool isEdgeMid = EdgePart.IsEdgeMid(ID);
-                float newMainKeyProbability = Random.Range(0, 1f);
-                bool newMainKey = false;
-                if (newMainKeyProbability < 0.1f)
-                    newMainKey = true;
-
-                // Container + lineRend
                 GameObject newObj = CreateContainer("EdgePart" + ID, MeshRef.inst.envEdgeParts_parent);
                 LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, 0.01f);
 
-                // Types
-                EdgePart.Type edgePartType = EdgePart.Type.Chord;
-                //float outsideMainKeyProbability = Random.Range(0, 1f); // to do
-
-                if (isCorner)
-                {
-                    //edgePartType = EdgePart.Type.Corner;
-                    //lineRend.material.color = MeshRef.inst.envEdgePart_corner;
-                }
-                //else if (isEdgeMid)
-                //{
-                //    edgePartType = EdgePart.Type.EdgeMid;
-                //    lineRend.material.color = MeshRef.inst.envEdgePart_edgeMid;
-                //}
-                else if (newMainKey)
-                {
-                    //edgePartType = EdgePart.Type.NewMainKey;
-                    //// Complementary Color
-                    //Color newColor = Color.white - MeshRef.inst.envEdgePart_mainKey;
-                    //lineRend.material.color = newColor;
-                }
-                else
-                {
-                    //edgePartType = EdgePart.Type.MainKey;
-                    //lineRend.material.color = MeshRef.inst.envEdgePart_mainKey;
-                }
-
-                // Create
-                EnvironmentData.edgeParts[ID] = new EdgePart(ID, edgePartType, lineRend);
-
-                //Color randColor1 = new Color(0.8f, 0.3f + Random.Range(-0.2f, 0.2f), 0.5f);
-                //Color randColor2 = Color.cyan;
-                //if (Random.Range(0,1f) > 0.1f)
-                //    EnvironmentData.edgeParts[ID].lineRend.material.color = randColor1;
-                //else
-                //    EnvironmentData.edgeParts[ID].lineRend.material.color = randColor2;
-
-                Debug.Log("ID : " + ID + ", type: " + edgePartType);
+                // Assign
+                EnvironmentData.edgeParts[ID] = new EdgePart(ID, lineRend, isCorner, isEdgeMid);
             }
         }
     }
@@ -212,7 +170,7 @@ public static class MeshCreation
         // EDGE PARTS
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.curEdgeParts_parent);
-        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.curEdgePart_mat, 0.03f);
+        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.curEdgePart_mat, VisualController.inst.playerEdgePartThickness);
         player.curEdgePart = new PlayerEdgePart(PlayerEdgePart.Type.Main, lineRend);
 
         // Seoncdary
@@ -220,7 +178,7 @@ public static class MeshCreation
         for (int i = 0; i < player.curSecEdgeParts.Length; i++)
         {
             GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.curEdgeParts_parent);
-            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.curSecEdgePart_mat, 0.03f);
+            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.curSecEdgePart_mat, VisualController.inst.playerEdgePartThickness);
             player.curSecEdgeParts[i] = new PlayerEdgePart(PlayerEdgePart.Type.Second, lineRend2);
             lineRend2.enabled = false;
         }

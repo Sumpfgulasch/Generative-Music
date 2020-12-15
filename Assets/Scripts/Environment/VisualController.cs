@@ -12,8 +12,12 @@ public class VisualController : MonoBehaviour
     public int envGridLoops = 6;
     public int envVertices = 3;
     public bool showCursor = true;
-    
-    
+    [Range(0.001f, 0.05f)]
+    public float edgePartThickness = 0.01f;
+    [Range(0.001f, 0.05f)]
+    public float playerEdgePartThickness = 0.03f;
+
+
 
     void Start()
     {
@@ -21,7 +25,6 @@ public class VisualController : MonoBehaviour
         if (!showCursor)
             Cursor.visible = false;
 
-        //MeshCreation.CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
         MeshCreation.CreateMeshes();
     }
 
