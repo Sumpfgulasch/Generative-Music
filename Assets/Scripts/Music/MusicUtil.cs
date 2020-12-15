@@ -16,41 +16,55 @@ public static class MusicUtil
 
 
     // PUBLIC METHODS
-    
-    public static Chord RandomChordInKey_stay(Key curKey, Chord curChord = null)
+
+
+    /// <summary>
+    /// Generate a chord in a key and stay in a certain tonality.
+    /// </summary>
+    /// <param name="key">The current key.</param>
+    /// <param name="degree">The wanted degree.</param>
+    ///     /// <param name="tonality">The tonality you wanna stay in as close as possible.</param>
+    public static Chord ChordInKey_stayInTonality(Key key, int degree, Chord tonality)
     {
-        int[] preventDegrees;
-        if (curChord != null)
-            preventDegrees = new int[] { curChord.degree };
-        else
-            preventDegrees = new int[0];
+        // 1. Basic chord
+        Chord chord = BasicTriad(key, degree);
 
-        // 1. Degree of next chord
-        int chordDegree = RandomChordDegree(curKey, preventDegrees);
-
-        // 2. Basic chord
-        Chord chord = BasicTriad(curKey, chordDegree);
-
-        // 3. Correct inversion
-        chord = InvertChord_stayInTonality(chord, Chords.fMajor); // sehr geil; einfach geil
+        // 2. Correct inversion
+        chord = InvertChord_stayInTonality(chord, tonality);
 
         return chord;
     }
 
-    public static Chord RandomChordInKey_move(Key curKey, Chord curChord, int direction)
+
+    /// <summary>
+    /// Generate a chord in a key and move up or down. Tempo is defined by direction.
+    /// </summary>
+    /// <param name="key">The key you wanna have.</param>
+    /// <param name="degree">The degree of the wanted chord.</param>
+    /// <param name="direction">The direction to move to. Slowly up/down: [1 or -1], fast up/down: [2 or -2].</param>
+    /// <param name="relationChord">The chord from where you wanna move up or down. Usually the last chord.</param>
+    public static Chord ChordInKey_move(Key key, int degree, int direction, Chord relationChord)
     {
-        int[] preventDegrees = new int[] { curChord.degree };
+        // 1. Basic chord
+        Chord chord = BasicTriad(key, degree);
 
-        // 1. Degree of next chord
-        int chordDegree = RandomChordDegree(curKey, preventDegrees);
-
-        // 2. Basic chord
-        Chord chord = BasicTriad(curKey, chordDegree);
-
-        // 3. Correct inversion
-        chord = InvertChord_moveInDirection(chord, curChord, direction); // sehr geil; einfach geil
+        // 2. Correct inversion
+        chord = InvertChord_moveInDirection(chord, direction, relationChord);
 
         return chord;
+    }
+
+    /// <summary>
+    /// Returns a new key.
+    /// </summary>
+    /// <param name="keyNote">The note defining the key [0-11]. (0=C, 7=G, 11=H).</param>
+    /// <param name="scale">The wanted scale.</param>
+    public static Key ChangeKey(int keyNote, ScaleTypes.Name scale)
+    {
+        keyNote = ExtensionMethods.NegativeModulo(keyNote, ScaleTypes.list[scale].Length);
+        Key key = new Key(keyNote, scale);
+
+        return key;
     }
 
 
@@ -81,42 +95,16 @@ public static class MusicUtil
     //}
     #endregion
 
-    /// <summary>
-    /// Generate random chord degree. [Returns in pentatonic scales: 1-7]
-    /// </summary>
-    /// <param name="scale">The wanted scale.</param>
-    /// <param name="preventDegrees">Degrees you wanna exclude.</param>
-    private static int RandomChordDegree(Key scale, int[] preventDegrees = null)
-    {
-        // 1. Get available degrees of scale
-        int maxDegree = scale.notesPerOctave;
-        List<int> degrees = new List<int>();
-        for (int i = 1; i <= maxDegree; i++)
-            degrees.Add(i);
-
-        // 2. Prevent certain degrees?
-        if (preventDegrees != null)
-        {
-            foreach (int notThisDegree in preventDegrees)
-                degrees.Remove(notThisDegree);
-        }
-        
-        // 3. Generate random degree
-        int randDegreeIndex = Random.Range(0, degrees.Count);
-
-        return degrees[randDegreeIndex];
-    }
-
 
     /// <summary>
-    /// Returns a triad of thirds in a given scale and in the given degree within the octave of the curScale.keyNote. No inversion.
+    /// Returns a triad of thirds in a given key and in the given degree. The tonality is 48-59. No inversion.
     /// </summary>
-    /// <param name="degree">The wanted chord degree</param>
-    /// <param name="chord">The given scale</param>
+    /// <param name="key">The key in which you wanna have the chord.</param>
+    /// <param name="degree">The wanted degree within the key.</param>
     private static Chord BasicTriad(Key key, int degree)
     {
         // Generate triad, no inversion
-        int baseNoteIndex = key.keyNoteIndex + degree;
+        int baseNoteIndex = key.notesPerOctave * 4 + key.keyNoteIndex + (degree - 1);
         int baseNote = key.notes[baseNoteIndex];
         int third = key.notes[baseNoteIndex + 2];
         int fifth = key.notes[baseNoteIndex + 4];
@@ -128,7 +116,6 @@ public static class MusicUtil
 
     
 
-    // Inversion #1: Stay in tonality
     /// <summary>
     /// Get inversion that is the closest to the relation chord, in order to stay in its tonality.
     /// </summary>
@@ -138,7 +125,7 @@ public static class MusicUtil
     {
         // = Compare distances between lowest and highest notes of the current inversion and the relation chord (in semi-tones)
         Chord invertedChord = chord;           
-        int distance, lastDistance;                          // distance in semi-tones
+        int distance, lastDistance;                                         // distance in semi-tones
 
         // Nähere von oben an
         if (chord.notes[0] > relationChord.notes[0])
@@ -187,24 +174,23 @@ public static class MusicUtil
 
 
 
-    // Inversion #2: Move up/down
     /// <summary>
-    /// Return the inversion that shifts the tonality slowly or fast up or down.
+    /// Inverts a chord so that it shifts its tonality slowly or fast up or down, compared to another chord.
     /// </summary>
-    /// <param name="direction">The direction to move to. Slowly up/down: [1 or -1], fast up/down: [2 or -2].</param>
     /// <param name="chord">The chord to be inverted.</param>
-    /// <param name="lastChord">The chord that the inversion shall be the closest to. Should be the last chord.</param>
-    private static Chord InvertChord_moveInDirection(Chord chord, Chord lastChord, int direction)
+    /// <param name="direction">The direction to move to. Slowly up/down: [1 or -1], fast up/down: [2 or -2].</param>
+    /// <param name="relationChord">The chord that the inversion shall be the closest to. Usually the last chord.</param>
+    private static Chord InvertChord_moveInDirection(Chord chord, int direction, Chord relationChord)
     {
         Chord invertedChord = chord;
         
         // 1. Get the closest inversion to the relationChord as start point
-        invertedChord = InvertChord_stayInTonality(chord, lastChord);
+        invertedChord = InvertChord_stayInTonality(chord, relationChord);
 
         if (direction > 0)
         {
             // 2. Check if chord is already higher; skip one iteration then
-            bool chordIsHigher = ChordIsHigher(invertedChord, lastChord);
+            bool chordIsHigher = ChordIsHigher(invertedChord, relationChord);
 
             for (int i=0; i < Mathf.Abs(direction); i++)
             {
@@ -217,7 +203,7 @@ public static class MusicUtil
         else if (direction < 0)
         {
             // 2. Check if chord is already lower; skip one iteration then
-            bool chordIsLower = !ChordIsHigher(invertedChord, lastChord);
+            bool chordIsLower = !ChordIsHigher(invertedChord, relationChord);
 
             for (int i = 0; i < Mathf.Abs(direction); i++)
             {
@@ -233,7 +219,6 @@ public static class MusicUtil
 
 
 
-    // Inversion #3: Get next/prior
     private static Chord InvertChord_up(this Chord chord)
     {
         // Move lowest note one octave up
@@ -251,7 +236,7 @@ public static class MusicUtil
         // Move highestNote one octave down
         int[] newNotes = chord.notes.ShiftForward();
         newNotes[0] -= MusicUtil.notesPerOctave;
-        int newInversion = ExtensionMethods.Modulo(chord.inversion - 1, 3);
+        int newInversion = ExtensionMethods.NegativeModulo(chord.inversion - 1, 3);
         Chord invertedChord = new Chord(newNotes, chord.degree, newInversion, chord.baseNote);
 
         return invertedChord;
@@ -285,7 +270,7 @@ public static class MusicUtil
         int lowestNotesDistance = lowestNote1 - lowestNote2;
         int highestNotesDistance = highestNote1 - highestNote2;
 
-        if (lowestNotesDistance > 0)
+        if (lowestNotesDistance > 0)                                    // TO DO: vergleicht nicht mittlere Töne, können auch entscheidend sein
         {
             if (highestNotesDistance >= 0)
                 return true;
@@ -342,33 +327,43 @@ public class Chord
 
 
 
+// -------------------------------------------------------------------------
+
+
+
+
+//public class ChordProgression
+//{
+//    public List<int> degrees;
+//}
 
 
 
 // -------------------------------------------------------------------------
 
 
+
 public class Key
 {
     // Public attributes
     private ScaleTypes.Name scale;
-    public ScaleTypes.Name Scale   // Name, z.b. Major
+    public ScaleTypes.Name Scale        // Name, z.b. Major
     {
         get { return scale; }
         private set { scale = value; }
     }
     private int keyNote;
-    public int KeyNote             // Grundton der Skala (Wert zwischen 0-127)                    // To do: Ich will keynote zwischen 0-127 nicht festlegen, sondern Name [C-H] oder Wert [0-11]
+    public int KeyNote                  // Tiefster Grundton der Skala (Wert zwischen 0-11)
     {
         get { return keyNote; }
         private set { keyNote = value; }
     }
-    public int[] notes;             // Alle verfügbaren Midi-Noten der Skala aus 0-127 (length immer kleiner als 128!)
-    public int keyNoteIndex;        // Index des Skala-Grundtons in notes
-    public int notesPerOctave;      // Anzahl der Skala-Noten innerhalb einer Oktave; meist 7
+    public int keyNoteIndex;            // Index des tiefsten Skala-Grundtons in notes
+    public int[] notes;                 // Alle verfügbaren Midi-Noten der Tonart aus 0-127 (length immer kleiner als 128!)
+    public int notesPerOctave;          // Anzahl der Skala-Noten innerhalb einer Oktave; meist 7
     
     // Auxilliary / fields
-    private int[] stepsInOctave;    // Alle Intervalle von der Prim der Skala aus, die die Skala innerhalb einer Oktave ausmachen
+    private int[] stepsInOctave;        // Alle Intervalle von der Prim der Skala aus, die die Skala innerhalb einer Oktave ausmachen
 
 
 
@@ -376,6 +371,9 @@ public class Key
 
 
     // CONSTRUCTOR
+
+    /// <param name="keyNote">The note defining the key [0-11]. (0=C, 7=G, 11=H).</param>
+    /// <param name="scale">The wanted scale.</param>
     public Key(int keyNote, ScaleTypes.Name scale)
     {
         Set(keyNote, scale);
@@ -501,12 +499,12 @@ public static class ScaleTypes
 
 public static class Chords
 {
-    public static Chord fMajor;
-    public static Chord cMajor;
+    public static Chord f2Major;
+    public static Chord c3Major;
 
     static Chords()
     {
-        fMajor = new Chord(new int[3] { 53, 57, 60 }, 1, 0, 55);
-        cMajor = new Chord(new int[3] { 60, 64, 67 }, 1, 0, 60);
+        f2Major = new Chord(new int[3] { 41, 45, 48 }, 1, 0, 41);
+        c3Major = new Chord(new int[3] { 48, 52, 57 }, 1, 0, 48);
     }
 }

@@ -154,10 +154,10 @@ public static class MeshCreation
                 // Get data
                 int ID = i * VisualController.inst.envGridLoops + j;
                 bool isCorner = EdgePart.IsCorner(ID);
-                bool isEdgeMid = EdgePart.isEdgeMid(ID);
+                bool isEdgeMid = EdgePart.IsEdgeMid(ID);
                 float newMainKeyProbability = Random.Range(0, 1f);
                 bool newMainKey = false;
-                if (newMainKeyProbability > 0.1f)
+                if (newMainKeyProbability < 0.1f)
                     newMainKey = true;
 
                 // Container + lineRend
@@ -165,30 +165,30 @@ public static class MeshCreation
                 LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, 0.01f);
 
                 // Types
-                EdgePart.Type edgePartType;
+                EdgePart.Type edgePartType = EdgePart.Type.Chord;
                 //float outsideMainKeyProbability = Random.Range(0, 1f); // to do
 
                 if (isCorner)
                 {
-                    edgePartType = EdgePart.Type.Corner;
-                    lineRend.material.color = MeshRef.inst.envEdgePart_corner;
+                    //edgePartType = EdgePart.Type.Corner;
+                    //lineRend.material.color = MeshRef.inst.envEdgePart_corner;
                 }
-                else if (isEdgeMid)
-                {
-                    edgePartType = EdgePart.Type.EdgeMid;
-                    lineRend.material.color = MeshRef.inst.envEdgePart_edgeMid;
-                }
+                //else if (isEdgeMid)
+                //{
+                //    edgePartType = EdgePart.Type.EdgeMid;
+                //    lineRend.material.color = MeshRef.inst.envEdgePart_edgeMid;
+                //}
                 else if (newMainKey)
                 {
-                    edgePartType = EdgePart.Type.NewMainKey;
-                    // Complementary Color
-                    Color newColor = Color.white - MeshRef.inst.envEdgePart_mainKey;
-                    lineRend.material.color = newColor;
+                    //edgePartType = EdgePart.Type.NewMainKey;
+                    //// Complementary Color
+                    //Color newColor = Color.white - MeshRef.inst.envEdgePart_mainKey;
+                    //lineRend.material.color = newColor;
                 }
                 else
                 {
-                    edgePartType = EdgePart.Type.MainKey;
-                    lineRend.material.color = MeshRef.inst.envEdgePart_mainKey;
+                    //edgePartType = EdgePart.Type.MainKey;
+                    //lineRend.material.color = MeshRef.inst.envEdgePart_mainKey;
                 }
 
                 // Create

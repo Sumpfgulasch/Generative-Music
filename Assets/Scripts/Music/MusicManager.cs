@@ -10,22 +10,29 @@ public class MusicManager : MonoBehaviour
     [Header("References")]
     public List<AudioHelm.HelmController> controllers;
 
-    [Header("Properties")]
+    [Header("Contraints")]
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;
     public int highestNote = 72;
     public int lowestNote = 48;
+    public float maxVelocity = 0.3f;
+    public float minVelocity = 0.1f;
 
     // Public variables
-    [HideInInspector] public Chord curChord;
-    [HideInInspector] public Key curKey;
-    [HideInInspector] public List<int> curCadence;
-    [HideInInspector] public List<int> curSequence;
+    private Chord curChord;
+    private Key curKey;
+    private List<int> curCadence;
+    private List<int> curSequence;
+    private int stage = 0;
+    private List<int> availableDegrees;
 
     // private
+    private float velocity;
     private float minPitch, maxPitch;
     private float curPitch = 0;
     private int chordDirection = 1;
+
+    // Calc variables
 
 
     // get set
@@ -40,36 +47,49 @@ public class MusicManager : MonoBehaviour
         else if (inst != null && inst != this)
             Destroy(inst);
 
-        curKey = new Key(53, ScaleTypes.Name.Minor);
-        curChord = MusicUtil.RandomChordInKey_stay(curKey);
+        // key
+        curKey = new Key(7, ScaleTypes.Name.Minor);
+        int degree = MusicLogic.RandomChordDegree(curKey);
+        curChord = MusicUtil.ChordInKey_stayInTonality(curKey, degree, Chords.f2Major);
 
         controllers[0].SetPitchWheel(0);
     }
     
     void Update()
     {
+        ManageStages();
         ManageChordGeneration();
     }
 
     
-
-    public void ManageChordGeneration()
+    private void ManageStages()
     {
-        //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curEdgePart.changed + ", leaveEdge: " + player.curEdge.leave + ", edgeChange: " + player.curEdge.changed);
+        switch (stage)
+        {
+            case 0:
+                break;
 
+            case 1:
+                break;
 
+            default:
+                break;
+        }
+    }
+
+    private void ManageChordGeneration()
+    {
         // EDGE CHANGE
         if (player.curEdge.changed)
         {
-            int newKeyNote = curKey.KeyNote + Random.Range(1, 7);
-            if (newKeyNote > highestNote || newKeyNote < lowestNote)
-                newKeyNote = 60;
+            // New key
+            int newKeyNote = Random.Range(1, 8);
             ScaleTypes.Name newScale;
             if (curKey.Scale == ScaleTypes.Name.Major)
                 newScale = ScaleTypes.Name.Minor;
             else
                 newScale = ScaleTypes.Name.Major;
-            curKey.Set(newKeyNote, ScaleTypes.Name.Minor);
+            curKey = MusicUtil.ChangeKey(newKeyNote, newScale);
 
 
             // Pitch
@@ -79,10 +99,14 @@ public class MusicManager : MonoBehaviour
         // FIRST EDGE TOUCH
         if (player.curEdge.firstTouch)
         {
-            PlayChord(curChord, Instrument.inner, 0.3f);
+            GetVelocity();
 
+            PlayChord(curChord, Instrument.inner, velocity);
+
+            #region pitch
             // calc pitch
             SetFirstPitchRange(ref minPitch, ref maxPitch);
+            #endregion
         }
 
         // EDGE PART CHANGE
@@ -90,12 +114,14 @@ public class MusicManager : MonoBehaviour
         {
             if (!Input.GetKey(KeyCode.Space)) // für eventuellen pitch
             {
+                SetChordDirection();
+
                 StopChord(curChord, Instrument.inner);
 
-                SetChordDirection();
-                curChord = MusicUtil.RandomChordInKey_move(curKey, curChord, chordDirection);
+                int newDegree = MusicLogic.RandomChordDegree(curKey, curChord.degree);
+                curChord = MusicUtil.ChordInKey_stayInTonality(curKey, newDegree, Chords.c3Major);
 
-                PlayChord(curChord, Instrument.inner, 0.3f);
+                PlayChord(curChord, Instrument.inner, velocity);
             }
         }
 
@@ -131,6 +157,17 @@ public class MusicManager : MonoBehaviour
             chordDirection = 1;
         else if (curChord.notes[curChord.notes.Length - 1] > highestNote)
             chordDirection = -1;
+    }
+
+    private void GetVelocity()
+    {
+        velocity = Player.inst.GetVelocityFromDistance();
+    }
+
+    public void SetEdgeParts(List<int> availableDegrees)
+    {
+        // Set chords, chord patterns & modulation fields
+
     }
 
 

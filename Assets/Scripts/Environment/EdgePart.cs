@@ -7,15 +7,16 @@ using UnityEngine;
 
 public class EdgePart
 {
-    public enum Type { MainKey, OutsideMainKey, NewMainKey, Corner, EdgeMid};
+    public enum Type { Chord, Modulation};
 
     // Properties
     public int ID;
     public Type type;
     public Vector3 start;
     public Vector3 end;
-    public bool isCorner;
+    //public bool isCorner;
     public Vector3 cornerMid;
+
     public Chord chord;
 
     // Private variables
@@ -43,7 +44,6 @@ public class EdgePart
         this.ID = ID;
         this.type = type;
         this.lineRend = lineRend;
-        //this.isCorner = isCorner;
     }
     
 
@@ -77,7 +77,7 @@ public class EdgePart
         this.ID = ID;
         this.start = start;
         this.end = end;
-        this.isCorner = isCorner;
+        //this.isCorner = isCorner;
 
         this.start.z = Player.inst.transform.position.z - 0.001f;
         this.end.z = Player.inst.transform.position.z - 0.001f;
@@ -94,9 +94,9 @@ public class EdgePart
             return false;
     }
 
-    public static bool isEdgeMid(int ID)
+    public static bool IsEdgeMid(int ID)
     {
-        int testID = ID + (VisualController.inst.envGridLoops / 2);
+        int testID = ID + (VisualController.inst.envGridLoops / 2 + 1);
 
         if (testID % VisualController.inst.envGridLoops == 0)
             return true;

@@ -125,8 +125,25 @@ public static class ExtensionMethods
         return tArray;
     }
 
-    public static int Modulo(int value, int modulo)
+    public static int NegativeModulo(int value, int modulo)
     {
         return ((value % modulo) + modulo) % modulo;
+    }
+
+    public static List<int> IntToList(int number, bool excludeZero = true)
+    {
+        List<int> newList = new List<int>();
+        if (excludeZero)
+        {
+            for (int i = 1; i <= number; i++)
+                newList.Add(i);
+        }
+        else
+        {
+            for (int i = 0; i <= number; i++)
+                newList.Add(i);
+        }
+
+        return newList;
     }
 }

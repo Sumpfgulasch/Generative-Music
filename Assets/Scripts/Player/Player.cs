@@ -122,17 +122,17 @@ public partial class Player : MonoBehaviour
         // 1. Handle Data
         GetInput();
         GetVertices();
-        //PlayerData.SetPositionStates();
+        PlayerData.SetPositionStates();
         PlayerData.SetActionStates();
         CalcMovementData();
-        //PlayerData.CalcEdgeData();
+        PlayerData.CalcEdgeData();
 
         // 2. Perform movement
         KeyboardMovement();
         PerformMouseMovement();
 
-        PlayerData.SetPositionStates();
-        PlayerData.CalcEdgeData();
+        //PlayerData.SetPositionStates();
+        //PlayerData.CalcEdgeData();
     }
 
 
@@ -397,10 +397,11 @@ public partial class Player : MonoBehaviour
     }
 
 
-    float GetVelocityFromDistance()
+    public float GetVelocityFromDistance()
     {
         float scaleSize = this.transform.localScale.x - startScale;
-        velocity = scaleSize.Remap(scaleMin, 0.4f, 0.3f, 0.7f);
+        velocity = scaleSize.Remap(scaleMin, 0.4f, musicManager.minVelocity, musicManager.maxVelocity);
+        velocity = Mathf.Clamp(velocity, musicManager.minVelocity, musicManager.maxVelocity);
         return velocity;
     }
 }

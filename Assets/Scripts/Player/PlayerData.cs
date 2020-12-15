@@ -154,8 +154,8 @@ public static class PlayerData
         if (player.actionState == Player.ActionState.move && player.lastActionState == Player.ActionState.stickToEdge)
         {
             player.curEdge.leave = true;
-            player.curEdge.changed = false;
-            player.curEdgePart.changed = false;
+            //player.curEdge.changed = false;
+            //player.curEdgePart.changed = false;
         }
         else
             player.curEdge.leave = false;
