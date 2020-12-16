@@ -101,20 +101,18 @@ public static class MusicUtil
     /// </summary>
     /// <param name="key">The key in which you wanna have the chord.</param>
     /// <param name="degree">The wanted degree within the key.</param>
-    /// <param name="interval1">Interval #1. [1 = perfect unison, 8 = octave]. Interval 1 has to be 1.</param>
-    /// <param name="interval2">Interval #2. [1 = perfect unison, 8 = octave]</param>
-    /// <param name="interval3">Interval #3. [1 = perfect unison, 8 = octave]</param>
-    public static Chord Triad(Key key, int degree, int interval1, int interval2, int interval3)
+    /// <param name="intervals">Intervals. [1 = perfect unison, 8 = octave]. intervals[0] has to be 1.</param>
+    public static Chord Triad(Key key, int degree, int[] intervals)
     {
         int baseNoteIndex = key.notesPerOctave * 4 + key.keyNoteIndex + degree;
-        int note1 = key.notes[baseNoteIndex + (interval1 - 1)];
-        int note2 = key.notes[baseNoteIndex + (interval2 - 1)];
-        int note3 = key.notes[baseNoteIndex + (interval3 - 1)];
+        int note1 = key.notes[baseNoteIndex + (intervals[0] - 1)];
+        int note2 = key.notes[baseNoteIndex + (intervals[1] - 1)];
+        int note3 = key.notes[baseNoteIndex + (intervals[2] - 1)];
         int[] chordNotes = new int[3] { note1, note2, note3 };
 
         Chord newChord = new Chord(chordNotes, degree, 0, note1);
 
-        if (interval1 != 1)
+        if (intervals[0] != 1)
             Debug.LogError("Chords different than 1-3-5 are not supported yet.");
 
         return newChord;
@@ -127,7 +125,8 @@ public static class MusicUtil
     /// <param name="degree">The wanted degree within the key.</param>
     private static Chord BasicTriad(Key key, int degree)
     {
-        Chord newChord = Triad(key, degree, 1, 3, 5);
+        int[] intervals = new int[] { 1, 3, 5 };
+        Chord newChord = Triad(key, degree, intervals);
 
         return newChord;
     }
@@ -221,7 +220,7 @@ public static class MusicUtil
         else if (direction < 0)
         {
             // 2. Check if chord is already lower; skip one iteration then
-            bool chordIsLower = !ChordIsHigher(invertedChord, relationChord);
+            bool chordIsLower = ChordIsLower(invertedChord, relationChord);
 
             for (int i = 0; i < Mathf.Abs(direction); i++)
             {
@@ -244,43 +243,60 @@ public static class MusicUtil
     /// <param name="relationChord">The chord that the inversion shall be the closest to. Usually the last chord.</param>
     /// <param name="minNote">Lowest possible note.</param>
     /// <param name="maxNote">Highest possible note.</param>
-    public static Chord[] DifferentChordInversions(Chord chord, int count, Chord relationChord, int minNote, int maxNote)
+    public static List<Chord> ChordInversions(Chord chord, int count, Chord relationChord, int minNote, int maxNote)
     {
-        Chord[] invertedChords = new Chord[count];
+        Chord[] inversions = new Chord[count];
+        inversions[0] = InvertChord_stayInTonality(chord, relationChord);
+        Chord startChord = inversions[0];
+        Chord nextInversion;
+        bool alternativelyUpAndDown = true;
+        int invertDirection = 1;
 
-        invertedChords[0] = InvertChord_stayInTonality(chord, relationChord);
-        Chord closestChord = invertedChords[0];
-        bool hitMaxNote = false, hitMinNote = false;
-        //int i = 1;
+        //Debug.Log("RelationChord: " + relationChord.notes[0] + ", " + relationChord.notes[1] + ", " + relationChord.notes[2]);
+        //Debug.Log("StartChord: " + startChord.notes[0] + ", " + startChord.notes[1] + ", " + startChord.notes[2]);
+
         for (int i = 1; i < count; i++)
         {
-            int invertDirection = 1;
-            Chord nextInversion = null;
-
-            nextInversion = InvertChord_moveInDirection(closestChord, invertDirection, closestChord);
+            nextInversion = InvertChord_moveInDirection(startChord, invertDirection, startChord);
+            //Debug.Log("i : " + i + ", direction: " + invertDirection + ", nextInversion: " + nextInversion.notes[0] + ", " + nextInversion.notes[1] + ", " + nextInversion.notes[2]);
             bool chordIsWithinRange = ChordIsWithinRange(nextInversion, minNote, maxNote);
-            
 
-            if (chordIsWithinRange)
+            // Phase 1: Go alternatively up and down
+            if (alternativelyUpAndDown)
             {
-                invertedChords[i] = nextInversion;
-
-                // Go alternatively up and down
+                invertDirection *= -1;
                 if (i % 2 == 0)
-                {
                     invertDirection++;
-                }
-                else
+
+                if (!chordIsWithinRange)
                 {
-                    invertDirection *= -1;
+                    // Reverse last inversion, assign & go to phase 2
+                    alternativelyUpAndDown = false;
+
+                    nextInversion = InvertChord_moveInDirection(startChord, invertDirection, startChord);
+                    invertDirection += 1 * (int) Mathf.Sign(invertDirection);
+
+                    chordIsWithinRange = ChordIsWithinRange(nextInversion, minNote, maxNote);
+                    #region Debug message for "missing" functionality
+                    if (!chordIsWithinRange)
+                        Debug.Log("ERROR! Chord inversions [" + (i+1) + " / " + count + "]: Phase 2 is not within range anymore");
+                    #endregion
                 }
             }
+            // Phase 2: Search only downwards or upwards
             else
             {
-                break;
+                invertDirection += 1 * (int)Mathf.Sign(invertDirection);
+                #region Debug message for "missing" functionality
+                if (!chordIsWithinRange)
+                    Debug.Log("ERROR! Chord inversions [" + (i+1) + " / " + count + "]: Phase 2 is not within range anymore");
+                #endregion
             }
-            
+
+            inversions[i] = nextInversion;
         }
+
+        return inversions.ToList();
     }
 
 
@@ -328,13 +344,9 @@ public static class MusicUtil
 
     private static bool ChordIsHigher(Chord chord, Chord relationChord)
     {
-        int lowestNote1 = chord.notes[0];
-        int highestNote1 = chord.notes[chord.notes.Length - 1];
-        int lowestNote2 = relationChord.notes[0];
-        int highestNote2 = relationChord.notes[relationChord.notes.Length - 1];
-
-        int lowestNotesDistance = lowestNote1 - lowestNote2;
-        int highestNotesDistance = highestNote1 - highestNote2;
+        int lowestNotesDistance = 0;
+        int highestNotesDistance = 0;
+        GetDistanceData(chord, relationChord, ref lowestNotesDistance, ref highestNotesDistance);
 
         if (lowestNotesDistance > 0)                                    // TO DO: vergleicht nicht mittlere Töne, können auch entscheidend sein
         {
@@ -354,31 +366,66 @@ public static class MusicUtil
             return false;
     }
 
+    private static bool ChordIsLower(Chord chord, Chord relationChord)
+    {
+        int lowestNotesDistance = 0;
+        int highestNotesDistance = 0;
+        GetDistanceData(chord, relationChord, ref lowestNotesDistance, ref highestNotesDistance);
 
-    private static bool ChordIsWithinRange(Chord chord, int minNote, int maxNote, ref bool highIsHIgher)
+        if (lowestNotesDistance < 0)                                    // TO DO: vergleicht nicht mittlere Töne, können auch entscheidend sein
+        {
+            if (highestNotesDistance <= 0)
+                return true;
+            else
+                return false;
+        }
+        else if (lowestNotesDistance == 0)
+        {
+            if (highestNotesDistance < 0)
+                return true;
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+
+    private static void GetDistanceData(Chord chord, Chord relationChord, ref int lowestNotesDistance, ref int highestNotesDistance)
+    {
+        int lowestNote1 = chord.notes[0];
+        int highestNote1 = chord.notes[chord.notes.Length - 1];
+        int lowestNote2 = relationChord.notes[0];
+        int highestNote2 = relationChord.notes[relationChord.notes.Length - 1];
+
+        lowestNotesDistance = lowestNote1 - lowestNote2;
+        highestNotesDistance = highestNote1 - highestNote2;
+    }
+
+
+    private static bool ChordIsWithinRange(Chord chord, int minNote, int maxNote)
     {
         int highestNote = chord.notes[chord.notes.Length - 1];
         int lowestNote = chord.notes[0];
 
-        //if (highestNote <= maxNote && lowestNote >= minNote)
-        //    return true;
-        //else
-        //    return false;
-
-        if (highestNote > maxNote)
-        {
-            highIsHIgher = true;
-            return false;
-        }
-        else if( lowestNote < minNote)
-        {
-            highIsHIgher = false;
-            return false;
-        }
-        else
-        {
+        if (highestNote <= maxNote && lowestNote >= minNote)
             return true;
-        }
+        else
+            return false;
+
+        //if (highestNote > maxNote)
+        //{
+        //    highIsHIgher = true;
+        //    return false;
+        //}
+        //else if( lowestNote < minNote)
+        //{
+        //    highIsHIgher = false;
+        //    return false;
+        //}
+        //else
+        //{
+        //    return true;
+        //}
     }
 
 }
@@ -594,10 +641,12 @@ public static class Chords
 {
     public static Chord f2Major;
     public static Chord c3Major;
+    public static Chord c4Major;
 
     static Chords()
     {
         f2Major = new Chord(new int[3] { 41, 45, 48 }, 1, 0, 41);
-        c3Major = new Chord(new int[3] { 48, 52, 57 }, 1, 0, 48);
+        c3Major = new Chord(new int[3] { 48, 52, 55 }, 1, 0, 48);
+        c4Major = new Chord(new int[3] { 60, 64, 67 }, 1, 0, 60);
     }
 }

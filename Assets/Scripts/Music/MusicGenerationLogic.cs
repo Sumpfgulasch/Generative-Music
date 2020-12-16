@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class MusicLogic
+public static class MusicGenerationLogic
 {
-    
+    // Alle Logik zur Generierung von Musik???
 
     // CONSTRUCTOR
-    static MusicLogic()
+    static MusicGenerationLogic()
     {
 
     }

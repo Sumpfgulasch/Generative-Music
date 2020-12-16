@@ -6,7 +6,6 @@ public class MusicManager : MonoBehaviour
 {
     public static MusicManager inst;
 
-
     // Public properties
     [Header("References")]
     public List<AudioHelm.HelmController> controllers;
@@ -44,10 +43,11 @@ public class MusicManager : MonoBehaviour
     // Calc variables
 
 
-    // get set
+    // Properties
     Player player { get { return Player.inst; } }
+    VisualController visualController { get { return VisualController.inst; } }
 
-    
+
     void Start()
     {
         // Init
@@ -55,12 +55,18 @@ public class MusicManager : MonoBehaviour
             inst = this;
         else if (inst != null && inst != this)
             Destroy(inst);
-        InitEdgeParts();
+
 
         // key
-        curKey = new Key(7, ScaleTypes.Name.Minor);
-        int degree = MusicLogic.RandomChordDegree(curKey);
+        curKey = new Key(7, ScaleTypes.Name.Major);
+
+        int degree = MusicGenerationLogic.RandomChordDegree(curKey);
         curChord = MusicUtil.ChordInKey_stayInTonality(curKey, degree, Chords.f2Major);
+
+
+        InitEdgeParts();
+
+
 
         controllers[0].SetPitchWheel(0);
     }
@@ -93,26 +99,31 @@ public class MusicManager : MonoBehaviour
         if (player.curEdge.changed)
         {
             // New key
-            int newKeyNote = Random.Range(1, 8);
-            ScaleTypes.Name newScale;
-            if (curKey.Scale == ScaleTypes.Name.Major)
-                newScale = ScaleTypes.Name.Minor;
-            else
-                newScale = ScaleTypes.Name.Major;
-            curKey = MusicUtil.ChangeKey(newKeyNote, newScale);
+            //int newKeyNote = Random.Range(1, 8);
+            //ScaleTypes.Name newScale;
+            //if (curKey.Scale == ScaleTypes.Name.Major)
+            //    newScale = ScaleTypes.Name.Minor;
+            //else
+            //    newScale = ScaleTypes.Name.Major;
+            //curKey = MusicUtil.ChangeKey(newKeyNote, newScale);
 
-
-            // Pitch
+            #region pitch
             SetNextPitchRange(ref minPitch, ref maxPitch);
+            #endregion
         }
 
         // FIRST EDGE TOUCH
         if (player.curEdge.firstTouch)
         {
             GetVelocity();
+            curChord = GetChordFromEdgePart();
 
             PlayChord(curChord, Instrument.inner, velocity);
-
+            for (int i=0; i<EnvironmentData.edgeParts.Length; i++)
+            {
+                //if (EnvironmentData.edgeParts[i].chord != null)
+                    //Debug.Log("ID: " + i + ", chord: " + EnvironmentData.edgeParts[i].chord.notes[0] + ", " + EnvironmentData.edgeParts[i].chord.notes[1] + ", " + EnvironmentData.edgeParts[i].chord.notes[2]);
+            }
             #region pitch
             // calc pitch
             SetFirstPitchRange(ref minPitch, ref maxPitch);
@@ -124,13 +135,11 @@ public class MusicManager : MonoBehaviour
         {
             if (!Input.GetKey(KeyCode.Space)) // für eventuellen pitch
             {
-                SetChordDirection();
-
-
                 StopChord(curChord, Instrument.inner);
 
-                int newDegree = MusicLogic.RandomChordDegree(curKey, curChord.degree);
-                curChord = MusicUtil.ChordInKey_stayInTonality(curKey, newDegree, Chords.c3Major);
+                int newDegree = MusicGenerationLogic.RandomChordDegree(curKey, curChord.degree);
+                //curChord = MusicUtil.ChordInKey_stayInTonality(curKey, newDegree, Chords.c3Major);
+                curChord = GetChordFromEdgePart();
 
                 PlayChord(curChord, Instrument.inner, velocity);
             }
@@ -175,10 +184,12 @@ public class MusicManager : MonoBehaviour
         velocity = Player.inst.GetVelocityFromDistance();
     }
 
-    public void SetEdgeParts(List<int> availableDegrees)
+    private Chord GetChordFromEdgePart()
     {
-        // Set chords, chord patterns & modulation fields
+        int playerID = player.curEdgePart.ID;
+        Chord chord = EnvironmentData.edgeParts[playerID].chord;
 
+        return chord;
     }
 
 
@@ -271,11 +282,29 @@ public class MusicManager : MonoBehaviour
 
     private void InitEdgeParts()
     {
+        // CORNERS
 
         // 1. get 1-5-8 chord
+        int[] unisonChordStructure = stageData[curStage].unison.chordStructure;
+        Chord unisonChord = MusicUtil.Triad(curKey, 1, unisonChordStructure);
+
         // 2. get 3 different inversions of 1-5-8 (within current tonality range, if possible)
-        int[] unisonNotes = stageData[curStage].unison.chordStructure;
-        Chord unisonChord = MusicUtil.Triad(curKey, 1, unisonNotes[0], unisonNotes[1], unisonNotes[2]);
+        List<Chord> unisonChords = MusicUtil.ChordInversions(unisonChord, VisualController.inst.envVertices, Chords.c4Major, stageData[0].toneRangeMin, stageData[0].toneRangeMax);
+
+        for (int i = 0; i < visualController.envVertices; i++)
+        {
+            // chords & colors
+            int ID1 = ExtensionMethods.NegativeModulo(i * visualController.envGridLoops - 1, visualController.EdgePartCount);
+            int ID2 = i * visualController.envGridLoops;
+
+            EnvironmentData.edgeParts[ID1].chord = unisonChords[i];
+            EnvironmentData.edgeParts[ID1].lineRend.material.color = MeshRef.inst.envEdgePart_corner;
+            EnvironmentData.edgeParts[ID2].chord = unisonChords[i];
+            EnvironmentData.edgeParts[ID2].lineRend.material.color = MeshRef.inst.envEdgePart_corner;
+        }
+
+
+        // REST
 
         // first additional degree
         // 1. get random degree
@@ -286,16 +315,26 @@ public class MusicManager : MonoBehaviour
         // 1. get new random degree
         // 2. get 1-3-5 chord on degree
         // 3. get (5x3 - 3) / 2 different inversions of 1-3-5 (within current tonality range, if possible)
-
-        for (int i = 0; i < EnvironmentData.edgeParts.Length; i++)
+        for (int ID = 0; ID < EnvironmentData.edgeParts.Length; ID++)
         {
-            if (EnvironmentData.edgeParts[i].isCorner)
+            EdgePart edgePart = EnvironmentData.edgeParts[ID];
+
+            if (edgePart.isCorner)
+                continue;
+
+            bool probability50 = Random.Range(0, 1f) > 0.5f;
+
+            if (probability50)
             {
-                // Degree = I.
+                // 
+            }
+
+            if (edgePart.isEdgeMid)
+            {
 
             }
 
-            bool probability50 = Random.Range(0,1f) > 0.5f;
+            
 
         }
     }

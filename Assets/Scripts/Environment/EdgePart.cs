@@ -114,6 +114,18 @@ public class EdgePart
             return false;
         }
     }
+
+    public static bool IsCornerRightPart(int ID)
+    {
+        if (ID % VisualController.inst.envGridLoops == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
 
 

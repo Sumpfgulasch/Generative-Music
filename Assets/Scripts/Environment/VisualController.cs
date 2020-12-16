@@ -17,7 +17,11 @@ public class VisualController : MonoBehaviour
     [Range(0.001f, 0.05f)]
     public float playerEdgePartThickness = 0.03f;
 
-
+    // Properties
+    public int EdgePartCount
+    {
+        get { return envVertices * envGridLoops; }
+    }    
 
     void Start()
     {
