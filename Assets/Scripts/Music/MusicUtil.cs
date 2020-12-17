@@ -252,13 +252,9 @@ public static class MusicUtil
         bool alternativelyUpAndDown = true;
         int invertDirection = 1;
 
-        //Debug.Log("RelationChord: " + relationChord.notes[0] + ", " + relationChord.notes[1] + ", " + relationChord.notes[2]);
-        //Debug.Log("StartChord: " + startChord.notes[0] + ", " + startChord.notes[1] + ", " + startChord.notes[2]);
-
         for (int i = 1; i < count; i++)
         {
             nextInversion = InvertChord_moveInDirection(startChord, invertDirection, startChord);
-            //Debug.Log("i : " + i + ", direction: " + invertDirection + ", nextInversion: " + nextInversion.notes[0] + ", " + nextInversion.notes[1] + ", " + nextInversion.notes[2]);
             bool chordIsWithinRange = ChordIsWithinRange(nextInversion, minNote, maxNote);
 
             // Phase 1: Go alternatively up and down
@@ -411,21 +407,6 @@ public static class MusicUtil
             return true;
         else
             return false;
-
-        //if (highestNote > maxNote)
-        //{
-        //    highIsHIgher = true;
-        //    return false;
-        //}
-        //else if( lowestNote < minNote)
-        //{
-        //    highIsHIgher = false;
-        //    return false;
-        //}
-        //else
-        //{
-        //    return true;
-        //}
     }
 
 }
@@ -436,8 +417,11 @@ public static class MusicUtil
 
 // -------------------------------------------------------------------------
 
-// Existieren immer nur innerhalb einer Skala
-public class Chord
+
+
+
+
+public class Chord          // Existieren immer nur innerhalb einer Skala
 {
     // Public attributes
     public int[] notes;     // Noten des Akkords; erstmal immer 3; Werte zwischen 0-127
@@ -467,19 +451,39 @@ public class Chord
 
 
 
+public static class Chords
+{
+    public static Chord f2Major;
+    public static Chord c3Major;
+    public static Chord c4Major;
+
+    static Chords()
+    {
+        f2Major = new Chord(new int[3] { 41, 45, 48 }, 1, 0, 41);
+        c3Major = new Chord(new int[3] { 48, 52, 55 }, 1, 0, 48);
+        c4Major = new Chord(new int[3] { 60, 64, 67 }, 1, 0, 60);
+    }
+}
+
+
+
+
+
+public class ChordData
+{
+    //public string name;
+    public int degree;
+    public int[] chordIntervals = new int[3];
+}
+
+
+
+
+
 // -------------------------------------------------------------------------
 
 
 
-
-//public class ChordProgression
-//{
-//    public List<int> degrees;
-//}
-
-
-
-// -------------------------------------------------------------------------
 
 
 
@@ -507,9 +511,6 @@ public class Key
 
 
 
-
-
-
     // CONSTRUCTOR
 
     /// <param name="keyNote">The note defining the key [0-11]. (0=C, 7=G, 11=H).</param>
@@ -519,9 +520,6 @@ public class Key
         Set(keyNote, scale);
     }
     
-
-
-
 
     // PUBLIC METHODS
 
@@ -536,7 +534,6 @@ public class Key
     }
 
     
-
     // PRIVATE METHODS
 
     private int[] GetScaleNotes(int keyNote, int[]stepsInOctave, int notesPerOctave)
@@ -607,10 +604,6 @@ public static class ScaleTypes
     public enum Name { Major, Minor, HexatonicBluesMinor };
     public static Dictionary<Name, int[]> list;
 
-    
-
-
-
 
     // CONSTRUCTOR: Create all scales
     static ScaleTypes()
@@ -621,32 +614,5 @@ public static class ScaleTypes
             { Name.Minor, new int[7] { 0, 2, 3, 5, 7, 8, 10 } },
             { Name.HexatonicBluesMinor, new int[6] { 0, 3, 5, 6, 7, 10} }
         };
-    }
-}
-
-
-
-
-
-
-// -------------------------------------------------------------------------
-
-
-
-
-
-
-
-public static class Chords
-{
-    public static Chord f2Major;
-    public static Chord c3Major;
-    public static Chord c4Major;
-
-    static Chords()
-    {
-        f2Major = new Chord(new int[3] { 41, 45, 48 }, 1, 0, 41);
-        c3Major = new Chord(new int[3] { 48, 52, 55 }, 1, 0, 48);
-        c4Major = new Chord(new int[3] { 60, 64, 67 }, 1, 0, 60);
     }
 }

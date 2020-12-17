@@ -111,6 +111,7 @@
     <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\Environment\ObjectSpawner.cs" />
+    <Compile Include="Assets\Scripts\Music\LoopData.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Shaders\Custom\Mask.shader" />

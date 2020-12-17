@@ -77,6 +77,12 @@ public static class MusicGenerationLogic
         return degrees;
     }
 
+    public static void ChordDegrees_Popular(Key key, int count)
+    {
+
+    }
+
+    // Weitere Funktion: Akkordstruktur- und Stellung abhängig von Tonlage (unten weite Intervalle)
 
 
     // PRIVATE FUNCTIONS

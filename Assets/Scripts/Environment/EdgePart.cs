@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class EdgePart
 {
-    public enum Type { Chord, Modulation};
+    public enum Type { Chord, ChordModulation, Pitch};
 
     // Properties
     public int ID;
@@ -17,11 +17,9 @@ public class EdgePart
     public bool isCorner;
     public bool isEdgeMid;
     public LineRenderer lineRend;
-
     public Chord chord;
 
     // Private variables
-
     private Color color;
 
 
@@ -80,7 +78,7 @@ public class EdgePart
         this.ID = ID;
         this.start = start;
         this.end = end;
-        //this.isCorner = isCorner;
+        this.isCorner = isCorner;
 
         this.start.z = Player.inst.transform.position.z - 0.001f;
         this.end.z = Player.inst.transform.position.z - 0.001f;
@@ -115,7 +113,7 @@ public class EdgePart
         }
     }
 
-    public static bool IsCornerRightPart(int ID)
+    public static bool IsCorner_RightPart(int ID)
     {
         if (ID % VisualController.inst.envGridLoops == 0)
         {

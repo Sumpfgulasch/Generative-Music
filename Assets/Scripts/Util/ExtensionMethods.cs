@@ -146,4 +146,14 @@ public static class ExtensionMethods
 
         return newList;
     }
+
+    public static bool Probability(float probability)
+    {
+        // probability has to be 0 - 1!
+
+        float value = Random.value;
+        if (value <= probability)
+            return true;
+        return false;
+    }
 }
