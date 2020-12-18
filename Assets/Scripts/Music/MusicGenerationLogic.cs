@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public static class MusicGenerationLogic
 {
@@ -55,11 +56,11 @@ public static class MusicGenerationLogic
         // 2. Exclude tritonus
         if (preventTritonus)
         {
-            if (key.Scale == ScaleTypes.Name.Major)
+            if (key.Scale == Scale.Name.Major)
             {
                 availableDegrees.Remove(7);
             }
-            else if (key.Scale == ScaleTypes.Name.Minor)
+            else if (key.Scale == Scale.Name.Minor)
             {
                 availableDegrees.Remove(2);
             }
@@ -82,11 +83,17 @@ public static class MusicGenerationLogic
 
     }
 
+    public static Key RandomKey()
+    {
+        int randKeyNote = Random.Range(0, MusicUtil.notesPerOctave);
+        Scale.Name randScale = ExtensionMethods.RandomEnumValue<Scale.Name>();
+
+        Key key = new Key(randKeyNote, randScale);
+
+        return key;
+    }
+
     // Weitere Funktion: Akkordstruktur- und Stellung abhängig von Tonlage (unten weite Intervalle)
-
-
-    // PRIVATE FUNCTIONS
-
 
 
 }

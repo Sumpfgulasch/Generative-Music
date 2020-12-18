@@ -59,9 +59,9 @@ public static class MusicUtil
     /// </summary>
     /// <param name="keyNote">The note defining the key [0-11]. (0=C, 7=G, 11=H).</param>
     /// <param name="scale">The wanted scale.</param>
-    public static Key ChangeKey(int keyNote, ScaleTypes.Name scale)
+    public static Key ChangeKey(int keyNote, Scale.Name scale)
     {
-        keyNote = ExtensionMethods.NegativeModulo(keyNote, ScaleTypes.list[scale].Length);
+        keyNote = ExtensionMethods.NegativeModulo(keyNote, Scale.types[scale].Length);
         Key key = new Key(keyNote, scale);
 
         return key;
@@ -490,8 +490,8 @@ public class ChordData
 public class Key
 {
     // Public attributes
-    private ScaleTypes.Name scale;
-    public ScaleTypes.Name Scale        // Name, z.b. Major
+    private Scale.Name scale;
+    public Scale.Name Scale        // Name, z.b. Major
     {
         get { return scale; }
         private set { scale = value; }
@@ -515,7 +515,7 @@ public class Key
 
     /// <param name="keyNote">The note defining the key [0-11]. (0=C, 7=G, 11=H).</param>
     /// <param name="scale">The wanted scale.</param>
-    public Key(int keyNote, ScaleTypes.Name scale)
+    public Key(int keyNote, Scale.Name scale)
     {
         Set(keyNote, scale);
     }
@@ -523,12 +523,12 @@ public class Key
 
     // PUBLIC METHODS
 
-    public void Set(int keyNote, ScaleTypes.Name scale)
+    public void Set(int keyNote, Scale.Name scale)
     {
         this.Scale = scale;
         this.KeyNote = keyNote;
-        this.stepsInOctave = ScaleTypes.list[scale];
-        this.notesPerOctave = ScaleTypes.list[scale].Length;
+        this.stepsInOctave = global::Scale.types[scale];
+        this.notesPerOctave = global::Scale.types[scale].Length;
         this.notes = GetScaleNotes(keyNote, stepsInOctave, notesPerOctave);
         this.keyNoteIndex = System.Array.IndexOf(this.notes, this.KeyNote);
     }
@@ -599,20 +599,21 @@ public class Key
 
 
 
-public static class ScaleTypes
+public  class Scale
 {
-    public enum Name { Major, Minor, HexatonicBluesMinor };
-    public static Dictionary<Name, int[]> list;
+    public enum Name { Major, Minor };
+    public  Dictionary<Name, int[]> types;
 
 
     // CONSTRUCTOR: Create all scales
-    static ScaleTypes()
+     Scale()
     {
-        list = new Dictionary<Name, int[]>()
+        types = new Dictionary<Name, int[]>()
         {
             { Name.Major, new int[7] { 0, 2, 4, 5, 7, 9, 11 } },
-            { Name.Minor, new int[7] { 0, 2, 3, 5, 7, 8, 10 } },
-            { Name.HexatonicBluesMinor, new int[6] { 0, 3, 5, 6, 7, 10} }
+            { Name.Minor, new int[7] { 0, 2, 3, 5, 7, 8, 10 } }
         };
+
+        //Name.HexatonicBluesMinor, new int[6] { 0, 3, 5, 6, 7, 10 }
     }
 }

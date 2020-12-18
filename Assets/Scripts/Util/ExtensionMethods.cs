@@ -156,4 +156,29 @@ public static class ExtensionMethods
             return true;
         return false;
     }
+
+    public static int GetRandomWeightedIndex (Weight[] weights)
+    {
+        // Sum of weights has to be 1
+
+        float addedWeights = 0;
+        float randomNumber = Random.value;
+
+        for (int i = 0; i < weights.Length; i++)
+        {
+            addedWeights += weights[i].value;
+
+            if (addedWeights <= randomNumber)
+                return i;
+        }
+        Debug.LogError("Summe der weights ist nicht 1");
+        return -1;
+    }
+
+    public static T RandomEnumValue<T>()
+    {
+        var values = System.Enum.GetValues(typeof(T));
+        int random = Random.Range(0, values.Length);
+        return (T)values.GetValue(random);
+    }
 }

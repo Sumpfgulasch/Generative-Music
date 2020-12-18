@@ -10,79 +10,110 @@ public static class LoopData
     // Gemanaged wird alles hier; fertige Akkorde werden in EdgeParts hinein gespeichert
 
     public static int basicChordTypes_count;
-    public static ChordData[] chordTypes;
+    public static ChordData[] chordData;
     public static EdgePart.Type[] modulationTypes;
 
     public static int toneRangeMin;
     public static int toneRangeMax;
 
-    public static Weights weights;
 
+    public static Dictionary<string, Weight[]> weights;
+    public static string[] weightAreas;
+
+ 
 
     // CONSTRUCTOR
     static LoopData()
     {
-        // INIT LOOP
+        
     }
 
-    public class Weights
+    private static Dictionary<string, Weight[]> InitWeights()
     {
-        public TonalRange tonalRange;
-        public Fields fields;
-        public ChordIntervals chordIntervals;
+        // = Create a dicitonary with data structures and values (name, value) for the global weights
 
-        public class TonalRange
+        // 1. Data structures and values
+
+        // 1.1. Areas
+        weightAreas = new string[] { Area.tonalRange, Area.fields, Area.chordIntervals };       // WICHTIG #1: Order is important! If changed, change the names, too!
+        // 1.2. Variable-names
+        string[][] weightNames = new string[][]                                                 // WICHTIG #2: Variablen-Namen stimmen mit den Animator-Parametern überein!
         {
-            public float stay = 1;
-            public float extend;
-            public float reduce;
-            public float up;
-            public float down;
+            // 1. Tonal Range
+            new string [] { Action.stay, Action.increase, Action.decrease, Action.up, Action.down},
+            // 2. Fields
+            new string [] { Action.stay, Action.add, Action.remove},                              
+            // 3. Chord Intervals
+            new string [] { Action.stay, Action.change}
+        };
+        // 1.3. Values                                                                           // TO DO: berechnen
+        int[][] weightValues = new int[weightNames.Length][];
+        for (int i = 0; i < weightNames.Length; i++)
+        {
+            weightValues[i] = new int[weightValues[i].Length];
 
-            public bool[] weights;
+            for (int j = 0; j < weightNames[i].Length; j++)
+            {
+                if (j == 0)
+                    weightValues[i][j] = 1;
+                else
+                    weightValues[i][j] = 0;
+            }
         }
 
-        public class Fields
-        {
-            public float stay = 1;
-            public float add;
-            public float remove;
+        // 2. Create dictionary
+        var newWeights = Weights.Create(weightAreas, weightNames, weightValues);
 
-            public Dictionary<string, float> weights = new Dictionary<string, float> { { "test", 1f } };
-        }
+        return newWeights;
+    }
+    
+    public static void Init()
+    {
+        // 0. Weights
+        weights = InitWeights();
 
-        public class ChordIntervals
-        {
-            public float stay = 1;
-            public float change;
-        }
+        // 1. key
+        MusicManager.inst.curKey = MusicGenerationLogic.RandomKey();
+
+        // 2. tone range
+
+        // 3. chord types
+            // count
+            // degrees
+            // intervals
+
+        // 4. chords
+            // generate
+
+        // 5. fields
+            // assign chords to edgeParts
+            // colors
     }
 
+
+    // ------------------------
 
 
 
     public static void Generate(int stage)
     {
-        GetTonalRange(stage);
-        ManageFields(stage);
-        GetChordIntervals(stage);
-        GetChords(stage);
+        SetTonalRange(stage);
+        SetFields(stage);
+        SetChordIntervals(stage);
+        SetChords(stage);
 
-        
+        ChangeWeights(stage);
 
-        // =  based on weights
-        //StageData test = new StageData();
-        //return test;
 
         // = Update chords & colors of the edgeParts; dependant on generated stageData
         // CORNERS
 
         // 1. get 1-5-8 chord
-        int[] unisonChordStructure = stageData[curStage].unison.chordStructure;
-        Chord unisonChord = MusicUtil.Triad(curKey, 1, unisonChordStructure);
+        int[] chordIntervals = stageData[curStage].unison.chordStructure;
+        Chord chord = MusicUtil.Triad(curKey, 1, chordIntervals);
 
         // 2. get 3 different inversions of 1-5-8 (within current tonality range, if possible)
-        List<Chord> unisonChords = MusicUtil.ChordInversions(unisonChord, VisualController.inst.envVertices, Chords.c4Major, stageData[0].toneRangeMin, stageData[0].toneRangeMax);
+        List<Chord> unisonChords = MusicUtil.ChordInversions(chord, VisualController.inst.envVertices, Chords.c4Major, stageData[0].toneRangeMin, stageData[0].toneRangeMax);
 
         for (int i = 0; i < visualController.envVertices; i++)
         {
@@ -115,12 +146,6 @@ public static class LoopData
             if (edgePart.isCorner)
                 continue;
 
-            bool probability50 = Random.Range(0, 1f) > 0.5f;
-
-            if (probability50)
-            {
-                // 
-            }
 
             if (edgePart.isEdgeMid)
             {
@@ -132,35 +157,47 @@ public static class LoopData
         }
     }
 
-    // Alle haben weights. Bisher unabhängig von bisherigen Werten, sind nur feste Wahrscheinlichkeiten
 
-    private static void GetTonalRange(int stage)
+
+    private static void SetTonalRange(int stage)
     {
-        float weight_stay = weights.tonalRange.stay;
+        // 1. Decide if to change the constraining data
+        // (= keep, increase, decrease, shift)
+        Weight[] curWeights = weights[Area.tonalRange];
+        string nextAction = Weights.RandomWeightedAction(curWeights);
+        SetAnimatorVariables(nextAction);
 
-        if (!ExtensionMethods.Probability(weight_stay))
-        {
-            toneRangeMin = 20;
-            toneRangeMax = 100;
-        }
+        Debug.Log("nextOperation: " + nextAction);
     }
 
-    private static void ManageFields(int stage)
+    private static void SetFields(int stage)
+    {
+        // 1. Decide if to change the constraining data
+        // (= keep fields, add new field (chord/mod), remove field)
+        Weight[] curWeights = weights[Area.fields];
+        string nextAction = Weights.RandomWeightedAction(curWeights);
+        SetAnimatorVariables(nextAction);
+    }
+
+    private static void SetChordIntervals(int stage)
     {
 
     }
 
-    private static void GetChordIntervals(int stage)
+    private static void SetChords(int stage)
     {
 
     }
 
-    private static void GetChords(int stage)
+    private static void ChangeWeights (int stage)
     {
 
     }
 
+    private static void SetAnimatorVariables(string parameter)
+    {
 
+    }
 
 
 
@@ -189,9 +226,27 @@ public static class LoopData
         }
     }
 
-
 }
 
 
 
 
+public static class Area
+{
+    public static string tonalRange = "tonalRange";
+    public static string fields = "fields";
+    public static string chordIntervals = "chordIntervals";
+    public static string chords = "chords";
+}
+
+public static class Action
+{
+    public static string stay = "stay";
+    public static string increase = "increase";
+    public static string decrease = "decrease";
+    public static string up = "up";
+    public static string down = "down";
+    public static string add = "add";
+    public static string remove = "remove";
+    public static string change = "change";
+}

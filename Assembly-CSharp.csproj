@@ -105,13 +105,14 @@
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\EnableAfterTime.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlTorque.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\NoteBlaster.cs" />
+    <Compile Include="Assets\Scripts\Music\LoopData.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmPatchFormat.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetSleepThreshold.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Native.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\Environment\ObjectSpawner.cs" />
-    <Compile Include="Assets\Scripts\Music\LoopData.cs" />
+    <Compile Include="Assets\Scripts\Music\Weights.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Shaders\Custom\Mask.shader" />

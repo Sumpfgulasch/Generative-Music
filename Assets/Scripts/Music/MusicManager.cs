@@ -23,19 +23,18 @@ public class MusicManager : MonoBehaviour
 
 
     // Private variables
-    private Chord curChord;
-    private Key curKey;
-    private List<int> curCadence;
-    private List<int> curSequence;
-    private int stage = 0;
-    private List<int> availableDegrees;
+    [HideInInspector] public Key curKey;
+    [HideInInspector] public Chord curChord;
+    [HideInInspector] public List<int> curCadence;
+    [HideInInspector] public List<int> curSequence;
 
+    private int curLoop = 0;
     private float velocity;
     private float minPitch, maxPitch;
     private float curPitch = 0;
     private int chordDirection = 1;
 
-    private int curLoop = 0;
+
 
     // Calc variables
 
@@ -48,25 +47,19 @@ public class MusicManager : MonoBehaviour
     void Start()
     {
         // Init
-        if (inst == null)
-            inst = this;
-        else if (inst != null && inst != this)
-            Destroy(inst);
-
-        // key
-        curKey = new Key(7, ScaleTypes.Name.Major);
+        inst = this;
 
         int degree = MusicGenerationLogic.RandomChordDegree(curKey);
-        curChord = MusicUtil.ChordInKey_stayInTonality(curKey, degree, Chords.f2Major);
+        curChord = MusicUtil.ChordInKey_stayInTonality(curKey, degree, Chords.f2Major);             // TO DO: entfernen und EdgeData-bools korrigieren
 
-        UpdateEdgeParts();
+        //controllers[0].SetPitchWheel(0);
 
-        controllers[0].SetPitchWheel(0);
+        LoopData.Init();
     }
     
     void Update()
     {
-        LoopData.Generate(curLoop);
+        LoopData.Generate(curLoop);                             // TO DO: nur OnEvent()
 
         ManageChordPlaying();
     }
@@ -87,7 +80,7 @@ public class MusicManager : MonoBehaviour
         if (player.curEdge.firstTouch)
         {
             velocity = GetVelocity();
-            curChord = GetChordFromEdgePart();
+            curChord = GetChord();                                  // TO DO: entfernen und edgeData-bools korrigieren
 
             PlayChord(curChord, Instrument.inner, velocity);
             #region pitch
@@ -102,7 +95,7 @@ public class MusicManager : MonoBehaviour
                 StopChord(curChord, Instrument.inner);
 
                 int newDegree = MusicGenerationLogic.RandomChordDegree(curKey, curChord.degree);
-                curChord = GetChordFromEdgePart();
+                curChord = GetChord();
 
                 PlayChord(curChord, Instrument.inner, velocity);
         }
@@ -133,21 +126,22 @@ public class MusicManager : MonoBehaviour
     }
 
 
-    private void SetChordDirection()
-    {
-        if (curChord.notes[0] < lowestNote)
-            chordDirection = 1;
-        else if (curChord.notes[curChord.notes.Length - 1] > highestNote)
-            chordDirection = -1;
-    }
+    //private void SetChordDirection()
+    //{
+    //    if (curChord.notes[0] < lowestNote)
+    //        chordDirection = 1;
+    //    else if (curChord.notes[curChord.notes.Length - 1] > highestNote)
+    //        chordDirection = -1;
+    //}
 
     private float GetVelocity()
     {
         return Player.inst.GetVelocityFromDistance();
     }
 
-    private Chord GetChordFromEdgePart()
+    private Chord GetChord()
     {
+        // = Get chord from currently touched edgePart
         int playerID = player.curEdgePart.ID;
         Chord chord = EnvironmentData.edgeParts[playerID].chord;
 
@@ -239,20 +233,4 @@ public class MusicManager : MonoBehaviour
     }
 
 
-
-    // ------------------------- Edge parts: types & colors -------------------------------
-
-    //private void UpdateEdgeParts(StageData data)
-    //{
-        
-    //}
-
-
-
 }
-
-//[System.Serializable]
-//public class StageData
-//{
-    
-//}
