@@ -17,7 +17,7 @@ public static class Weights
         //foreach (Area area in System.Enum.GetValues(typeof(Area)))
         foreach (string area in areas)
         {
-            Debug.Log("ENUM DEBUG! i: " + i + ", value: " + area);                              // TO DO: checken ob der Enum in der Reihenfolge wie deklariert durchlaufen wird
+            Debug.Log("ENUM DEBUG! i: " + i + ", value: " + area);
 
             string[] curNames = weightNames[i];
             int[] curValues = weightValues[i];

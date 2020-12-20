@@ -16,10 +16,10 @@ public class MusicManager : MonoBehaviour
     public int startDegreesCount = 3;
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;
-    public int highestNote = 72;
-    public int lowestNote = 48;
-    public float maxVelocity = 0.3f;
+    //public int toneRangeMin;
+    //public int toneRangeMax;
     public float minVelocity = 0.1f;
+    public float maxVelocity = 0.3f;
 
 
     // Private variables
@@ -125,14 +125,6 @@ public class MusicManager : MonoBehaviour
         #endregion
     }
 
-
-    //private void SetChordDirection()
-    //{
-    //    if (curChord.notes[0] < lowestNote)
-    //        chordDirection = 1;
-    //    else if (curChord.notes[curChord.notes.Length - 1] > highestNote)
-    //        chordDirection = -1;
-    //}
 
     private float GetVelocity()
     {

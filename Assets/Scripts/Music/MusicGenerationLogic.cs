@@ -42,7 +42,14 @@ public static class MusicGenerationLogic
     }
 
 
-    public static List<int> RandomChordDegrees(Key key, int count, bool preventTritonus = true)
+
+    /// <summary>
+    /// Generate different random chord degrees within the key. First is always first degree. Possible to prevent tritonus degrees.
+    /// </summary>
+    /// <param name="key">The current key.</param>
+    /// <param name="count">The wanted degree count.</param>
+    /// <param name="preventTritonus">Will work with 1-3-5 chords.</param>
+    public static int[] RandomChordDegrees(Key key, int count, bool preventTritonus = true)
     {
         // = return x different degrees within key; first is always I.
 
@@ -75,7 +82,7 @@ public static class MusicGenerationLogic
             availableDegrees.Remove(newDegree);
         }
 
-        return degrees;
+        return degrees.ToArray();
     }
 
     public static void ChordDegrees_Popular(Key key, int count)
@@ -91,6 +98,106 @@ public static class MusicGenerationLogic
         Key key = new Key(randKeyNote, randScale);
 
         return key;
+    }
+
+    public static int[] RandomChordTypeCounts(int allChordTypes)
+    {
+        // = returne einen int[] mit den gewünschten individuellen anzahlen von Feldern der jeweiligen chord degrees
+        int remainingFields = VisualController.inst.EdgePartCount;
+        int[] chordTypeCounts = new int[allChordTypes];
+        int curCount;
+
+        for (int i = 0; i<allChordTypes; i++)
+        {
+            if (i==0)
+                curCount = VisualController.inst.envVertices * 2;
+            else if (i==allChordTypes)
+                curCount = remainingFields;
+            else
+                curCount = remainingFields / (allChordTypes - i) + Random.Range(-1, 2);
+
+            chordTypeCounts[i] = curCount;
+            remainingFields -= curCount;
+        }
+
+        return chordTypeCounts;
+    }
+
+
+
+    public static Chord[][] RandomChordsFromData(ChordData[] chordData)
+    {
+        // 1. Get all possible chords from data, within contraints (toneRange, chordData)
+        AllChordsFromData(chordData);
+
+        // 2. Select random chords
+        SelectRandomChords();
+    }
+
+
+
+
+    private static void AllChordsFromData(ChordData[] chordData)
+    {
+        
+    }
+
+    private static void SelectRandomChords()
+    {
+
+
+
+
+        // = Update chords & colors of the edgeParts; dependant on generated stageData
+        // CORNERS
+
+        // 1. get 1-5-8 chord
+        int[] chordIntervals = stageData[curStage].unison.chordStructure;
+        Chord chord = MusicUtil.Triad(curKey, 1, chordIntervals);
+
+        // 2. get 3 different inversions of 1-5-8 (within current tonality range, if possible)
+        List<Chord> unisonChords = MusicUtil.ChordInversions(chord, VisualController.inst.envVertices, Chords.c4Major, stageData[0].toneRangeMin, stageData[0].toneRangeMax);
+
+        for (int i = 0; i < visualController.envVertices; i++)
+        {
+            // chords & colors
+            int ID1 = ExtensionMethods.NegativeModulo(i * visualController.envGridLoops - 1, visualController.EdgePartCount);
+            int ID2 = i * visualController.envGridLoops;
+
+            EnvironmentData.edgeParts[ID1].chord = unisonChords[i];
+            EnvironmentData.edgeParts[ID1].lineRend.material.color = MeshRef.inst.envEdgePart_corner;
+            EnvironmentData.edgeParts[ID2].chord = unisonChords[i];
+            EnvironmentData.edgeParts[ID2].lineRend.material.color = MeshRef.inst.envEdgePart_corner;
+        }
+
+
+        // REST
+
+        // first additional degree
+        // 1. get random degree
+        // 2. get 1-3-5 chord on degree
+        // 3. get (5x3 - 3) / 2 different inversions of 1-3-5 (within current tonality range, if possible)
+
+        // second additional degree
+        // 1. get new random degree
+        // 2. get 1-3-5 chord on degree
+        // 3. get (5x3 - 3) / 2 different inversions of 1-3-5 (within current tonality range, if possible)
+        for (int ID = 0; ID < EnvironmentData.edgeParts.Length; ID++)
+        {
+            EdgePart edgePart = EnvironmentData.edgeParts[ID];
+
+            if (edgePart.isCorner)
+                continue;
+
+
+            if (edgePart.isEdgeMid)
+            {
+
+            }
+
+
+
+        }
     }
 
     // Weitere Funktion: Akkordstruktur- und Stellung abhängig von Tonlage (unten weite Intervalle)

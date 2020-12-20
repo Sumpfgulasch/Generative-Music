@@ -23,7 +23,7 @@ public static class MusicUtil
     /// </summary>
     /// <param name="key">The current key.</param>
     /// <param name="degree">The wanted degree.</param>
-    ///     /// <param name="tonality">The tonality you wanna stay in as close as possible.</param>
+    /// <param name="tonality">The tonality you wanna stay in as close as possible.</param>
     public static Chord ChordInKey_stayInTonality(Key key, int degree, Chord tonality)
     {
         // 1. Basic chord
@@ -34,6 +34,8 @@ public static class MusicUtil
 
         return chord;
     }
+
+
 
 
     /// <summary>
@@ -53,6 +55,9 @@ public static class MusicUtil
 
         return chord;
     }
+
+
+
 
     /// <summary>
     /// Returns a new key.
@@ -113,10 +118,13 @@ public static class MusicUtil
         Chord newChord = new Chord(chordNotes, degree, 0, note1);
 
         if (intervals[0] != 1)
-            Debug.LogError("Chords different than 1-3-5 are not supported yet.");
+            Debug.LogError("Chords different than 1-3-5 are not tested yet.");
 
         return newChord;
     }
+
+
+
 
     /// <summary>
     /// Returns a triad of thirds in a given key and in the given degree. The tonality is 48-59. No inversion.
@@ -129,6 +137,29 @@ public static class MusicUtil
         Chord newChord = Triad(key, degree, intervals);
 
         return newChord;
+    }
+
+
+
+
+    /// <summary>
+    /// Get all triads from the given intervals, that include more than one octave. Each interval has to be smaller than the next one.
+    /// </summary>
+    /// <param name="key">The wanted key.</param>
+    /// <param name="intervals">Intervals [1-7].</param>
+    public static Chord[] AllBigTriads(Key key, int[] intervals)
+    {
+        int[][] bigIntervals = Chords.BigChordStructures(intervals, key.notesPerOctave);
+        Chord[] chords = new Chord[bigIntervals.Length];
+        int degree = intervals[0];
+
+        for (int i=0; i<bigIntervals.Length; i++)
+        {
+            chords[i] = Triad(key, degree, bigIntervals[i]);
+        }
+        return chords;
+
+        // To do: sämtliche Oktavierungen innerhalb toneRange
     }
 
     
@@ -457,11 +488,45 @@ public static class Chords
     public static Chord c3Major;
     public static Chord c4Major;
 
+    
+
     static Chords()
     {
         f2Major = new Chord(new int[3] { 41, 45, 48 }, 1, 0, 41);
         c3Major = new Chord(new int[3] { 48, 52, 55 }, 1, 0, 48);
         c4Major = new Chord(new int[3] { 60, 64, 67 }, 1, 0, 60);
+
+    }
+
+
+    public static int[][] BigChordStructures(int[] intervals, int keyNotesPerOctave)
+    {
+        int[][] bigIntervals;
+        int o1 = keyNotesPerOctave;
+        int o2 = keyNotesPerOctave * 2;
+        int intv1 = intervals[0], intv2 = intervals[1], intv3 = intervals[2];
+
+        // only different intervals
+        bigIntervals = new int[][]
+        {
+            new int[]   {intv1,         intv2 + o1,     intv3 + o1 },
+            new int[]   {intv1,         intv2 + o1,     intv3 + o2 },
+            new int[]   {intv1,         intv2,          intv3 + o1 },
+            new int[]   {intv1,         intv3,          intv2 + o1 },
+
+            new int[]   {intv2,         intv1 + o1,     intv3 + o1 },
+            new int[]   {intv2,         intv1 + o1,     intv3 + o2 },
+            new int[]   {intv2,         intv3,          intv1 + o2 },
+            new int[]   {intv2,         intv3 + o1,     intv1 + o2 },
+
+            new int[]   {intv3,         intv1 + o1,     intv2 + o2 },
+            new int[]   {intv3,         intv1 + o1,     intv2 + o1 },
+            new int[]   {intv3,         intv2 + o1,     intv1 + o2 }
+        };
+
+        return bigIntervals;
+
+        // (partially) same intervals
     }
 }
 
@@ -469,11 +534,22 @@ public static class Chords
 
 
 
+
+
+
+
 public class ChordData
 {
-    //public string name;
     public int degree;
-    public int[] chordIntervals = new int[3];
+    public int[] intervals = new int[3];
+    public int individualCount;
+
+    public void Set(int degree, int[] intervals, int individualCount)
+    {
+        this.degree = degree;
+        this.intervals = intervals;
+        this.individualCount = individualCount;
+    }
 }
 
 
@@ -599,14 +675,14 @@ public class Key
 
 
 
-public  class Scale
+public static class Scale
 {
     public enum Name { Major, Minor };
-    public  Dictionary<Name, int[]> types;
+    public static Dictionary<Name, int[]> types;
 
 
     // CONSTRUCTOR: Create all scales
-     Scale()
+     static Scale()
     {
         types = new Dictionary<Name, int[]>()
         {
