@@ -52,10 +52,6 @@ public class EdgePart
 
 
 
-    void Update()
-    {
-         
-    }
 
 
 
@@ -122,6 +118,39 @@ public class EdgePart
         else
         {
             return false;
+        }
+    }
+
+
+    public static int[][] GetRandomSubdivision(ChordData[] chordTypes)
+    {
+        int[][] subdivisions = new int[subdivisionCount][];
+
+        var indicies = ExtensionMethods.IntToList(VisualController.inst.EdgePartCount);
+
+        // 1. types
+        for (int i=0; i< chordTypes.Length; i++)
+        {
+            for (int h=0; h<chordTypes[i].individualCount; h++)
+            {
+                int randNumber = Random.Range(0, indicies.Count);
+            }
+
+            if (i==0)
+            {
+                subdivisions[i] = new int[VisualController.inst.envVertices * 2];
+
+                // 2. field-indicies
+                for (int j=0; j<VisualController.inst.envVertices; j++)
+                {
+                    int ID1 = ExtensionMethods.NegativeModulo(VisualController.inst.envGridLoops * j - 1, VisualController.inst.EdgePartCount);
+                    int ID2 = VisualController.inst.envGridLoops * j;
+
+                    subdivisions[i][j * 2] = ID1;
+                    subdivisions[i][j * 2 + 1] = ID2;
+                }
+            }
+
         }
     }
 }

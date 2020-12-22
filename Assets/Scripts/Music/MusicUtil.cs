@@ -24,10 +24,10 @@ public static class MusicUtil
     /// <param name="key">The current key.</param>
     /// <param name="degree">The wanted degree.</param>
     /// <param name="tonality">The tonality you wanna stay in as close as possible.</param>
-    public static Chord ChordInKey_stayInTonality(Key key, int degree, Chord tonality)
+    public static Chord ChordInKey_stayInTonality(Key key, int degree, int[] intervals, Chord tonality)
     {
         // 1. Basic chord
-        Chord chord = BasicTriad(key, degree);
+        Chord chord = Triad(key, degree, intervals);
 
         // 2. Correct inversion
         chord = InvertChord_stayInTonality(chord, tonality);
@@ -45,10 +45,10 @@ public static class MusicUtil
     /// <param name="degree">The degree of the wanted chord.</param>
     /// <param name="direction">The direction to move to. Slowly up/down: [1 or -1], fast up/down: [2 or -2].</param>
     /// <param name="relationChord">The chord from where you wanna move up or down. Usually the last chord.</param>
-    public static Chord ChordInKey_move(Key key, int degree, int direction, Chord relationChord)
+    public static Chord ChordInKey_move(Key key, int degree, int[] intervals, int direction, Chord relationChord)
     {
         // 1. Basic chord
-        Chord chord = BasicTriad(key, degree);
+        Chord chord = Triad(key, degree, intervals);
 
         // 2. Correct inversion
         chord = InvertChord_moveInDirection(chord, direction, relationChord);
@@ -78,38 +78,16 @@ public static class MusicUtil
     // PRIVATE METHODS
 
 
-    #region random note in scale, to rework
-    // To rework (random range)
-    //private static int RandomNoteInScale(int noteMin, int noteMax, Scale scale, int preventNote = -1)
-    //{
-    //    // 1. Random index (indices adress scale.notes, not allMidiNotes!)
-    //    int rangeMin = System.Array.IndexOf(scale.notes, noteMin);
-    //    int rangeMax = System.Array.IndexOf(scale.notes, noteMax);
-    //    int randomIndex = Random.Range(rangeMin, rangeMax);
-
-    //    // 2. New note than the last chord-base note?
-    //    if (preventNote != -1)
-    //    {
-    //        while (scale.notes[randomIndex] == preventNote)
-    //            randomIndex = Random.Range(rangeMin, rangeMax);
-    //    }
-
-    //    // 3. Assign
-    //    int randomNote = scale.notes[randomIndex];
-
-    //    return randomNote; // Wert zwischen 0-127
-    //}
-    #endregion
-
     /// <summary>
     /// Returns any triad in a given key and in the given degree*. The tonality is 48-59. No inversion. (* Chords not containing the perfect unison are not supported yet.)
     /// </summary>
     /// <param name="key">The key in which you wanna have the chord.</param>
     /// <param name="degree">The wanted degree within the key.</param>
     /// <param name="intervals">Intervals. [1 = perfect unison, 8 = octave]. intervals[0] has to be 1.</param>
-    public static Chord Triad(Key key, int degree, int[] intervals)
+    /// <param name="octave">The wanted tonality, by defining the octave.</param>
+    public static Chord Triad(Key key, int degree, int[] intervals, int octave = 4)
     {
-        int baseNoteIndex = key.notesPerOctave * 4 + key.keyNoteIndex + degree;
+        int baseNoteIndex = key.notesPerOctave * octave + key.keyNoteIndex + degree;
         int note1 = key.notes[baseNoteIndex + (intervals[0] - 1)];
         int note2 = key.notes[baseNoteIndex + (intervals[1] - 1)];
         int note3 = key.notes[baseNoteIndex + (intervals[2] - 1)];
@@ -126,18 +104,18 @@ public static class MusicUtil
 
 
 
-    /// <summary>
-    /// Returns a triad of thirds in a given key and in the given degree. The tonality is 48-59. No inversion.
-    /// </summary>
-    /// <param name="key">The key in which you wanna have the chord.</param>
-    /// <param name="degree">The wanted degree within the key.</param>
-    private static Chord BasicTriad(Key key, int degree)
-    {
-        int[] intervals = new int[] { 1, 3, 5 };
-        Chord newChord = Triad(key, degree, intervals);
+    ///// <summary>
+    ///// Returns a triad of thirds in a given key and in the given degree. The tonality is 48-59. No inversion.
+    ///// </summary>
+    ///// <param name="key">The key in which you wanna have the chord.</param>
+    ///// <param name="degree">The wanted degree within the key.</param>
+    //private static Chord BasicTriad(Key key, int degree)
+    //{
+    //    int[] intervals = new int[] { 1, 3, 5 };
+    //    Chord newChord = Triad(key, degree, intervals);
 
-        return newChord;
-    }
+    //    return newChord;
+    //}
 
 
 
@@ -146,20 +124,33 @@ public static class MusicUtil
     /// Get all triads from the given intervals, that include more than one octave. Each interval has to be smaller than the next one.
     /// </summary>
     /// <param name="key">The wanted key.</param>
-    /// <param name="intervals">Intervals [1-7].</param>
-    public static Chord[] AllBigTriads(Key key, int[] intervals)
+    /// <param name="intervals">Intervals [1-7]. Amount has to be 3.</param>
+    public static Chord[] AllBigTriads(Key key, int degree, int[] intervals, int minNote, int maxNote)
     {
         int[][] bigIntervals = Chords.BigChordStructures(intervals, key.notesPerOctave);
         Chord[] chords = new Chord[bigIntervals.Length];
-        int degree = intervals[0];
 
+        // 1. Get all chords within one octave
         for (int i=0; i<bigIntervals.Length; i++)
         {
-            chords[i] = Triad(key, degree, bigIntervals[i]);
+            chords[i] = Triad(key, degree, bigIntervals[i], 0);
         }
-        return chords;
 
-        // To do: sämtliche Oktavierungen innerhalb toneRange
+        // 2. Get all chords withing tone range
+        List<Chord> allChords = new List<Chord>();
+        int allOctaves = allMidiNotes / notesPerOctave - 1;
+        for (int i=0; i<allOctaves; i++)
+        {
+            for (int j = 0; j < chords.Length; j++)
+            {
+                bool chordIsWithinRange = ChordIsWithinRange(chords[j], minNote, maxNote);
+                if (chordIsWithinRange)
+                    allChords.Add(chords[j]);
+                chords[j] = Transpose_BySemiTones(chords[j], notesPerOctave);
+            }
+        }
+
+        return allChords.ToArray();
     }
 
     
@@ -265,6 +256,27 @@ public static class MusicUtil
         return invertedChord;
     }
 
+    //private static void TransposeInKey(Key key, Chord chord, int interval)
+    //{
+    //    Chord newChord = chord;
+    //    int baseNoteIndex = System.Array.IndexOf(key.notes, chord.notes[0]);
+    //    for (int i = 0; i < chord.notes.Length; i++) 
+    //    {
+    //        newChord.notes[i] = chord.notes[i]
+    //    }
+    //}
+
+    private static Chord Transpose_BySemiTones(Chord chord, int semitones)
+    {
+        Chord newChord = chord;
+        for (int i = 0; i < chord.notes.Length; i++)
+        {
+            newChord.notes[i] = chord.notes[i] + semitones;
+        }
+
+        return newChord;
+    }
+
 
     /// <summary>
     /// Inverts a chord x times in always different ways. Orients to a relationChord. Forced to stay in a certain tonality. Ordered in distance to relationChord.
@@ -324,6 +336,26 @@ public static class MusicUtil
         }
 
         return inversions.ToList();
+    }
+
+    public static Chord[] AllChordInversions(Key key, int degree, int[] intervals, int minNote, int maxNote)
+    {
+        // 1. Make chord
+        Chord testChord = Triad(key, degree, intervals, 0);
+
+        // 2. Inversions
+        List<Chord> inversions = new List<Chord>();
+
+
+        while (testChord.notes[testChord.notes.Length-1] < allMidiNotes)
+        {
+            bool chordIsWithinRange = ChordIsWithinRange(testChord, minNote, maxNote);
+            if (chordIsWithinRange)
+                inversions.Add(testChord);
+            testChord = testChord.InvertChord_up();
+        }
+
+        return inversions.ToArray();
     }
 
 
@@ -438,6 +470,16 @@ public static class MusicUtil
             return true;
         else
             return false;
+    }
+
+    private static bool NotesAreWithinRange(List<int> notes, int minNote, int maxNote)
+    {
+        foreach(int note in notes)
+        {
+            if (note < minNote || note > maxNote)
+                return false;
+        }
+        return true;
     }
 
 }
@@ -566,8 +608,8 @@ public class ChordData
 public class Key
 {
     // Public attributes
-    private Scale.Name scale;
-    public Scale.Name Scale        // Name, z.b. Major
+    private Scale.Name scale;            
+    public Scale.Name Scale             // Name, z.b. Major
     {
         get { return scale; }
         private set { scale = value; }

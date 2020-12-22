@@ -125,27 +125,78 @@ public static class MusicGenerationLogic
 
 
 
-    public static Chord[][] RandomChordsFromData(ChordData[] chordData)
+    public static Chord[][] RandomChordsFromData(Key key, ChordData[] chordTypes, int minNote, int maxNote)
     {
         // 1. Get all possible chords from data, within contraints (toneRange, chordData)
-        AllChordsFromData(chordData);
+        Chord[][][] chords = AllChordsFromData(key, chordTypes, minNote, maxNote);
 
         // 2. Select random chords
-        SelectRandomChords();
+        SelectRandomChords(chords, chordTypes);
     }
 
 
 
 
-    private static void AllChordsFromData(ChordData[] chordData)
+    private static Chord[][][] AllChordsFromData(Key key, ChordData[] chordTypes, int minNote, int maxNote)
     {
-        
+        Chord[][] basicChords = new Chord[chordTypes.Length][];
+        Chord[][] bigChords = new Chord[chordTypes.Length][];
+
+        for (int i=0; i<chordTypes.Length; i++)
+        {
+            int degree = chordTypes[i].degree;
+            int[] intervals = chordTypes[i].intervals;
+            basicChords[i] = MusicUtil.AllChordInversions(key, degree, intervals, minNote, maxNote);
+            bigChords[i] = MusicUtil.AllBigTriads(key, degree, intervals, minNote, maxNote);
+        }
+
+        Chord[][][] chords = new Chord[][][]
+        {
+            basicChords,
+            bigChords
+        };
+
+        return chords;
     }
 
-    private static void SelectRandomChords()
+    private static Chord[][] SelectRandomChords(Chord[][][] chords, ChordData[] chordTypes)
     {
+        Chord[][] finalChords = new Chord[chordTypes.Length][];
+
+        // 1. Gehe jeden CHORD TYPE durch
+        for (int i=0; i< chords[0].Length; i++)
+        {
+            Chord[] relevantChords;
+            // random: basic chord or big chord?
+            if (ExtensionMethods.Probability(0.5f))
+            {
+                relevantChords = chords[0][i];
+            }
+            else
+            {
+                relevantChords = chords[1][i];
+            }
+
+            // 2. jede individuelle chordType-count
+            for (int j=0; j<chordTypes[i].individualCount; j++)
+            {
+                int randIndex = Random.Range(0, relevantChords.Length);
+                finalChords[i][j] = relevantChords[randIndex];                                      // TO DO: gleiche items verhindern
+            }
+        }
+
+        return finalChords;
+    }
 
 
+    private static void SetFields(Chord[][] chords)
+    {
+        //int[][] indicies = new int[]
+        // 1. Alle fields
+        for (int i=0; i<VisualController.inst.EdgePartCount; i++)
+        {
+
+        }
 
 
         // = Update chords & colors of the edgeParts; dependant on generated stageData

@@ -130,17 +130,17 @@ public static class ExtensionMethods
         return ((value % modulo) + modulo) % modulo;
     }
 
-    public static List<int> IntToList(int number, bool excludeZero = true)
+    public static List<int> IntToList(int number, bool startFromZero = false)
     {
         List<int> newList = new List<int>();
-        if (excludeZero)
+        if (!startFromZero)
         {
             for (int i = 1; i <= number; i++)
                 newList.Add(i);
         }
         else
         {
-            for (int i = 0; i <= number; i++)
+            for (int i = 0; i < number; i++)
                 newList.Add(i);
         }
 

@@ -102,7 +102,7 @@ public static class LoopData
             chordTypes[i].Set(degrees[i], intervals, individualCounts[i]);
 
         // 4. chords
-        Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(chordTypes);
+        Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(curKey, chordTypes, toneRangeMin, toneRangeMax);
 
         // 5. fields
         // assign chords to edgeParts
