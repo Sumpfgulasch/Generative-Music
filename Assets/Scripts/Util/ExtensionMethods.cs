@@ -181,4 +181,10 @@ public static class ExtensionMethods
         int random = Random.Range(0, values.Length);
         return (T)values.GetValue(random);
     }
+
+    public static List<T> FlattenArray<T>(List<T> param)
+    {
+
+        return param;
+    }
 }

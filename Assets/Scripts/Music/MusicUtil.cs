@@ -125,10 +125,11 @@ public static class MusicUtil
     /// </summary>
     /// <param name="key">The wanted key.</param>
     /// <param name="intervals">Intervals [1-7]. Amount has to be 3.</param>
-    public static Chord[] AllBigTriads(Key key, int degree, int[] intervals, int minNote, int maxNote)
+    public static Chord[] AllBigTriads(Key key, int[] intervals, int minNote, int maxNote)
     {
         int[][] bigIntervals = Chords.BigChordStructures(intervals, key.notesPerOctave);
         Chord[] chords = new Chord[bigIntervals.Length];
+        int degree = intervals[0];
 
         // 1. Get all chords within one octave
         for (int i=0; i<bigIntervals.Length; i++)
@@ -341,18 +342,18 @@ public static class MusicUtil
     public static Chord[] AllChordInversions(Key key, int degree, int[] intervals, int minNote, int maxNote)
     {
         // 1. Make chord
-        Chord testChord = Triad(key, degree, intervals, 0);
+        Chord chord = Triad(key, degree, intervals, 0);
 
         // 2. Inversions
         List<Chord> inversions = new List<Chord>();
 
 
-        while (testChord.notes[testChord.notes.Length-1] < allMidiNotes)
+        while (chord.notes[chord.notes.Length-1] < allMidiNotes)
         {
-            bool chordIsWithinRange = ChordIsWithinRange(testChord, minNote, maxNote);
+            bool chordIsWithinRange = ChordIsWithinRange(chord, minNote, maxNote);
             if (chordIsWithinRange)
-                inversions.Add(testChord);
-            testChord = testChord.InvertChord_up();
+                inversions.Add(chord);
+            chord = chord.InvertChord_up();
         }
 
         return inversions.ToArray();
@@ -585,12 +586,14 @@ public class ChordData
     public int degree;
     public int[] intervals = new int[3];
     public int individualCount;
+    public Color color;
 
-    public void Set(int degree, int[] intervals, int individualCount)
+    public void Set(int degree, int[] intervals, int individualCount, Color color)
     {
         this.degree = degree;
         this.intervals = intervals;
         this.individualCount = individualCount;
+        this.color = color;
     }
 }
 

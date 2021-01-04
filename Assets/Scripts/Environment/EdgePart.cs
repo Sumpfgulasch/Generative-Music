@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 
 // ----------------------------- Edge Part ----------------------------
@@ -21,6 +22,11 @@ public class EdgePart
 
     // Private variables
     private Color color;
+    public Color Color
+    {
+        get { return color; }
+        set { color = value; lineRend.material.color = color; }
+    }
 
 
 
@@ -122,37 +128,37 @@ public class EdgePart
     }
 
 
-    public static int[][] GetRandomSubdivision(ChordData[] chordTypes)
-    {
-        int[][] subdivisions = new int[subdivisionCount][];
+    //public static int[][] GetRandomSubdivision(ChordData[] chordTypes)
+    //{
+    //    int[][] subdivisions = new int[subdivisionCount][];
 
-        var indicies = ExtensionMethods.IntToList(VisualController.inst.EdgePartCount);
+    //    var indicies = ExtensionMethods.IntToList(VisualController.inst.EdgePartCount);
 
-        // 1. types
-        for (int i=0; i< chordTypes.Length; i++)
-        {
-            for (int h=0; h<chordTypes[i].individualCount; h++)
-            {
-                int randNumber = Random.Range(0, indicies.Count);
-            }
+    //    // 1. types
+    //    for (int i=0; i< chordTypes.Length; i++)
+    //    {
+    //        for (int h=0; h<chordTypes[i].individualCount; h++)
+    //        {
+    //            int randNumber = Random.Range(0, indicies.Count);
+    //        }
 
-            if (i==0)
-            {
-                subdivisions[i] = new int[VisualController.inst.envVertices * 2];
+    //        if (i==0)
+    //        {
+    //            subdivisions[i] = new int[VisualController.inst.envVertices * 2];
 
-                // 2. field-indicies
-                for (int j=0; j<VisualController.inst.envVertices; j++)
-                {
-                    int ID1 = ExtensionMethods.NegativeModulo(VisualController.inst.envGridLoops * j - 1, VisualController.inst.EdgePartCount);
-                    int ID2 = VisualController.inst.envGridLoops * j;
+    //            // 2. field-indicies
+    //            for (int j=0; j<VisualController.inst.envVertices; j++)
+    //            {
+    //                int ID1 = ExtensionMethods.NegativeModulo(VisualController.inst.envGridLoops * j - 1, VisualController.inst.EdgePartCount);
+    //                int ID2 = VisualController.inst.envGridLoops * j;
 
-                    subdivisions[i][j * 2] = ID1;
-                    subdivisions[i][j * 2 + 1] = ID2;
-                }
-            }
+    //                subdivisions[i][j * 2] = ID1;
+    //                subdivisions[i][j * 2 + 1] = ID2;
+    //            }
+    //        }
 
-        }
-    }
+    //    }
+    //}
 }
 
 
@@ -208,4 +214,74 @@ public class Edge
         this.changed = changed;
         this.percentage = percentage;
     }
+}
+
+
+// -------------------------------- EDGE PARTS -------------------------------
+
+
+public static class EdgeParts
+{
+    public static Color[] RandomColors(int types)
+    {
+        Color[] colors = new Color[types];
+        for (int i=0; i < types; i++)
+        {
+            Color randColor = new Color(Random.Range(0, 256), Random.Range(0, 256), Random.Range(0, 256));
+            colors[i] = randColor;
+        }
+        return colors;
+    }
+
+
+
+    public static void SetFields(Chord[][] chords, Color[] colors)
+    {
+        
+        // = assign every calculated chord to the fields; assign color
+
+        var edgePartIDs = ExtensionMethods.IntToList(VisualController.inst.EdgePartCount, true);
+
+        // 1. Gehe jeden chordType durch (3)
+        for (int i = 0; i < chords.Length; i++)
+        {
+            var curChords = chords[i].ToList();
+
+            // 2. Gehe jeden chord durch (3-5)
+            for (int j = 0; j < chords[i].Length; j++)
+            {
+
+                // chord
+                var chord = curChords[0];
+                curChords.RemoveAt(0);
+
+                if (i == 0)
+                {
+                    // get corner fields
+                    int ID1 = ExtensionMethods.NegativeModulo(j * VisualController.inst.envGridLoops - 1, VisualController.inst.EdgePartCount);
+                    int ID2 = j * VisualController.inst.envGridLoops;
+                    edgePartIDs.Remove(ID1);
+                    edgePartIDs.Remove(ID2);
+                    // set field
+                    EnvironmentData.edgeParts[ID1].chord = chord;
+                    EnvironmentData.edgeParts[ID2].chord = chord;
+                    EnvironmentData.edgeParts[ID1].Color = colors[i];
+                    EnvironmentData.edgeParts[ID2].Color = colors[i];
+                }
+                else
+                {
+                    // get random field
+                    int randID_index = Random.Range(0, edgePartIDs.Count);
+                    int randID = edgePartIDs[randID_index];
+                    edgePartIDs.RemoveAt(randID);
+
+                    // set field
+                    EnvironmentData.edgeParts[randID].chord = chord;
+                    EnvironmentData.edgeParts[randID].Color = colors[i];
+                }
+            }
+        }
+    }
+
+    
 }

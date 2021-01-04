@@ -49,7 +49,7 @@ public class MusicManager : MonoBehaviour
         // Init
         inst = this;
 
-        int degree = MusicGenerationLogic.RandomChordDegree(curKey);
+        //int degree = MusicGenerationLogic.RandomChordDegree(curKey);
         //curChord = MusicUtil.ChordInKey_stayInTonality(curKey, degree, Chords.f2Major);             // TO DO: entfernen und EdgeData-bools korrigieren
 
         //controllers[0].SetPitchWheel(0);

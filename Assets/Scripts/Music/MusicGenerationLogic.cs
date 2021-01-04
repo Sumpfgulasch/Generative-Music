@@ -128,10 +128,12 @@ public static class MusicGenerationLogic
     public static Chord[][] RandomChordsFromData(Key key, ChordData[] chordTypes, int minNote, int maxNote)
     {
         // 1. Get all possible chords from data, within contraints (toneRange, chordData)
-        Chord[][][] chords = AllChordsFromData(key, chordTypes, minNote, maxNote);
+        Chord[][][] allChords = AllChordsFromData(key, chordTypes, minNote, maxNote);
 
         // 2. Select random chords
-        SelectRandomChords(chords, chordTypes);
+        Chord[][] randChords = SelectRandomChords(allChords, chordTypes);
+
+        return randChords;
     }
 
 
@@ -146,8 +148,9 @@ public static class MusicGenerationLogic
         {
             int degree = chordTypes[i].degree;
             int[] intervals = chordTypes[i].intervals;
+            //Chord basicChord = MusicUtil.Triad(key, degree, intervals);
             basicChords[i] = MusicUtil.AllChordInversions(key, degree, intervals, minNote, maxNote);
-            bigChords[i] = MusicUtil.AllBigTriads(key, degree, intervals, minNote, maxNote);
+            bigChords[i] = MusicUtil.AllBigTriads(key, intervals, minNote, maxNote);
         }
 
         Chord[][][] chords = new Chord[][][]
@@ -164,7 +167,7 @@ public static class MusicGenerationLogic
         Chord[][] finalChords = new Chord[chordTypes.Length][];
 
         // 1. Gehe jeden CHORD TYPE durch
-        for (int i=0; i< chords[0].Length; i++)
+        for (int i=0; i< chordTypes.Length; i++)
         {
             Chord[] relevantChords;
             // random: basic chord or big chord?
@@ -189,67 +192,7 @@ public static class MusicGenerationLogic
     }
 
 
-    private static void SetFields(Chord[][] chords)
-    {
-        //int[][] indicies = new int[]
-        // 1. Alle fields
-        for (int i=0; i<VisualController.inst.EdgePartCount; i++)
-        {
-
-        }
-
-
-        // = Update chords & colors of the edgeParts; dependant on generated stageData
-        // CORNERS
-
-        // 1. get 1-5-8 chord
-        int[] chordIntervals = stageData[curStage].unison.chordStructure;
-        Chord chord = MusicUtil.Triad(curKey, 1, chordIntervals);
-
-        // 2. get 3 different inversions of 1-5-8 (within current tonality range, if possible)
-        List<Chord> unisonChords = MusicUtil.ChordInversions(chord, VisualController.inst.envVertices, Chords.c4Major, stageData[0].toneRangeMin, stageData[0].toneRangeMax);
-
-        for (int i = 0; i < visualController.envVertices; i++)
-        {
-            // chords & colors
-            int ID1 = ExtensionMethods.NegativeModulo(i * visualController.envGridLoops - 1, visualController.EdgePartCount);
-            int ID2 = i * visualController.envGridLoops;
-
-            EnvironmentData.edgeParts[ID1].chord = unisonChords[i];
-            EnvironmentData.edgeParts[ID1].lineRend.material.color = MeshRef.inst.envEdgePart_corner;
-            EnvironmentData.edgeParts[ID2].chord = unisonChords[i];
-            EnvironmentData.edgeParts[ID2].lineRend.material.color = MeshRef.inst.envEdgePart_corner;
-        }
-
-
-        // REST
-
-        // first additional degree
-        // 1. get random degree
-        // 2. get 1-3-5 chord on degree
-        // 3. get (5x3 - 3) / 2 different inversions of 1-3-5 (within current tonality range, if possible)
-
-        // second additional degree
-        // 1. get new random degree
-        // 2. get 1-3-5 chord on degree
-        // 3. get (5x3 - 3) / 2 different inversions of 1-3-5 (within current tonality range, if possible)
-        for (int ID = 0; ID < EnvironmentData.edgeParts.Length; ID++)
-        {
-            EdgePart edgePart = EnvironmentData.edgeParts[ID];
-
-            if (edgePart.isCorner)
-                continue;
-
-
-            if (edgePart.isEdgeMid)
-            {
-
-            }
-
-
-
-        }
-    }
+    
 
     // Weitere Funktion: Akkordstruktur- und Stellung abhängig von Tonlage (unten weite Intervalle)
 

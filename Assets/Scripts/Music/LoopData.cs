@@ -96,17 +96,18 @@ public static class LoopData
         int[] intervals = new int[] { 1, 3, 5 };
         // individual count
         int[] individualCounts = MusicGenerationLogic.RandomChordTypeCounts(chordTypeCount);
-        // assign
+        // colors
+        var colors = EdgeParts.RandomColors(chordTypeCount);                    // to do?: eig nicht nötig hier
+        // assign!
         chordTypes = new ChordData[chordTypeCount];
         for (int i = 0; i < chordTypeCount; i++)
-            chordTypes[i].Set(degrees[i], intervals, individualCounts[i]);
+            chordTypes[i].Set(degrees[i], intervals, individualCounts[i], colors[i]);
 
         // 4. chords
         Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(curKey, chordTypes, toneRangeMin, toneRangeMax);
 
         // 5. fields
-        // assign chords to edgeParts
-        // colors
+        EdgeParts.SetFields(chords, colors);
     }
 
 
