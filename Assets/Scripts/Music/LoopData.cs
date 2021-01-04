@@ -17,10 +17,10 @@ public static class LoopData
     public static int toneRangeMax;
 
     // Current play variables
+    public static Key curKey;
     public static Dictionary<string, Weight[]> weights;
     public static string[] weightAreas;
 
- 
 
     // CONSTRUCTOR
     static LoopData()
@@ -77,11 +77,10 @@ public static class LoopData
     public static void Init()
     {
         // 0. Weights
-        weights = InitWeights();
+        //weights = InitWeights();
 
         // 1. key
-        Key curKey = MusicGenerationLogic.RandomKey();
-        MusicManager.inst.curKey = curKey;
+        curKey = MusicGenerationLogic.RandomKey();
 
         // 2. tone range
         toneRangeMin = curKey.KeyNote + MusicUtil.notesPerOctave * 4;
@@ -101,7 +100,12 @@ public static class LoopData
         // assign!
         chordTypes = new ChordData[chordTypeCount];
         for (int i = 0; i < chordTypeCount; i++)
-            chordTypes[i].Set(degrees[i], intervals, individualCounts[i], colors[i]);
+        {
+            
+            chordTypes[i] = new ChordData(degrees[i], intervals, individualCounts[i], colors[i]);
+            Debug.Log("chordTypes[i].indivCount: " + chordTypes[i].individualCount);
+            //chordTypes[i].Set(degrees[i], intervals, individualCounts[i], colors[i]);
+        }
 
         // 4. chords
         Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(curKey, chordTypes, toneRangeMin, toneRangeMax);

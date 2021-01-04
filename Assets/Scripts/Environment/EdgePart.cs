@@ -217,7 +217,9 @@ public class Edge
 }
 
 
+
 // -------------------------------- EDGE PARTS -------------------------------
+
 
 
 public static class EdgeParts
@@ -260,6 +262,7 @@ public static class EdgeParts
                     // get corner fields
                     int ID1 = ExtensionMethods.NegativeModulo(j * VisualController.inst.envGridLoops - 1, VisualController.inst.EdgePartCount);
                     int ID2 = j * VisualController.inst.envGridLoops;
+                    //Debug.Log("chordType i: " + i + ", chord j: " + j + "(chords.length: " + chords[i].Length + ")");
                     edgePartIDs.Remove(ID1);
                     edgePartIDs.Remove(ID2);
                     // set field
@@ -273,7 +276,10 @@ public static class EdgeParts
                     // get random field
                     int randID_index = Random.Range(0, edgePartIDs.Count);
                     int randID = edgePartIDs[randID_index];
-                    edgePartIDs.RemoveAt(randID);
+
+                    //Debug.Log("chord: " + j + "/" + chords[i].Length + ", edgePartIDs.length: " + edgePartIDs.Count + ", randID: " + randID + ", randID_index: " + randID_index);
+                    //ExtensionMethods.PrintArray("Remaining IDs: ", edgePartIDs);
+                    edgePartIDs.Remove(randID);
 
                     // set field
                     EnvironmentData.edgeParts[randID].chord = chord;

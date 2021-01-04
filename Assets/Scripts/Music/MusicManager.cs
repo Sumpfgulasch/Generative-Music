@@ -16,23 +16,19 @@ public class MusicManager : MonoBehaviour
     public int startDegreesCount = 3;
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;
-    //public int toneRangeMin;
-    //public int toneRangeMax;
     public float minVelocity = 0.1f;
     public float maxVelocity = 0.3f;
 
 
-    // Private variables
-    [HideInInspector] public Key curKey;
     [HideInInspector] public Chord curChord;
-    [HideInInspector] public List<int> curCadence;
-    [HideInInspector] public List<int> curSequence;
+    //[HideInInspector] public List<int> curCadence;
+    //[HideInInspector] public List<int> curSequence;
 
+    // Private variables
     private int curLoop = 0;
     private float velocity;
     private float minPitch, maxPitch;
     private float curPitch = 0;
-    private int chordDirection = 1;
 
 
 
@@ -48,10 +44,6 @@ public class MusicManager : MonoBehaviour
     {
         // Init
         inst = this;
-
-        //int degree = MusicGenerationLogic.RandomChordDegree(curKey);
-        //curChord = MusicUtil.ChordInKey_stayInTonality(curKey, degree, Chords.f2Major);             // TO DO: entfernen und EdgeData-bools korrigieren
-
         //controllers[0].SetPitchWheel(0);
 
         LoopData.Init();
@@ -59,7 +51,7 @@ public class MusicManager : MonoBehaviour
     
     void Update()
     {
-        LoopData.Generate(curLoop);                             // TO DO: nur OnEvent()
+        //LoopData.Generate(curLoop);                             // TO DO: nur OnEvent()
 
         ManageChordPlaying();
     }
@@ -92,12 +84,11 @@ public class MusicManager : MonoBehaviour
         // EDGE PART CHANGE
         else if (player.curEdgePart.changed)
         {
-                StopChord(curChord, Instrument.inner);
+            StopChord(curChord, Instrument.inner);
 
-                int newDegree = MusicGenerationLogic.RandomChordDegree(curKey, curChord.degree);
-                curChord = GetChord();
+            curChord = GetChord();
 
-                PlayChord(curChord, Instrument.inner, velocity);
+            PlayChord(curChord, Instrument.inner, velocity);
         }
 
         // LEAVE EDGE

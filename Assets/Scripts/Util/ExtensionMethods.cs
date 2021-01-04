@@ -182,9 +182,8 @@ public static class ExtensionMethods
         return (T)values.GetValue(random);
     }
 
-    public static List<T> FlattenArray<T>(List<T> param)
+    public static void PrintArray(string startText, List<int> list)
     {
-
-        return param;
+        Debug.Log(startText + System.String.Join(", ", new List<int>(list).ConvertAll(k => k.ToString()).ToArray()));
     }
 }

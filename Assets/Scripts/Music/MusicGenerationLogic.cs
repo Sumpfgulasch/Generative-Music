@@ -103,21 +103,21 @@ public static class MusicGenerationLogic
     public static int[] RandomChordTypeCounts(int allChordTypes)
     {
         // = returne einen int[] mit den gewünschten individuellen anzahlen von Feldern der jeweiligen chord degrees
-        int remainingFields = VisualController.inst.EdgePartCount;
+        int remainingFields = VisualController.inst.EdgePartCount - VisualController.inst.envVertices;      // Hack
         int[] chordTypeCounts = new int[allChordTypes];
-        int curCount;
+        int fields;
 
         for (int i = 0; i<allChordTypes; i++)
         {
             if (i==0)
-                curCount = VisualController.inst.envVertices * 2;
-            else if (i==allChordTypes)
-                curCount = remainingFields;
+                fields = VisualController.inst.envVertices;
+            else if (i==allChordTypes-1)
+                fields = remainingFields;
             else
-                curCount = remainingFields / (allChordTypes - i) + Random.Range(-1, 2);
+                fields = remainingFields / (allChordTypes - i) + Random.Range(-1, 2);
 
-            chordTypeCounts[i] = curCount;
-            remainingFields -= curCount;
+            chordTypeCounts[i] = fields;
+            remainingFields -= fields;
         }
 
         return chordTypeCounts;
@@ -181,6 +181,7 @@ public static class MusicGenerationLogic
             }
 
             // 2. jede individuelle chordType-count
+            finalChords[i] = new Chord[chordTypes[i].individualCount];
             for (int j=0; j<chordTypes[i].individualCount; j++)
             {
                 int randIndex = Random.Range(0, relevantChords.Length);

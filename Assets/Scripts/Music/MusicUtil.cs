@@ -95,8 +95,8 @@ public static class MusicUtil
 
         Chord newChord = new Chord(chordNotes, degree, 0, note1);
 
-        if (intervals[0] != 1)
-            Debug.LogError("Chords different than 1-3-5 are not tested yet.");
+        //if (intervals[0] != 1)
+        //    Debug.LogError("Chords different than 1-3-5 are not tested yet. First interval: " + intervals[0]);
 
         return newChord;
     }
@@ -588,13 +588,21 @@ public class ChordData
     public int individualCount;
     public Color color;
 
-    public void Set(int degree, int[] intervals, int individualCount, Color color)
+
+    public ChordData(int degree, int[] intervals, int individualCount, Color color)
     {
         this.degree = degree;
         this.intervals = intervals;
         this.individualCount = individualCount;
         this.color = color;
     }
+    //public void Set(int degree, int[] intervals, int individualCount, Color color)
+    //{
+    //    this.degree = degree;
+    //    this.intervals = intervals;
+    //    this.individualCount = individualCount;
+    //    this.color = color;
+    //}
 }
 
 
