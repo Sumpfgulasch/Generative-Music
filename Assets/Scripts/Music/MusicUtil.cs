@@ -87,7 +87,7 @@ public static class MusicUtil
     /// <param name="octave">The wanted tonality, by defining the octave.</param>
     public static Chord Triad(Key key, int degree, int[] intervals, int octave = 4)
     {
-        int baseNoteIndex = key.notesPerOctave * octave + key.keyNoteIndex + degree;
+        int baseNoteIndex = key.keyNoteIndex + key.notesPerOctave * octave + degree - 1;
         int note1 = key.notes[baseNoteIndex + (intervals[0] - 1)];
         int note2 = key.notes[baseNoteIndex + (intervals[1] - 1)];
         int note3 = key.notes[baseNoteIndex + (intervals[2] - 1)];
@@ -109,19 +109,22 @@ public static class MusicUtil
     /// </summary>
     /// <param name="key">The wanted key.</param>
     /// <param name="intervals">Intervals [1-7]. Amount has to be 3.</param>
-    public static Chord[] AllBigTriads(Key key, int[] intervals, int minNote, int maxNote)
+    public static Chord[] AllBigTriads(Key key, int degree, int[] intervals, int minNote, int maxNote)
     {
+        // 1. Get Intervals from Big Chords
         int[][] bigIntervals = Chords.BigChordStructures(intervals, key.notesPerOctave);
         Chord[] chords = new Chord[bigIntervals.Length];
-        int degree = intervals[0];
 
-        // 1. Get all chords within one octave
+        //Debug.Log("intervals: " + bigIntervals[0].ArrayToString() + ", key: " + key.Scale);
+
+        // 2. Get all chords within one octave
         for (int i=0; i<bigIntervals.Length; i++)
         {
             chords[i] = Triad(key, degree, bigIntervals[i], 0);
+            //Debug.Log(i + "; degree: " + degree + ", chord: " + chords[i].notes.ArrayToString() + ", in notes: " + chords[i].notes.AsNames());
         }
 
-        // 2. Get all chords withing tone range
+        // 3. Get all chords withing tone range
         List<Chord> allChords = new List<Chord>();
         int allOctaves = allMidiNotes / notesPerOctave - 1;
         for (int i=0; i<allOctaves; i++)
@@ -166,6 +169,35 @@ public static class MusicUtil
         Chord newChord = new Chord(notes, degree, inversion, baseNote);
 
         return newChord;
+    }
+
+
+
+    public static string AsNames(this int[] notes)
+    {
+        string noteNames = "";
+        foreach (int note in notes)
+        {
+            int octave = note / notesPerOctave - 1;
+            int modulo = note % notesPerOctave;
+
+            if (modulo == 0) noteNames = noteNames + "C" + octave.ToString() + ", ";
+            else if(modulo == 1) noteNames += "Cis" + octave.ToString() + ", ";
+            else if(modulo == 2) noteNames += "D" + octave.ToString() + ", ";
+            else if(modulo == 3) noteNames += "Dis" + octave.ToString() + ", ";
+            else if(modulo == 4) noteNames += "E" + octave.ToString() + ", ";
+            else if(modulo == 5) noteNames += "F" + octave.ToString() + ", ";
+            else if(modulo == 6) noteNames += "Fis" + octave.ToString() + ", ";
+            else if(modulo == 7) noteNames += "G" + octave.ToString() + ", ";
+            else if(modulo == 8) noteNames += "Gis" + octave.ToString() + ", ";
+            else if(modulo == 9) noteNames += "A" + octave.ToString() + ", ";
+            else if(modulo == 10) noteNames += "Ais" + octave.ToString() + ", ";
+            else if(modulo == 11) noteNames += "H" + octave.ToString() + ", ";
+        }
+
+        noteNames = noteNames.Substring(0, noteNames.Length - 2);
+
+        return noteNames;
     }
 
     
@@ -585,6 +617,8 @@ public static class Chords
 
         // (partially) same intervals
     }
+
+
 }
 
 

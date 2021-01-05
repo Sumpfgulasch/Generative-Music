@@ -14,7 +14,6 @@ public class MusicManager : MonoBehaviour
 
     [Header("Contraints")]
     [Tooltip("Number of chord degrees that make up the edgeParts in the beginning.")]
-    public int startDegreesCount = 3;
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;
 
@@ -78,7 +77,7 @@ public class MusicManager : MonoBehaviour
 
             PlayChord(curChord, Instrument.inner, velocity);
 
-            ExtensionMethods.PrintArray("curChord: ", curChord.notes);
+            //Debug.Log("note names: " + curChord.notes.AsNames() + ", as numbers: " + curChord.notes.ArrayToString());
             #region pitch
             // calc pitch
             SetFirstPitchRange(ref minPitch, ref maxPitch);

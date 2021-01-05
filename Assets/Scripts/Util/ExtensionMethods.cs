@@ -199,4 +199,16 @@ public static class ExtensionMethods
 
         Debug.Log(startText + text);
     }
+
+    public static string ArrayToString(this int[] myArray)
+    {
+        string myString = "";
+        for (int i=0; i<myArray.Length; i++)
+        {
+            myString = myString + myArray[i].ToString() + ", ";
+        }
+        myString = myString.Substring(0, myString.Length - 2);
+
+        return myString;
+    }
 }

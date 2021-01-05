@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public static class LoopData
 {
@@ -110,13 +111,23 @@ public static class LoopData
             chordTypes[i] = new ChordData(degrees[i], intervals, individualCounts[i], colors[i]);
         }
 
+        int[] testArray = new int[] { curKey.KeyNote };
+        Debug.Log("curKey: " + testArray.AsNames() + "-" + curKey.Scale + ", baseNote: " + (curKey.KeyNote + 4 * MusicUtil.notesPerOctave));
+
         // 4. chords
         Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(curKey, chordTypes, toneRangeMin, toneRangeMax);
+        //for (int i = 0; i < chords.Length; i++)
+        //{
+        //    for (int j = 0; j < chords[i].Length; j++)
+        //    {
+        //        Debug.Log("FINAL CHORD: degree: " + degrees[i] + "; chords: " + chords[i][j].notes.AsNames() + ", as numbers: " + chords[i][j].notes.ArrayToString());
+        //    }
+        //}
 
         // 5. fields
         EdgeParts.SetFields(chords, colors);
 
-        Debug.Log("curKey: " + curKey.Scale + ", baseNote: " + (curKey.KeyNote + 4*MusicUtil.notesPerOctave) );
+        
 
     }
 

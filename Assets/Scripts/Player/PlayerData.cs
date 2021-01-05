@@ -151,7 +151,7 @@ public static class PlayerData
                 }
                 // No edgePartChange in corners
                 bool lastIDisCorner = EdgePart.IsCorner(lastEdgePartID);
-                bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1;
+                bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1 || Mathf.Abs(curEdgePartID - lastEdgePartID) == VisualController.inst.EdgePartCount-1;
                 if (lastIDisCorner && lastIDisClose)
                     player.curEdgePart.changed = false;
             }

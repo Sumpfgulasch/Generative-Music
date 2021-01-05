@@ -151,7 +151,7 @@ public static class MusicGenerationLogic
             int[] intervals = chordTypes[i].intervals;
             //Chord basicChord = MusicUtil.Triad(key, degree, intervals);
             basicChords[i] = MusicUtil.AllChordInversions(key, degree, intervals, minNote, maxNote);
-            bigChords[i] = MusicUtil.AllBigTriads(key, intervals, minNote, maxNote);
+            bigChords[i] = MusicUtil.AllBigTriads(key, degree, intervals, minNote, maxNote);
         }
 
         Chord[][][] chords = new Chord[][][]
