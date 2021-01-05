@@ -398,8 +398,8 @@ public partial class Player : MonoBehaviour
     public float GetVelocityFromDistance()
     {
         float scaleSize = this.transform.localScale.x - startScale;
-        velocity = scaleSize.Remap(scaleMin, 0.4f, musicManager.minVelocity, musicManager.maxVelocity);
-        velocity = Mathf.Clamp(velocity, musicManager.minVelocity, musicManager.maxVelocity);
+        velocity = scaleSize.Remap(scaleMin, 0.4f, LoopData.minVelocity, LoopData.maxVelocity);
+        velocity = Mathf.Clamp(velocity, LoopData.minVelocity, LoopData.maxVelocity);
         return velocity;
     }
 }

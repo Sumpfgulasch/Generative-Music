@@ -182,8 +182,21 @@ public static class ExtensionMethods
         return (T)values.GetValue(random);
     }
 
-    public static void PrintArray(string startText, List<int> list)
+    public static void PrintList(string startText, List<int> myArray)
     {
-        Debug.Log(startText + System.String.Join(", ", new List<int>(list).ConvertAll(k => k.ToString()).ToArray()));
+        Debug.Log(startText + System.String.Join(", ", new List<int>(myArray).ConvertAll(k => k.ToString()).ToArray()));
+    }
+
+    public static void PrintArray(string startText, int[] array)
+    {
+        string text = "";
+        foreach(int number in array)
+        {
+            text = text + number.ToString() + ", ";
+        }
+
+        text.Remove(text.Length - 2, 2);
+
+        Debug.Log(startText + text);
     }
 }

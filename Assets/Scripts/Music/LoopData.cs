@@ -15,6 +15,8 @@ public static class LoopData
     public static EdgePart.Type[] modulationTypes;
     public static int toneRangeMin;
     public static int toneRangeMax;
+    public static float minVelocity;
+    public static float maxVelocity;
 
     // Current play variables
     public static Key curKey;
@@ -86,6 +88,10 @@ public static class LoopData
         toneRangeMin = curKey.KeyNote + MusicUtil.notesPerOctave * 4;
         toneRangeMax = curKey.KeyNote + MusicUtil.notesPerOctave * 7;
 
+        // 3. velocity
+        minVelocity = 0.08f;
+        maxVelocity = 0.2f;
+
         // 3. chord types
         // count
         chordTypeCount = 3;
@@ -101,10 +107,7 @@ public static class LoopData
         chordTypes = new ChordData[chordTypeCount];
         for (int i = 0; i < chordTypeCount; i++)
         {
-            
             chordTypes[i] = new ChordData(degrees[i], intervals, individualCounts[i], colors[i]);
-            Debug.Log("chordTypes[i].indivCount: " + chordTypes[i].individualCount);
-            //chordTypes[i].Set(degrees[i], intervals, individualCounts[i], colors[i]);
         }
 
         // 4. chords
@@ -112,6 +115,9 @@ public static class LoopData
 
         // 5. fields
         EdgeParts.SetFields(chords, colors);
+
+        Debug.Log("curKey: " + curKey.Scale + ", baseNote: " + (curKey.KeyNote + 4*MusicUtil.notesPerOctave) );
+
     }
 
 

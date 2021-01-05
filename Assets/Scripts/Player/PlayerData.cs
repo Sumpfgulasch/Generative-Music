@@ -87,8 +87,6 @@ public static class PlayerData
             lastEdge_start = player.curEdge.start;
             lastEdge_end = player.curEdge.end;
             lastEdgePartID = curEdgePartID;
-            if (player.curEdge.firstTouch)
-                Debug.Log("firstTouch; lastID: " + lastEdgePartID);
 
             Vector2 intersection = Vector2.zero;
             Vector3 mousePos_extended = midPoint + (player.mousePos - midPoint).normalized * 10f;
@@ -158,8 +156,8 @@ public static class PlayerData
                     player.curEdgePart.changed = false;
             }
 
-            if (player.curEdgePart.changed)
-                Debug.Log("edgePartChange; ID: " + curEdgePartID);
+            //if (player.curEdgePart.changed)
+            //    Debug.Log("edgePartChange!");
 
             // ASSIGN
             player.curEdgePart.Set(curEdgePartID, curEdgePart_positions.ToArray(), isCorner);

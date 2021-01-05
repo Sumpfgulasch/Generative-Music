@@ -144,6 +144,7 @@ public static class MusicGenerationLogic
         Chord[][] basicChords = new Chord[chordTypes.Length][];
         Chord[][] bigChords = new Chord[chordTypes.Length][];
 
+        // 1. Gehe jeden CHORD TYPE durch
         for (int i=0; i<chordTypes.Length; i++)
         {
             int degree = chordTypes[i].degree;
@@ -171,7 +172,7 @@ public static class MusicGenerationLogic
         {
             Chord[] relevantChords;
             // random: basic chord or big chord?
-            if (ExtensionMethods.Probability(0.5f))
+            if (ExtensionMethods.Probability(0f))
             {
                 relevantChords = chords[0][i];
             }
@@ -187,7 +188,10 @@ public static class MusicGenerationLogic
                 int randIndex = Random.Range(0, relevantChords.Length);
                 finalChords[i][j] = relevantChords[randIndex];                                      // TO DO: gleiche items verhindern
             }
+
         }
+
+
 
         return finalChords;
     }

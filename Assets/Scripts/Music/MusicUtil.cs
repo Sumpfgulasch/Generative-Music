@@ -104,22 +104,6 @@ public static class MusicUtil
 
 
 
-    ///// <summary>
-    ///// Returns a triad of thirds in a given key and in the given degree. The tonality is 48-59. No inversion.
-    ///// </summary>
-    ///// <param name="key">The key in which you wanna have the chord.</param>
-    ///// <param name="degree">The wanted degree within the key.</param>
-    //private static Chord BasicTriad(Key key, int degree)
-    //{
-    //    int[] intervals = new int[] { 1, 3, 5 };
-    //    Chord newChord = Triad(key, degree, intervals);
-
-    //    return newChord;
-    //}
-
-
-
-
     /// <summary>
     /// Get all triads from the given intervals, that include more than one octave. Each interval has to be smaller than the next one.
     /// </summary>
@@ -144,14 +128,44 @@ public static class MusicUtil
         {
             for (int j = 0; j < chords.Length; j++)
             {
+                
+
                 bool chordIsWithinRange = ChordIsWithinRange(chords[j], minNote, maxNote);
                 if (chordIsWithinRange)
-                    allChords.Add(chords[j]);
+                {
+                    allChords.Add(chords[j].DeepCopy());
+                }
                 chords[j] = Transpose_BySemiTones(chords[j], notesPerOctave);
+
+                
             }
+            
         }
 
+        //for (int i=0; i<allChords.Count; i++)
+        //{
+        //    ExtensionMethods.PrintArray("ALL CHORDS: ", allChords[i].notes.ToList());
+        //}
+
+
         return allChords.ToArray();
+    }
+
+
+
+    private static Chord DeepCopy(this Chord chord)
+    {
+        int[] notes = new int[chord.notes.Length];
+        for (int i = 0; i < notes.Length; i++)
+            notes[i] = chord.notes[i];
+
+        int degree = chord.degree;
+        int inversion = chord.inversion;
+        int baseNote = chord.baseNote;
+
+        Chord newChord = new Chord(notes, degree, inversion, baseNote);
+
+        return newChord;
     }
 
     
@@ -596,13 +610,6 @@ public class ChordData
         this.individualCount = individualCount;
         this.color = color;
     }
-    //public void Set(int degree, int[] intervals, int individualCount, Color color)
-    //{
-    //    this.degree = degree;
-    //    this.intervals = intervals;
-    //    this.individualCount = individualCount;
-    //    this.color = color;
-    //}
 }
 
 

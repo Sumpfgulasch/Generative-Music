@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class MusicManager : MonoBehaviour
 {
@@ -16,8 +17,6 @@ public class MusicManager : MonoBehaviour
     public int startDegreesCount = 3;
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;
-    public float minVelocity = 0.1f;
-    public float maxVelocity = 0.3f;
 
 
     [HideInInspector] public Chord curChord;
@@ -75,9 +74,11 @@ public class MusicManager : MonoBehaviour
         if (player.curEdge.firstTouch)
         {
             velocity = GetVelocity();
-            curChord = GetChord();                                  // TO DO: entfernen und edgeData-bools korrigieren
+            curChord = GetChord();
 
             PlayChord(curChord, Instrument.inner, velocity);
+
+            ExtensionMethods.PrintArray("curChord: ", curChord.notes);
             #region pitch
             // calc pitch
             SetFirstPitchRange(ref minPitch, ref maxPitch);
@@ -130,6 +131,8 @@ public class MusicManager : MonoBehaviour
         // = Get chord from currently touched edgePart
         int playerID = player.curEdgePart.ID;
         Chord chord = EnvironmentData.edgeParts[playerID].chord;
+
+        //ExtensionMethods.PrintArray("curChord: ", curChord.notes.ToList());
 
         return chord;
     }

@@ -23,7 +23,7 @@ public static class MeshUpdate
     public static void UpdateMeshes()
     {
         SetPlayerWidth();
-        DrawEnvironmentEdges();
+        //DrawEnvironmentEdges();
         UpdateEdgeParts();
         UpdateSurfacesTransforms();
     }
@@ -139,7 +139,6 @@ public static class MeshUpdate
         if (Player.inst.curEdgePart.changed)
         {
             Player.inst.curEdgePart.UpdateLineRenderer();
-            Debug.Log("updateLineRend player");
         }
         
     }
