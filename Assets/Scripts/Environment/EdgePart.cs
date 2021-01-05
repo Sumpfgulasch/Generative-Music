@@ -50,7 +50,6 @@ public class EdgePart
         this.lineRend = lineRend;
         this.isCorner = isCorner;
         this.isEdgeMid = isEdgeMid;
-        //this.type = type;
     }
 
 
@@ -179,6 +178,12 @@ public class PlayerEdgePart : EdgePart
     public new enum Type {Main, Second};
     public new Type type;
     public bool changed;
+    private bool visible;
+    public bool Visible
+    {
+        get { return visible; }
+        set { this.lineRend.enabled = value; visible = value; }
+    }
 
 
     public new void Set(Vector3 start, Vector3 end)
@@ -229,7 +234,7 @@ public static class EdgeParts
         Color[] colors = new Color[types];
         for (int i=0; i < types; i++)
         {
-            Color randColor = new Color(Random.Range(0, 256), Random.Range(0, 256), Random.Range(0, 256));
+            Color randColor = new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f));
             colors[i] = randColor;
         }
         return colors;
@@ -260,7 +265,7 @@ public static class EdgeParts
                 if (i == 0)
                 {
                     // get corner fields
-                    int ID1 = ExtensionMethods.NegativeModulo(j * VisualController.inst.envGridLoops - 1, VisualController.inst.EdgePartCount);
+                    int ID1 = ExtensionMethods.Modulo(j * VisualController.inst.envGridLoops - 1, VisualController.inst.EdgePartCount);
                     int ID2 = j * VisualController.inst.envGridLoops;
                     //Debug.Log("chordType i: " + i + ", chord j: " + j + "(chords.length: " + chords[i].Length + ")");
                     edgePartIDs.Remove(ID1);

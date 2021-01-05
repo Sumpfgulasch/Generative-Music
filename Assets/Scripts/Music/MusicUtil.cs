@@ -66,7 +66,7 @@ public static class MusicUtil
     /// <param name="scale">The wanted scale.</param>
     public static Key ChangeKey(int keyNote, Scale.Name scale)
     {
-        keyNote = ExtensionMethods.NegativeModulo(keyNote, Scale.types[scale].Length);
+        keyNote = ExtensionMethods.Modulo(keyNote, Scale.types[scale].Length);
         Key key = new Key(keyNote, scale);
 
         return key;
@@ -378,7 +378,7 @@ public static class MusicUtil
         // Move highestNote one octave down
         int[] newNotes = chord.notes.ShiftForward();
         newNotes[0] -= MusicUtil.notesPerOctave;
-        int newInversion = ExtensionMethods.NegativeModulo(chord.inversion - 1, 3);
+        int newInversion = ExtensionMethods.Modulo(chord.inversion - 1, 3);
         Chord invertedChord = new Chord(newNotes, chord.degree, newInversion, chord.baseNote);
 
         return invertedChord;

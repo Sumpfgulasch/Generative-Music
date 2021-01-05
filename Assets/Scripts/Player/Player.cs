@@ -130,9 +130,6 @@ public partial class Player : MonoBehaviour
         // 2. Perform movement
         KeyboardMovement();
         PerformMouseMovement();
-
-        //PlayerData.SetPositionStates();
-        //PlayerData.CalcEdgeData();
     }
 
 

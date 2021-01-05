@@ -24,7 +24,7 @@ public static class MeshUpdate
     {
         SetPlayerWidth();
         DrawEnvironmentEdges();
-        UpdateEnvironmentEdgeParts();
+        UpdateEdgeParts();
         UpdateSurfacesTransforms();
     }
 
@@ -83,6 +83,8 @@ public static class MeshUpdate
 
     private static void DrawEnvironmentEdges()
     {
+        // = Draw lineRenderer lines for each edge (3)
+
         // 1) Add extra points for LineRenderer
         List<Vector3> newPositions = EnvironmentData.vertices.ToList();
         int insertCounter = 0;
@@ -104,8 +106,9 @@ public static class MeshUpdate
     }
 
 
-    private static void UpdateEnvironmentEdgeParts()
+    private static void UpdateEdgeParts()
     {
+        // Environment
         for (int i = 0; i < EnvironmentData.vertices.Length; i++)
         {
             for (int j = 0; j < VisualController.inst.envGridLoops; j++)
@@ -115,6 +118,16 @@ public static class MeshUpdate
                 
                 EnvironmentData.edgeParts[i * VisualController.inst.envGridLoops + j].Set(start, end);
             }
+        }
+
+        // Player
+        if (Player.inst.curEdge.firstTouch)
+        {
+            Player.inst.curEdgePart.Visible = true;
+        }
+        else if (Player.inst.curEdge.leave)
+        {
+            Player.inst.curEdgePart.Visible = false;
         }
     }
 }

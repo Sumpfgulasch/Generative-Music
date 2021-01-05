@@ -113,6 +113,7 @@ public static class PlayerData
                 + curEdgeIndex * VisualController.inst.envGridLoops)) % (EnvironmentData.vertices.Length * VisualController.inst.envGridLoops); // gar kein bock mehr
             Vector3 curEdgePart_start = EnvironmentData.edgeParts[curEdgePartID].start;
             Vector3 curEdgePart_end = EnvironmentData.edgeParts[curEdgePartID].end;
+            var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
 
             // Edge part change?
             //Debug.Log("curEdgePartID: " + curEdgePartID + ", lastEdgePartID: " + lastEdgePartID + ", percentage: " + player.curEdge.percentage + ", curEdgeIndex: " + curEdgeIndex);
@@ -129,10 +130,25 @@ public static class PlayerData
 
             // Is corner?
             bool isCorner = (curEdgePartID + 1) % VisualController.inst.envGridLoops == 0 || curEdgePartID % VisualController.inst.envGridLoops == 0;
+            //bool isCorner = EdgePart.IsCorner(curEdgePartID);
             if (isCorner)
             {
+                // Add third position
+                if (EdgePart.IsCorner_RightPart(curEdgePartID))
+                {
+                    int leftCornerID = ExtensionMethods.Modulo(curEdgePartID - 1, VisualController.inst.EdgePartCount);
+                    Vector3 leftCornerPos = EnvironmentData.edgeParts[leftCornerID].start;
+                    curEdgePart_positions.Insert(0, leftCornerPos);
+                }
+                else
+                {
+                    int rightCornerID = ExtensionMethods.Modulo(curEdgePartID + 1, VisualController.inst.EdgePartCount);
+                    Vector3 rightCornerPos = EnvironmentData.edgeParts[rightCornerID].end;
+                    curEdgePart_positions.Add(rightCornerPos);
+                }
                 // No edgePartChange in corners
                 bool lastIDisCorner = (lastEdgePartID + 1) % VisualController.inst.envGridLoops == 0 || lastEdgePartID % VisualController.inst.envGridLoops == 0;
+                //bool lastIDisCorner = EdgePart.IsCorner(lastEdgePartID);
                 if (lastIDisCorner)
                     player.curEdgePart.changed = false;
             }
@@ -154,8 +170,6 @@ public static class PlayerData
         if (player.actionState == Player.ActionState.move && player.lastActionState == Player.ActionState.stickToEdge)
         {
             player.curEdge.leave = true;
-            //player.curEdge.changed = false;
-            //player.curEdgePart.changed = false;
         }
         else
             player.curEdge.leave = false;

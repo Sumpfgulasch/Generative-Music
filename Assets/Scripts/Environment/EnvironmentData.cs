@@ -31,7 +31,6 @@ public static class EnvironmentData
     public static void HandleData()
     {
         GetEnvironmentTriangle();
-        
     }
 
 
