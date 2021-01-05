@@ -54,6 +54,9 @@ public class MusicManager : MonoBehaviour
         //LoopData.Generate(curLoop);                             // TO DO: nur OnEvent()
 
         ManageChordPlaying();
+
+        if (Input.GetKeyDown(KeyCode.R))
+            LoopData.Init();
     }
 
     

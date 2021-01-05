@@ -64,6 +64,7 @@ public partial class Player : MonoBehaviour
     [HideInInspector] public PlayerEdgePart[] curSecEdgeParts;
     [HideInInspector] public Edge curEdge;
     [HideInInspector] public Edge[] curSecEdges;
+    [HideInInspector] public bool tunnelEnter;
 
 
 

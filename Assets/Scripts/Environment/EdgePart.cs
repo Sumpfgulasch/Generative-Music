@@ -70,9 +70,19 @@ public class EdgePart
         this.start.z = Player.inst.transform.position.z - 0.001f;
         this.end.z = Player.inst.transform.position.z - 0.001f;
 
-        lineRend.SetPosition(0, this.start);
-        lineRend.SetPosition(1, this.end);
+        //lineRend.SetPosition(0, this.start);
+        //lineRend.SetPosition(1, this.end);
     }
+
+
+
+    public void UpdateLineRenderer(Vector3 start, Vector3 end)
+    {
+        this.lineRend.positionCount = 2;
+        this.lineRend.SetPositions(new Vector3[] { start, end });
+    }
+
+
 
     public void Set(int ID, Vector3 start, Vector3 end, bool isCorner)
     {
@@ -84,8 +94,8 @@ public class EdgePart
         this.start.z = Player.inst.transform.position.z - 0.001f;
         this.end.z = Player.inst.transform.position.z - 0.001f;
 
-        lineRend.SetPosition(0, this.start);
-        lineRend.SetPosition(1, this.end);
+        //lineRend.SetPosition(0, this.start);
+        //lineRend.SetPosition(1, this.end);
     }
 
     public static bool IsCorner(int ID)
@@ -168,6 +178,8 @@ public class EdgePart
 
 public class PlayerEdgePart : EdgePart
 {
+    public Vector3[] positions;
+
     // Contructor
     public PlayerEdgePart(Type type, LineRenderer lineRend)
     {
@@ -178,24 +190,30 @@ public class PlayerEdgePart : EdgePart
     public new enum Type {Main, Second};
     public new Type type;
     public bool changed;
-    private bool visible;
-    public bool Visible
+
+
+    public void Set(int ID, Vector3[] positions, bool isCorner)
     {
-        get { return visible; }
-        set { this.lineRend.enabled = value; visible = value; }
+        this.ID = ID;
+        this.positions = positions;
+        this.isCorner = isCorner;
+
+        for (int i=0; i<positions.Length; i++)
+            this.positions[i].z = Player.inst.transform.position.z - 0.002f;
+
+        //lineRend.SetPosition(0, base.start);
+        //lineRend.SetPosition(1, base.end);
     }
 
-
-    public new void Set(Vector3 start, Vector3 end)
+    public void SetVisible(bool value)
     {
-        base.start = start;
-        base.end = end;
+        this.lineRend.enabled = value;
+    }
 
-        base.start.z = Player.inst.transform.position.z - 0.002f;
-        base.end.z = Player.inst.transform.position.z - 0.002f;
-
-        lineRend.SetPosition(0, base.start);
-        lineRend.SetPosition(1, base.end);
+    public void UpdateLineRenderer()
+    {
+        this.lineRend.positionCount = this.positions.Length;
+        this.lineRend.SetPositions(this.positions);
     }
 
 }

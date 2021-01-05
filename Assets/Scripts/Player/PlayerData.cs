@@ -68,6 +68,12 @@ public static class PlayerData
         }
         else
             player.positionState = Player.PositionState.noTunnel;
+
+        // Tunnel enter?
+        if (player.positionState != Player.PositionState.noTunnel && player.lastPosState == Player.PositionState.noTunnel)
+            player.tunnelEnter = true;
+        else
+            player.tunnelEnter = false;
     }
 
 
@@ -81,7 +87,8 @@ public static class PlayerData
             lastEdge_start = player.curEdge.start;
             lastEdge_end = player.curEdge.end;
             lastEdgePartID = curEdgePartID;
-
+            if (player.curEdge.firstTouch)
+                Debug.Log("firstTouch; lastID: " + lastEdgePartID);
 
             Vector2 intersection = Vector2.zero;
             Vector3 mousePos_extended = midPoint + (player.mousePos - midPoint).normalized * 10f;
@@ -116,7 +123,6 @@ public static class PlayerData
             var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
 
             // Edge part change?
-            //Debug.Log("curEdgePartID: " + curEdgePartID + ", lastEdgePartID: " + lastEdgePartID + ", percentage: " + player.curEdge.percentage + ", curEdgeIndex: " + curEdgeIndex);
             if (curEdgePartID != lastEdgePartID)
                 player.curEdgePart.changed = true;
             else
@@ -129,8 +135,7 @@ public static class PlayerData
                 player.curEdge.changed = true;
 
             // Is corner?
-            bool isCorner = (curEdgePartID + 1) % VisualController.inst.envGridLoops == 0 || curEdgePartID % VisualController.inst.envGridLoops == 0;
-            //bool isCorner = EdgePart.IsCorner(curEdgePartID);
+            bool isCorner = EdgePart.IsCorner(curEdgePartID);
             if (isCorner)
             {
                 // Add third position
@@ -147,14 +152,17 @@ public static class PlayerData
                     curEdgePart_positions.Add(rightCornerPos);
                 }
                 // No edgePartChange in corners
-                bool lastIDisCorner = (lastEdgePartID + 1) % VisualController.inst.envGridLoops == 0 || lastEdgePartID % VisualController.inst.envGridLoops == 0;
-                //bool lastIDisCorner = EdgePart.IsCorner(lastEdgePartID);
-                if (lastIDisCorner)
+                bool lastIDisCorner = EdgePart.IsCorner(lastEdgePartID);
+                bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1;
+                if (lastIDisCorner && lastIDisClose)
                     player.curEdgePart.changed = false;
             }
 
+            if (player.curEdgePart.changed)
+                Debug.Log("edgePartChange; ID: " + curEdgePartID);
+
             // ASSIGN
-            player.curEdgePart.Set(curEdgePartID, curEdgePart_start, curEdgePart_end, isCorner);
+            player.curEdgePart.Set(curEdgePartID, curEdgePart_positions.ToArray(), isCorner);
         }
         
         

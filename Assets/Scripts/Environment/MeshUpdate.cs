@@ -113,21 +113,34 @@ public static class MeshUpdate
         {
             for (int j = 0; j < VisualController.inst.envGridLoops; j++)
             {
+                // calc
                 Vector3 start = EnvironmentData.vertices[i] + (((EnvironmentData.vertices[(i + 1) % EnvironmentData.vertices.Length] - EnvironmentData.vertices[i]) / VisualController.inst.envGridLoops) * j);
                 Vector3 end = EnvironmentData.vertices[i] + (((EnvironmentData.vertices[(i + 1) % EnvironmentData.vertices.Length] - EnvironmentData.vertices[i]) / VisualController.inst.envGridLoops) * (j+1));
-                
-                EnvironmentData.edgeParts[i * VisualController.inst.envGridLoops + j].Set(start, end);
+
+                int ID = i * VisualController.inst.envGridLoops + j;
+                EnvironmentData.edgeParts[ID].Set(start, end);
+
+                // lineRenderer
+                if (Player.inst.tunnelEnter)
+                    EnvironmentData.edgeParts[ID].UpdateLineRenderer(start, end);
             }
         }
 
         // Player
         if (Player.inst.curEdge.firstTouch)
         {
-            Player.inst.curEdgePart.Visible = true;
+            Player.inst.curEdgePart.SetVisible(true);
         }
         else if (Player.inst.curEdge.leave)
         {
-            Player.inst.curEdgePart.Visible = false;
+            Player.inst.curEdgePart.SetVisible(false);
         }
+
+        if (Player.inst.curEdgePart.changed)
+        {
+            Player.inst.curEdgePart.UpdateLineRenderer();
+            Debug.Log("updateLineRend player");
+        }
+        
     }
 }
