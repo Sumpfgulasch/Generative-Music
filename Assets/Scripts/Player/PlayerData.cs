@@ -31,7 +31,7 @@ public static class PlayerData
     {
         player.lastActionState = player.actionState;
 
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
+        if (InputManager.Action())
             player.actionState = Player.ActionState.stickToEdge;
         else
             player.actionState = Player.ActionState.move;
@@ -120,11 +120,15 @@ public static class PlayerData
             Vector3 curEdgePart_end = EnvironmentData.edgeParts[curEdgePartID].end;
             var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
 
+            //Debug.Log("curID: " + curEdgePartID);
+
+            // --------- EVENT --------
             // Edge part change?
             if (curEdgePartID != lastEdgePartID)
                 player.curEdgePart.changed = true;
             else
                 player.curEdgePart.changed = false;
+            // --------- EVENT --------
 
             // Edge change?
             if (player.curEdge.start == lastEdge_start && player.curEdge.end == lastEdge_end)
@@ -151,19 +155,19 @@ public static class PlayerData
                 }
                 // No edgePartChange in corners
                 bool lastIDisCorner = EdgePart.IsCorner(lastEdgePartID);
-                bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1 || Mathf.Abs(curEdgePartID - lastEdgePartID) == VisualController.inst.EdgePartCount-1;
+                bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1 || Mathf.Abs(curEdgePartID - lastEdgePartID) == VisualController.inst.EdgePartCount - 1;
                 if (lastIDisCorner && lastIDisClose)
                     player.curEdgePart.changed = false;
             }
 
-            //if (player.curEdgePart.changed)
-            //    Debug.Log("edgePartChange!");
-
             // ASSIGN
             player.curEdgePart.Set(curEdgePartID, curEdgePart_positions.ToArray(), isCorner);
         }
-        
-        
+
+        if (player.curEdgePart.changed)
+            Debug.Log("edgePart change");
+
+
         // First edge touch
         if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.move)
         {

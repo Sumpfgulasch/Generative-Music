@@ -87,7 +87,7 @@ public static class LoopData
 
         // 2. tone range
         toneRangeMin = curKey.KeyNote + MusicUtil.notesPerOctave * 4;
-        toneRangeMax = curKey.KeyNote + MusicUtil.notesPerOctave * 7;
+        toneRangeMax = curKey.KeyNote + MusicUtil.notesPerOctave * 6;
 
         // 3. velocity
         minVelocity = 0.08f;

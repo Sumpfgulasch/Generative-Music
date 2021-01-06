@@ -53,7 +53,7 @@ public class MusicManager : MonoBehaviour
 
         ManageChordPlaying();
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (InputManager.Reset())
             LoopData.Init();
     }
 

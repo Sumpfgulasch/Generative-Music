@@ -8,8 +8,8 @@ public partial class Player : MonoBehaviour
     public static Player inst;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
     public enum ActionState { stickToEdge, move };
-    public PositionState positionState = PositionState.noTunnel;
-    public ActionState actionState = ActionState.move;
+    [HideInInspector] public PositionState positionState = PositionState.noTunnel;
+    [HideInInspector] public ActionState actionState = ActionState.move;
     
     [Header("General stuff")]
     public int verticesCount = 3;
@@ -17,6 +17,8 @@ public partial class Player : MonoBehaviour
     public bool constantInnerWidth = true;
     public float stickToEdgeTolerance = 0.01f;
     public float stickToOuterEdge_holeSize = 0.05f;
+    public bool useKeyboard;
+
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
     [Range(0, 1f)] public float rotationTargetVectorFactor = 0.1f;
@@ -129,7 +131,6 @@ public partial class Player : MonoBehaviour
         PlayerData.CalcEdgeData();
 
         // 2. Perform movement
-        KeyboardMovement();
         PerformMouseMovement();
     }
 
@@ -180,29 +181,6 @@ public partial class Player : MonoBehaviour
 
 
 
-
-    // KEYBOARD
-    void KeyboardMovement()
-    {
-        // ROTATION
-        float horizontalAxis = Input.GetAxis("Horizontal");
-        float slowAxis = Input.GetAxis("Slow");
-        float slowRotValue = slowAxis + 1 - (2 * slowAxis * kb_slowRotation);
-        if (horizontalAxis != 0)
-        {
-            this.transform.eulerAngles -= new Vector3(0, 0, horizontalAxis * kb_rotationSpeed * slowRotValue);
-        }
-
-        // SCALE
-        float verticalAxis = Input.GetAxis("Vertical");
-        float slowScaleFactor = slowAxis + 1 - (2 * slowAxis * kb_slowScale);
-        float scaleValue = -verticalAxis * kb_scaleSpeed * slowScaleFactor;
-        if (verticalAxis != 0)
-        {
-            this.transform.localScale += new Vector3(scaleValue, scaleValue, 0);
-        }
-    }
-
     
 
     void PerformMouseMovement()
@@ -212,49 +190,62 @@ public partial class Player : MonoBehaviour
         // regular move
         if (actionState == ActionState.move)
         {
-            if (positionState == PositionState.inside)
+            if (!useKeyboard)
             {
-                MoveTowardsMouse("inner");
+                if (positionState == PositionState.inside || positionState == PositionState.innerEdge)
+                {
+                    MoveTowardsMouse("inner");
+                }
+                else
+                {
+                    MoveTowardsMouse("outer");
+                }
             }
-            else if (positionState == PositionState.innerEdge)
+            else
             {
-                MoveTowardsMouse("inner");
+
             }
-            else if (positionState == PositionState.outside)
-            {
-                MoveTowardsMouse("outer");
-            }
-            else if (positionState == PositionState.outerEdge)
-            {
-                MoveTowardsMouse("outer");
-            }
+            //else if (positionState == PositionState.innerEdge)
+            //{
+            //    MoveTowardsMouse("inner");
+            //}
+            //else if (positionState == PositionState.outside)
+            //{
+            //    MoveTowardsMouse("outer");
+            //}
+            //else if (positionState == PositionState.outerEdge)
+            //{
+            //    MoveTowardsMouse("outer");
+            //}
         }
         // action: stick to edge
         else if (actionState == ActionState.stickToEdge)
         {
-            if (startPosState == PositionState.inside)
+            if (startPosState == PositionState.inside || startPosState == PositionState.innerEdge)
             {
-                //MoveTowardsEdge("inner");
                 StickToEdge("inner");
-
             }
-            else if (startPosState == PositionState.innerEdge)
+            else
             {
-                StickToEdge("inner");
+                StickToEdge("outer");
+            }
+
+            //else if (startPosState == PositionState.innerEdge)
+            //{
+            //    StickToEdge("inner");
                 
-                velocity = GetVelocityFromDistance();
-            }
-            else if (startPosState == PositionState.outside)
-            {
-                //MoveTowardsEdge("outer");
-                StickToEdge("outer");
-            }
-            else if (startPosState == PositionState.outerEdge)
-            {
-                StickToEdge("outer");
+            //    velocity = GetVelocityFromDistance();
+            //}
+            //else if (startPosState == PositionState.outside)
+            //{
+            //    StickToEdge("outer");
+            //}
+            //else if (startPosState == PositionState.outerEdge)
+            //{
+            //    StickToEdge("outer");
 
-                velocity = GetVelocityFromDistance();
-            }
+            //    velocity = GetVelocityFromDistance();
+            //}
         }
 
         // APPLY & clamp (scale & rot)
@@ -373,11 +364,11 @@ public partial class Player : MonoBehaviour
         mouseY = Input.GetAxis("Mouse Y");
         mouseDelta = Mathf.Sqrt(mouseX * mouseX + mouseY * mouseY);
 
-        if (Input.GetMouseButtonDown(1) || Input.GetMouseButton(1))
+        if (InputManager.FastMoveStart())
             fastWeight = fastFactor;
-        else if (Input.GetMouseButtonUp(1))
+        else if (InputManager.FastMoveEnd())
             fastWeight = 1f;
-        if (Input.GetMouseButtonDown(0))
+        if (InputManager.ActionStart())
         {
             startScale = this.transform.localScale.x;
             startPosState = positionState;
