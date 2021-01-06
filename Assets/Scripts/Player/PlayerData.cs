@@ -81,53 +81,57 @@ public static class PlayerData
     public static void CalcEdgeData()
     {
         // Berechne nur auf Edges
+        //if (player.actionState == Player.ActionState.stickToEdge)
+        //{
+        // Last-variables
+        lastEdge_start = player.curEdge.start;
+        lastEdge_end = player.curEdge.end;
+
+
+        Vector2 intersection = Vector2.zero;
+        Vector3 mousePos_extended = midPoint + (player.mousePos - midPoint).normalized * 10f;
+        int curEdgeIndex = 0;
+        for (int i = 0; i < player.outerVertices.Length; i++)
+        {
+            Vector3 playerMainVertex_extended = midPoint + ((player.outerVertices[0] - midPoint).normalized * 10f);
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, EnvironmentData.vertices[i], EnvironmentData.vertices[(i + 1) % 3]))
+            {
+                // Current edge (main & sec)
+                player.curEdge.start = EnvironmentData.vertices[i];           // i beginnt immer beim environmentTriangle UNTEN LINKS!
+                player.curEdge.end = EnvironmentData.vertices[(i + 1) % 3]; // im Uhrzeigersinn (wie alle anderen Vertex-Arrays)
+                for (int j = 0; j < player.curSecEdges.Length; j++)
+                {
+                    player.curSecEdges[j].start = EnvironmentData.vertices[(i + 1 + j) % 3];
+                    player.curSecEdges[j].end = EnvironmentData.vertices[(i + 2 + j) % 3];
+                }
+                curEdgeIndex = i; // for later edgePart-index
+            }
+        }
+
+        // Current edgePart & edgePartPercentage
+        RaycastHit hit;
+        Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit);
+        Vector3 playerPointOnEnv = new Vector3(hit.point.x, hit.point.y, player.outerVertices[0].z);
+        player.curEdge.percentage = Mathf.Clamp01((playerPointOnEnv - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
+        curEdgePartID = ((int)(player.curEdge.percentage.
+            Remap(0, 1f, 0, VisualController.inst.envGridLoops)
+            + curEdgeIndex * VisualController.inst.envGridLoops)) % (EnvironmentData.vertices.Length * VisualController.inst.envGridLoops); // gar kein bock mehr
+        Vector3 curEdgePart_start = EnvironmentData.edgeParts[curEdgePartID].start;
+        Vector3 curEdgePart_end = EnvironmentData.edgeParts[curEdgePartID].end;
+        var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
+
+        //Debug.Log("curID: " + curEdgePartID);
+
+        // --------- EVENT --------
+        // Edge part change?
         if (player.actionState == Player.ActionState.stickToEdge)
         {
-            // Last-variables
-            lastEdge_start = player.curEdge.start;
-            lastEdge_end = player.curEdge.end;
-            lastEdgePartID = curEdgePartID;
-
-            Vector2 intersection = Vector2.zero;
-            Vector3 mousePos_extended = midPoint + (player.mousePos - midPoint).normalized * 10f;
-            int curEdgeIndex = 0;
-            for (int i = 0; i < player.outerVertices.Length; i++)
-            {
-                Vector3 playerMainVertex_extended = midPoint + ((player.outerVertices[0] - midPoint).normalized * 10f);
-                if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, EnvironmentData.vertices[i], EnvironmentData.vertices[(i + 1) % 3]))
-                {
-                    // Current edge (main & sec)
-                    player.curEdge.start = EnvironmentData.vertices[i];           // i beginnt immer beim environmentTriangle UNTEN LINKS!
-                    player.curEdge.end = EnvironmentData.vertices[(i + 1) % 3]; // im Uhrzeigersinn (wie alle anderen Vertex-Arrays)
-                    for (int j = 0; j < player.curSecEdges.Length; j++)
-                    {
-                        player.curSecEdges[j].start = EnvironmentData.vertices[(i + 1 + j) % 3];
-                        player.curSecEdges[j].end = EnvironmentData.vertices[(i + 2 + j) % 3];
-                    }
-                    curEdgeIndex = i; // for later edgePart-index
-                }
-            }
-
-            // Current edgePart & edgePartPercentage
-            RaycastHit hit;
-            Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit);
-            Vector3 playerPointOnEnv = new Vector3(hit.point.x, hit.point.y, player.outerVertices[0].z);
-            player.curEdge.percentage = Mathf.Clamp01((playerPointOnEnv - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
-            curEdgePartID = ((int)(player.curEdge.percentage.
-                Remap(0, 1f, 0, VisualController.inst.envGridLoops)
-                + curEdgeIndex * VisualController.inst.envGridLoops)) % (EnvironmentData.vertices.Length * VisualController.inst.envGridLoops); // gar kein bock mehr
-            Vector3 curEdgePart_start = EnvironmentData.edgeParts[curEdgePartID].start;
-            Vector3 curEdgePart_end = EnvironmentData.edgeParts[curEdgePartID].end;
-            var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
-
-            //Debug.Log("curID: " + curEdgePartID);
-
-            // --------- EVENT --------
-            // Edge part change?
             if (curEdgePartID != lastEdgePartID)
                 player.curEdgePart.changed = true;
             else
                 player.curEdgePart.changed = false;
+
+            
             // --------- EVENT --------
 
             // Edge change?
@@ -140,7 +144,7 @@ public static class PlayerData
             bool isCorner = EdgePart.IsCorner(curEdgePartID);
             if (isCorner)
             {
-                // Add third position
+                // Add third position (left or right)
                 if (EdgePart.IsCorner_RightPart(curEdgePartID))
                 {
                     int leftCornerID = ExtensionMethods.Modulo(curEdgePartID - 1, VisualController.inst.EdgePartCount);
@@ -156,13 +160,17 @@ public static class PlayerData
                 // No edgePartChange in corners
                 bool lastIDisCorner = EdgePart.IsCorner(lastEdgePartID);
                 bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1 || Mathf.Abs(curEdgePartID - lastEdgePartID) == VisualController.inst.EdgePartCount - 1;
+                //Debug.Log("curID: " + curEdgePartID + ", lastID: " + lastEdgePartID + ", lastIDisCorner: " + lastIDisCorner + ", lastIDisClose: " + lastIDisClose);
                 if (lastIDisCorner && lastIDisClose)
                     player.curEdgePart.changed = false;
             }
 
+            lastEdgePartID = curEdgePartID;
+
             // ASSIGN
             player.curEdgePart.Set(curEdgePartID, curEdgePart_positions.ToArray(), isCorner);
         }
+        //}
 
         if (player.curEdgePart.changed)
             Debug.Log("edgePart change");
