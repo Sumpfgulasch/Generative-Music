@@ -65,4 +65,19 @@ public static class InputManager
             return false;
     }
 
+    public static bool SelectClockWise()
+    {
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+            return true;
+        else
+            return false;
+    }
+
+    public static bool SelectCounterClockWise()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+            return true;
+        else
+            return false;
+    }
 }

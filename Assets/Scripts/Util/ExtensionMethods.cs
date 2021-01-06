@@ -125,7 +125,7 @@ public static class ExtensionMethods
         return tArray;
     }
 
-    public static int Modulo(int value, int modulo)
+    public static int Modulo(this int value, int modulo)
     {
         return ((value % modulo) + modulo) % modulo;
     }

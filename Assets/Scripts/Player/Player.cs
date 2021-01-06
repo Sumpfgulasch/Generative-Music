@@ -109,6 +109,7 @@ public partial class Player : MonoBehaviour
     {
         inst = this;
         midPoint = this.transform.position;
+        //this.transform.localScale = new Vector3(scaleMin, scaleMin, this.transform.localScale.z);
     }
 
 
@@ -141,42 +142,63 @@ public partial class Player : MonoBehaviour
     // MOUSE
     void CalcMovementData()
     {
-        // ROTATION
-        Vector2 mouseToMid = mousePos - midPoint;
-        Vector2 playerAngleVec = outerVertices[0] - midPoint;
-        float curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
-        curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
-        rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
-        curRotSpeed = rotTargetValue;
+        // MOUSE
 
-        // SCALE
-        // Distances
-        mouseToPlayerDistance = 0;
-        Vector2 intersection = Vector2.zero;
-        Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
-        if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
+        if (!useKeyboard)
         {
-            curPlayerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
-            tunnelToMidDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
-            mouseToEnvDistance = ((Vector2)mousePos - (Vector2)envPlayerIntersection.point).magnitude;
-            if (((Vector2)mousePos - (Vector2)midPoint).magnitude < ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude)
-                mouseToEnvDistance *= -1;
-        }
-        for (int i = 0; i < outerVertices.Length; i++)
-        {
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
+            // Rotation
+            Vector2 mouseToMid = mousePos - midPoint;
+            Vector2 playerAngleVec = outerVertices[0] - midPoint;
+            float curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
+            curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
+            rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
+            curRotSpeed = rotTargetValue;
+
+            // Scale
+            mouseToPlayerDistance = 0;
+            Vector2 intersection = Vector2.zero;
+            Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
+            if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
             {
-                mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
-                if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
+                curPlayerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
+                tunnelToMidDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
+                mouseToEnvDistance = ((Vector2)mousePos - (Vector2)envPlayerIntersection.point).magnitude;
+                if (((Vector2)mousePos - (Vector2)midPoint).magnitude < ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude)
+                    mouseToEnvDistance *= -1;
+            }
+            for (int i = 0; i < outerVertices.Length; i++)
+            {
+                if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
                 {
-                    mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
+                    mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
+                    if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
+                    {
+                        mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
+                    }
                 }
+            }
+
+            // Scale value
+            scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
+            scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+        }
+
+        // KEYBOARD
+        else
+        {
+            int curID = curEdgePart.ID;
+            float curRot = this.transform.eulerAngles.z;
+            if (InputManager.SelectClockWise())
+            {
+                int nextID = (curEdgePart.ID + 1).Modulo(VisualController.inst.EdgePartCount);
+                Vector3 target = (EnvironmentData.edgeParts[nextID].start + EnvironmentData.edgeParts[nextID].end) / 2f;
+                Vector3 targetVec = target - this.transform.position;
+                float nextRot = Vector2.Angle(Vector2.up, targetVec);
             }
         }
 
-        // Scale value
-        scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
-        scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+        
+
     }
 
 
@@ -193,30 +215,14 @@ public partial class Player : MonoBehaviour
             if (!useKeyboard)
             {
                 if (positionState == PositionState.inside || positionState == PositionState.innerEdge)
-                {
                     MoveTowardsMouse("inner");
-                }
                 else
-                {
                     MoveTowardsMouse("outer");
-                }
             }
             else
             {
 
             }
-            //else if (positionState == PositionState.innerEdge)
-            //{
-            //    MoveTowardsMouse("inner");
-            //}
-            //else if (positionState == PositionState.outside)
-            //{
-            //    MoveTowardsMouse("outer");
-            //}
-            //else if (positionState == PositionState.outerEdge)
-            //{
-            //    MoveTowardsMouse("outer");
-            //}
         }
         // action: stick to edge
         else if (actionState == ActionState.stickToEdge)
@@ -229,23 +235,6 @@ public partial class Player : MonoBehaviour
             {
                 StickToEdge("outer");
             }
-
-            //else if (startPosState == PositionState.innerEdge)
-            //{
-            //    StickToEdge("inner");
-                
-            //    velocity = GetVelocityFromDistance();
-            //}
-            //else if (startPosState == PositionState.outside)
-            //{
-            //    StickToEdge("outer");
-            //}
-            //else if (startPosState == PositionState.outerEdge)
-            //{
-            //    StickToEdge("outer");
-
-            //    velocity = GetVelocityFromDistance();
-            //}
         }
 
         // APPLY & clamp (scale & rot)

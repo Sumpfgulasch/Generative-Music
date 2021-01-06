@@ -80,14 +80,6 @@ public static class PlayerData
 
     public static void CalcEdgeData()
     {
-        // Berechne nur auf Edges
-        //if (player.actionState == Player.ActionState.stickToEdge)
-        //{
-        // Last-variables
-        lastEdge_start = player.curEdge.start;
-        lastEdge_end = player.curEdge.end;
-
-
         Vector2 intersection = Vector2.zero;
         Vector3 mousePos_extended = midPoint + (player.mousePos - midPoint).normalized * 10f;
         int curEdgeIndex = 0;
@@ -119,6 +111,8 @@ public static class PlayerData
         Vector3 curEdgePart_start = EnvironmentData.edgeParts[curEdgePartID].start;
         Vector3 curEdgePart_end = EnvironmentData.edgeParts[curEdgePartID].end;
         var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
+
+        player.curEdgePart.ID = curEdgePartID;
 
         //Debug.Log("curID: " + curEdgePartID);
 
@@ -165,11 +159,16 @@ public static class PlayerData
                     player.curEdgePart.changed = false;
             }
 
+            // Last-variables
+            lastEdge_start = player.curEdge.start;
+            lastEdge_end = player.curEdge.end;
             lastEdgePartID = curEdgePartID;
 
             // ASSIGN
             player.curEdgePart.Set(curEdgePartID, curEdgePart_positions.ToArray(), isCorner);
         }
+
+        
         //}
 
         if (player.curEdgePart.changed)
