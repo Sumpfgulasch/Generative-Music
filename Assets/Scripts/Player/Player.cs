@@ -7,9 +7,9 @@ public partial class Player : MonoBehaviour
     // Public variables
     public static Player inst;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
-    public enum ActionState { stickToEdge, move };
+    public enum ActionState { stickToEdge, none };
     [HideInInspector] public PositionState positionState = PositionState.noTunnel;
-    [HideInInspector] public ActionState actionState = ActionState.move;
+    [HideInInspector] public ActionState actionState = ActionState.none;
     
     [Header("General stuff")]
     public int verticesCount = 3;
@@ -39,6 +39,7 @@ public partial class Player : MonoBehaviour
     [Range(1, 20f)]
     public float bounceFactor = 10f;
     public float bounceRecoverTime = 0.5f;
+
     [Header("Keyboard")]
     public float kb_scaleSpeed = 1f;
     [Range(0.1f, 1f)]
@@ -132,7 +133,7 @@ public partial class Player : MonoBehaviour
         PlayerData.CalcEdgeData();
 
         // 2. Perform movement
-        PerformMouseMovement();
+        PerformMovement();
     }
 
 
@@ -143,75 +144,65 @@ public partial class Player : MonoBehaviour
     void CalcMovementData()
     {
         // MOUSE
+        // Rotation
+        Vector2 mouseToMid = mousePos - midPoint;
+        Vector2 playerAngleVec = outerVertices[0] - midPoint;
+        float curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
+        curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
+        rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
+        curRotSpeed = rotTargetValue;
 
-        if (!useKeyboard)
+        // Scale
+        mouseToPlayerDistance = 0;
+        Vector2 intersection = Vector2.zero;
+        Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
+        if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
         {
-            // Rotation
-            Vector2 mouseToMid = mousePos - midPoint;
-            Vector2 playerAngleVec = outerVertices[0] - midPoint;
-            float curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
-            curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
-            rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
-            curRotSpeed = rotTargetValue;
-
-            // Scale
-            mouseToPlayerDistance = 0;
-            Vector2 intersection = Vector2.zero;
-            Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
-            if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
+            curPlayerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
+            tunnelToMidDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
+            mouseToEnvDistance = ((Vector2)mousePos - (Vector2)envPlayerIntersection.point).magnitude;
+            if (((Vector2)mousePos - (Vector2)midPoint).magnitude < ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude)
+                mouseToEnvDistance *= -1;
+        }
+        for (int i = 0; i < outerVertices.Length; i++)
+        {
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
             {
-                curPlayerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
-                tunnelToMidDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
-                mouseToEnvDistance = ((Vector2)mousePos - (Vector2)envPlayerIntersection.point).magnitude;
-                if (((Vector2)mousePos - (Vector2)midPoint).magnitude < ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude)
-                    mouseToEnvDistance *= -1;
-            }
-            for (int i = 0; i < outerVertices.Length; i++)
-            {
-                if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
+                mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
+                if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
                 {
-                    mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
-                    if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
-                    {
-                        mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
-                    }
+                    mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
                 }
             }
-
-            // Scale value
-            scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
-            scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
         }
 
-        // KEYBOARD
-        else
-        {
-            int curID = curEdgePart.ID;
-            float curRot = this.transform.eulerAngles.z;
-            if (InputManager.SelectClockWise())
-            {
-                int nextID = (curEdgePart.ID + 1).Modulo(VisualController.inst.EdgePartCount);
-                Vector3 target = (EnvironmentData.edgeParts[nextID].start + EnvironmentData.edgeParts[nextID].end) / 2f;
-                Vector3 targetVec = target - this.transform.position;
-                float nextRot = Vector2.Angle(Vector2.up, targetVec);
-            }
-        }
-
-        
-
+        // Scale value
+        scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
+        scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
     }
 
 
 
     
 
-    void PerformMouseMovement()
+    void PerformMovement()
     {
         // = manage states
 
-        // regular move
-        if (actionState == ActionState.move)
+        // Keyboard: select next
+        if (InputManager.SelectNext())
         {
+            RotateToNext(1);
+        }
+        else if (InputManager.SelectPrevious())
+        {
+            RotateToNext(-1);
+        }
+
+        // regular move
+        if (actionState == ActionState.none)
+        {
+            // Mouse
             if (!useKeyboard)
             {
                 if (positionState == PositionState.inside || positionState == PositionState.innerEdge)
@@ -219,10 +210,10 @@ public partial class Player : MonoBehaviour
                 else
                     MoveTowardsMouse("outer");
             }
-            else
-            {
 
-            }
+            // HACK
+            if (useKeyboard)
+                ButtonScale(-1);
         }
         // action: stick to edge
         else if (actionState == ActionState.stickToEdge)
@@ -237,42 +228,67 @@ public partial class Player : MonoBehaviour
             }
         }
 
-        // APPLY & clamp (scale & rot)
-        curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;
-        curScaleSpeed = curScaleSpeed * (1 - bounceRecoverWeight) + curBounceSpeed * bounceWeight; // add bounce force & fast speed
-
-        this.transform.localScale += new Vector3(curScaleSpeed * fastWeight, curScaleSpeed * fastWeight, 0);
-        this.transform.localScale = ExtensionMethods.ClampVector3_2D(this.transform.localScale, scaleMin, scaleMax);
-
-        this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
     }
 
 
-
-    void MoveTowardsEdge(string side)
+    private void ButtonScale(int direction)
     {
-        if (side == "inner")
-        {
-            float scaleAdd = scaleEdgeAcc;
-            if (curScaleSpeed < 0.0001f)
-                curScaleSpeed = 0.0001f;
-
-        }
-        else if (side == "outer")
-        {
-            if (curScaleSpeed > -0.0001f)
-                curScaleSpeed = -0.0001f;
-        }
-
-        if (curPlayerRadius < tunnelToMidDistance)
-        {
-            curScaleSpeed = Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
-        }
-        else
-        {
-            curScaleSpeed = -Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
-        }
+        this.transform.localScale += new Vector3(kb_scaleSpeed * 2, kb_scaleSpeed * 2, 0) * direction;
+        this.transform.localScale = this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);              // clamp
     }
+
+
+    private void RotateToNext(int direction)
+    {
+        // KEYBOARD
+        int curID = curEdgePart.ID;
+
+        Vector3 targetPos = EdgePart.NextEdgePartMid(curID, direction);
+        Vector3 targetVec = targetPos - this.transform.position;
+        Vector3 curVec = outerVertices[0] - this.transform.position;
+
+        float nextRot = Vector2.SignedAngle(curVec, targetVec);
+        
+        this.transform.eulerAngles += new Vector3(this.transform.eulerAngles.x, this.transform.eulerAngles.y, nextRot);
+
+        // Hack
+        if ((Mathf.Abs(this.transform.eulerAngles.z) > 180f - 0.1f && Mathf.Abs(this.transform.eulerAngles.z) < 180f + 0.1f) ||
+            Mathf.Abs(this.transform.eulerAngles.z) > 60f - 0.1f && Mathf.Abs(this.transform.eulerAngles.z) < 60f + 0.1f)
+        {
+            print("error");
+            this.transform.eulerAngles += new Vector3(0, 0, 0.1f);
+        }
+
+        // Hack2
+        CalcMovementData();
+    }
+
+
+
+    //void MoveTowardsEdge(string side)
+    //{
+    //    if (side == "inner")
+    //    {
+    //        float scaleAdd = scaleEdgeAcc;
+    //        if (curScaleSpeed < 0.0001f)
+    //            curScaleSpeed = 0.0001f;
+
+    //    }
+    //    else if (side == "outer")
+    //    {
+    //        if (curScaleSpeed > -0.0001f)
+    //            curScaleSpeed = -0.0001f;
+    //    }
+
+    //    if (curPlayerRadius < tunnelToMidDistance)
+    //    {
+    //        curScaleSpeed = Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
+    //    }
+    //    else
+    //    {
+    //        curScaleSpeed = -Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
+    //    }
+    //}
 
 
 
@@ -286,12 +302,20 @@ public partial class Player : MonoBehaviour
             curScaleSpeed = scaleTargetValue * outsideSlowFac;
             curRotSpeed = rotTargetValue * outsideSlowFac;
         }
+        // scale
+        curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;                  // damp
+        this.transform.localScale += new Vector3(curScaleSpeed * fastWeight, curScaleSpeed * fastWeight, 0);    // add
+        this.transform.localScale = this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);              // clamp
+
+        // rotation
+        this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
     }
 
 
 
     void StickToEdge(string side)
     {
+        // SCALE only
         if (side == "inner")
         {
             float borderTargetScaleFactor = tunnelToMidDistance / curPlayerRadius;
@@ -306,42 +330,46 @@ public partial class Player : MonoBehaviour
             if (constantInnerWidth)
             {
                 float borderTargetScaleFactor = (tunnelToMidDistance + innerWidth + stickToOuterEdge_holeSize) / curPlayerRadius;
-                this.transform.localScale *= borderTargetScaleFactor;
-                
+                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+
             }
             else
             {
                 float innerVertexDistance = (innerVertices[0] - midPoint).magnitude;
                 float borderTargetScaleFactor = (tunnelToMidDistance + stickToOuterEdge_holeSize) / innerVertexDistance;
-                this.transform.localScale *= borderTargetScaleFactor;
+                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
             }
             curScaleSpeed = 0; // unschön
         }
+
+        // rotation
+        if (!useKeyboard)
+            this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
     }
 
 
 
-    IEnumerator BounceForce()
-    {
-        startedBounce = true;
-        float time = 0;
-        bounceRecoverWeight = 1;
-        while (time < bounceTime)
-        {
-            time += Time.deltaTime;
-            bounceWeight = 1 - time / bounceTime;
-            curBounceSpeed = -maxBounceSpeed;
-            yield return null;
-        }
-        time = 0;
-        while (time < bounceRecoverTime)
-        {
-            time += Time.deltaTime;
-            bounceRecoverWeight = 1 - time / bounceRecoverTime;
-            yield return null;
-        }
-        startedBounce = false;
-    }
+    //IEnumerator BounceForce()
+    //{
+    //    startedBounce = true;
+    //    float time = 0;
+    //    bounceRecoverWeight = 1;
+    //    while (time < bounceTime)
+    //    {
+    //        time += Time.deltaTime;
+    //        bounceWeight = 1 - time / bounceTime;
+    //        curBounceSpeed = -maxBounceSpeed;
+    //        yield return null;
+    //    }
+    //    time = 0;
+    //    while (time < bounceRecoverTime)
+    //    {
+    //        time += Time.deltaTime;
+    //        bounceRecoverWeight = 1 - time / bounceRecoverTime;
+    //        yield return null;
+    //    }
+    //    startedBounce = false;
+    //}
 
 
     void GetInput()

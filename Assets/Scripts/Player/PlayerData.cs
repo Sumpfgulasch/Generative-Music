@@ -34,7 +34,7 @@ public static class PlayerData
         if (InputManager.Action())
             player.actionState = Player.ActionState.stickToEdge;
         else
-            player.actionState = Player.ActionState.move;
+            player.actionState = Player.ActionState.none;
     }
 
 
@@ -171,12 +171,9 @@ public static class PlayerData
         
         //}
 
-        if (player.curEdgePart.changed)
-            Debug.Log("edgePart change");
-
 
         // First edge touch
-        if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.move)
+        if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.none)
         {
             player.curEdge.firstTouch = true;
         }
@@ -184,7 +181,7 @@ public static class PlayerData
             player.curEdge.firstTouch = false;
 
         // Leave edge // to rework
-        if (player.actionState == Player.ActionState.move && player.lastActionState == Player.ActionState.stickToEdge)
+        if (player.actionState == Player.ActionState.none && player.lastActionState == Player.ActionState.stickToEdge)
         {
             player.curEdge.leave = true;
         }

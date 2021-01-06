@@ -65,7 +65,7 @@ public static class InputManager
             return false;
     }
 
-    public static bool SelectClockWise()
+    public static bool SelectNext()
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
             return true;
@@ -73,10 +73,34 @@ public static class InputManager
             return false;
     }
 
-    public static bool SelectCounterClockWise()
+    public static bool SelectPrevious()
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
             return true;
+        else
+            return false;
+    }
+
+
+    public static bool ButtonScaleUp()
+    {
+        // Keyboard
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKey(KeyCode.UpArrow))
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+
+
+    public static bool ButtonScaleDown()
+    {
+        // Keyboard
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKey(KeyCode.DownArrow))
+        {
+            return true;
+        }
         else
             return false;
     }

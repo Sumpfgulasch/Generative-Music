@@ -69,9 +69,6 @@ public class EdgePart
 
         this.start.z = Player.inst.transform.position.z - 0.001f;
         this.end.z = Player.inst.transform.position.z - 0.001f;
-
-        //lineRend.SetPosition(0, this.start);
-        //lineRend.SetPosition(1, this.end);
     }
 
 
@@ -93,9 +90,6 @@ public class EdgePart
 
         this.start.z = Player.inst.transform.position.z - 0.001f;
         this.end.z = Player.inst.transform.position.z - 0.001f;
-
-        //lineRend.SetPosition(0, this.start);
-        //lineRend.SetPosition(1, this.end);
     }
 
     public static bool IsCorner(int ID)
@@ -136,38 +130,52 @@ public class EdgePart
         }
     }
 
+    public static Vector3 CornerPosition(int ID)
+    {
+        if (!IsCorner(ID)) 
+        {
+            Debug.Log("Error! Wrong ID, no corner.");
+            return Vector3.zero;
+        }
+        else if(IsCorner_RightPart(ID))
+        {
+            return EnvironmentData.edgeParts[ID].start;
+        }
+        else
+            return EnvironmentData.edgeParts[ID].end;
+    }
 
-    //public static int[][] GetRandomSubdivision(ChordData[] chordTypes)
-    //{
-    //    int[][] subdivisions = new int[subdivisionCount][];
+    public static Vector3 NextEdgePartMid(int curID, int direction)
+    {
+        // = take the mid of corners
 
-    //    var indicies = ExtensionMethods.IntToList(VisualController.inst.EdgePartCount);
+        int nextID = (curID + direction).Modulo(VisualController.inst.EdgePartCount);
+        Vector3 position;
 
-    //    // 1. types
-    //    for (int i=0; i< chordTypes.Length; i++)
-    //    {
-    //        for (int h=0; h<chordTypes[i].individualCount; h++)
-    //        {
-    //            int randNumber = Random.Range(0, indicies.Count);
-    //        }
+        if (!IsCorner(nextID))
+        {
+            position = (EnvironmentData.edgeParts[nextID].start + EnvironmentData.edgeParts[nextID].end) / 2f;
+            return position;
+        }
+        else if (!IsCorner(curID) && IsCorner(nextID))
+        {
+            position = CornerPosition(nextID);
+            return position;
+        }
+        else if (IsCorner(curID) && IsCorner(nextID))
+        {
+            Debug.Log("direction before: " + direction);
+            nextID = (nextID + (int) Mathf.Sign(direction)).Modulo(VisualController.inst.EdgePartCount);
+            position = (EnvironmentData.edgeParts[nextID].start + EnvironmentData.edgeParts[nextID].end) / 2f;
+            return position;
+        }
+        else
+        {
+            Debug.LogError("wrong values");
+            return Vector3.zero;
+        }
 
-    //        if (i==0)
-    //        {
-    //            subdivisions[i] = new int[VisualController.inst.envVertices * 2];
-
-    //            // 2. field-indicies
-    //            for (int j=0; j<VisualController.inst.envVertices; j++)
-    //            {
-    //                int ID1 = ExtensionMethods.NegativeModulo(VisualController.inst.envGridLoops * j - 1, VisualController.inst.EdgePartCount);
-    //                int ID2 = VisualController.inst.envGridLoops * j;
-
-    //                subdivisions[i][j * 2] = ID1;
-    //                subdivisions[i][j * 2 + 1] = ID2;
-    //            }
-    //        }
-
-    //    }
-    //}
+    }
 }
 
 
@@ -200,9 +208,6 @@ public class PlayerEdgePart : EdgePart
 
         for (int i=0; i<positions.Length; i++)
             this.positions[i].z = Player.inst.transform.position.z - 0.002f;
-
-        //lineRend.SetPosition(0, base.start);
-        //lineRend.SetPosition(1, base.end);
     }
 
     public void SetVisible(bool value)
@@ -285,7 +290,6 @@ public static class EdgeParts
                     // get corner fields
                     int ID1 = ExtensionMethods.Modulo(j * VisualController.inst.envGridLoops - 1, VisualController.inst.EdgePartCount);
                     int ID2 = j * VisualController.inst.envGridLoops;
-                    //Debug.Log("chordType i: " + i + ", chord j: " + j + "(chords.length: " + chords[i].Length + ")");
                     edgePartIDs.Remove(ID1);
                     edgePartIDs.Remove(ID2);
                     // set field
@@ -300,8 +304,6 @@ public static class EdgeParts
                     int randID_index = Random.Range(0, edgePartIDs.Count);
                     int randID = edgePartIDs[randID_index];
 
-                    //Debug.Log("chord: " + j + "/" + chords[i].Length + ", edgePartIDs.length: " + edgePartIDs.Count + ", randID: " + randID + ", randID_index: " + randID_index);
-                    //ExtensionMethods.PrintArray("Remaining IDs: ", edgePartIDs);
                     edgePartIDs.Remove(randID);
 
                     // set field

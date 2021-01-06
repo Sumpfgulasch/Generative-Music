@@ -70,7 +70,7 @@ public static class ExtensionMethods
         return start + heading * dotP;
     }
 
-    public static Vector3 ClampVector3_2D(Vector3 value, float min, float max)
+    public static Vector3 ClampVector3_2D(this Vector3 value, float min, float max)
     {
         // only x & y!
         Vector3 clampedVector3;
