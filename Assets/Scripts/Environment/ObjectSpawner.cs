@@ -27,7 +27,7 @@ public class ObjectSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 
     IEnumerator SpawnObject()
@@ -66,5 +66,6 @@ public class ObjectSpawner : MonoBehaviour
             }
             yield return new WaitForSeconds(spawnRhythm);
         }
+        
     }
 }

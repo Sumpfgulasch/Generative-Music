@@ -164,7 +164,6 @@ public class EdgePart
         }
         else if (IsCorner(curID) && IsCorner(nextID))
         {
-            Debug.Log("direction before: " + direction);
             nextID = (nextID + (int) Mathf.Sign(direction)).Modulo(VisualController.inst.EdgePartCount);
             position = (EnvironmentData.edgeParts[nextID].start + EnvironmentData.edgeParts[nextID].end) / 2f;
             return position;
