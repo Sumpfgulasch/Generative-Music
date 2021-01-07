@@ -47,6 +47,8 @@ public partial class Player : MonoBehaviour
     public float kb_rotationSpeed = 1f;
     [Range(0.1f, 1f)]
     public float kb_slowRotation = 0.9f;
+    [Range(0.1f, 1f)]
+    public float kb_rotationDamp = 0.8f;
 
     // Public attributes
     [HideInInspector] public PositionState lastPosState;
@@ -97,6 +99,7 @@ public partial class Player : MonoBehaviour
     private float mouseToEnvDistance;
     private float timer;
     private float startScale;
+    Vector3 targetPos = Vector3.up;
 
 
 
@@ -179,6 +182,16 @@ public partial class Player : MonoBehaviour
         // Scale value
         scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
         scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+
+        // KEYBOARD
+        if (InputManager.SelectNext())
+        {
+            targetPos = GetNextRotation(1);
+        }
+        else if (InputManager.SelectPrevious())
+        {
+            targetPos = GetNextRotation(-1);
+        }
     }
 
 
@@ -190,14 +203,8 @@ public partial class Player : MonoBehaviour
         // = manage states
 
         // Keyboard: select next
-        if (InputManager.SelectNext())
-        {
-            RotateToNext(1);
-        }
-        else if (InputManager.SelectPrevious())
-        {
-            RotateToNext(-1);
-        }
+        if (useKeyboard)
+            RotateToTarget(targetPos);
 
         // regular move
         if (actionState == ActionState.none)
@@ -238,28 +245,34 @@ public partial class Player : MonoBehaviour
     }
 
 
-    private void RotateToNext(int direction)
+    private Vector3 GetNextRotation(int direction)
     {
-        // KEYBOARD
         int curID = curEdgePart.ID;
+        //int nextID = (curID + direction).Modulo(VisualController.inst.EdgePartCount);
+        //curEdgePart.ID = nextID;
 
         Vector3 targetPos = EdgePart.NextEdgePartMid(curID, direction);
+
+        return targetPos;
+    }
+
+    private void RotateToTarget(Vector3 targetPos)
+    {
         Vector3 targetVec = targetPos - this.transform.position;
         Vector3 curVec = outerVertices[0] - this.transform.position;
 
-        float nextRot = Vector2.SignedAngle(curVec, targetVec);
-        
+        float nextRot = Vector2.SignedAngle(curVec, targetVec) * kb_rotationDamp;
+
         this.transform.eulerAngles += new Vector3(this.transform.eulerAngles.x, this.transform.eulerAngles.y, nextRot);
 
-        // Hack
+        // Hack1 (gegen 180° & 60° Winkel)
         if ((Mathf.Abs(this.transform.eulerAngles.z) > 180f - 0.1f && Mathf.Abs(this.transform.eulerAngles.z) < 180f + 0.1f) ||
             Mathf.Abs(this.transform.eulerAngles.z) > 60f - 0.1f && Mathf.Abs(this.transform.eulerAngles.z) < 60f + 0.1f)
         {
-            print("error");
             this.transform.eulerAngles += new Vector3(0, 0, 0.1f);
         }
 
-        // Hack2
+        // Hack2 (bringt nix)
         CalcMovementData();
     }
 
