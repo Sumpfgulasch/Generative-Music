@@ -24,6 +24,9 @@ public static class LoopData
     public static Dictionary<string, Weight[]> weights;
     public static string[] weightAreas;
 
+    // Rest
+    public static float timePerBar;
+
 
     // CONSTRUCTOR
     static LoopData()
@@ -116,18 +119,12 @@ public static class LoopData
 
         // 4. chords
         Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(curKey, chordTypes, toneRangeMin, toneRangeMax);
-        //for (int i = 0; i < chords.Length; i++)
-        //{
-        //    for (int j = 0; j < chords[i].Length; j++)
-        //    {
-        //        Debug.Log("FINAL CHORD: degree: " + degrees[i] + "; chords: " + chords[i][j].notes.AsNames() + ", as numbers: " + chords[i][j].notes.ArrayToString());
-        //    }
-        //}
 
         // 5. fields
         EdgeParts.SetFields(chords, colors);
 
-        
+        // 6. get timePerBar
+        timePerBar = TimePerBar();
 
     }
 
@@ -216,6 +213,17 @@ public static class LoopData
         {
 
         }
+    }
+
+
+    public static float TimePerBar()
+    {
+        // info: 4 16tel sind 1 Beat
+        // wichtig: length muss immer vielfaches sein von 4; z.B. length=16 == 4/4-Takt, length=20 == 5/4-Takt
+        Debug.Log("MusicRef: " + MusicRef.inst);
+        int beatsPerBar = MusicRef.inst.beatSequencer.length / 4;
+        float timePerBar = (beatsPerBar / MusicRef.inst.clock.bpm) *60;
+        return timePerBar;
     }
 
 }

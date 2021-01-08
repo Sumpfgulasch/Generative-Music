@@ -8,10 +8,6 @@ public class MusicManager : MonoBehaviour
     public static MusicManager inst;
 
     // Public properties
-    [Header("References")]
-    public List<AudioHelm.HelmController> controllers;
-
-
     [Header("Contraints")]
     [Tooltip("Number of chord degrees that make up the edgeParts in the beginning.")]
     public float shortNotes_minPlayTime = 0.3f;
@@ -19,8 +15,6 @@ public class MusicManager : MonoBehaviour
 
 
     [HideInInspector] public Chord curChord;
-    //[HideInInspector] public List<int> curCadence;
-    //[HideInInspector] public List<int> curSequence;
 
     // Private variables
     private int curLoop = 0;
@@ -185,8 +179,8 @@ public class MusicManager : MonoBehaviour
 
         static Instrument()
         {
-            inner = MusicManager.inst.controllers[0];
-            outer = MusicManager.inst.controllers[1];
+            inner = MusicRef.inst.helmControllers[0];
+            outer = MusicRef.inst.helmControllers[1];
         }
     }
 

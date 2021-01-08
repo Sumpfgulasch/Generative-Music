@@ -7,21 +7,30 @@ public class ObjectSpawner : MonoBehaviour
     // public
     [Header("Objects")]
     public static ObjectSpawner instance;
-    public List<GameObject> objects;
+    public List<GameObject> availableObjects;
     public float zSpawn = 10f;
-    public float moveSpeed = 1f;
-    public float spawnRhythm = 5f;
-    public int objectCount = 3;
+    public int maxObjects;
+
+    [HideInInspector] public float moveSpeed;
 
     // private
-    private List<GameObject> activeObjects;
+    private List<GameObject> movingObjects;
+
+    private float tunnelLength;
+
+
+
+    
 
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
 
-        StartCoroutine(SpawnObject());
+        tunnelLength = GetTunnelLength();
+        moveSpeed = GetMoveSpeed();
+
+        StartCoroutine(SpawnObjects());
     }
 
     // Update is called once per frame
@@ -30,42 +39,55 @@ public class ObjectSpawner : MonoBehaviour
         
     }
 
-    IEnumerator SpawnObject()
+    private float GetMoveSpeed() 
     {
-        activeObjects = new List<GameObject>();
+        int FPS = Screen.currentResolution.refreshRate;
+        return (tunnelLength / LoopData.TimePerBar()) / FPS;
+    }
+
+    private float GetTunnelLength()
+    {
+        Vector3 start = availableObjects[0].GetComponent<Move>().start.transform.position;
+        Vector3 end = availableObjects[0].GetComponent<Move>().end.transform.position;
+        print("end: " + end);
+        //return 2f;
+        return (start - end).magnitude;
+    }
+
+    IEnumerator SpawnObjects()
+    {
+        movingObjects = new List<GameObject>();
 
         // initial instatiations
-        for (int i = 0; i<objectCount-1; i++)
+        for (int i = 0; i<maxObjects-1; i++)
         {
-            GameObject newObj = objects[Random.Range(0, objects.Count)];
-            newObj = Instantiate(newObj, new Vector3(0, 0, zSpawn + i * moveSpeed * spawnRhythm * 120), Quaternion.identity);
-            newObj.AddComponent<Move>();
-            activeObjects.Add(newObj);
+            GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
+            newObj = Instantiate(newObj, new Vector3(0, 0, zSpawn + i * tunnelLength), Quaternion.identity);
+            movingObjects.Add(newObj);
         }
-        
+
         while (true)
         {
             // INSTANTIATE new objects
-            GameObject newObj = objects[Random.Range(0, objects.Count)];
-            newObj = Instantiate(newObj, new Vector3(0, 0, zSpawn + objectCount * moveSpeed * spawnRhythm * 120), Quaternion.identity);
-            newObj.AddComponent<Move>();
-            activeObjects.Add(newObj);
+            GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
+            newObj = Instantiate(newObj, new Vector3(0, 0, zSpawn + (maxObjects - 1) * tunnelLength), Quaternion.identity);
+            movingObjects.Add(newObj);
 
             // delete when not visible anymore
             List<GameObject> objects2destroy = new List<GameObject>();
-            foreach(GameObject obj in activeObjects)
+            foreach (GameObject obj in movingObjects)
             {
                 if (obj.transform.position.z < -20)
                     objects2destroy.Add(obj);
             }
-            for(int i=0;i<objects2destroy.Count; i++)
+            for (int i = 0; i < objects2destroy.Count; i++)
             {
-                activeObjects.Remove(objects2destroy[i]);
+                movingObjects.Remove(objects2destroy[i]);
                 Destroy(objects2destroy[i]);
-                
+
             }
-            yield return new WaitForSeconds(spawnRhythm);
+            yield return new WaitForSeconds(LoopData.TimePerBar());
         }
-        
+        yield return null;
     }
 }

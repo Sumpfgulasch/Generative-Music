@@ -69,6 +69,7 @@
     <Compile Include="Assets\Scripts\Music\MusicManager.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\GroundKeyboard.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\PulseImageOnNote.cs" />
+    <Compile Include="Assets\Scripts\Player\InputManager.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshRef.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\DestroyAfterTime.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteRow.cs" />
@@ -113,7 +114,8 @@
     <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\Environment\ObjectSpawner.cs" />
-    <Compile Include="Assets\Scripts\Player\InputManager.cs" />
+    <Compile Include="Assets\Scripts\Music\MusicRef.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Shaders\Custom\Mask.shader" />
