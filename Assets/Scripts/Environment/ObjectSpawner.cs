@@ -49,7 +49,6 @@ public class ObjectSpawner : MonoBehaviour
     {
         Vector3 start = availableObjects[0].GetComponent<Move>().start.transform.position;
         Vector3 end = availableObjects[0].GetComponent<Move>().end.transform.position;
-        print("end: " + end);
         //return 2f;
         return (start - end).magnitude;
     }

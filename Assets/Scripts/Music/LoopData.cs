@@ -220,7 +220,6 @@ public static class LoopData
     {
         // info: 4 16tel sind 1 Beat
         // wichtig: length muss immer vielfaches sein von 4; z.B. length=16 == 4/4-Takt, length=20 == 5/4-Takt
-        Debug.Log("MusicRef: " + MusicRef.inst);
         int beatsPerBar = MusicRef.inst.beatSequencer.length / 4;
         float timePerBar = (beatsPerBar / MusicRef.inst.clock.bpm) *60;
         return timePerBar;

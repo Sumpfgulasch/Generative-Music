@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public static class PlayerData
 {
@@ -21,21 +22,13 @@ public static class PlayerData
         player = Player.inst;
         midPoint = Player.inst.transform.position;
     }
-    
+
 
 
     // ----------------------------- Public methods ----------------------------
 
 
-    public static void SetActionStates()
-    {
-        player.lastActionState = player.actionState;
 
-        if (InputManager.Action())
-            player.actionState = Player.ActionState.stickToEdge;
-        else
-            player.actionState = Player.ActionState.none;
-    }
 
 
 
@@ -57,9 +50,9 @@ public static class PlayerData
                 stickToEdgeTolerance *= 3f;
 
             // States
-            if (playerToEnvDistance < stickToEdgeTolerance && !player.startedBounce) // player.actionState == Player.ActionState.stickToEdge && (player.positionState == Player.PositionState.inside || player.positionState == Player.PositionState.innerEdge)
+            if (playerToEnvDistance < stickToEdgeTolerance)
                 player.positionState = Player.PositionState.innerEdge;
-            else if (innerVertexToEnvDistance < stickToEdgeTolerance && !player.startedBounce) // player.actionState == Player.ActionState.stickToEdge && (player.positionState == Player.PositionState.outside || player.positionState == Player.PositionState.outerEdge)
+            else if (innerVertexToEnvDistance < stickToEdgeTolerance)
                 player.positionState = Player.PositionState.outerEdge;
             else if (playerRadius < envDistance)
                 player.positionState = Player.PositionState.inside;
@@ -114,8 +107,6 @@ public static class PlayerData
 
         player.curEdgePart.ID = curEdgePartID;
 
-        //Debug.Log("curID: " + curEdgePartID);
-
         // --------- EVENT --------
         // Edge part change?
         if (player.actionState == Player.ActionState.stickToEdge)
@@ -154,7 +145,6 @@ public static class PlayerData
                 // No edgePartChange in corners
                 bool lastIDisCorner = EdgePart.IsCorner(lastEdgePartID);
                 bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1 || Mathf.Abs(curEdgePartID - lastEdgePartID) == VisualController.inst.EdgePartCount - 1;
-                //Debug.Log("curID: " + curEdgePartID + ", lastID: " + lastEdgePartID + ", lastIDisCorner: " + lastIDisCorner + ", lastIDisClose: " + lastIDisClose);
                 if (lastIDisCorner && lastIDisClose)
                     player.curEdgePart.changed = false;
             }
@@ -173,7 +163,7 @@ public static class PlayerData
 
 
         // First edge touch
-        if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.none)
+        if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.none)          // TO DO (2): testen ob noch klappt, lastActionState vllt fehler
         {
             player.curEdge.firstTouch = true;
         }
@@ -187,7 +177,25 @@ public static class PlayerData
         }
         else
             player.curEdge.leave = false;
-        
-        
+
+        // last variables
+        player.lastActionState = player.actionState;
     }
+
+
+
+    // -------------------------------- Events --------------------------------
+
+    private static void OnMakeMusicStarted(InputAction.CallbackContext context)
+    {
+        //player.lastActionState = player.actionState;
+        player.actionState = Player.ActionState.stickToEdge;
+    }
+
+    private static void OnMakeMusicCanceled(InputAction.CallbackContext context)
+    {
+        //player.lastActionState = player.actionState;
+        player.actionState = Player.ActionState.none;
+    }
+
 }

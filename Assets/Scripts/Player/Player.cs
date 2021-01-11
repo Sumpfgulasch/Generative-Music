@@ -1,16 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public partial class Player : MonoBehaviour
+public class Player : MonoBehaviour
 {
-    // Public variables
+    // stuff
     public static Player inst;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
     public enum ActionState { stickToEdge, none };
     [HideInInspector] public PositionState positionState = PositionState.noTunnel;
     [HideInInspector] public ActionState actionState = ActionState.none;
-    
+
+    // Public variables
     [Header("General stuff")]
     public int verticesCount = 3;
     [Range(0, 1f)] public float innerWidth = 0.2f;
@@ -74,32 +76,20 @@ public partial class Player : MonoBehaviour
 
 
     // private variables
-    private float curPlayerRot;
-    private bool mouseIsActive;
-    private Vector3 mouseStartPos;
-    private Vector3 lastMousePos = Vector3.zero;
     protected private Vector3 midPoint;
-    private float rotationTargetAngle;
     private float scaleTargetValue;
-    private float lastScaleTargetValue;
-    private float scaleDifferenceToLastFrame;
     private float curScaleSpeed = 0;
-    private float curMouseRot;
     private float rotTargetValue;
-    private float rotDifferenceToLastFrame;
     private float mouseToPlayerDistance;
     private float curPlayerRadius;
     private float tunnelToMidDistance;
     private RaycastHit envPlayerIntersection;
-    private float bounceWeight = 0f;
-    private float bounceRecoverWeight;
-    private float curBounceSpeed;
     private float fastWeight = 1f;
     private float mouseX, mouseY, mouseDelta;
     private float mouseToEnvDistance;
-    private float timer;
     private float startScale;
     Vector3 targetPos = Vector3.up;
+    private InputAction makeMusicAction, selectRightAction, selectLeftAction;
 
 
 
@@ -107,20 +97,46 @@ public partial class Player : MonoBehaviour
     MusicManager musicManager { get { return MusicManager.inst; } }
     VisualController visualController { get { return VisualController.inst; } }
 
+    private float deltaTime { get { return Time.deltaTime * GameManager.inst.FPS; } }
+
     
+
+
+
+    private void Awake()
+    {
+        var inputActionAssetClass = GameManager.inst.inputActionAssetClass;
+        makeMusicAction = inputActionAssetClass.Gameplay.MakeMusic;
+        // todo: other actions
+
+        // Add listeners
+        makeMusicAction.started += OnMakeMusicStarted;
+
+    }
+
+    private void OnEnable()
+    {
+        makeMusicAction.Enable();
+        selectRightAction.Enable();
+        selectLeftAction.Enable();
+    }
 
     void Start()
     {
         inst = this;
         midPoint = this.transform.position;
-        //this.transform.localScale = new Vector3(scaleMin, scaleMin, this.transform.localScale.z);
     }
+
+
+
 
 
     void Update()
     {
         ManageMovement();
     }
+
+
 
 
     // ----------------------------- Main method ----------------------------
@@ -131,7 +147,7 @@ public partial class Player : MonoBehaviour
         GetInput();
         GetVertices();
         PlayerData.SetPositionStates();
-        PlayerData.SetActionStates();
+        //PlayerData.SetActionStates();
         CalcMovementData();
         PlayerData.CalcEdgeData();
 
@@ -182,16 +198,6 @@ public partial class Player : MonoBehaviour
         // Scale value
         scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
         scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-
-        // KEYBOARD
-        if (InputManager.SelectNext())
-        {
-            targetPos = GetNextRotation(1);
-        }
-        else if (InputManager.SelectPrevious())
-        {
-            targetPos = GetNextRotation(-1);
-        }
     }
 
 
@@ -205,6 +211,8 @@ public partial class Player : MonoBehaviour
         // Keyboard: select next
         if (useKeyboard)
             RotateToTarget(targetPos);
+
+
 
         // regular move
         if (actionState == ActionState.none)
@@ -245,12 +253,9 @@ public partial class Player : MonoBehaviour
     }
 
 
-    private Vector3 GetNextRotation(int direction)
+    public Vector3 GetNextTargetRotation(int direction)
     {
         int curID = curEdgePart.ID;
-        //int nextID = (curID + direction).Modulo(VisualController.inst.EdgePartCount);
-        //curEdgePart.ID = nextID;
-
         Vector3 targetPos = EdgePart.NextEdgePartMid(curID, direction);
 
         return targetPos;
@@ -261,7 +266,7 @@ public partial class Player : MonoBehaviour
         Vector3 targetVec = targetPos - this.transform.position;
         Vector3 curVec = outerVertices[0] - this.transform.position;
 
-        float nextRot = Vector2.SignedAngle(curVec, targetVec) * kb_rotationDamp;
+        float nextRot = Vector2.SignedAngle(curVec, targetVec) * kb_rotationDamp * deltaTime;
 
         this.transform.eulerAngles += new Vector3(this.transform.eulerAngles.x, this.transform.eulerAngles.y, nextRot);
 
@@ -275,33 +280,6 @@ public partial class Player : MonoBehaviour
         // Hack2 (bringt nix)
         CalcMovementData();
     }
-
-
-
-    //void MoveTowardsEdge(string side)
-    //{
-    //    if (side == "inner")
-    //    {
-    //        float scaleAdd = scaleEdgeAcc;
-    //        if (curScaleSpeed < 0.0001f)
-    //            curScaleSpeed = 0.0001f;
-
-    //    }
-    //    else if (side == "outer")
-    //    {
-    //        if (curScaleSpeed > -0.0001f)
-    //            curScaleSpeed = -0.0001f;
-    //    }
-
-    //    if (curPlayerRadius < tunnelToMidDistance)
-    //    {
-    //        curScaleSpeed = Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
-    //    }
-    //    else
-    //    {
-    //        curScaleSpeed = -Mathf.Pow(Mathf.Abs(curScaleSpeed), scaleEdgeAcc);
-    //    }
-    //}
 
 
 
@@ -361,49 +339,16 @@ public partial class Player : MonoBehaviour
     }
 
 
-
-    //IEnumerator BounceForce()
-    //{
-    //    startedBounce = true;
-    //    float time = 0;
-    //    bounceRecoverWeight = 1;
-    //    while (time < bounceTime)
-    //    {
-    //        time += Time.deltaTime;
-    //        bounceWeight = 1 - time / bounceTime;
-    //        curBounceSpeed = -maxBounceSpeed;
-    //        yield return null;
-    //    }
-    //    time = 0;
-    //    while (time < bounceRecoverTime)
-    //    {
-    //        time += Time.deltaTime;
-    //        bounceRecoverWeight = 1 - time / bounceRecoverTime;
-    //        yield return null;
-    //    }
-    //    startedBounce = false;
-    //}
-
-
     void GetInput()
     {
-        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, this.transform.position.z);
+        mousePos = Mouse.current.position.ReadValue();
+        mousePos.z = this.transform.position.z;
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-
-        mouseX = Input.GetAxis("Mouse X");
-        mouseY = Input.GetAxis("Mouse Y");
-        mouseDelta = Mathf.Sqrt(mouseX * mouseX + mouseY * mouseY);
-
-        if (InputManager.FastMoveStart())
-            fastWeight = fastFactor;
-        else if (InputManager.FastMoveEnd())
-            fastWeight = 1f;
-        if (InputManager.ActionStart())
-        {
-            startScale = this.transform.localScale.x;
-            startPosState = positionState;
-        }
     }
+
+    
+
+
 
     void GetVertices()
     {
@@ -422,5 +367,31 @@ public partial class Player : MonoBehaviour
         velocity = scaleSize.Remap(scaleMin, 0.4f, LoopData.minVelocity, LoopData.maxVelocity);
         velocity = Mathf.Clamp(velocity, LoopData.minVelocity, LoopData.maxVelocity);
         return velocity;
+    }
+
+
+
+    // ------------------------------ Input Actions ------------------------------
+
+    public void OnMakeMusic(InputAction.CallbackContext context)
+    {
+        print("make music start");
+    }
+
+    public void OnMakeMusicStarted(InputAction.CallbackContext context)
+    {
+        // If action.started
+        startScale = this.transform.localScale.x;
+        startPosState = positionState;
+    }
+
+    public void OnSelectRight(InputAction.CallbackContext context)
+    {
+        targetPos = GetNextTargetRotation(1);
+    }
+
+    public void OnSelectLeft(InputAction.CallbackContext context)
+    {
+        targetPos = GetNextTargetRotation(-1);
     }
 }

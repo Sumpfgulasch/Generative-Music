@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Linq;
 
 public class MusicManager : MonoBehaviour
@@ -21,6 +22,7 @@ public class MusicManager : MonoBehaviour
     private float velocity;
     private float minPitch, maxPitch;
     private float curPitch = 0;
+    private InputAction resetAction;
 
 
 
@@ -31,6 +33,24 @@ public class MusicManager : MonoBehaviour
     Player player { get { return Player.inst; } }
     VisualController visualController { get { return VisualController.inst; } }
 
+
+
+    private void Awake()
+    {
+        var inputActionAssetClass = GameManager.inst.inputActionAssetClass;
+        resetAction = inputActionAssetClass.Gameplay.Reset;
+
+        // Add listeners
+        resetAction.started += OnReset;
+    }
+
+
+    private void OnEnable()
+    {
+        resetAction.Enable();
+    }
+
+    
 
     void Start()
     {
@@ -46,9 +66,6 @@ public class MusicManager : MonoBehaviour
         //LoopData.Generate(curLoop);                             // TO DO: nur OnEvent()
 
         ManageChordPlaying();
-
-        if (InputManager.Reset())
-            LoopData.Init();
     }
 
     
@@ -71,7 +88,6 @@ public class MusicManager : MonoBehaviour
 
             PlayChord(curChord, Instrument.inner, velocity);
 
-            //Debug.Log("note names: " + curChord.notes.AsNames() + ", as numbers: " + curChord.notes.ArrayToString());
             #region pitch
             // calc pitch
             SetFirstPitchRange(ref minPitch, ref maxPitch);
@@ -128,6 +144,15 @@ public class MusicManager : MonoBehaviour
         //ExtensionMethods.PrintArray("curChord: ", curChord.notes.ToList());
 
         return chord;
+    }
+
+
+
+    // ------------------------------ Input Actions ------------------------------
+
+    private void OnReset(InputAction.CallbackContext context)
+    {
+        LoopData.Init();
     }
 
 
@@ -213,6 +238,9 @@ public class MusicManager : MonoBehaviour
             }
         }
     }
+
+
+    
 
 
 }

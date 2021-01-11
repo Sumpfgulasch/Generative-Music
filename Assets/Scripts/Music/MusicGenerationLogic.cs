@@ -183,10 +183,12 @@ public static class MusicGenerationLogic
 
             // 2. jede individuelle chordType-count
             finalChords[i] = new Chord[chordTypes[i].individualCount];
+            var relevantChords_list = relevantChords.ToList();
             for (int j=0; j<chordTypes[i].individualCount; j++)
             {
-                int randIndex = Random.Range(0, relevantChords.Length);
-                finalChords[i][j] = relevantChords[randIndex];                                      // TO DO: gleiche items verhindern
+                int randIndex = Random.Range(0, relevantChords_list.Count);
+                finalChords[i][j] = relevantChords_list[randIndex];
+                relevantChords_list.RemoveAt(randIndex);
             }
 
         }
