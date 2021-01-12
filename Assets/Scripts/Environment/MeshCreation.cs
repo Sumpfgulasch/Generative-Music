@@ -25,7 +25,7 @@ public static class MeshCreation
         playerMid = Player.inst.transform.position;
 
         CreateEnvEdgeParts();
-        CreatePlayerEdgeParts();
+        CreatePlayerEdgeParts();            // to do: in createMeshes verschieben
     }
 
 

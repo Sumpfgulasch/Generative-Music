@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     // stuff
     public static Player inst;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
-    public enum ActionState { stickToEdge, none };
+    public enum ActionState { none, stickToEdge };
     [HideInInspector] public PositionState positionState = PositionState.noTunnel;
     [HideInInspector] public ActionState actionState = ActionState.none;
 
@@ -105,20 +105,24 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        var inputActionAssetClass = GameManager.inst.inputActionAssetClass;
-        makeMusicAction = inputActionAssetClass.Gameplay.MakeMusic;
+        //var playerControls = GameManager.inst.playerControls;
+        //makeMusicAction = playerControls.Gameplay.MakeMusic;
+
+
         // todo: other actions
 
         // Add listeners
-        makeMusicAction.started += OnMakeMusicStarted;
+        //makeMusicAction.performed += OnMakeMusicStarted;
+        //makeMusicAction.canceled += OnMakeMusic;
+        
 
     }
 
     private void OnEnable()
     {
-        makeMusicAction.Enable();
-        selectRightAction.Enable();
-        selectLeftAction.Enable();
+        //makeMusicAction.Enable();
+        //selectRightAction.Enable();
+        //selectLeftAction.Enable();
     }
 
     void Start()
@@ -371,27 +375,42 @@ public class Player : MonoBehaviour
 
 
 
+    // wird nur über input-events aufgerufen
+    public void SetActionStates(InputAction.CallbackContext context)
+    {
+        lastActionState = actionState;
+        
+        
+        if (context.started)
+        {
+            
+        }
+        else if (context.performed)
+        {
+            actionState = Player.ActionState.stickToEdge;
+            startScale = this.transform.localScale.x;
+            startPosState = positionState;
+        }
+        else if (context.canceled)
+        {
+            actionState = Player.ActionState.none;
+        }
+    }
+
+
+
     // ------------------------------ Input Actions ------------------------------
 
-    public void OnMakeMusic(InputAction.CallbackContext context)
+
+
+    public void SelectNext(InputAction.CallbackContext context)
     {
-        print("make music start");
+        
+        if (context.performed)
+        {
+            int direction = (int)context.ReadValue<float>();
+            targetPos = GetNextTargetRotation(direction);
+        }
     }
 
-    public void OnMakeMusicStarted(InputAction.CallbackContext context)
-    {
-        // If action.started
-        startScale = this.transform.localScale.x;
-        startPosState = positionState;
-    }
-
-    public void OnSelectRight(InputAction.CallbackContext context)
-    {
-        targetPos = GetNextTargetRotation(1);
-    }
-
-    public void OnSelectLeft(InputAction.CallbackContext context)
-    {
-        targetPos = GetNextTargetRotation(-1);
-    }
 }

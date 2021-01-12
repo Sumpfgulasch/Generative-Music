@@ -6,26 +6,26 @@ using UnityEngine.InputSystem;
 public class GameManager : MonoBehaviour
 {
     public static GameManager inst;
-    [HideInInspector] public InputActionAssetClass inputActionAssetClass;
+    //[HideInInspector] public PlayerControls playerControls;
 
     [HideInInspector] public int FPS;
 
     private void Awake()
     {
-        
+        inst = this;
+
+        FPS = Screen.currentResolution.refreshRate;
     }
 
     private void OnEnable()
     {
-        inputActionAssetClass = new InputActionAssetClass();
-        inputActionAssetClass.Enable();
+        //playerControls = new PlayerControls();
+        //playerControls.Enable();
     }
 
     void Start()
     {
-        inst = this;
-
-        FPS = Screen.currentResolution.refreshRate;
+        
     }
 
     // Update is called once per frame

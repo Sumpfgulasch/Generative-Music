@@ -112,9 +112,13 @@ public static class PlayerData
         if (player.actionState == Player.ActionState.stickToEdge)
         {
             if (curEdgePartID != lastEdgePartID)
+            {
                 player.curEdgePart.changed = true;
+            }
             else
+            {
                 player.curEdgePart.changed = false;
+            }
 
             
             // --------- EVENT --------
@@ -163,7 +167,7 @@ public static class PlayerData
 
 
         // First edge touch
-        if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.none)          // TO DO (2): testen ob noch klappt, lastActionState vllt fehler
+        if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.none)
         {
             player.curEdge.firstTouch = true;
         }
@@ -178,6 +182,7 @@ public static class PlayerData
         else
             player.curEdge.leave = false;
 
+
         // last variables
         player.lastActionState = player.actionState;
     }
@@ -186,16 +191,18 @@ public static class PlayerData
 
     // -------------------------------- Events --------------------------------
 
-    private static void OnMakeMusicStarted(InputAction.CallbackContext context)
-    {
-        //player.lastActionState = player.actionState;
-        player.actionState = Player.ActionState.stickToEdge;
-    }
+    //public static void SetActionStates(InputAction.CallbackContext context)
+    //{
+    //    player.lastActionState = player.actionState;
 
-    private static void OnMakeMusicCanceled(InputAction.CallbackContext context)
-    {
-        //player.lastActionState = player.actionState;
-        player.actionState = Player.ActionState.none;
-    }
+    //    if (context.started)
+    //    {
+    //        player.actionState = Player.ActionState.stickToEdge;
+    //    }
+    //    else if (context.canceled)
+    //    {
+    //        player.actionState = Player.ActionState.none;
+    //    }
+    //}
 
 }

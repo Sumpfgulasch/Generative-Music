@@ -37,17 +37,17 @@ public class MusicManager : MonoBehaviour
 
     private void Awake()
     {
-        var inputActionAssetClass = GameManager.inst.inputActionAssetClass;
-        resetAction = inputActionAssetClass.Gameplay.Reset;
+        //var inputMaster = GameManager.inst.playerControls;
+        //resetAction = inputMaster.Gameplay.Reset;
 
         // Add listeners
-        resetAction.started += OnReset;
+        //resetAction.started += OnReset;
     }
 
 
     private void OnEnable()
     {
-        resetAction.Enable();
+        //resetAction.Enable();
     }
 
     
@@ -72,6 +72,7 @@ public class MusicManager : MonoBehaviour
 
     private void ManageChordPlaying()
     {
+        //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curEdgePart.changed + ", leave: " + player.curEdge.leave);
         // EDGE CHANGE
         if (player.curEdge.changed)
         {
@@ -98,7 +99,7 @@ public class MusicManager : MonoBehaviour
         else if (player.curEdgePart.changed)
         {
             StopChord(curChord, Instrument.inner);
-
+            
             curChord = GetChord();
 
             PlayChord(curChord, Instrument.inner, velocity);

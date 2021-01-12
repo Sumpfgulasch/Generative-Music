@@ -2353,14 +2353,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   positionState: 0
-  actionState: 0
+  actionState: 1
   verticesCount: 3
   innerWidth: 0.25
   constantInnerWidth: 1
   stickToEdgeTolerance: 0.01
   stickToOuterEdge_holeSize: 0.03
   useKeyboard: 1
-  inputActionAsset: {fileID: -944628639613478452, guid: db817c78b4b3d6a4c8df4b4e6e407803, type: 3}
   rotationMaxSpeed: 100
   rotationTargetVectorFactor: 0.1
   scaleTargetVectorFactor: 0.05
@@ -2457,15 +2456,11 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents:
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 7b66a7a5-e4df-4540-9853-b81b74015108
-    m_ActionName: Player/Move[/XInputControllerWindows/leftStick,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
-  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1240982957}
-        m_TargetAssemblyTypeName: UnityEngine.Object, UnityEngine
-        m_MethodName: set_name
-        m_Mode: 5
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: SelectNext
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2476,10 +2471,6 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 5365614d-c245-4056-92ff-00becdd27083
     m_ActionName: Player/Select right[/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 5c7f1b6e-e34e-41b7-8808-63687c3de971
-    m_ActionName: Player/Select left[/Keyboard/leftArrow]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 1db4873e-e431-432f-891d-2877e4a5db56
@@ -2521,7 +2512,19 @@ MonoBehaviour:
     m_ActionId: 18c728fa-ab2c-482c-957d-a0ef8ccdf405
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1240982957}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: SetActionStates
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 9588a1b1-801a-4d3f-8fe4-fb1101545abf
     m_ActionName: Player/PlayChord[/Keyboard/space,/Mouse/leftButton,/XInputControllerWindows/buttonSouth]
   - m_PersistentCalls:
