@@ -65,12 +65,56 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "Gamepad Trigger",
+                    "id": "93f9d7f2-5c2f-4f6a-8273-698f893a9d0f",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectNext",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "75798cc6-44fb-41d0-bee5-c263ab8dd675",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectNext",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "224122fa-7f0d-4c11-8fd5-3a4844dc869b",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectNext",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "15f002c6-4852-478d-8384-18ae895194b1",
                     "path": "<Keyboard>/r",
                     "interactions": "Press",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
+                    "action": "Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6ef66da6-fa1f-49e5-8dc4-2cf8c61c30d9",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Reset",
                     "isComposite": false,
                     "isPartOfComposite": false

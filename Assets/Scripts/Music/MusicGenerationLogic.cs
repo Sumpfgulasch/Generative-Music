@@ -187,11 +187,22 @@ public static class MusicGenerationLogic
             for (int j=0; j<chordTypes[i].individualCount; j++)
             {
                 int randIndex = Random.Range(0, relevantChords_list.Count);
+                //Debug.Log("indivTypeCount[" + i + "]: " + chordTypes[i].individualCount + ", relevantChords-array[" + i + "].length: " + relevantChords.Length + ", relevantChords_list.count: " + relevantChords_list.Count + ", randIndex: " + randIndex);
                 finalChords[i][j] = relevantChords_list[randIndex];
-                relevantChords_list.RemoveAt(randIndex);
+                if (relevantChords_list.Count > 1)
+                    relevantChords_list.RemoveAt(randIndex);            // hack
             }
 
         }
+
+        //Debug.Log("final lengths. type1:" + finalChords[0].Length + "; type2: " + finalChords[1].Length + ", type3: " + finalChords[2].Length);
+        //for (int i=0; i<finalChords.Length; i++)
+        //{
+        //    for (int j=0; j<finalChords[i].Length; j++)
+        //    {
+        //        Debug.Log("i: " + i + ", j: " + j + ", chord: " + finalChords[i][j].notes.AsNames());
+        //    }
+        //}
 
 
 

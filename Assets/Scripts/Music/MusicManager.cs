@@ -142,8 +142,6 @@ public class MusicManager : MonoBehaviour
         int playerID = player.curEdgePart.ID;
         Chord chord = EnvironmentData.edgeParts[playerID].chord;
 
-        //ExtensionMethods.PrintArray("curChord: ", curChord.notes.ToList());
-
         return chord;
     }
 
@@ -151,9 +149,13 @@ public class MusicManager : MonoBehaviour
 
     // ------------------------------ Input Actions ------------------------------
 
-    private void OnReset(InputAction.CallbackContext context)
+    public void OnReset(InputAction.CallbackContext context)
     {
-        LoopData.Init();
+        if (context.performed)
+        {
+            LoopData.Init();
+            //player.curEdgePart.changed = true;
+        }
     }
 
 
