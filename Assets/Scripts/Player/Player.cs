@@ -390,6 +390,7 @@ public class Player : MonoBehaviour
             actionState = Player.ActionState.stickToEdge;
             startScale = this.transform.localScale.x;
             startPosState = positionState;
+            
         }
         else if (context.canceled)
         {
@@ -403,12 +404,13 @@ public class Player : MonoBehaviour
 
 
 
-    public void SelectNext(InputAction.CallbackContext context)
+    public void OnSelectNext(InputAction.CallbackContext context)
     {
         
         if (context.performed)
         {
             int direction = (int)context.ReadValue<float>();
+            //print("value: " + direction);
             targetPos = GetNextTargetRotation(direction);
         }
     }

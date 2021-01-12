@@ -34,7 +34,7 @@
                 {
                     "name": "Keyboard",
                     "id": "642b2260-582f-4cc6-a076-0c537c432efe",
-                    "path": "1DAxis",
+                    "path": "1DAxis(whichSideWins=1)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -65,9 +65,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Gamepad Trigger",
-                    "id": "93f9d7f2-5c2f-4f6a-8273-698f893a9d0f",
-                    "path": "1DAxis",
+                    "name": "Gamepad",
+                    "id": "fee59968-6c33-4f82-8737-46b2ea301073",
+                    "path": "1DAxis(whichSideWins=1)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -77,22 +77,22 @@
                 },
                 {
                     "name": "negative",
-                    "id": "75798cc6-44fb-41d0-bee5-c263ab8dd675",
-                    "path": "<Gamepad>/leftTrigger",
+                    "id": "39c004e5-3aff-497b-bcdb-d8fec9cf40f9",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Gamepad",
                     "action": "SelectNext",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "positive",
-                    "id": "224122fa-7f0d-4c11-8fd5-3a4844dc869b",
-                    "path": "<Gamepad>/rightTrigger",
+                    "id": "5fdcbf66-7a26-4527-8838-7a85530faa63",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Gamepad",
                     "action": "SelectNext",
                     "isComposite": false,
                     "isPartOfComposite": true

@@ -154,7 +154,6 @@ public class MusicManager : MonoBehaviour
         if (context.performed)
         {
             LoopData.Init();
-            //player.curEdgePart.changed = true;
         }
     }
 
