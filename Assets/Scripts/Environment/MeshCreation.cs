@@ -22,10 +22,7 @@ public static class MeshCreation
     // Constructor
     static MeshCreation()
     {
-        playerMid = Player.inst.transform.position;
-
-        CreateEnvEdgeParts();
-        CreatePlayerEdgeParts();            // to do: in createMeshes verschieben
+        
     }
 
 
@@ -34,6 +31,8 @@ public static class MeshCreation
     public static void CreateMeshes()
     {
         // = Create all meshes
+
+        playerMid = Player.inst.transform.position;
 
         InitPlayer();
 
@@ -48,6 +47,10 @@ public static class MeshCreation
         // Outer player
         CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
         CreateMesh(ref MeshRef.inst.outerPlayerMask_mf, EnvironmentData.vertices);
+
+        // Edge parts
+        CreateEnvEdgeParts();
+        CreatePlayerEdgeParts();
     }
 
 
@@ -170,7 +173,7 @@ public static class MeshCreation
         // EDGE PARTS
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.curEdgeParts_parent);
-        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.curEdgePart_mat, VisualController.inst.playerEdgePartThickness);
+        LineRenderer lineRend = newObj.AddLineRenderer(0, MeshRef.inst.curEdgePart_mat, VisualController.inst.playerEdgePartThickness);
         player.curEdgePart = new PlayerEdgePart(PlayerEdgePart.Type.Main, lineRend);
 
         // Seoncdary
