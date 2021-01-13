@@ -49,8 +49,12 @@ public class Player : MonoBehaviour
     public float kb_rotationSpeed = 1f;
     [Range(0.1f, 1f)]
     public float kb_slowRotation = 0.9f;
-    [Range(0.1f, 1f)]
-    public float kb_rotationDamp = 0.8f;
+
+    
+    [Header("All button devices")]
+    [Range(0.01f, 1f)]
+    public float bt_rotationDamp = 0.4f;
+    public float bt_selectionFrequency = 0.3f;
 
     // Public attributes
     [HideInInspector] public PositionState lastPosState;
@@ -90,6 +94,9 @@ public class Player : MonoBehaviour
     private float startScale;
     Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
+    private IEnumerator rotateTriggerEnumerator;
+    private IEnumerable rotateEnumerable;
+    private IEnumerator rotateEnumerator;
 
 
 
@@ -129,6 +136,7 @@ public class Player : MonoBehaviour
     {
         inst = this;
         midPoint = this.transform.position;
+        rotateEnumerator = RotateToNextField(1).GetEnumerator(); // hack init
     }
 
 
@@ -213,8 +221,8 @@ public class Player : MonoBehaviour
         // = manage states
 
         // Keyboard: select next
-        if (useKeyboard)
-            RotateToTarget(targetPos);
+        //if (useKeyboard)
+        //    RotateToTarget(targetPos);
 
 
 
@@ -270,7 +278,7 @@ public class Player : MonoBehaviour
         Vector3 targetVec = targetPos - this.transform.position;
         Vector3 curVec = outerVertices[0] - this.transform.position;
 
-        float nextRot = Vector2.SignedAngle(curVec, targetVec) * kb_rotationDamp * deltaTime;
+        float nextRot = Vector2.SignedAngle(curVec, targetVec) * bt_rotationDamp * deltaTime;
 
         this.transform.eulerAngles += new Vector3(this.transform.eulerAngles.x, this.transform.eulerAngles.y, nextRot);
 
@@ -375,44 +383,117 @@ public class Player : MonoBehaviour
 
 
 
-    // wird nur über input-events aufgerufen
-    public void SetActionStates(InputAction.CallbackContext context)
+    // ------------------------------ Input Actions ------------------------------
+
+
+    public void OnMakeMusic(InputAction.CallbackContext context)
     {
-        lastActionState = actionState;
-        
-        
-        if (context.started)
+        // = SET ACTION STATES
+
+        if (positionState != PositionState.noTunnel)
         {
-            
-        }
-        else if (context.performed)
-        {
-            actionState = Player.ActionState.stickToEdge;
-            startScale = this.transform.localScale.x;
-            startPosState = positionState;
-            
-        }
-        else if (context.canceled)
-        {
-            actionState = Player.ActionState.none;
+            lastActionState = actionState;
+
+            if (context.performed)
+            {
+                actionState = Player.ActionState.stickToEdge;
+                startScale = this.transform.localScale.x;
+                startPosState = positionState;
+
+            }
+            else if (context.canceled)
+            {
+                actionState = Player.ActionState.none;
+            }
         }
     }
-
-
-
-    // ------------------------------ Input Actions ------------------------------
 
 
 
     public void OnSelectNext(InputAction.CallbackContext context)
     {
         
+
         if (context.performed)
         {
             int direction = (int)context.ReadValue<float>();
-            //print("value: " + direction);
-            targetPos = GetNextTargetRotation(direction);
+            rotateEnumerable = RotateToNextField(direction);
+            rotateTriggerEnumerator = CallRoutineFrequently(rotateEnumerable, bt_selectionFrequency);
+
+            StopCoroutine(rotateEnumerator);
+            StartCoroutine(rotateTriggerEnumerator);
+
+            if (actionState == ActionState.none)
+            {
+                // hier rhythmisch
+            }
+            else
+            {
+                // hier tempo variierend
+            }
         }
+        else if (context.canceled)
+        {
+            StopCoroutine(rotateTriggerEnumerator);
+        }
+
+        
+    }
+
+    private IEnumerator CallRoutineFrequently (IEnumerable enumerable, float frequency)
+    {
+        // Info: enumerable als Argument, weil ich jedes mal einen neuen enumerator erzeugen muss, sonst wird die coroutine nicht erneut aufgerufen
+
+        float timer = 0;
+
+        // 1. Initial
+        //IEnumerator enumerator = enumerable.GetEnumerator();
+        rotateEnumerator = enumerable.GetEnumerator();
+        StartCoroutine(rotateEnumerator);
+        //Coroutine routine = StartCoroutine(curRotRoutine);
+
+        // 2. Repetitions
+        while (true)
+        {
+            if (timer >= frequency)
+            {
+                // code gelangt hier rein
+                //print("routine to stop: " + curRotRoutine);
+                StopCoroutine(rotateEnumerator);
+
+                rotateEnumerator = enumerable.GetEnumerator();
+                //print("routine started: " + curRotRoutine);
+                StartCoroutine(rotateEnumerator);
+
+                timer -= frequency;
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        
+    }
+    
+
+    private IEnumerable RotateToNextField(int direction)
+    {
+        var targetPos = GetNextTargetRotation(direction);
+
+        float maxTime = 2f;
+        float timer = 0;
+
+        while (timer<maxTime)
+        {
+            RotateToTarget(targetPos);
+            //print("rotation; timer: " + timer);
+            timer += Time.deltaTime;
+
+            yield return null;
+        }
+        
+        // while ... rotate // to do: zeile oben ersetzen
+        
     }
 
 }

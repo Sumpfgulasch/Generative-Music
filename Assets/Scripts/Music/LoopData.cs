@@ -26,6 +26,7 @@ public static class LoopData
 
     // Rest
     public static float timePerBar;
+    public static int beatsPerBar;
 
 
     // CONSTRUCTOR
@@ -218,9 +219,9 @@ public static class LoopData
 
     public static float TimePerBar()
     {
-        // info: 4 16tel sind 1 Beat
-        // wichtig: length muss immer vielfaches sein von 4; z.B. length=16 == 4/4-Takt, length=20 == 5/4-Takt
-        int beatsPerBar = MusicRef.inst.beatSequencer.length / 4;
+        // Info: 4 16tel sind 1 Beat
+        // Wichtig: length muss immer vielfaches sein von 4; z.B. length=16 == 4/4-Takt, length=20 == 5/4-Takt
+        beatsPerBar = MusicRef.inst.beatSequencer.length / 4;
         float timePerBar = (beatsPerBar / MusicRef.inst.clock.bpm) *60;
         return timePerBar;
     }
