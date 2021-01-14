@@ -214,6 +214,17 @@ public class PlayerEdgePart : EdgePart
         this.lineRend.enabled = value;
     }
 
+    /// <summary>
+    /// Set opacity of the line renderer material.
+    /// </summary>
+    /// <param name="opacity">Opacity [0, 1]. 0 == transparent.</param>
+    public void SetOpacity(float opacity)
+    {
+        Color newColor = this.lineRend.material.color;
+        newColor.a = opacity;
+        this.lineRend.material.color = newColor;
+    }
+
     public void UpdateLineRenderer()
     {
         this.lineRend.positionCount = this.positions.Length;

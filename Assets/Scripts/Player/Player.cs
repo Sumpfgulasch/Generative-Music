@@ -54,7 +54,11 @@ public class Player : MonoBehaviour
     [Header("All button devices")]
     [Range(0.01f, 1f)]
     public float bt_rotationDamp = 0.4f;
-    public float bt_selectionFrequency = 0.3f;
+    public float bt_selectionPressTime = 0.3f;
+    public float bt_selectionFrequency = 0.13f;
+    public float bt_play_selectionPressTime = 0.7f;
+    public float bt_play_selectionFrequency = 0.4f;
+
 
     // Public attributes
     [HideInInspector] public PositionState lastPosState;
@@ -94,9 +98,10 @@ public class Player : MonoBehaviour
     private float startScale;
     Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
-    private IEnumerator rotateTriggerEnumerator;
+    private IEnumerator triggerRotateEnumerator;
     private IEnumerable rotateEnumerable;
     private IEnumerator rotateEnumerator;
+    private float selectionPressTime, selectionFrequency;
 
 
 
@@ -137,6 +142,8 @@ public class Player : MonoBehaviour
         inst = this;
         midPoint = this.transform.position;
         rotateEnumerator = RotateToNextField(1).GetEnumerator(); // hack init
+        selectionPressTime = bt_selectionPressTime;
+        selectionFrequency = bt_selectionFrequency;
     }
 
 
@@ -400,10 +407,16 @@ public class Player : MonoBehaviour
                 startScale = this.transform.localScale.x;
                 startPosState = positionState;
 
+                selectionPressTime = bt_play_selectionPressTime;
+                selectionFrequency = bt_play_selectionFrequency;
+
             }
             else if (context.canceled)
             {
                 actionState = Player.ActionState.none;
+
+                selectionPressTime = bt_selectionPressTime;
+                selectionFrequency = bt_selectionFrequency;
             }
         }
     }
@@ -418,10 +431,12 @@ public class Player : MonoBehaviour
         {
             int direction = (int)context.ReadValue<float>();
             rotateEnumerable = RotateToNextField(direction);
-            rotateTriggerEnumerator = CallRoutineFrequently(rotateEnumerable, bt_selectionFrequency);
+            triggerRotateEnumerator = ButtonPressBehaviour1(rotateEnumerable, selectionPressTime, selectionFrequency);
 
             StopCoroutine(rotateEnumerator);
-            StartCoroutine(rotateTriggerEnumerator);
+            StartCoroutine(triggerRotateEnumerator);
+
+            Player.inst.curEdgePart.UpdateLineRenderer(); // unschön; klappt nicht; hier weiter
 
             if (actionState == ActionState.none)
             {
@@ -434,35 +449,39 @@ public class Player : MonoBehaviour
         }
         else if (context.canceled)
         {
-            StopCoroutine(rotateTriggerEnumerator);
+            StopCoroutine(triggerRotateEnumerator);
         }
 
         
     }
 
-    private IEnumerator CallRoutineFrequently (IEnumerable enumerable, float frequency)
+    private IEnumerator ButtonPressBehaviour1 (IEnumerable enumerable, float startPressTime, float frequency)
     {
+        // = Call a coroutine frequently to simulate button behaviour: trigger immediatly, wait for press time, trigger frequently
         // Info: enumerable als Argument, weil ich jedes mal einen neuen enumerator erzeugen muss, sonst wird die coroutine nicht erneut aufgerufen
 
         float timer = 0;
 
         // 1. Initial
-        //IEnumerator enumerator = enumerable.GetEnumerator();
         rotateEnumerator = enumerable.GetEnumerator();
         StartCoroutine(rotateEnumerator);
-        //Coroutine routine = StartCoroutine(curRotRoutine);
 
-        // 2. Repetitions
+        // 2. Press time
+        while (timer < startPressTime)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        timer = frequency;
+
+        // 3. Repetitions
         while (true)
         {
             if (timer >= frequency)
             {
-                // code gelangt hier rein
-                //print("routine to stop: " + curRotRoutine);
                 StopCoroutine(rotateEnumerator);
 
                 rotateEnumerator = enumerable.GetEnumerator();
-                //print("routine started: " + curRotRoutine);
                 StartCoroutine(rotateEnumerator);
 
                 timer -= frequency;
@@ -486,14 +505,12 @@ public class Player : MonoBehaviour
         while (timer<maxTime)
         {
             RotateToTarget(targetPos);
-            //print("rotation; timer: " + timer);
             timer += Time.deltaTime;
 
             yield return null;
         }
-        
-        // while ... rotate // to do: zeile oben ersetzen
-        
     }
+
+
 
 }

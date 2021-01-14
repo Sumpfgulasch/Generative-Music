@@ -129,11 +129,11 @@ public static class MeshUpdate
         // Player
         if (Player.inst.curEdge.firstTouch)
         {
-            Player.inst.curEdgePart.SetVisible(true);
+            Player.inst.curEdgePart.SetOpacity(1);
         }
         else if (Player.inst.curEdge.leave)
         {
-            Player.inst.curEdgePart.SetVisible(false);
+            Player.inst.curEdgePart.SetOpacity(0.3f);
         }
 
         if (Player.inst.curEdgePart.changed)

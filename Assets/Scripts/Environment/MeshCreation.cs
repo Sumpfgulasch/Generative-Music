@@ -173,7 +173,7 @@ public static class MeshCreation
         // EDGE PARTS
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.curEdgeParts_parent);
-        LineRenderer lineRend = newObj.AddLineRenderer(0, MeshRef.inst.curEdgePart_mat, VisualController.inst.playerEdgePartThickness);
+        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.curEdgePart_mat, VisualController.inst.playerEdgePartThickness);
         player.curEdgePart = new PlayerEdgePart(PlayerEdgePart.Type.Main, lineRend);
 
         // Seoncdary
