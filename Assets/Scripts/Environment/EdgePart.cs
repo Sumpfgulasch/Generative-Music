@@ -214,6 +214,22 @@ public class PlayerEdgePart : EdgePart
         this.lineRend.enabled = value;
     }
 
+    
+
+    public void SetToFocus()
+    {
+        this.lineRend.startWidth = VisualController.inst.edgePartThickness;
+        this.lineRend.endWidth = VisualController.inst.edgePartThickness;
+        SetOpacity(0.9f);
+    }
+
+    public void SetToPlay()
+    {
+        this.lineRend.startWidth = VisualController.inst.playerEdgePartThickness;
+        this.lineRend.endWidth = VisualController.inst.playerEdgePartThickness;
+        SetOpacity(1);
+    }
+
     /// <summary>
     /// Set opacity of the line renderer material.
     /// </summary>
@@ -225,10 +241,27 @@ public class PlayerEdgePart : EdgePart
         this.lineRend.material.color = newColor;
     }
 
+    
+
     public void UpdateLineRenderer()
     {
-        this.lineRend.positionCount = this.positions.Length;
-        this.lineRend.SetPositions(this.positions);
+        if (!isCorner)
+        {
+            this.lineRend.positionCount = this.positions.Length;
+            this.lineRend.SetPositions(this.positions);
+        }
+        else
+        {
+            List<Vector3> addedLineRendPositions = this.positions.ToList();
+            Vector3 cornerPos = addedLineRendPositions[1];
+            addedLineRendPositions.Insert(1, cornerPos);
+            addedLineRendPositions.Insert(1, cornerPos);
+
+
+            this.lineRend.positionCount = addedLineRendPositions.Count;
+            this.lineRend.SetPositions(addedLineRendPositions.ToArray());
+        }
+        
     }
 
 }

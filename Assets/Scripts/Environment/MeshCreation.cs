@@ -159,7 +159,7 @@ public static class MeshCreation
                 bool isCorner = EdgePart.IsCorner(ID);
                 bool isEdgeMid = EdgePart.IsEdgeMid(ID);
                 GameObject newObj = CreateContainer("EdgePart" + ID, MeshRef.inst.envEdgeParts_parent);
-                LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, 0.01f);
+                LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, VisualController.inst.edgePartThickness);
 
                 // Assign
                 EnvironmentData.edgeParts[ID] = new EdgePart(ID, lineRend, isCorner, isEdgeMid);

@@ -109,8 +109,8 @@ public static class PlayerData
 
         // --------- EVENT --------
         // Edge part change?
-        if (player.actionState == Player.ActionState.stickToEdge)
-        {
+        //if (player.actionState == Player.ActionState.stickToEdge)
+        //{
             if (curEdgePartID != lastEdgePartID)
             {
                 player.curEdgePart.changed = true;
@@ -160,9 +160,6 @@ public static class PlayerData
 
             // ASSIGN
             player.curEdgePart.Set(curEdgePartID, curEdgePart_positions.ToArray(), isCorner);
-        }
-
-        
         //}
 
 

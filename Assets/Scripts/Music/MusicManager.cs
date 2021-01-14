@@ -73,42 +73,47 @@ public class MusicManager : MonoBehaviour
     private void ManageChordPlaying()
     {
         //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curEdgePart.changed + ", leave: " + player.curEdge.leave);
-        // EDGE CHANGE
-        if (player.curEdge.changed)
+        if (player.actionState == Player.ActionState.stickToEdge)
         {
-            #region pitch
-            SetNextPitchRange(ref minPitch, ref maxPitch);
-            #endregion
+            // EDGE CHANGE
+            if (player.curEdge.changed)
+            {
+                #region pitch
+                SetNextPitchRange(ref minPitch, ref maxPitch);
+                #endregion
+            }
+
+            // FIRST EDGE TOUCH
+            if (player.curEdge.firstTouch)
+            {
+                velocity = GetVelocity();
+                curChord = GetChord();
+
+                PlayChord(curChord, Instrument.inner, velocity);
+
+                #region pitch
+                // calc pitch
+                SetFirstPitchRange(ref minPitch, ref maxPitch);
+                #endregion
+            }
+
+            // EDGE PART CHANGE
+            else if (player.curEdgePart.changed)
+            {
+                StopChord(curChord, Instrument.inner);
+
+                curChord = GetChord();
+
+                PlayChord(curChord, Instrument.inner, velocity);
+            }
         }
-
-        // FIRST EDGE TOUCH
-        if (player.curEdge.firstTouch)
+        else
         {
-            velocity = GetVelocity();
-            curChord = GetChord();
-
-            PlayChord(curChord, Instrument.inner, velocity);
-
-            #region pitch
-            // calc pitch
-            SetFirstPitchRange(ref minPitch, ref maxPitch);
-            #endregion
-        }
-
-        // EDGE PART CHANGE
-        else if (player.curEdgePart.changed)
-        {
-            StopChord(curChord, Instrument.inner);
-            
-            curChord = GetChord();
-
-            PlayChord(curChord, Instrument.inner, velocity);
-        }
-
-        // LEAVE EDGE
-        if (player.curEdge.leave)
-        {
-            StopChord(curChord, Instrument.inner);
+            // LEAVE EDGE
+            if (player.curEdge.leave)
+            {
+                StopChord(curChord, Instrument.inner);
+            }
         }
 
         #region Pitch

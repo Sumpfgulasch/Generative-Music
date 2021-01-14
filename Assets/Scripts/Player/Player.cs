@@ -436,7 +436,7 @@ public class Player : MonoBehaviour
             StopCoroutine(rotateEnumerator);
             StartCoroutine(triggerRotateEnumerator);
 
-            Player.inst.curEdgePart.UpdateLineRenderer(); // unschön; klappt nicht; hier weiter
+            //Player.inst.curEdgePart.UpdateLineRenderer(); // unschön; klappt nicht; hier weiter
 
             if (actionState == ActionState.none)
             {
