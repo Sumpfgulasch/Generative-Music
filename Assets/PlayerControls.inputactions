@@ -6,9 +6,17 @@
             "id": "29068d5a-6aac-4f70-8848-930d669184f8",
             "actions": [
                 {
-                    "name": "MakeMusic",
+                    "name": "PlayInside",
                     "type": "Button",
                     "id": "9588a1b1-801a-4d3f-8fe4-fb1101545abf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "PlayOutside",
+                    "type": "Button",
+                    "id": "d75e87d4-f94a-4872-93e9-a5ccf2b93f33",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -98,6 +106,39 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "Mouse",
+                    "id": "78fcc568-f279-4f18-a07f-a0fa9edfe63d",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectNext",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "406af44d-7299-40c4-b9e2-82a6030d18f2",
+                    "path": "<Mouse>/scroll/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "SelectNext",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "c3ebe6eb-4b4c-4e73-a138-b9055ec1c7ed",
+                    "path": "<Mouse>/scroll/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "SelectNext",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "15f002c6-4852-478d-8384-18ae895194b1",
                     "path": "<Keyboard>/r",
@@ -126,7 +167,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "MakeMusic",
+                    "action": "PlayInside",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5876c95d-5d65-4077-8b77-0869aeac928d",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "PlayInside",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -137,7 +189,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "MakeMusic",
+                    "action": "PlayInside",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -148,7 +200,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "MakeMusic",
+                    "action": "PlayInside",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "85f1db7a-9aff-4f7f-864a-9c234dfe735f",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "PlayOutside",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "357728a1-bb44-4c08-a9db-7148d79a806b",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "PlayOutside",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

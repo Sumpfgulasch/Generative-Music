@@ -186,12 +186,14 @@ public class EdgePart
 public class PlayerEdgePart : EdgePart
 {
     public Vector3[] positions;
+    
 
     // Contructor
     public PlayerEdgePart(Type type, LineRenderer lineRend)
     {
         this.type = type;
         base.lineRend = lineRend;
+        SetToFocus();
     }
 
     public new enum Type {Main, Second};

@@ -18,7 +18,6 @@ public class MusicManager : MonoBehaviour
     [HideInInspector] public Chord curChord;
 
     // Private variables
-    private int curLoop = 0;
     private float velocity;
     private float minPitch, maxPitch;
     private float curPitch = 0;

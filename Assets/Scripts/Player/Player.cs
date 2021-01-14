@@ -98,9 +98,8 @@ public class Player : MonoBehaviour
     private float startScale;
     Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
-    private IEnumerator triggerRotateEnumerator;
+    private IEnumerator rotateEnumerator, triggerRotateEnumerator, scaleOutEnumerator, scaleInEnumerator;
     private IEnumerable rotateEnumerable;
-    private IEnumerator rotateEnumerator;
     private float selectionPressTime, selectionFrequency;
 
 
@@ -141,7 +140,10 @@ public class Player : MonoBehaviour
     {
         inst = this;
         midPoint = this.transform.position;
-        rotateEnumerator = RotateToNextField(1).GetEnumerator(); // hack init
+        rotateEnumerator = RotateToNextField(1).GetEnumerator(); // hack inits
+        scaleOutEnumerator = DampedScale(scaleMax);
+        scaleInEnumerator = DampedScale(scaleMin);
+
         selectionPressTime = bt_selectionPressTime;
         selectionFrequency = bt_selectionFrequency;
     }
@@ -226,41 +228,65 @@ public class Player : MonoBehaviour
     void PerformMovement()
     {
         // = manage states
-
-        // Keyboard: select next
-        //if (useKeyboard)
-        //    RotateToTarget(targetPos);
-
-
-
-        // regular move
-        if (actionState == ActionState.none)
+        
+        if (!useKeyboard) // to do: an maus und input system anpassen
         {
-            // Mouse
-            if (!useKeyboard)
+            // regular move
+            if (actionState == ActionState.none)
             {
                 if (positionState == PositionState.inside || positionState == PositionState.innerEdge)
                     MoveTowardsMouse("inner");
                 else
                     MoveTowardsMouse("outer");
             }
+            // action: stick to edge
+            else if (actionState == ActionState.stickToEdge)
+            {
+                if (startPosState == PositionState.inside || startPosState == PositionState.innerEdge)
+                {
+                    StickToEdge("inner");
+                }
+                else
+                {
+                    StickToEdge("outer");
+                }
+            }
 
-            // HACK
-            if (useKeyboard)
-                ButtonScale(-1);
         }
-        // action: stick to edge
-        else if (actionState == ActionState.stickToEdge)
-        {
-            if (startPosState == PositionState.inside || startPosState == PositionState.innerEdge)
-            {
-                StickToEdge("inner");
-            }
-            else
-            {
-                StickToEdge("outer");
-            }
-        }
+        // HACK
+        //else if (actionState == ActionState.none)
+        //    ButtonScale(-1);
+
+
+
+        // regular move
+        //if (actionState == ActionState.none)
+        //{
+        //    // Mouse
+        //    if (!useKeyboard)
+        //    {
+        //        if (positionState == PositionState.inside || positionState == PositionState.innerEdge)
+        //            MoveTowardsMouse("inner");
+        //        else
+        //            MoveTowardsMouse("outer");
+        //    }
+
+        //    // HACK
+        //    if (useKeyboard)
+        //        ButtonScale(-1);
+        //}
+        //// action: stick to edge
+        //else if (actionState == ActionState.stickToEdge)
+        //{
+        //    if (startPosState == PositionState.inside || startPosState == PositionState.innerEdge)
+        //    {
+        //        StickToEdge("inner");
+        //    }
+        //    else
+        //    {
+        //        StickToEdge("outer");
+        //    }
+        //}
 
     }
 
@@ -325,6 +351,7 @@ public class Player : MonoBehaviour
 
     void StickToEdge(string side)
     {
+
         // SCALE only
         if (side == "inner")
         {
@@ -392,8 +419,9 @@ public class Player : MonoBehaviour
 
     // ------------------------------ Input Actions ------------------------------
 
+        
 
-    public void OnMakeMusic(InputAction.CallbackContext context)
+    public void OnPlayInside(InputAction.CallbackContext context)
     {
         // = SET ACTION STATES
 
@@ -403,23 +431,74 @@ public class Player : MonoBehaviour
 
             if (context.performed)
             {
+                // state & movement
                 actionState = Player.ActionState.stickToEdge;
+                StopCoroutine(scaleOutEnumerator);
+                StopCoroutine(scaleInEnumerator);
+                StickToEdge("inner");
+
+                // start variables; todo: entfernen weil nicht mehr gebraucht (? was ist mit maus)
                 startScale = this.transform.localScale.x;
                 startPosState = positionState;
 
+                // press frequencies
                 selectionPressTime = bt_play_selectionPressTime;
                 selectionFrequency = bt_play_selectionFrequency;
 
             }
             else if (context.canceled)
             {
+                // state
                 actionState = Player.ActionState.none;
 
+                scaleInEnumerator = DampedScale(scaleMin);
+                StartCoroutine(scaleInEnumerator);
+
+                // press frequencies
                 selectionPressTime = bt_selectionPressTime;
                 selectionFrequency = bt_selectionFrequency;
             }
         }
     }
+
+    // to do: kürzen
+    public void OnPlayOutside(InputAction.CallbackContext context)
+    {
+        // = SET ACTION STATES
+
+        if (positionState != PositionState.noTunnel)
+        {
+            lastActionState = actionState;
+
+            if (context.performed)
+            {
+                // state & movement
+                actionState = Player.ActionState.stickToEdge;
+                StopCoroutine(scaleOutEnumerator);
+                StopCoroutine(scaleInEnumerator);
+                StickToEdge("outer");
+
+                // press frequencies
+                selectionPressTime = bt_play_selectionPressTime;
+                selectionFrequency = bt_play_selectionFrequency;
+
+            }
+            else if (context.canceled)
+            {
+                // state
+                actionState = Player.ActionState.none;
+                // to do: coroutine um in ursprungs-pos zu gehen -> max scale
+                scaleOutEnumerator = DampedScale(scaleMax);
+                StartCoroutine(scaleOutEnumerator);
+
+                // press frequencies
+                selectionPressTime = bt_selectionPressTime;
+                selectionFrequency = bt_selectionFrequency;
+            }
+        }
+    }
+
+
 
 
 
@@ -435,8 +514,6 @@ public class Player : MonoBehaviour
 
             StopCoroutine(rotateEnumerator);
             StartCoroutine(triggerRotateEnumerator);
-
-            //Player.inst.curEdgePart.UpdateLineRenderer(); // unschön; klappt nicht; hier weiter
 
             if (actionState == ActionState.none)
             {
@@ -497,18 +574,55 @@ public class Player : MonoBehaviour
 
     private IEnumerable RotateToNextField(int direction)
     {
+        // = rotate to next field, with break; if player is making music, do stickToEdge(), too
+
         var targetPos = GetNextTargetRotation(direction);
 
-        float maxTime = 2f;
+        float maxTime = 1.2f;
         float timer = 0;
 
         while (timer<maxTime)
         {
             RotateToTarget(targetPos);
+
+
+            // unschöner hack
+            if (actionState == ActionState.stickToEdge)
+            {
+                if (positionState == PositionState.inside || positionState == PositionState.innerEdge)
+                {
+                    StickToEdge("inner");
+                }
+                else
+                {
+                    StickToEdge("outer");
+                }
+            }
+
+
             timer += Time.deltaTime;
 
             yield return null;
         }
+    }
+
+    private IEnumerator DampedScale(float targetScale)
+    {
+        float maxTime = 2.2f;
+        float timer = 0;
+        Vector3 maxScale = new Vector3(targetScale, targetScale, 1);
+
+        float fraction = 0.04f;
+
+        while (timer < maxTime)
+        {
+            Vector3 scaleSpeed = (maxScale - this.transform.localScale) * fraction;
+            this.transform.localScale += scaleSpeed;
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        
     }
 
 

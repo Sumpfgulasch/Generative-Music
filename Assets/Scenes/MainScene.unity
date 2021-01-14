@@ -695,7 +695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 045e068a7f5e98b4d9ed97de401bb997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bpm_: 120
+  bpm_: 74
   pause_: 0
 --- !u!1001 &446193508
 PrefabInstance:
@@ -2237,7 +2237,7 @@ MonoBehaviour:
   rotationMaxSpeed: 100
   rotationTargetVectorFactor: 0.1
   scaleTargetVectorFactor: 0.05
-  scaleMax: 1.7
+  scaleMax: 1.19
   scaleMin: 0.15
   scaleMaxSpeed: 0.05
   scaleDamp: 0.8
@@ -2256,10 +2256,10 @@ MonoBehaviour:
   kb_rotationSpeed: 1
   kb_slowRotation: 0.9
   bt_rotationDamp: 0.198
-  bt_selectionPressTime: 0
+  bt_selectionPressTime: 0.23
   bt_selectionFrequency: 0.13
-  bt_play_selectionPressTime: 0.7
-  bt_play_selectionFrequency: 0.5
+  bt_play_selectionPressTime: 0.6
+  bt_play_selectionFrequency: 0.45
   lastPosState: 0
   lastActionState: 0
   startPosState: 0
@@ -2393,7 +2393,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1240982957}
         m_TargetAssemblyTypeName: Player, Assembly-CSharp
-        m_MethodName: OnMakeMusic
+        m_MethodName: OnPlayInside
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2421,6 +2421,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 8297cf6e-367f-44d3-9511-d5aa49f07ec1
     m_ActionName: Player/Reset[/Keyboard/r]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1240982957}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: OnPlayOutside
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: d75e87d4-f94a-4872-93e9-a5ccf2b93f33
+    m_ActionName: Gameplay/PlayOutside[/Mouse/rightButton,/Keyboard/downArrow]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay
