@@ -98,11 +98,11 @@ public class Player : MonoBehaviour
     private float startScale;
     Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
-    private IEnumerator rotateEnumerator, triggerRotateEnumerator, scaleOutEnumerator, scaleInEnumerator;
+    private IEnumerator rotateEnumerator, triggerRotateEnumerator, scaleOutEnumerator, scaleEnumerator;
     private IEnumerable rotateEnumerable;
     private float selectionPressTime, selectionFrequency;
     private enum Side { inner, outer};
-    private Side curSide;
+    private Side curSide = Side.inner;
 
 
 
@@ -144,7 +144,7 @@ public class Player : MonoBehaviour
         midPoint = this.transform.position;
         rotateEnumerator = RotateToNextField(1).GetEnumerator(); // hack inits
         scaleOutEnumerator = DampedScale(scaleMax);
-        scaleInEnumerator = DampedScale(scaleMin);
+        scaleEnumerator = DampedScale(scaleMin);
 
         selectionPressTime = bt_selectionPressTime;
         selectionFrequency = bt_selectionFrequency;
@@ -426,8 +426,7 @@ public class Player : MonoBehaviour
                 // state & movement
                 actionState = Player.ActionState.stickToEdge;
                 curSide = Side.inner;
-                StopCoroutine(scaleOutEnumerator);
-                StopCoroutine(scaleInEnumerator);
+                StopCoroutine(scaleEnumerator);
                 StickToEdge(curSide);
 
                 // start variables; todo: entfernen weil nicht mehr gebraucht (? was ist mit maus)
@@ -444,8 +443,8 @@ public class Player : MonoBehaviour
                 // state
                 actionState = Player.ActionState.none;
 
-                scaleInEnumerator = DampedScale(scaleMin);
-                StartCoroutine(scaleInEnumerator);
+                scaleEnumerator = DampedScale(scaleMin);
+                StartCoroutine(scaleEnumerator);
 
                 // press frequencies
                 selectionPressTime = bt_selectionPressTime;
@@ -468,8 +467,7 @@ public class Player : MonoBehaviour
                 // state & movement
                 actionState = Player.ActionState.stickToEdge;
                 curSide = Side.outer;
-                StopCoroutine(scaleOutEnumerator);
-                StopCoroutine(scaleInEnumerator);
+                StopCoroutine(scaleEnumerator);
                 StickToEdge(curSide);
 
                 // press frequencies
@@ -482,8 +480,8 @@ public class Player : MonoBehaviour
                 // state
                 actionState = Player.ActionState.none;
                 // to do: coroutine um in ursprungs-pos zu gehen -> max scale
-                scaleOutEnumerator = DampedScale(scaleMax);
-                StartCoroutine(scaleOutEnumerator);
+                scaleEnumerator = DampedScale(scaleMax);
+                StartCoroutine(scaleEnumerator);
 
                 // press frequencies
                 selectionPressTime = bt_selectionPressTime;
@@ -504,10 +502,8 @@ public class Player : MonoBehaviour
             {
                 // state & movement
                 actionState = Player.ActionState.stickToEdge;
-                StopCoroutine(scaleOutEnumerator);
-                StopCoroutine(scaleInEnumerator);
+                StopCoroutine(scaleEnumerator);
                 StickToEdge(curSide);
-                Debug.Log("curside: " + curSide);
 
                 // press frequencies
                 selectionPressTime = bt_play_selectionPressTime;
@@ -521,13 +517,13 @@ public class Player : MonoBehaviour
                 // to do: coroutine um in ursprungs-pos zu gehen -> max scale
                 if (curSide == Side.outer)
                 {
-                    scaleOutEnumerator = DampedScale(scaleMax);
-                    StartCoroutine(scaleOutEnumerator);
+                    scaleEnumerator = DampedScale(scaleMax);
+                    StartCoroutine(scaleEnumerator);
                 }
                 else
                 {
-                    scaleOutEnumerator = DampedScale(scaleMin);
-                    StartCoroutine(scaleInEnumerator);
+                    scaleEnumerator = DampedScale(scaleMin);
+                    StartCoroutine(scaleEnumerator);
                 }
                     
 
@@ -649,6 +645,7 @@ public class Player : MonoBehaviour
 
         while (timer < maxTime)
         {
+            //print("damped scale: " + timer);
             Vector3 scaleSpeed = (maxScale - this.transform.localScale) * fraction;
             this.transform.localScale += scaleSpeed;
 

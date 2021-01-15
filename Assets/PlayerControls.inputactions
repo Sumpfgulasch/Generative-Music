@@ -192,17 +192,6 @@
                 },
                 {
                     "name": "",
-                    "id": "7ab0fd86-2fcc-4421-9195-ddcf20b5dcd7",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "PlayInside",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "9e3d9eac-f2e0-49c5-89b4-e24506abd1f1",
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
