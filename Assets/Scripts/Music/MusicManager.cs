@@ -21,7 +21,7 @@ public class MusicManager : MonoBehaviour
     private float velocity;
     private float minPitch, maxPitch;
     private float curPitch = 0;
-    private InputAction resetAction;
+    private AudioHelm.HelmController curInstrument;
 
 
 
@@ -88,7 +88,7 @@ public class MusicManager : MonoBehaviour
                 velocity = GetVelocity();
                 curChord = GetChord();
 
-                PlayChord(curChord, Instrument.inner, velocity);
+                PlayChord(curChord, curInstrument, velocity);
 
                 #region pitch
                 // calc pitch
@@ -99,11 +99,11 @@ public class MusicManager : MonoBehaviour
             // EDGE PART CHANGE
             else if (player.curEdgePart.changed)
             {
-                StopChord(curChord, Instrument.inner);
+                StopChord(curChord, curInstrument);
 
                 curChord = GetChord();
 
-                PlayChord(curChord, Instrument.inner, velocity);
+                PlayChord(curChord, curInstrument, velocity);
             }
         }
         else
@@ -111,7 +111,7 @@ public class MusicManager : MonoBehaviour
             // LEAVE EDGE
             if (player.curEdge.leave)
             {
-                StopChord(curChord, Instrument.inner);
+                StopChord(curChord, curInstrument);
             }
         }
 
@@ -158,6 +158,22 @@ public class MusicManager : MonoBehaviour
         if (context.performed)
         {
             LoopData.Init();
+        }
+    }
+
+    public void OnPlayInside(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            curInstrument = Instrument.inner;
+        }
+    }
+
+    public void OnPlayOutside(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            curInstrument = Instrument.outer;
         }
     }
 

@@ -101,6 +101,8 @@ public class Player : MonoBehaviour
     private IEnumerator rotateEnumerator, triggerRotateEnumerator, scaleOutEnumerator, scaleInEnumerator;
     private IEnumerable rotateEnumerable;
     private float selectionPressTime, selectionFrequency;
+    private enum Side { inner, outer};
+    private Side curSide;
 
 
 
@@ -234,22 +236,12 @@ public class Player : MonoBehaviour
             // regular move
             if (actionState == ActionState.none)
             {
-                if (positionState == PositionState.inside || positionState == PositionState.innerEdge)
-                    MoveTowardsMouse("inner");
-                else
-                    MoveTowardsMouse("outer");
+                MoveTowardsMouse(curSide);
             }
             // action: stick to edge
             else if (actionState == ActionState.stickToEdge)
             {
-                if (startPosState == PositionState.inside || startPosState == PositionState.innerEdge)
-                {
-                    StickToEdge("inner");
-                }
-                else
-                {
-                    StickToEdge("outer");
-                }
+                StickToEdge(curSide);
             }
 
         }
@@ -328,12 +320,12 @@ public class Player : MonoBehaviour
 
 
 
-    void MoveTowardsMouse(string side)
+    void MoveTowardsMouse(Side side)
     {
-        if (side == "inner")
+        if (side == Side.inner)
             // accalerate towards mouse
             curScaleSpeed += scaleTargetValue;
-        else if (side == "outer")
+        else if (side == Side.outer)
         {
             curScaleSpeed = scaleTargetValue * outsideSlowFac;
             curRotSpeed = rotTargetValue * outsideSlowFac;
@@ -349,11 +341,11 @@ public class Player : MonoBehaviour
 
 
 
-    void StickToEdge(string side)
+    void StickToEdge(Side side)
     {
 
         // SCALE only
-        if (side == "inner")
+        if (side == Side.inner)
         {
             float borderTargetScaleFactor = tunnelToMidDistance / curPlayerRadius;
             this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
@@ -362,7 +354,7 @@ public class Player : MonoBehaviour
             // TO DO: bounce?
         }
 
-        else if (side == "outer")
+        else if (side == Side.outer)
         {
             if (constantInnerWidth)
             {
@@ -433,13 +425,14 @@ public class Player : MonoBehaviour
             {
                 // state & movement
                 actionState = Player.ActionState.stickToEdge;
+                curSide = Side.inner;
                 StopCoroutine(scaleOutEnumerator);
                 StopCoroutine(scaleInEnumerator);
-                StickToEdge("inner");
+                StickToEdge(curSide);
 
                 // start variables; todo: entfernen weil nicht mehr gebraucht (? was ist mit maus)
-                startScale = this.transform.localScale.x;
-                startPosState = positionState;
+                startScale = this.transform.localScale.x; // für velocity
+                //startPosState = positionState;
 
                 // press frequencies
                 selectionPressTime = bt_play_selectionPressTime;
@@ -474,9 +467,10 @@ public class Player : MonoBehaviour
             {
                 // state & movement
                 actionState = Player.ActionState.stickToEdge;
+                curSide = Side.outer;
                 StopCoroutine(scaleOutEnumerator);
                 StopCoroutine(scaleInEnumerator);
-                StickToEdge("outer");
+                StickToEdge(curSide);
 
                 // press frequencies
                 selectionPressTime = bt_play_selectionPressTime;
@@ -490,6 +484,52 @@ public class Player : MonoBehaviour
                 // to do: coroutine um in ursprungs-pos zu gehen -> max scale
                 scaleOutEnumerator = DampedScale(scaleMax);
                 StartCoroutine(scaleOutEnumerator);
+
+                // press frequencies
+                selectionPressTime = bt_selectionPressTime;
+                selectionFrequency = bt_selectionFrequency;
+            }
+        }
+    }
+
+    public void OnPlay(InputAction.CallbackContext context)
+    {
+        // = SET ACTION STATES
+
+        if (positionState != PositionState.noTunnel)
+        {
+            lastActionState = actionState;
+
+            if (context.performed)
+            {
+                // state & movement
+                actionState = Player.ActionState.stickToEdge;
+                StopCoroutine(scaleOutEnumerator);
+                StopCoroutine(scaleInEnumerator);
+                StickToEdge(curSide);
+                Debug.Log("curside: " + curSide);
+
+                // press frequencies
+                selectionPressTime = bt_play_selectionPressTime;
+                selectionFrequency = bt_play_selectionFrequency;
+
+            }
+            else if (context.canceled)
+            {
+                // state
+                actionState = Player.ActionState.none;
+                // to do: coroutine um in ursprungs-pos zu gehen -> max scale
+                if (curSide == Side.outer)
+                {
+                    scaleOutEnumerator = DampedScale(scaleMax);
+                    StartCoroutine(scaleOutEnumerator);
+                }
+                else
+                {
+                    scaleOutEnumerator = DampedScale(scaleMin);
+                    StartCoroutine(scaleInEnumerator);
+                }
+                    
 
                 // press frequencies
                 selectionPressTime = bt_selectionPressTime;
@@ -589,14 +629,7 @@ public class Player : MonoBehaviour
             // unschöner hack
             if (actionState == ActionState.stickToEdge)
             {
-                if (positionState == PositionState.inside || positionState == PositionState.innerEdge)
-                {
-                    StickToEdge("inner");
-                }
-                else
-                {
-                    StickToEdge("outer");
-                }
+                StickToEdge(curSide);
             }
 
 

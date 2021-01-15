@@ -22,6 +22,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Play",
+                    "type": "Button",
+                    "id": "246b1f2e-90fa-4fd9-98dc-b7197d5acdbd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "SelectNext",
                     "type": "Button",
                     "id": "5365614d-c245-4056-92ff-00becdd27083",
@@ -106,8 +114,8 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Mouse",
-                    "id": "78fcc568-f279-4f18-a07f-a0fa9edfe63d",
+                    "name": "MouseWheel",
+                    "id": "cd61850d-a01b-4cd1-ade8-5fd9cef21e58",
                     "path": "1DAxis",
                     "interactions": "",
                     "processors": "",
@@ -118,8 +126,8 @@
                 },
                 {
                     "name": "negative",
-                    "id": "406af44d-7299-40c4-b9e2-82a6030d18f2",
-                    "path": "<Mouse>/scroll/x",
+                    "id": "edfb5151-ea4e-4369-9ddd-ba41f8f47fa0",
+                    "path": "<Mouse>/scroll/y",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -129,7 +137,7 @@
                 },
                 {
                     "name": "positive",
-                    "id": "c3ebe6eb-4b4c-4e73-a138-b9055ec1c7ed",
+                    "id": "579d0a41-ddd8-4f01-b6a2-62d4355b22f2",
                     "path": "<Mouse>/scroll/x",
                     "interactions": "",
                     "processors": "",
@@ -223,6 +231,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "PlayOutside",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c3cfbd79-458c-4dac-a1f9-f2ec7454bccc",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Play",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

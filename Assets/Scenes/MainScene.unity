@@ -2233,7 +2233,7 @@ MonoBehaviour:
   constantInnerWidth: 1
   stickToEdgeTolerance: 0.01
   stickToOuterEdge_holeSize: 0.03
-  useKeyboard: 1
+  useKeyboard: 0
   rotationMaxSpeed: 100
   rotationTargetVectorFactor: 0.1
   scaleTargetVectorFactor: 0.05
@@ -2259,7 +2259,7 @@ MonoBehaviour:
   bt_selectionPressTime: 0.23
   bt_selectionFrequency: 0.13
   bt_play_selectionPressTime: 0.6
-  bt_play_selectionFrequency: 0.45
+  bt_play_selectionFrequency: 0.5
   lastPosState: 0
   lastActionState: 0
   startPosState: 0
@@ -2403,6 +2403,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1033251703}
+        m_TargetAssemblyTypeName: MusicManager, Assembly-CSharp
+        m_MethodName: OnPlayInside
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 9588a1b1-801a-4d3f-8fe4-fb1101545abf
     m_ActionName: Player/PlayChord[/Keyboard/space,/Mouse/leftButton,/XInputControllerWindows/buttonSouth]
   - m_PersistentCalls:
@@ -2425,6 +2437,18 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1240982957}
         m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: OnPlayOutside
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1033251703}
+        m_TargetAssemblyTypeName: MusicManager, Assembly-CSharp
         m_MethodName: OnPlayOutside
         m_Mode: 0
         m_Arguments:
@@ -2498,6 +2522,34 @@ MonoBehaviour:
   - {fileID: 1683182927}
   beatSequencer: {fileID: 700626522}
   clock: {fileID: 441292771}
+--- !u!83 &1546324927
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!83 &1550272947
 AudioClip:
   m_ObjectHideFlags: 0
@@ -2883,7 +2935,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 2224735792368419155, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 1982963763}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -3089,6 +3141,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f411c93fc0bd3b146a2c8fa8915b6c3e, type: 3}
+--- !u!83 &1982963763
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &1990999422
 GameObject:
   m_ObjectHideFlags: 0
@@ -3120,6 +3200,54 @@ Transform:
   - {fileID: 924272495}
   m_Father: {fileID: 1240982958}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2017337906
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2017337908}
+  - component: {fileID: 2017337907}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2017337907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017337906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 93374b87463620842913e580712fb4d0, type: 2}
+--- !u!4 &2017337908
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017337906}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.076108575, y: 0.36487645, z: 1.8264902}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2146842604
 GameObject:
@@ -3196,7 +3324,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5925276600095122450, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 1546324927}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
