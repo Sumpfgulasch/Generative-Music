@@ -2261,7 +2261,7 @@ MonoBehaviour:
   constantInnerWidth: 1
   stickToEdgeTolerance: 0.01
   stickToOuterEdge_holeSize: 0.03
-  useKeyboard: 0
+  useKeyboard: 1
   rotationMaxSpeed: 100
   rotationTargetVectorFactor: 0.1
   scaleTargetVectorFactor: 0.05
