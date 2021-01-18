@@ -23,6 +23,7 @@ public static class LoopData
     public static Key curKey;
     public static Dictionary<string, Weight[]> weights;
     public static string[] weightAreas;
+    public static int curLoop;
 
     // Rest
     public static float timePerBar;
