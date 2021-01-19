@@ -23,7 +23,8 @@ public static class LoopData
     public static Key curKey;
     public static Dictionary<string, Weight[]> weights;
     public static string[] weightAreas;
-    public static int curLoop;
+    public static int curCycle;
+    public static float timer;
 
     // Rest
     public static float timePerBar;
@@ -54,11 +55,11 @@ public static class LoopData
         string[][] weightNames = new string[][]                                                 // WICHTIG #2: Variablen-Namen stimmen mit den Animator-Parametern überein!
         {
             // 1. Tonal Range
-            new string [] { Action.stay, Action.increase, Action.decrease, Action.up, Action.down},
+            new string [] { MusicAction.stay, MusicAction.increase, MusicAction.decrease, MusicAction.up, MusicAction.down},
             // 2. Fields
-            new string [] { Action.stay, Action.add, Action.remove},                              
+            new string [] { MusicAction.stay, MusicAction.add, MusicAction.remove},                              
             // 3. Chord Intervals
-            new string [] { Action.stay, Action.change}
+            new string [] { MusicAction.stay, MusicAction.change}
         };
 
         // 1.3. Values                                                                           // TO DO: berechnen! Bisher ist der stay-value jeder Area immer 1, alle anderen 0
@@ -84,6 +85,9 @@ public static class LoopData
     
     public static void Init()
     {
+        // -1. Loop events
+        MusicRef.inst.beatSequencer.beatEvent.AddListener(ManageSpawning);
+
         // 0. Weights
         //weights = InitWeights();
 
@@ -132,6 +136,27 @@ public static class LoopData
 
 
     // ------------------------
+
+
+
+    private static void ManageSpawning(int beat)
+    {
+        if (beat == 0)
+        {
+            // Increase cycle
+            curCycle++;
+            Debug.Log("curCycle: " + curCycle);
+
+
+        }
+    }
+
+    private static bool AllowForSpecialField()
+    {
+        // = Gibt es aktuell ein special field? ist eines aktiv?
+
+        return true;
+    }
 
 
 
@@ -240,7 +265,7 @@ public static class Area
     public static string chords = "chords";
 }
 
-public static class Action
+public static class MusicAction
 {
     public static string stay = "stay";
     public static string increase = "increase";

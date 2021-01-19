@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using System.Linq;
 
@@ -62,8 +63,6 @@ public class MusicManager : MonoBehaviour
     
     void Update()
     {
-        //LoopData.Generate(curLoop);                             // TO DO: nur OnEvent()
-
         ManageChordPlaying();
     }
 
