@@ -56,9 +56,10 @@ public class MusicManager : MonoBehaviour
     {
         // Init
         inst = this;
+
         //controllers[0].SetPitchWheel(0);
 
-        LoopData.Init();
+        //LoopData.Init();
     }
     
     void Update()
@@ -74,20 +75,17 @@ public class MusicManager : MonoBehaviour
         if (player.actionState == Player.ActionState.stickToEdge)
         {
             // EDGE CHANGE
-            if (player.curEdge.changed)
-            {
-                #region pitch
-                SetNextPitchRange(ref minPitch, ref maxPitch);
-                #endregion
-            }
+            //if (player.curEdge.changed)
+            //{
+            //    #region pitch
+            //    SetNextPitchRange(ref minPitch, ref maxPitch);
+            //    #endregion
+            //}
 
             // FIRST EDGE TOUCH
             if (player.curEdge.firstTouch)
             {
-                velocity = GetVelocity();
-                curChord = GetChord();
-
-                PlayChord(curChord, curInstrument, velocity);
+                PlayField();
 
                 #region pitch
                 // calc pitch
@@ -133,6 +131,32 @@ public class MusicManager : MonoBehaviour
         #endregion
     }
 
+    private void PlayField()
+    {
+        velocity = GetVelocity();
+        curChord = GetChord();
+
+        int ID = player.curEdgePart.ID;
+        var fieldType = player.curEdgePartSet[ID].type;
+
+        switch (fieldType)
+        {
+            case MusicField.Type.Chord:
+                PlayChord(curChord, curInstrument, velocity);
+                break;
+
+            case MusicField.Type.Modulation:
+                MusicFieldSet.SwitchEdgeParts();
+                break;
+
+            case MusicField.Type.Pitch:
+                break;
+
+        }
+    }
+
+    
+
 
     private float GetVelocity()
     {
@@ -143,14 +167,55 @@ public class MusicManager : MonoBehaviour
     {
         // = Get chord from currently touched edgePart
         int playerID = player.curEdgePart.ID;
-        Chord chord = EnvironmentData.edgeParts[playerID].chord;
+        Chord chord = player.curEdgePartSet[playerID].chord;
 
         return chord;
     }
+    
 
 
 
-    // ------------------------------ Input Actions ------------------------------
+    // ------------------------------ Events ------------------------------
+
+
+    //private void OnStartToPlay()
+    //{
+    //    print("on start; curInstrument: " + curInstrument);
+    //    velocity = GetVelocity();
+    //    curChord = GetChord();
+
+    //    PlayChord(curChord, curInstrument, velocity);
+
+    //    #region pitch
+    //    // calc pitch
+    //    SetFirstPitchRange(ref minPitch, ref maxPitch);
+    //    #endregion
+    //}
+
+    //private void OnChangeEdgePart()
+    //{
+    //    if (!player.curEdge.firstTouch)
+    //    {
+    //        print("on change");
+    //        StopChord(curChord, curInstrument);
+
+    //        curChord = GetChord();
+
+    //        PlayChord(curChord, curInstrument, velocity);
+    //    }
+    //}
+
+    //private void OnStopToPlay()
+    //{
+    //    print("on stop");
+    //    StopChord(curChord, curInstrument);
+    //}
+
+    private void OnTunnelEnter()
+    {
+
+    }
+
 
     public void OnReset(InputAction.CallbackContext context)
     {

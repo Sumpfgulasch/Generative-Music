@@ -28,14 +28,29 @@ public class VisualController : MonoBehaviour
         inst = this;
         if (!showCursor)
             Cursor.visible = false;
-
+        
         MeshCreation.CreateMeshes();
+
+        // Event subscription
+        GameEvents.inst.onTunnelEnter += OnTunnelStart;
     }
 
 
     void Update()
     {
-        EnvironmentData.HandleData();
-        MeshUpdate.UpdateMeshes();
+        MeshUpdate.UpdatePlayer();
+    }
+
+
+
+    // ----------------------------- Events ----------------------------
+
+
+
+    private void OnTunnelStart()
+    {
+        Debug.Log("on tunnel start");
+        MeshUpdate.UpdateFieldsPositions();
+        LoopData.Init();            // HACK; gehört eig nicht hier rein
     }
 }

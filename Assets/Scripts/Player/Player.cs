@@ -80,6 +80,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public Edge curEdge;
     [HideInInspector] public Edge[] curSecEdges;
     [HideInInspector] public bool tunnelEnter;
+    [HideInInspector] public MusicField[] curEdgePartSet;
 
 
 
@@ -293,7 +294,7 @@ public class Player : MonoBehaviour
     public Vector3 GetNextTargetRotation(int direction)
     {
         int curID = curEdgePart.ID;
-        Vector3 targetPos = EdgePart.NextEdgePartMid(curID, direction);
+        Vector3 targetPos = MusicField.NextEdgePartMid(curID, direction);
 
         return targetPos;
     }
@@ -437,6 +438,9 @@ public class Player : MonoBehaviour
                 selectionPressTime = bt_play_selectionPressTime;
                 selectionFrequency = bt_play_selectionFrequency;
 
+                // Events
+                GameEvents.inst.FirstTouch();
+
             }
             else if (context.canceled)
             {
@@ -449,6 +453,9 @@ public class Player : MonoBehaviour
                 // press frequencies
                 selectionPressTime = bt_selectionPressTime;
                 selectionFrequency = bt_selectionFrequency;
+
+                // Events
+                GameEvents.inst.Leave();
             }
         }
     }
@@ -474,6 +481,9 @@ public class Player : MonoBehaviour
                 selectionPressTime = bt_play_selectionPressTime;
                 selectionFrequency = bt_play_selectionFrequency;
 
+                // Events
+                GameEvents.inst.FirstTouch();
+
             }
             else if (context.canceled)
             {
@@ -486,6 +496,9 @@ public class Player : MonoBehaviour
                 // press frequencies
                 selectionPressTime = bt_selectionPressTime;
                 selectionFrequency = bt_selectionFrequency;
+
+                // Events
+                GameEvents.inst.Leave();
             }
         }
     }
@@ -509,6 +522,9 @@ public class Player : MonoBehaviour
                 selectionPressTime = bt_play_selectionPressTime;
                 selectionFrequency = bt_play_selectionFrequency;
 
+                // Events
+                GameEvents.inst.FirstTouch();
+
             }
             else if (context.canceled)
             {
@@ -530,6 +546,9 @@ public class Player : MonoBehaviour
                 // press frequencies
                 selectionPressTime = bt_selectionPressTime;
                 selectionFrequency = bt_selectionFrequency;
+
+                // Events
+                GameEvents.inst.Leave();
             }
         }
     }

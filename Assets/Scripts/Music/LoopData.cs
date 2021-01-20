@@ -13,7 +13,7 @@ public static class LoopData
     // Constraints
     public static int chordTypeCount;
     public static ChordData[] chordTypes;
-    public static EdgePart.Type[] modulationTypes;
+    public static MusicField.Type[] modulationTypes;
     public static int toneRangeMin;
     public static int toneRangeMax;
     public static float minVelocity;
@@ -112,7 +112,7 @@ public static class LoopData
         // individual count
         int[] individualCounts = MusicGenerationLogic.RandomChordTypeCounts(chordTypeCount);
         // colors
-        var colors = EdgeParts.RandomColors(chordTypeCount);                    // to do?: eig nicht nötig hier
+        var colors = MusicFieldSet.RandomColors(chordTypeCount);                    // to do?: eig nicht nötig hier
         // assign!
         chordTypes = new ChordData[chordTypeCount];
         for (int i = 0; i < chordTypeCount; i++)
@@ -127,7 +127,7 @@ public static class LoopData
         Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(curKey, chordTypes, toneRangeMin, toneRangeMax);
 
         // 5. fields
-        EdgeParts.SetFields(chords, colors);
+        MusicFieldSet.AssignDataToFields(chords, colors);
 
         // 6. get timePerBar
         timePerBar = TimePerBar();

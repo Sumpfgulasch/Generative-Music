@@ -1,16 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public static class PlayerData
 {
-    //public static PlayerData inst;
-
     // Private variables
     private static Player player;
     private static Vector3 midPoint;
-    private static int lastEdgePartID;
+    private static int lastEdgePartID = 4;
     private static int curEdgePartID;
     private static Vector3 lastEdge_start, lastEdge_end;
     private static Vector3 lastEdge;
@@ -29,7 +28,10 @@ public static class PlayerData
 
 
 
+    public static void OnMovementChanged()
+    {
 
+    }
 
 
     public static void SetPositionStates()
@@ -84,15 +86,15 @@ public static class PlayerData
         for (int i = 0; i < player.outerVertices.Length; i++)
         {
             Vector3 playerMainVertex_extended = midPoint + ((player.outerVertices[0] - midPoint).normalized * 10f);
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, EnvironmentData.vertices[i], EnvironmentData.vertices[(i + 1) % 3]))
+            if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, TunnelData.vertices[i], TunnelData.vertices[(i + 1) % 3]))
             {
                 // Current edge (main & sec)
-                player.curEdge.start = EnvironmentData.vertices[i];           // i beginnt immer beim environmentTriangle UNTEN LINKS!
-                player.curEdge.end = EnvironmentData.vertices[(i + 1) % 3]; // im Uhrzeigersinn (wie alle anderen Vertex-Arrays)
+                player.curEdge.start = TunnelData.vertices[i];           // i beginnt immer beim environmentTriangle UNTEN LINKS!
+                player.curEdge.end = TunnelData.vertices[(i + 1) % 3]; // im Uhrzeigersinn (wie alle anderen Vertex-Arrays)
                 for (int j = 0; j < player.curSecEdges.Length; j++)
                 {
-                    player.curSecEdges[j].start = EnvironmentData.vertices[(i + 1 + j) % 3];
-                    player.curSecEdges[j].end = EnvironmentData.vertices[(i + 2 + j) % 3];
+                    player.curSecEdges[j].start = TunnelData.vertices[(i + 1 + j) % 3];
+                    player.curSecEdges[j].end = TunnelData.vertices[(i + 2 + j) % 3];
                 }
                 curEdgeIndex = i; // for later edgePart-index
             }
@@ -105,14 +107,14 @@ public static class PlayerData
         player.curEdge.percentage = Mathf.Clamp01((playerPointOnEnv - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
         curEdgePartID = ((int)(player.curEdge.percentage.
             Remap(0, 1f, 0, VisualController.inst.envGridLoops)
-            + curEdgeIndex * VisualController.inst.envGridLoops)) % (EnvironmentData.vertices.Length * VisualController.inst.envGridLoops); // gar kein bock mehr
-        Vector3 curEdgePart_start = EnvironmentData.edgeParts[curEdgePartID].start;
-        Vector3 curEdgePart_end = EnvironmentData.edgeParts[curEdgePartID].end;
+            + curEdgeIndex * VisualController.inst.envGridLoops)) % (TunnelData.vertices.Length * VisualController.inst.envGridLoops); // gar kein bock mehr
+        Vector3 curEdgePart_start = TunnelData.edgeParts[curEdgePartID].start;
+        Vector3 curEdgePart_end = TunnelData.edgeParts[curEdgePartID].end;
         var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
 
         player.curEdgePart.ID = curEdgePartID;
 
-        // --------- EVENT --------
+        // Edge part change?
         if (curEdgePartID != lastEdgePartID)
         {
             player.curEdgePart.changed = true;
@@ -129,39 +131,44 @@ public static class PlayerData
             player.curEdge.changed = true;
 
         // Is corner?
-        bool isCorner = EdgePart.IsCorner(curEdgePartID);
+        bool isCorner = MusicField.IsCorner(curEdgePartID);
         if (isCorner)
         {
             // Add third position (left or right)
-            if (EdgePart.IsCorner_RightPart(curEdgePartID))
+            if (MusicField.IsCorner_RightPart(curEdgePartID))
             {
                 int leftCornerID = ExtensionMethods.Modulo(curEdgePartID - 1, VisualController.inst.EdgePartCount);
-                Vector3 leftCornerPos = EnvironmentData.edgeParts[leftCornerID].start;
+                Vector3 leftCornerPos = TunnelData.edgeParts[leftCornerID].start;
                 curEdgePart_positions.Insert(0, leftCornerPos);
             }
             else
             {
                 int rightCornerID = ExtensionMethods.Modulo(curEdgePartID + 1, VisualController.inst.EdgePartCount);
-                Vector3 rightCornerPos = EnvironmentData.edgeParts[rightCornerID].end;
+                Vector3 rightCornerPos = TunnelData.edgeParts[rightCornerID].end;
                 curEdgePart_positions.Add(rightCornerPos);
             }
             // No edgePartChange in corners
-            bool lastIDisCorner = EdgePart.IsCorner(lastEdgePartID);
+            bool lastIDisCorner = MusicField.IsCorner(lastEdgePartID);
             bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1 || Mathf.Abs(curEdgePartID - lastEdgePartID) == VisualController.inst.EdgePartCount - 1;
             if (lastIDisCorner && lastIDisClose)
                 player.curEdgePart.changed = false;
         }
 
-        // Last-variables
-        lastEdge_start = player.curEdge.start;
-        lastEdge_end = player.curEdge.end;
-        lastEdgePartID = curEdgePartID;
+
+        // Events (etwas unschön...)
+        if (player.curEdgePart.changed)
+        {
+            GameEvents.inst.EdgePartChange();
+        }
+
 
         // ASSIGN
         player.curEdgePart.Set(curEdgePartID, curEdgePart_positions.ToArray(), isCorner);
 
 
-        // First edge touch
+
+
+        // First edge touch                                                             to do: entfernen, nicht mehr nötig
         if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.none)
         {
             player.curEdge.firstTouch = true;
@@ -169,7 +176,7 @@ public static class PlayerData
         else
             player.curEdge.firstTouch = false;
 
-        // Leave edge // to rework
+        // Leave edge // to rework                                                      to do: entfernen, nicht mehr nötig
         if (player.actionState == Player.ActionState.none && player.lastActionState == Player.ActionState.stickToEdge)
         {
             player.curEdge.leave = true;
@@ -180,6 +187,9 @@ public static class PlayerData
 
         // last variables
         player.lastActionState = player.actionState;
+        lastEdge_start = player.curEdge.start;
+        lastEdge_end = player.curEdge.end;
+        lastEdgePartID = curEdgePartID;
     }
 
 

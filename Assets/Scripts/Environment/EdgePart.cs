@@ -6,9 +6,9 @@ using System.Linq;
 
 // ----------------------------- Edge Part ----------------------------
 
-public class EdgePart
+public class MusicField
 {
-    public enum Type { Chord, ChordModulation, Pitch};
+    public enum Type { Chord, Modulation, Pitch};
 
     // Properties
     public int ID;
@@ -25,26 +25,26 @@ public class EdgePart
     public Color Color
     {
         get { return color; }
-        set { color = value; lineRend.material.color = color; }
+        private set { color = value; }
     }
 
 
 
 
 
-    
+
     // Contructors
-    public EdgePart()
+    public MusicField()
     {
         
     }
 
-    public EdgePart(Type type)
+    public MusicField(Type type)
     {
         this.type = type;
     }
 
-    public EdgePart(int ID, LineRenderer lineRend, bool isCorner, bool isEdgeMid)
+    public MusicField(int ID, LineRenderer lineRend, bool isCorner, bool isEdgeMid)
     {
         this.ID = ID;
         this.lineRend = lineRend;
@@ -62,21 +62,41 @@ public class EdgePart
 
     // Functions
 
-    public void Set(Vector3 start, Vector3 end)
+
+    /// <summary>
+    /// Sets vertices variables and lineRenderer vertices.
+    /// </summary>
+    /// <param name="start">Start Position.</param>
+    /// <param name="end">End position.</param>
+    public void UpdateVertices(Vector3 start, Vector3 end)
     {
+        start.z = Player.inst.transform.position.z - 0.001f;
+        end.z = Player.inst.transform.position.z - 0.001f;
+
         this.start = start;
         this.end = end;
-
-        this.start.z = Player.inst.transform.position.z - 0.001f;
-        this.end.z = Player.inst.transform.position.z - 0.001f;
+        
+        this.lineRend.positionCount = 2;
+        this.lineRend.SetPositions(new Vector3[] { start, end });
     }
 
 
 
-    public void UpdateLineRenderer(Vector3 start, Vector3 end)
+    //public void UpdateLineRenderer(Vector3 start, Vector3 end)
+    //{
+    //    this.lineRend.positionCount = 2;
+    //    this.lineRend.SetPositions(new Vector3[] { start, end });
+    //}
+
+
+    /// <summary>
+    /// Store color and change line renderer color.
+    /// </summary>
+    /// <param name="color"></param>
+    public void SetColor(Color color)
     {
-        this.lineRend.positionCount = 2;
-        this.lineRend.SetPositions(new Vector3[] { start, end });
+        this.color = color;
+        this.lineRend.material.color = color;
     }
 
 
@@ -139,10 +159,10 @@ public class EdgePart
         }
         else if(IsCorner_RightPart(ID))
         {
-            return EnvironmentData.edgeParts[ID].start;
+            return TunnelData.edgeParts[ID].start;
         }
         else
-            return EnvironmentData.edgeParts[ID].end;
+            return TunnelData.edgeParts[ID].end;
     }
 
     public static Vector3 NextEdgePartMid(int curID, int direction)
@@ -154,7 +174,7 @@ public class EdgePart
 
         if (!IsCorner(nextID))
         {
-            position = (EnvironmentData.edgeParts[nextID].start + EnvironmentData.edgeParts[nextID].end) / 2f;
+            position = (TunnelData.edgeParts[nextID].start + TunnelData.edgeParts[nextID].end) / 2f;
             return position;
         }
         else if (!IsCorner(curID) && IsCorner(nextID))
@@ -165,7 +185,7 @@ public class EdgePart
         else if (IsCorner(curID) && IsCorner(nextID))
         {
             nextID = (nextID + (int) Mathf.Sign(direction)).Modulo(VisualController.inst.EdgePartCount);
-            position = (EnvironmentData.edgeParts[nextID].start + EnvironmentData.edgeParts[nextID].end) / 2f;
+            position = (TunnelData.edgeParts[nextID].start + TunnelData.edgeParts[nextID].end) / 2f;
             return position;
         }
         else
@@ -183,7 +203,7 @@ public class EdgePart
 
 
 
-public class PlayerEdgePart : EdgePart
+public class PlayerEdgePart : MusicField
 {
     public Vector3[] positions;
     
@@ -235,7 +255,7 @@ public class PlayerEdgePart : EdgePart
     /// <summary>
     /// Set opacity of the line renderer material.
     /// </summary>
-    /// <param name="opacity">Opacity [0, 1]. 0 == transparent.</param>
+    /// <param name="opacity">Opacity. 0 == transparent [0, 1].</param>
     public void SetOpacity(float opacity)
     {
         Color newColor = this.lineRend.material.color;
@@ -295,7 +315,7 @@ public class Edge
 
 
 
-public static class EdgeParts
+public static class MusicFieldSet
 {
     public static Color[] RandomColors(int types)
     {
@@ -309,12 +329,14 @@ public static class EdgeParts
     }
 
 
-
-    public static void SetFields(Chord[][] chords, Color[] colors)
+    /// <summary>
+    /// Override existing fields with (1) chords, (2) colors, (3) types, (4) available to each field
+    /// </summary>
+    /// <param name="fieldsToAssign"></param>
+    /// <param name="chords"></param>
+    /// <param name="colors"></param>
+    public static void AssignDataToFields(Chord[][] chords, Color[] colors) //MusicField[] fieldsToAssign
     {
-        
-        // = assign every calculated chord to the fields; assign color
-
         var edgePartIDs = ExtensionMethods.IntToList(VisualController.inst.EdgePartCount, true);
 
         // 1. Gehe jeden chordType durch (3)
@@ -337,11 +359,12 @@ public static class EdgeParts
                     int ID2 = j * VisualController.inst.envGridLoops;
                     edgePartIDs.Remove(ID1);
                     edgePartIDs.Remove(ID2);
+
                     // set field
-                    EnvironmentData.edgeParts[ID1].chord = chord;
-                    EnvironmentData.edgeParts[ID2].chord = chord;
-                    EnvironmentData.edgeParts[ID1].Color = colors[i];
-                    EnvironmentData.edgeParts[ID2].Color = colors[i];
+                    TunnelData.edgeParts[ID1].chord = chord;
+                    TunnelData.edgeParts[ID2].chord = chord;
+                    TunnelData.edgeParts[ID1].SetColor(colors[i]);
+                    TunnelData.edgeParts[ID2].SetColor(colors[i]);
                 }
                 else
                 {
@@ -352,12 +375,17 @@ public static class EdgeParts
                     edgePartIDs.Remove(randID);
 
                     // set field
-                    EnvironmentData.edgeParts[randID].chord = chord;
-                    EnvironmentData.edgeParts[randID].Color = colors[i];
+                    TunnelData.edgeParts[randID].chord = chord;
+                    TunnelData.edgeParts[randID].SetColor(colors[i]);
                 }
             }
         }
     }
 
-    
+    public static void SwitchEdgeParts()
+    {
+
+    }
+
+
 }

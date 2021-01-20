@@ -40,13 +40,13 @@ public static class MeshCreation
         CreatePlayerMesh(ref MeshRef.inst.innerPlayerMesh_mf);
 
         // Inner surface
-        CreateMesh(ref MeshRef.inst.innerSurface_mf, EnvironmentData.vertices);
+        CreateMesh(ref MeshRef.inst.innerSurface_mf, TunnelData.vertices);
         CreateMesh(ref MeshRef.inst.innerMask_mf, Player.inst.outerVertices);
-        CreateMesh(ref MeshRef.inst.innerPlayerMask_mf, EnvironmentData.vertices);
+        CreateMesh(ref MeshRef.inst.innerPlayerMask_mf, TunnelData.vertices);
 
         // Outer player
         CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
-        CreateMesh(ref MeshRef.inst.outerPlayerMask_mf, EnvironmentData.vertices);
+        CreateMesh(ref MeshRef.inst.outerPlayerMask_mf, TunnelData.vertices);
 
         // Edge parts
         CreateEnvEdgeParts();
@@ -147,8 +147,8 @@ public static class MeshCreation
     // ENVIRONMENT
     private static void CreateEnvEdgeParts()
     {
-        int edgePartCount = EnvironmentData.vertices.Length * VisualController.inst.envGridLoops;
-        EnvironmentData.edgeParts = new EdgePart[edgePartCount];
+        int edgePartCount = TunnelData.vertices.Length * VisualController.inst.envGridLoops;
+        TunnelData.edgeParts = new MusicField[edgePartCount];
 
         for (int i = 0; i < VisualController.inst.envVertices; i++)
         {
@@ -156,13 +156,13 @@ public static class MeshCreation
             {
                 // Get data
                 int ID = i * VisualController.inst.envGridLoops + j;
-                bool isCorner = EdgePart.IsCorner(ID);
-                bool isEdgeMid = EdgePart.IsEdgeMid(ID);
+                bool isCorner = MusicField.IsCorner(ID);
+                bool isEdgeMid = MusicField.IsEdgeMid(ID);
                 GameObject newObj = CreateContainer("EdgePart" + ID, MeshRef.inst.envEdgeParts_parent);
                 LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, VisualController.inst.edgePartThickness);
 
                 // Assign
-                EnvironmentData.edgeParts[ID] = new EdgePart(ID, lineRend, isCorner, isEdgeMid);
+                TunnelData.edgeParts[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
             }
         }
     }

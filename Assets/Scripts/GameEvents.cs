@@ -8,7 +8,10 @@ public class GameEvents : MonoBehaviour
 {
     public static GameEvents inst;
 
-    public Action onTunnelStart;
+    public Action onTunnelEnter;
+    public Action onFirstTouch;
+    public Action onEdgePartChange;
+    public Action onLeave;
 
     void Start()
     {
@@ -17,11 +20,26 @@ public class GameEvents : MonoBehaviour
 
     public void TunnelStart()
     {
-        onTunnelStart?.Invoke();
+        onTunnelEnter?.Invoke();
     }
 
-    
+    public void FirstTouch()
+    {
+        onFirstTouch?.Invoke();
+    }
 
-    
+    public void EdgePartChange()
+    {
+        onEdgePartChange?.Invoke();
+    }
+
+    public void Leave()
+    {
+        onLeave?.Invoke();
+    }
+
+
+
+
 
 }
