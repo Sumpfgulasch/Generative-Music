@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class VisualController : MonoBehaviour
 {
@@ -9,8 +8,8 @@ public class VisualController : MonoBehaviour
     public static VisualController inst;
 
     [Header("Settings")]
-    public int envGridLoops = 6;
-    public int envVertices = 3;
+    public int fieldsPerEdge = 6;
+    public int tunnelVertices = 3;
     public bool showCursor = true;
     [Range(0.001f, 0.05f)]
     public float edgePartThickness = 0.01f;
@@ -18,9 +17,9 @@ public class VisualController : MonoBehaviour
     public float playerEdgePartThickness = 0.03f;
 
     // Properties
-    public int EdgePartCount
+    public int FieldsCount
     {
-        get { return envVertices * envGridLoops; }
+        get { return tunnelVertices * fieldsPerEdge; }
     }    
 
     void Start()
@@ -29,9 +28,8 @@ public class VisualController : MonoBehaviour
         if (!showCursor)
             Cursor.visible = false;
         
-        MeshCreation.CreateMeshes();
 
-        // Event subscription
+        // EVENT subscription
         GameEvents.inst.onTunnelEnter += OnTunnelStart;
     }
 
@@ -49,8 +47,6 @@ public class VisualController : MonoBehaviour
 
     private void OnTunnelStart()
     {
-        Debug.Log("on tunnel start");
-        MeshUpdate.UpdateFieldsPositions();
-        LoopData.Init();            // HACK; gehört eig nicht hier rein
+        
     }
 }

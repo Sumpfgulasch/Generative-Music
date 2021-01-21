@@ -22,14 +22,13 @@ public static class MeshUpdate
     
 
     /// <summary>
-    /// Get vertices from tunnel, create form and update line renderer vertices of music fields.
+    /// Get vertices from tunnel, create form and update line renderer vertices of music fields. Set Z to player.z.
     /// </summary>
     public static void UpdateFieldsPositions()
     {
-        Debug.Log("tunnel enter, update fields pos");
         // 1. Tunnel
         GetTunnelVertices();                // einmalig
-        SetFieldsVertices();                // einmalig
+        UpdateFieldsVertices();             // einmalig
     }
 
 
@@ -49,9 +48,9 @@ public static class MeshUpdate
 
 
 
-
-
     // ----------------------------- private methods ----------------------------
+
+
 
 
     private static void GetTunnelVertices()
@@ -65,7 +64,7 @@ public static class MeshUpdate
         for (int i = 0; i < Player.inst.verticesCount; i++)
         {
             Vector3 playerEdgeMid = Player.inst.outerVertices[i] + ((Player.inst.outerVertices[(i + 1) % 3] - Player.inst.outerVertices[i]) / 2f);
-            playerEdgeMid.z = MeshRef.inst.envEdges_lr.transform.position.z;
+            playerEdgeMid.z = MeshRef.inst.tunnelEdges_lr.transform.position.z;
             Vector3 directionOut = (playerEdgeMid - playerMid).normalized;
             RaycastHit hit;
 
@@ -178,7 +177,7 @@ public static class MeshUpdate
     //}
 
 
-    private static void SetFieldsVertices()
+    private static void UpdateFieldsVertices()
     {
         // = Abhängig von sich veränderndem Tunnel setze die Punkte für LineRenderer aller Edgeparts (von Tunnel & Spieler)
         // to do: Update (1) LineRenderer, (2)
@@ -186,16 +185,16 @@ public static class MeshUpdate
         // Environment
         for (int i = 0; i < TunnelData.vertices.Length; i++)
         {
-            for (int j = 0; j < VisualController.inst.envGridLoops; j++)
+            for (int j = 0; j < VisualController.inst.fieldsPerEdge; j++)
             {
                 // calc
-                Vector3 start = TunnelData.vertices[i] + (((TunnelData.vertices[(i + 1) % TunnelData.vertices.Length] - TunnelData.vertices[i]) / VisualController.inst.envGridLoops) * j);
-                Vector3 end = TunnelData.vertices[i] + (((TunnelData.vertices[(i + 1) % TunnelData.vertices.Length] - TunnelData.vertices[i]) / VisualController.inst.envGridLoops) * (j+1));
+                Vector3 start = TunnelData.vertices[i] + (((TunnelData.vertices[(i + 1) % TunnelData.vertices.Length] - TunnelData.vertices[i]) / VisualController.inst.fieldsPerEdge) * j);
+                Vector3 end = TunnelData.vertices[i] + (((TunnelData.vertices[(i + 1) % TunnelData.vertices.Length] - TunnelData.vertices[i]) / VisualController.inst.fieldsPerEdge) * (j+1));
 
-                int ID = i * VisualController.inst.envGridLoops + j;
+                int ID = i * VisualController.inst.fieldsPerEdge + j;
 
                 // assign
-                TunnelData.edgeParts[ID].UpdateVertices(start, end);
+                TunnelData.fields[ID].UpdateVertices(start, end);
             }
         }
     }

@@ -75,7 +75,7 @@
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\GroundKeyboard.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\PulseImageOnNote.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshRef.cs" />
-    <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Game\GameManager.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\DestroyAfterTime.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteRow.cs" />
     <Compile Include="Assets\Scripts\Music\Weights.cs" />
@@ -100,6 +100,7 @@
     <Compile Include="Assets\AudioHelm\Scripts\HelmAudioReceive.cs" />
     <Compile Include="Assets\Scripts\Environment\VisualController.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmSequencer.cs" />
+    <Compile Include="Assets\Scripts\Game\GameEvents.cs" />
     <Compile Include="Assets\Scripts\Environment\TunnelData.cs" />
     <Compile Include="Assets\Scripts\Util\ExtensionMethods.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\AudioHelmClock.cs" />
@@ -119,7 +120,7 @@
     <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\Environment\ObjectSpawner.cs" />
-    <Compile Include="Assets\Scripts\GameEvents.cs" />
+    <Compile Include="Assets\Scripts\Game\GameplayManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Custom\Mask.shader" />

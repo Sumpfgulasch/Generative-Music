@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager inst;
-    //[HideInInspector] public PlayerControls playerControls;
 
     [HideInInspector] public int FPS;
 
@@ -19,8 +17,7 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        //playerControls = new PlayerControls();
-        //playerControls.Enable();
+        
     }
 
     void Start()
@@ -28,9 +25,13 @@ public class GameManager : MonoBehaviour
         
     }
 
-    // Update is called once per frame
+    
+
+
     void Update()
     {
         
     }
+
+    
 }

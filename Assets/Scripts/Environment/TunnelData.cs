@@ -9,7 +9,7 @@ public static class TunnelData
 
     // Public attributes
     [HideInInspector] public static Vector3[] vertices = new Vector3[3];
-    [HideInInspector] public static MusicField[] edgeParts;
+    [HideInInspector] public static MusicField[] fields;
 
 
 

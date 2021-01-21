@@ -106,10 +106,10 @@ public static class PlayerData
         Vector3 playerPointOnEnv = new Vector3(hit.point.x, hit.point.y, player.outerVertices[0].z);
         player.curEdge.percentage = Mathf.Clamp01((playerPointOnEnv - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
         curEdgePartID = ((int)(player.curEdge.percentage.
-            Remap(0, 1f, 0, VisualController.inst.envGridLoops)
-            + curEdgeIndex * VisualController.inst.envGridLoops)) % (TunnelData.vertices.Length * VisualController.inst.envGridLoops); // gar kein bock mehr
-        Vector3 curEdgePart_start = TunnelData.edgeParts[curEdgePartID].start;
-        Vector3 curEdgePart_end = TunnelData.edgeParts[curEdgePartID].end;
+            Remap(0, 1f, 0, VisualController.inst.fieldsPerEdge)
+            + curEdgeIndex * VisualController.inst.fieldsPerEdge)) % (TunnelData.vertices.Length * VisualController.inst.fieldsPerEdge); // gar kein bock mehr
+        Vector3 curEdgePart_start = TunnelData.fields[curEdgePartID].start;
+        Vector3 curEdgePart_end = TunnelData.fields[curEdgePartID].end;
         var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
 
         player.curEdgePart.ID = curEdgePartID;
@@ -137,19 +137,19 @@ public static class PlayerData
             // Add third position (left or right)
             if (MusicField.IsCorner_RightPart(curEdgePartID))
             {
-                int leftCornerID = ExtensionMethods.Modulo(curEdgePartID - 1, VisualController.inst.EdgePartCount);
-                Vector3 leftCornerPos = TunnelData.edgeParts[leftCornerID].start;
+                int leftCornerID = ExtensionMethods.Modulo(curEdgePartID - 1, VisualController.inst.FieldsCount);
+                Vector3 leftCornerPos = TunnelData.fields[leftCornerID].start;
                 curEdgePart_positions.Insert(0, leftCornerPos);
             }
             else
             {
-                int rightCornerID = ExtensionMethods.Modulo(curEdgePartID + 1, VisualController.inst.EdgePartCount);
-                Vector3 rightCornerPos = TunnelData.edgeParts[rightCornerID].end;
+                int rightCornerID = ExtensionMethods.Modulo(curEdgePartID + 1, VisualController.inst.FieldsCount);
+                Vector3 rightCornerPos = TunnelData.fields[rightCornerID].end;
                 curEdgePart_positions.Add(rightCornerPos);
             }
             // No edgePartChange in corners
             bool lastIDisCorner = MusicField.IsCorner(lastEdgePartID);
-            bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1 || Mathf.Abs(curEdgePartID - lastEdgePartID) == VisualController.inst.EdgePartCount - 1;
+            bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1 || Mathf.Abs(curEdgePartID - lastEdgePartID) == VisualController.inst.FieldsCount - 1;
             if (lastIDisCorner && lastIDisClose)
                 player.curEdgePart.changed = false;
         }

@@ -28,18 +28,17 @@ public static class MeshCreation
 
     // ----------------------------- Public methods ----------------------------
 
-    public static void CreateMeshes()
+    /// <summary>
+    /// Create all player meshes
+    /// </summary>
+    public static void CreatePlayerMeshes()
     {
-        // = Create all meshes
-
-        playerMid = Player.inst.transform.position;
-
         InitPlayer();
 
         // Inner player
         CreatePlayerMesh(ref MeshRef.inst.innerPlayerMesh_mf);
 
-        // Inner surface
+        // Milk surface
         CreateMesh(ref MeshRef.inst.innerSurface_mf, TunnelData.vertices);
         CreateMesh(ref MeshRef.inst.innerMask_mf, Player.inst.outerVertices);
         CreateMesh(ref MeshRef.inst.innerPlayerMask_mf, TunnelData.vertices);
@@ -47,10 +46,15 @@ public static class MeshCreation
         // Outer player
         CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
         CreateMesh(ref MeshRef.inst.outerPlayerMask_mf, TunnelData.vertices);
+    }
 
-        // Edge parts
-        CreateEnvEdgeParts();
-        CreatePlayerEdgeParts();
+    /// <summary>
+    /// Instantiate music fields and player fields, with line renderers but empty positions (-> not visible)
+    /// </summary>
+    public static void CreateFields()
+    {
+        InstantiateFields();
+        CreatePlayerFields();
     }
 
 
@@ -63,6 +67,8 @@ public static class MeshCreation
     private static void InitPlayer()
     {
         // = Create mesh form, create containers & set player variables
+
+        playerMid = Player.inst.transform.position;
 
         // Create containers
         GameObject vertices = CreateContainer("Vertices", Player.inst.transform);
@@ -145,43 +151,47 @@ public static class MeshCreation
     }
 
     // ENVIRONMENT
-    private static void CreateEnvEdgeParts()
+    private static void InstantiateFields()
     {
-        int edgePartCount = TunnelData.vertices.Length * VisualController.inst.envGridLoops;
-        TunnelData.edgeParts = new MusicField[edgePartCount];
+        // == Create gameObjects with lineRenderers with empty positions
 
-        for (int i = 0; i < VisualController.inst.envVertices; i++)
+        int fieldsCount = VisualController.inst.FieldsCount;
+        TunnelData.fields = new MusicField[fieldsCount];
+
+        for (int i = 0; i < VisualController.inst.tunnelVertices; i++)
         {
-            for (int j = 0; j < VisualController.inst.envGridLoops; j++)
+            for (int j = 0; j < VisualController.inst.fieldsPerEdge; j++)
             {
                 // Get data
-                int ID = i * VisualController.inst.envGridLoops + j;
+                int ID = i * VisualController.inst.fieldsPerEdge + j;
                 bool isCorner = MusicField.IsCorner(ID);
                 bool isEdgeMid = MusicField.IsEdgeMid(ID);
-                GameObject newObj = CreateContainer("EdgePart" + ID, MeshRef.inst.envEdgeParts_parent);
-                LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.envEdgePart_mat, VisualController.inst.edgePartThickness);
+                GameObject newObj = CreateContainer("Field" + ID, MeshRef.inst.musicFields_parent);
+                LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.edgePartThickness);
 
                 // Assign
-                TunnelData.edgeParts[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
+                TunnelData.fields[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
             }
         }
     }
 
     // PLAYER
-    private static void CreatePlayerEdgeParts()
+    private static void CreatePlayerFields()
     {
+        // == Create 1 gameObject with lineRenderer with empty positions
+
         // EDGE PARTS
         // Primary
-        GameObject newObj = CreateContainer("Primary", MeshRef.inst.curEdgeParts_parent);
-        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.curEdgePart_mat, VisualController.inst.playerEdgePartThickness);
+        GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
+        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerEdgePartThickness);
         player.curEdgePart = new PlayerEdgePart(PlayerEdgePart.Type.Main, lineRend);
 
         // Seoncdary
         player.curSecEdgeParts = new PlayerEdgePart[player.verticesCount - 1];
         for (int i = 0; i < player.curSecEdgeParts.Length; i++)
         {
-            GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.curEdgeParts_parent);
-            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.curSecEdgePart_mat, VisualController.inst.playerEdgePartThickness);
+            GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.playerField_parent);
+            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerEdgePartThickness);
             player.curSecEdgeParts[i] = new PlayerEdgePart(PlayerEdgePart.Type.Second, lineRend2);
             lineRend2.enabled = false;
         }

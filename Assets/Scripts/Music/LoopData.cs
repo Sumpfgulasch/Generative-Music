@@ -30,6 +30,10 @@ public static class LoopData
     public static float timePerBar;
     public static int beatsPerBar;
 
+    // Properties
+    private static Player Player { get { return Player.inst; } }
+    private static int FieldsCount { get { return VisualController.inst.FieldsCount; } }
+
 
     // CONSTRUCTOR
     static LoopData()
@@ -127,10 +131,21 @@ public static class LoopData
         Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(curKey, chordTypes, toneRangeMin, toneRangeMax);
 
         // 5. fields
-        MusicFieldSet.AssignDataToFields(chords, colors);
+        var fieldTypes = new MusicField.Type[FieldsCount];
+        var availables = new bool[FieldsCount];
+        var buildUps = new bool[FieldsCount];
+        for (int i=0; i < FieldsCount; i++)
+        {
+            fieldTypes[i] = MusicField.Type.Chord;
+            availables[i] = false;
+            buildUps[i] = false;
+        }
+        MusicFieldSet.StoreDataInFields(Player.curFieldSet, chords, colors, fieldTypes, availables, buildUps);
 
         // 6. get timePerBar
         timePerBar = TimePerBar();
+
+
 
     }
 
@@ -145,7 +160,7 @@ public static class LoopData
         {
             // Increase cycle
             curCycle++;
-            Debug.Log("curCycle: " + curCycle);
+            //Debug.Log("curCycle: " + curCycle);
 
 
         }

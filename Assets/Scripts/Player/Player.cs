@@ -80,7 +80,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public Edge curEdge;
     [HideInInspector] public Edge[] curSecEdges;
     [HideInInspector] public bool tunnelEnter;
-    [HideInInspector] public MusicField[] curEdgePartSet;
+    [HideInInspector] public MusicField[] curFieldSet;
 
 
 

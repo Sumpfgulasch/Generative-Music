@@ -103,14 +103,14 @@ public static class MusicGenerationLogic
     public static int[] RandomChordTypeCounts(int allChordTypes)
     {
         // = returne einen int[] mit den gewünschten individuellen anzahlen von Feldern der jeweiligen chord degrees
-        int remainingFields = VisualController.inst.EdgePartCount - VisualController.inst.envVertices;      // Hack
+        int remainingFields = VisualController.inst.FieldsCount - VisualController.inst.tunnelVertices;      // Hack
         int[] chordTypeCounts = new int[allChordTypes];
         int fields;
 
         for (int i = 0; i<allChordTypes; i++)
         {
             if (i==0)
-                fields = VisualController.inst.envVertices;
+                fields = VisualController.inst.tunnelVertices;
             else if (i==allChordTypes-1)
                 fields = remainingFields;
             else

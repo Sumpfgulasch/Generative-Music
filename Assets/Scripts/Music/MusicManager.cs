@@ -137,7 +137,7 @@ public class MusicManager : MonoBehaviour
         curChord = GetChord();
 
         int ID = player.curEdgePart.ID;
-        var fieldType = player.curEdgePartSet[ID].type;
+        var fieldType = player.curFieldSet[ID].type;
 
         switch (fieldType)
         {
@@ -167,7 +167,7 @@ public class MusicManager : MonoBehaviour
     {
         // = Get chord from currently touched edgePart
         int playerID = player.curEdgePart.ID;
-        Chord chord = player.curEdgePartSet[playerID].chord;
+        Chord chord = player.curFieldSet[playerID].chord;
 
         return chord;
     }

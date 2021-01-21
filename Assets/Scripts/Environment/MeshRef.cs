@@ -14,18 +14,17 @@ public class MeshRef : MonoBehaviour
     public MeshFilter outerPlayerMesh_mf;
     public MeshFilter outerPlayerMask_mf;
     [Space]
-    public LineRenderer envEdges_lr;
+    public LineRenderer tunnelEdges_lr;
     [Space]
-    public Transform curEdgeParts_parent;
-    public Material curEdgePart_mat;
-    public Material curSecEdgePart_mat;
+    public Transform playerField_parent;
+    public Material playerField_mat;
+    public Material playerFieldSec_mat;
     [Space]
-    public Transform envEdgeParts_parent;
-    public Material envEdgePart_mat;
-    public Color envEdgePart_mainKey;
-    //public Color envEdgePart_newMainKey;
-    public Color envEdgePart_corner;
-    public Color envEdgePart_edgeMid;
+    public Transform musicFields_parent;
+    public Material musicFields_mat;
+    //public Color envEdgePart_mainKey;
+    //public Color envEdgePart_corner;
+    //public Color envEdgePart_edgeMid;
 
 
     // Start is called before the first frame update

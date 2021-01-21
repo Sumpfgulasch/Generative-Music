@@ -21,12 +21,12 @@ public class MusicField
     public Chord chord;
 
     // Private variables
-    private Color color;
-    public Color Color
-    {
-        get { return color; }
-        private set { color = value; }
-    }
+    public Color color;
+    //public Color Color
+    //{
+    //    get { return color; }
+    //    private set { color = value; }
+    //}
 
 
 
@@ -90,7 +90,7 @@ public class MusicField
 
 
     /// <summary>
-    /// Store color and change line renderer color.
+    /// Store color and change material color of line renderer.
     /// </summary>
     /// <param name="color"></param>
     public void SetColor(Color color)
@@ -114,7 +114,7 @@ public class MusicField
 
     public static bool IsCorner(int ID)
     {
-        if ((ID + 1) % VisualController.inst.envGridLoops == 0 || ID % VisualController.inst.envGridLoops == 0)
+        if ((ID + 1) % VisualController.inst.fieldsPerEdge == 0 || ID % VisualController.inst.fieldsPerEdge == 0)
         {
             return true;
         }
@@ -126,9 +126,9 @@ public class MusicField
 
     public static bool IsEdgeMid(int ID)
     {
-        int testID = ID + (VisualController.inst.envGridLoops / 2 + 1);
+        int testID = ID + (VisualController.inst.fieldsPerEdge / 2 + 1);
 
-        if (testID % VisualController.inst.envGridLoops == 0)
+        if (testID % VisualController.inst.fieldsPerEdge == 0)
         {
             return true;
         }
@@ -140,7 +140,7 @@ public class MusicField
 
     public static bool IsCorner_RightPart(int ID)
     {
-        if (ID % VisualController.inst.envGridLoops == 0)
+        if (ID % VisualController.inst.fieldsPerEdge == 0)
         {
             return true;
         }
@@ -159,22 +159,22 @@ public class MusicField
         }
         else if(IsCorner_RightPart(ID))
         {
-            return TunnelData.edgeParts[ID].start;
+            return TunnelData.fields[ID].start;
         }
         else
-            return TunnelData.edgeParts[ID].end;
+            return TunnelData.fields[ID].end;
     }
 
     public static Vector3 NextEdgePartMid(int curID, int direction)
     {
         // = take the mid of corners
 
-        int nextID = (curID + direction).Modulo(VisualController.inst.EdgePartCount);
+        int nextID = (curID + direction).Modulo(VisualController.inst.FieldsCount);
         Vector3 position;
 
         if (!IsCorner(nextID))
         {
-            position = (TunnelData.edgeParts[nextID].start + TunnelData.edgeParts[nextID].end) / 2f;
+            position = (TunnelData.fields[nextID].start + TunnelData.fields[nextID].end) / 2f;
             return position;
         }
         else if (!IsCorner(curID) && IsCorner(nextID))
@@ -184,8 +184,8 @@ public class MusicField
         }
         else if (IsCorner(curID) && IsCorner(nextID))
         {
-            nextID = (nextID + (int) Mathf.Sign(direction)).Modulo(VisualController.inst.EdgePartCount);
-            position = (TunnelData.edgeParts[nextID].start + TunnelData.edgeParts[nextID].end) / 2f;
+            nextID = (nextID + (int) Mathf.Sign(direction)).Modulo(VisualController.inst.FieldsCount);
+            position = (TunnelData.fields[nextID].start + TunnelData.fields[nextID].end) / 2f;
             return position;
         }
         else
@@ -317,8 +317,13 @@ public class Edge
 
 public static class MusicFieldSet
 {
+    // == Operations for complete MusicFieldSets
+
+
     public static Color[] RandomColors(int types)
     {
+        // == Get a random color for each type
+
         Color[] colors = new Color[types];
         for (int i=0; i < types; i++)
         {
@@ -330,14 +335,16 @@ public static class MusicFieldSet
 
 
     /// <summary>
-    /// Override existing fields with (1) chords, (2) colors, (3) types, (4) available to each field
+    /// Store data (chords, colors, types, available, isBuildingUp) in each field; data only, no material assignments
     /// </summary>
-    /// <param name="fieldsToAssign"></param>
-    /// <param name="chords"></param>
-    /// <param name="colors"></param>
-    public static void AssignDataToFields(Chord[][] chords, Color[] colors) //MusicField[] fieldsToAssign
+    /// <param name="fieldsToAssign">Length == edges * divisions (att 15).</param>
+    /// <param name="chords">First array length is types.length, second arrays vary.</param>
+    /// <param name="colors">Length == types.length.</param>
+    /// <param name="availables">Length == edges * divisions (att 15).</param>
+    /// <param name="buildUps">Length == edges * divisions (att 15)</param>
+    public static void StoreDataInFields(MusicField[] fieldsToAssign, Chord[][] chords, Color[] colors, MusicField.Type[] fieldTypes, bool[] availables, bool [] buildUps)
     {
-        var edgePartIDs = ExtensionMethods.IntToList(VisualController.inst.EdgePartCount, true);
+        var edgePartIDs = ExtensionMethods.IntToList(VisualController.inst.FieldsCount, true);
 
         // 1. Gehe jeden chordType durch (3)
         for (int i = 0; i < chords.Length; i++)
@@ -355,16 +362,18 @@ public static class MusicFieldSet
                 if (i == 0)
                 {
                     // get corner fields
-                    int ID1 = ExtensionMethods.Modulo(j * VisualController.inst.envGridLoops - 1, VisualController.inst.EdgePartCount);
-                    int ID2 = j * VisualController.inst.envGridLoops;
+                    int ID1 = ExtensionMethods.Modulo(j * VisualController.inst.fieldsPerEdge - 1, VisualController.inst.FieldsCount);
+                    int ID2 = j * VisualController.inst.fieldsPerEdge;
                     edgePartIDs.Remove(ID1);
                     edgePartIDs.Remove(ID2);
 
-                    // set field
-                    TunnelData.edgeParts[ID1].chord = chord;
-                    TunnelData.edgeParts[ID2].chord = chord;
-                    TunnelData.edgeParts[ID1].SetColor(colors[i]);
-                    TunnelData.edgeParts[ID2].SetColor(colors[i]);
+                    // assign
+                    TunnelData.fields[ID1].chord = chord;
+                    TunnelData.fields[ID2].chord = chord;
+                    //TunnelData.edgeParts[ID1].SetColor(colors[i]);
+                    //TunnelData.edgeParts[ID2].SetColor(colors[i]);
+                    TunnelData.fields[ID1].color = colors[i];
+                    TunnelData.fields[ID2].color = colors[i];
                 }
                 else
                 {
@@ -374,9 +383,10 @@ public static class MusicFieldSet
 
                     edgePartIDs.Remove(randID);
 
-                    // set field
-                    TunnelData.edgeParts[randID].chord = chord;
-                    TunnelData.edgeParts[randID].SetColor(colors[i]);
+                    // assign
+                    TunnelData.fields[randID].chord = chord;
+                    //TunnelData.edgeParts[randID].SetColor(colors[i]);
+                    TunnelData.fields[randID].color = colors[i];
                 }
             }
         }
@@ -386,6 +396,7 @@ public static class MusicFieldSet
     {
 
     }
+
 
 
 }
