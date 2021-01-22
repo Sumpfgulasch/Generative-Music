@@ -710,20 +710,17 @@ public class Key
     {
         List<int> newScaleNotes = new List<int>();
         int nextNote = keyNote % MusicUtil.notesPerOctave;                      // Wert ist immer 0 bis 11
-        //Debug.Log("keyNote % notesPerOctave: " + keyNote + " % " + MusicUtil.notesPerOctave + " = " + nextNote);
 
         // 1. Get lowest notes (below lowest key note)
         if (nextNote != 0)
         {
             int negativeKeyNote = nextNote - MusicUtil.notesPerOctave;          // Wert zwischen -11 und -1
-            //Debug.Log("#1 negativeKeyNote: " + negativeKeyNote);
             for (int i = 0; i < notesPerOctave; i++)
             {
                 nextNote = negativeKeyNote + stepsInOctave[i];
                 if (nextNote >= 0)
                 {
                     newScaleNotes.Add(nextNote);
-                    //Debug.Log("#1 nextNote beeing added: " + nextNote);
                 }
             }
             nextNote = negativeKeyNote + MusicUtil.notesPerOctave;
@@ -734,7 +731,6 @@ public class Key
             for (int i = 0; i < notesPerOctave; i++)
             {
                 newScaleNotes.Add(nextNote + stepsInOctave[i]);
-                //Debug.Log("#2 nextNote beeing added: " + (nextNote + stepsInOctave[i]));
             }
             nextNote += MusicUtil.notesPerOctave;
         }
@@ -748,7 +744,6 @@ public class Key
                 if (nextNote < MusicUtil.allMidiNotes)
                 {
                     newScaleNotes.Add(nextNote);
-                    //Debug.Log("#3 nextNote beeing added: " + nextNote);
                 }
             }
         }

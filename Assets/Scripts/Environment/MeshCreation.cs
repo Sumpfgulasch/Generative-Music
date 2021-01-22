@@ -47,21 +47,14 @@ public static class MeshCreation
         CreateMesh(ref MeshRef.inst.outerPlayerMask_mf, TunnelData.vertices);
     }
 
-    /// <summary>
-    /// Instantiate music fields and player fields, with line renderers but empty positions (-> not visible)
-    /// </summary>
-    public static void CreateFields()
-    {
-        //InstantiateFieldSet();
-        CreatePlayerFields();
-    }
 
     /// <summary>
-    /// Instantiates music fields and stores them in TunnelData.fields.
+    /// Instantiates music fields and player fields, with line renderers but empty positions (-> not visible). Stores them in TunnelData.fields.
     /// </summary>
     public static void InitFields()
     {
         TunnelData.fields = InstantiateFieldSet();
+        CreatePlayerFields();
     }
 
 

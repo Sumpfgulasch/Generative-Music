@@ -6,7 +6,7 @@ public class ObjectSpawner : MonoBehaviour
 {
     // public
     [Header("Objects")]
-    public static ObjectSpawner instance;
+    public static ObjectSpawner inst;
     public List<GameObject> availableObjects;
     public int maxObjects;
 
@@ -14,25 +14,45 @@ public class ObjectSpawner : MonoBehaviour
 
     // private
     private List<GameObject> movingObjects;
-    private float zSpawn;
+    private float playerZpos;
     private float tunnelLength;
     private float distancePerBeat;
+    private float FPS;
+
+    // Properties
+    private float deltaTime { get { return Time.deltaTime * FPS; }
+    }
 
 
+    private void Awake()
+    {
+        inst = this;
+    }
 
-
-
+    private void OnEnable()
+    {
+        
+    }
 
     void Start()
     {
-        instance = this;
-
-        // Init
-        GetData();
-        InitiallySpawnObjects();
+        FPS = Screen.currentResolution.refreshRate;
 
         // EVENTS
         MusicRef.inst.beatSequencer.beatEvent.AddListener(OnBeat);
+    }
+
+
+
+    // ------------------------- Public functions -------------------------
+
+
+
+    public void InitSpawn()
+    {
+        // Init
+        GetData();
+        InstantiateFirstObjects();
     }
     
 
@@ -55,8 +75,10 @@ public class ObjectSpawner : MonoBehaviour
 
 
 
-
-    private void GetData()
+    /// <summary>
+    /// Distance-related data to beats.
+    /// </summary>
+    private void GetData()                                                  // to do: mit loopData-data mischen?
     {
         Vector3 start = availableObjects[0].GetComponent<Move>().start.transform.position;
         Vector3 end = availableObjects[0].GetComponent<Move>().end.transform.position;
@@ -67,12 +89,12 @@ public class ObjectSpawner : MonoBehaviour
 
         distancePerBeat = tunnelLength / LoopData.beatsPerBar;
 
-
+        playerZpos = Player.inst.transform.position.z;
     }
 
-    private void InitiallySpawnObjects()
+    private void InstantiateFirstObjects()
     {
-        float initalZPos = Player.inst.transform.position.z + distancePerBeat;
+        float initalZPos = playerZpos + distancePerBeat;
         movingObjects = new List<GameObject>();
 
         for (int i = 0; i < maxObjects-1; i++)
@@ -86,9 +108,8 @@ public class ObjectSpawner : MonoBehaviour
 
     private void SpawnObject()
     {
-        zSpawn = Player.inst.transform.position.z;
         GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
-        newObj = Instantiate(newObj, new Vector3(0, 0, zSpawn + (maxObjects - 1) * tunnelLength), Quaternion.identity);
+        newObj = Instantiate(newObj, new Vector3(0, 0, playerZpos + (maxObjects - 1) * tunnelLength), Quaternion.identity);
         movingObjects.Add(newObj);
     }
 
@@ -105,6 +126,46 @@ public class ObjectSpawner : MonoBehaviour
             movingObjects.Remove(objects2destroy[i]);
             Destroy(objects2destroy[i]);
 
+        }
+    }
+
+    /// <summary>
+    /// Move each field displaced from back to front. Replace old fields when done.
+    /// </summary>
+    /// <param name="fields"></param>
+    /// <param name="beatsToStart">Mesured in beats [1 bar == beats per bar].</param>
+    /// <param name="durationInBeats">Measured in beats.</param>
+    /// <returns></returns>
+    public IEnumerator SpawnMusicFields(MusicField[] fields, float beatsToStart, float durationInBeats)
+    {
+        float zSpawn = playerZpos + distancePerBeat * beatsToStart;
+        float durationTime = durationInBeats * LoopData.timePerBeat;
+        float timeToWait = durationTime / (fields.Length - 1);
+        print("time to wait: " + timeToWait + ", durationTime: " + durationTime + ", timePerBeat: " + LoopData.timePerBeat);
+
+        for (int i=0; i<fields.Length; i++)
+        {
+            StartCoroutine(MoveFieldFromBackToFront(fields[i], zSpawn));
+            //Debug.Log("instantiate; time: " + Time.time);
+            yield return new WaitForSeconds(timeToWait);
+        }
+    }
+
+
+    private IEnumerator MoveFieldFromBackToFront(MusicField field, float zSpawn)
+    {
+        float beatsToStart = (zSpawn - playerZpos) / distancePerBeat;
+        float timeToFinish = beatsToStart * LoopData.timePerBeat;
+        float timer = 0;
+        float zPos = zSpawn;
+
+        while (timer < timeToFinish)
+        {
+            zPos = zPos - moveSpeed * deltaTime;
+            field.SetZPos(zPos);
+
+            timer += Time.deltaTime;
+            yield return null;
         }
     }
 }

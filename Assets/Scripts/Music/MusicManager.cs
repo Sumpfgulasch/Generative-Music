@@ -43,8 +43,7 @@ public class MusicManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // EVENTS
-        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnFirstBeat);
+        
     }
 
     
@@ -56,7 +55,8 @@ public class MusicManager : MonoBehaviour
 
         //controllers[0].SetPitchWheel(0);
 
-       
+        // EVENTS
+        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnFirstBeat);
     }
     
     void Update()

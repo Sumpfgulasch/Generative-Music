@@ -56,7 +56,7 @@ public class MusicField
 
 
     /// <summary>
-    /// Sets vertices variables and lineRenderer vertices.
+    /// Sets vertices variables.
     /// </summary>
     /// <param name="start">Start Position.</param>
     /// <param name="end">End position.</param>
@@ -68,8 +68,8 @@ public class MusicField
         this.start = start;
         this.end = end;
         
-        this.lineRend.positionCount = 2;
-        this.lineRend.SetPositions(new Vector3[] { start, end });
+        //this.lineRend.positionCount = 2;
+        //this.lineRend.SetPositions(new Vector3[] { start, end });
     }
 
 
@@ -82,19 +82,22 @@ public class MusicField
         this.lineRend.material.color = color;
     }
 
+    /// <summary>
+    /// Set the z-position of the line renderer.
+    /// </summary>
+    public void SetZPos(float zPos)
+    {
+        Vector3 lineRendPos1 = this.start;
+        Vector3 lineRendPos2 = this.end;
+        lineRendPos1.z = zPos;
+        lineRendPos2.z = zPos;
+        this.lineRend.SetPosition(0, lineRendPos1);
+        this.lineRend.SetPosition(1, lineRendPos2);
+    }
 
-
-    //public void Set(int ID, Vector3 start, Vector3 end, bool isCorner)
-    //{
-    //    this.ID = ID;
-    //    this.start = start;
-    //    this.end = end;
-    //    this.isCorner = isCorner;
-
-    //    this.start.z = Player.inst.transform.position.z - 0.001f;
-    //    this.end.z = Player.inst.transform.position.z - 0.001f;
-    //}
-
+    /// <summary>
+    /// Set data and set material color.
+    /// </summary>
     public void SetContent(Type fieldType, Chord chord, Color color, bool available, bool isBuildingUp)
     {
         this.type = fieldType;
@@ -102,6 +105,8 @@ public class MusicField
         this.color = color;
         this.available = available;
         this.isBuildingUp = isBuildingUp;
+
+        this.lineRend.material.color = color;
     }
 
     public static bool IsCorner(int ID)
@@ -375,7 +380,9 @@ public static class MusicFieldSet
                     edgePartIDs.Remove(randID);
 
                     // assign
-                    fieldsToAssign[randID].SetContent(fieldTypes[randID], chord, colors[randID], availables[randID], buildUps[randID]);
+                    //Debug.Log("chord type: " + i + ", chord: " + j + ", randID: " + randID);
+                    //Debug.Log("field type: " + fieldTypes.Length + ", colors.length: " + colors.Length + ", availables.lenght: " + availables.Length + ", buildups.length: " + buildUps.Length);
+                    fieldsToAssign[randID].SetContent(fieldTypes[randID], chord, colors[i], availables[randID], buildUps[randID]);
                 }
             }
         }

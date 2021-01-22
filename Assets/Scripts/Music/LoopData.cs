@@ -26,7 +26,7 @@ public static class LoopData
     public static int curCycle;
     public static float timer;
 
-    // Rest
+    // time & distance values
     public static float timePerBar;
     public static float timePerBeat;
     public static int beatsPerBar;
@@ -265,7 +265,7 @@ public static class LoopData
 
 
     /// <summary>
-    /// BeatsPerBar, timePerBar, timePerBeat.
+    /// Time-related data: BeatsPerBar, timePerBar, timePerBeat.
     /// </summary>
     public static void GetBeatData()
     {

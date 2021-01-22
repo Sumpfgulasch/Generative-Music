@@ -22,7 +22,7 @@ public static class MeshUpdate
     
 
     /// <summary>
-    /// Get vertices from tunnel, create form and update line renderer vertices of music fields. Set Z to player.z.
+    /// Get vertices from tunnel, create form and update vertices variables of music fields. Set Z to player.z.
     /// </summary>
     public static void UpdateFieldsPositions()
     {
@@ -50,6 +50,8 @@ public static class MeshUpdate
 
     // ----------------------------- private methods ----------------------------
 
+
+    
 
 
 
@@ -183,6 +185,8 @@ public static class MeshUpdate
         // to do: Update (1) LineRenderer, (2)
 
         // Environment
+        if (TunnelData.vertices[0] == Vector3.zero)
+            Debug.LogError("Tried to get tunnel vertices too early, no collider yet.");
         for (int i = 0; i < TunnelData.vertices.Length; i++)
         {
             for (int j = 0; j < VisualController.inst.fieldsPerEdge; j++)
