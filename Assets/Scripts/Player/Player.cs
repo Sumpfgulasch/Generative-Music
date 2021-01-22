@@ -75,8 +75,8 @@ public class Player : MonoBehaviour
     [HideInInspector] public Transform[] innerVertices_obj;
     [HideInInspector] public float velocity;
     [HideInInspector] public Vector3 mousePos;
-    [HideInInspector] public PlayerEdgePart curEdgePart;
-    [HideInInspector] public PlayerEdgePart[] curSecEdgeParts;
+    [HideInInspector] public PlayerField curEdgePart;
+    [HideInInspector] public PlayerField[] curSecEdgeParts;
     [HideInInspector] public Edge curEdge;
     [HideInInspector] public Edge[] curSecEdges;
     [HideInInspector] public bool tunnelEnter;

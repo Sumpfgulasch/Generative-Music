@@ -28,6 +28,7 @@ public static class LoopData
 
     // Rest
     public static float timePerBar;
+    public static float timePerBeat;
     public static int beatsPerBar;
 
     // Properties
@@ -38,7 +39,7 @@ public static class LoopData
     // CONSTRUCTOR
     static LoopData()
     {
-        
+        GetBeatData();
     }
 
     private static Dictionary<string, Weight[]> InitWeights()
@@ -87,6 +88,9 @@ public static class LoopData
         return newWeights;
     }
     
+    /// <summary>
+    /// Generate all musical data and store it in TunnelData.fields.
+    /// </summary>
     public static void Init()
     {
         // -1. Loop events
@@ -125,7 +129,7 @@ public static class LoopData
         }
 
         int[] testArray = new int[] { curKey.KeyNote };
-        Debug.Log("curKey: " + testArray.AsNames() + "-" + curKey.Scale + ", baseNote: " + (curKey.KeyNote + 4 * MusicUtil.notesPerOctave));
+        Debug.Log("curKey: " + testArray.NoteNames() + "-" + curKey.Scale + ", baseNote: " + (curKey.KeyNote + 4 * MusicUtil.notesPerOctave));
 
         // 4. chords
         Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(curKey, chordTypes, toneRangeMin, toneRangeMax);
@@ -140,10 +144,12 @@ public static class LoopData
             availables[i] = false;
             buildUps[i] = false;
         }
-        MusicFieldSet.StoreDataInFields(Player.curFieldSet, chords, colors, fieldTypes, availables, buildUps);
+        TunnelData.fields = MusicFieldSet.StoreDataInFields(TunnelData.fields, fieldTypes, chords, colors, availables, buildUps);
 
-        // 6. get timePerBar
-        timePerBar = TimePerBar();
+        Player.curFieldSet = TunnelData.fields;
+
+        // 6. Beat data
+        GetBeatData();
 
 
 
@@ -258,13 +264,16 @@ public static class LoopData
     }
 
 
-    public static float TimePerBar()
+    /// <summary>
+    /// BeatsPerBar, timePerBar, timePerBeat.
+    /// </summary>
+    public static void GetBeatData()
     {
         // Info: 4 16tel sind 1 Beat
         // Wichtig: length muss immer vielfaches sein von 4; z.B. length=16 == 4/4-Takt, length=20 == 5/4-Takt
         beatsPerBar = MusicRef.inst.beatSequencer.length / 4;
-        float timePerBar = (beatsPerBar / MusicRef.inst.clock.bpm) *60;
-        return timePerBar;
+        timePerBar = (beatsPerBar / MusicRef.inst.clock.bpm) *60;
+        timePerBeat = timePerBar / beatsPerBar;
     }
 
 }

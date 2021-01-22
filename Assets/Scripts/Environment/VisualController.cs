@@ -28,9 +28,6 @@ public class VisualController : MonoBehaviour
         if (!showCursor)
             Cursor.visible = false;
         
-
-        // EVENT subscription
-        GameEvents.inst.onTunnelEnter += OnTunnelStart;
     }
 
 
@@ -44,9 +41,4 @@ public class VisualController : MonoBehaviour
     // ----------------------------- Events ----------------------------
 
 
-
-    private void OnTunnelStart()
-    {
-        
-    }
 }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{094C5E05-DC00-1772-CE67-73F6A687ECF3}</ProjectGuid>
+    <ProjectGuid>{873614EE-742A-51B8-17AB-43CD63BED3CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -52,13 +52,9 @@
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2020.1.10f1</UnityVersion>
   </PropertyGroup>
-  <PropertyGroup>
-    <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
-    <UnityProjectType>Game:1</UnityProjectType>
-    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
-    <UnityVersion>2020.1.10f1</UnityVersion>
-  </PropertyGroup>
+  <ItemGroup>
+    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Music\MusicGenerationLogic.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\RepetitiveSpawner.cs" />
@@ -89,7 +85,7 @@
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetHelmParameter.cs" />
     <Compile Include="Assets\Scripts\Additional stuff\SetRenderQueue.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ToggleParameter.cs" />
-    <Compile Include="Assets\Scripts\Environment\EdgePart.cs" />
+    <Compile Include="Assets\Scripts\Environment\MusicField.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\MaterialPulse.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmPatch.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteHandler.cs" />
@@ -113,6 +109,7 @@
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\EnableAfterTime.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlTorque.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\NoteBlaster.cs" />
+    <Compile Include="Assets\Scripts\Game\GameplayManager.cs" />
     <Compile Include="Assets\Scripts\Music\LoopData.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmPatchFormat.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetSleepThreshold.cs" />
@@ -120,19 +117,18 @@
     <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\Environment\ObjectSpawner.cs" />
-    <Compile Include="Assets\Scripts\Game\GameplayManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\Custom\Mask.shader" />
-    <None Include="Assets\Shaders\Custom\MaskedObj.shader" />
-    <None Include="Assets\AudioHelm\Plugins\UWP\x86_64\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\x86\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\UWP\ARM\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\UWP\x86\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\x86_64\AudioPluginHelm.dll" />
-    <None Include="Assets\Shaders\Custom\InverseMaskedObj.shader" />
-    <None Include="Assets\Shaders\Custom\DepthMask.shader" />
-    <None Include="Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll" />
+     <None Include="Assets\Shaders\Custom\Mask.shader" />
+     <None Include="Assets\Shaders\Custom\MaskedObj.shader" />
+     <None Include="Assets\AudioHelm\Plugins\UWP\x86_64\AudioPluginHelm.dll" />
+     <None Include="Assets\AudioHelm\Plugins\x86\AudioPluginHelm.dll" />
+     <None Include="Assets\AudioHelm\Plugins\UWP\ARM\AudioPluginHelm.dll" />
+     <None Include="Assets\AudioHelm\Plugins\UWP\x86\AudioPluginHelm.dll" />
+     <None Include="Assets\AudioHelm\Plugins\x86_64\AudioPluginHelm.dll" />
+     <None Include="Assets\Shaders\Custom\InverseMaskedObj.shader" />
+     <None Include="Assets\Shaders\Custom\DepthMask.shader" />
+     <None Include="Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.1.10f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -731,9 +727,9 @@
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup></ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

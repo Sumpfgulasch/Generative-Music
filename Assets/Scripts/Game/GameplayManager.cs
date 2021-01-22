@@ -5,15 +5,20 @@ using UnityEngine;
 public class GameplayManager : MonoBehaviour
 {
 
+    private void OnEnable()
+    {
+        // EVENTS
+        GameEvents.inst.onFirstBeat += OnFirstBeat;
+    }
+
     void Start()
     {
-        // 1. Create meshes
+        // 1. Create meshes & Instantiate all fields (invisible)
         MeshCreation.CreatePlayerMeshes();
+        MeshCreation.InitFields();
 
-        // EVENTS
-        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnFirstBeat);
-        GameEvents.inst.onTunnelEnter += OnTunnelStart;
-        
+        // 2. Fill with content
+        LoopData.Init();
     }
 
 
@@ -24,27 +29,11 @@ public class GameplayManager : MonoBehaviour
 
 
 
-    private void OnFirstBeat(int beat)
+    private void OnFirstBeat()
     {
         // gefährlich; könnte nicht klappen, wenn durch lags hier noch kein tunnel-collider ist
 
-        if (beat == 0)
-        {
-            // 1. Instantiate all fields (invisible)
-            MeshCreation.CreateFields();
-
-            // 2. Fill with content
-            LoopData.Init();
-
-            // 3. Move one after another to front & activate
-        }
-        
-    }
-
-    private void OnTunnelStart()
-    {
-        // 2. 
-        MeshUpdate.UpdateFieldsPositions(); // brache nicht mehr das, anders
+        // 3. Move one after another to front & activate
         
     }
 }

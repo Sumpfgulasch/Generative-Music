@@ -13,6 +13,8 @@ public class GameEvents : MonoBehaviour
     public Action onEdgePartChange;
     public Action onLeave;
 
+    public Action onFirstBeat;
+
     void Start()
     {
         inst = this;

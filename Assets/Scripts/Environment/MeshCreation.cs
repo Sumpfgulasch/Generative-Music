@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public static class MeshCreation
 {
@@ -53,8 +52,16 @@ public static class MeshCreation
     /// </summary>
     public static void CreateFields()
     {
-        InstantiateFields();
+        //InstantiateFieldSet();
         CreatePlayerFields();
+    }
+
+    /// <summary>
+    /// Instantiates music fields and stores them in TunnelData.fields.
+    /// </summary>
+    public static void InitFields()
+    {
+        TunnelData.fields = InstantiateFieldSet();
     }
 
 
@@ -150,29 +157,31 @@ public static class MeshCreation
         // no UVs
     }
 
+
     // ENVIRONMENT
-    private static void InstantiateFields()
+
+    /// <summary>
+    /// Create game objects for a complete field set, with line renderers being unvisible (empty positions). Add data: ID, isCorner, isEdgeMid, lineRend.
+    /// </summary>
+    public static MusicField[] InstantiateFieldSet()
     {
-        // == Create gameObjects with lineRenderers with empty positions
-
         int fieldsCount = VisualController.inst.FieldsCount;
-        TunnelData.fields = new MusicField[fieldsCount];
+        MusicField[] newFields = new MusicField[fieldsCount];
 
-        for (int i = 0; i < VisualController.inst.tunnelVertices; i++)
+        for (int i = 0; i < fieldsCount; i++)
         {
-            for (int j = 0; j < VisualController.inst.fieldsPerEdge; j++)
-            {
-                // Get data
-                int ID = i * VisualController.inst.fieldsPerEdge + j;
-                bool isCorner = MusicField.IsCorner(ID);
-                bool isEdgeMid = MusicField.IsEdgeMid(ID);
-                GameObject newObj = CreateContainer("Field" + ID, MeshRef.inst.musicFields_parent);
-                LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.edgePartThickness);
+            // Get data
+            int ID = i;
+            bool isCorner = MusicField.IsCorner(ID);
+            bool isEdgeMid = MusicField.IsEdgeMid(ID);
+            GameObject newObj = CreateContainer("Field" + ID, MeshRef.inst.musicFields_parent);
+            LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.edgePartThickness);
 
-                // Assign
-                TunnelData.fields[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
-            }
+            // Assign
+            newFields[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
         }
+
+        return newFields;
     }
 
     // PLAYER
@@ -184,15 +193,15 @@ public static class MeshCreation
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
         LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerEdgePartThickness);
-        player.curEdgePart = new PlayerEdgePart(PlayerEdgePart.Type.Main, lineRend);
+        player.curEdgePart = new PlayerField(PlayerField.Type.Main, lineRend);
 
         // Seoncdary
-        player.curSecEdgeParts = new PlayerEdgePart[player.verticesCount - 1];
+        player.curSecEdgeParts = new PlayerField[player.verticesCount - 1];
         for (int i = 0; i < player.curSecEdgeParts.Length; i++)
         {
             GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.playerField_parent);
             LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerEdgePartThickness);
-            player.curSecEdgeParts[i] = new PlayerEdgePart(PlayerEdgePart.Type.Second, lineRend2);
+            player.curSecEdgeParts[i] = new PlayerField(PlayerField.Type.Second, lineRend2);
             lineRend2.enabled = false;
         }
 

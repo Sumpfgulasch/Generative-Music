@@ -173,7 +173,7 @@ public static class MusicUtil
 
 
 
-    public static string AsNames(this int[] notes)
+    public static string NoteNames(this int[] notes)
     {
         string noteNames = "";
         foreach (int note in notes)

@@ -63,7 +63,7 @@ public class ObjectSpawner : MonoBehaviour
         tunnelLength = (start - end).magnitude;
 
         int FPS = Screen.currentResolution.refreshRate;
-        moveSpeed = (tunnelLength / LoopData.TimePerBar()) / FPS;
+        moveSpeed = (tunnelLength / LoopData.timePerBar) / FPS;
 
         distancePerBeat = tunnelLength / LoopData.beatsPerBar;
 

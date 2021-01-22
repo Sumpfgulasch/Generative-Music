@@ -37,17 +37,14 @@ public class MusicManager : MonoBehaviour
 
     private void Awake()
     {
-        //var inputMaster = GameManager.inst.playerControls;
-        //resetAction = inputMaster.Gameplay.Reset;
-
-        // Add listeners
-        //resetAction.started += OnReset;
+        
     }
 
 
     private void OnEnable()
     {
-        //resetAction.Enable();
+        // EVENTS
+        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnFirstBeat);
     }
 
     
@@ -59,13 +56,15 @@ public class MusicManager : MonoBehaviour
 
         //controllers[0].SetPitchWheel(0);
 
-        //LoopData.Init();
+       
     }
     
     void Update()
     {
         ManageChordPlaying();
     }
+
+    
 
     
 
@@ -171,12 +170,23 @@ public class MusicManager : MonoBehaviour
 
         return chord;
     }
-    
+
 
 
 
     // ------------------------------ Events ------------------------------
 
+
+
+    private void OnFirstBeat(int beat)
+    {
+        if (beat == 0)
+        {
+            GameEvents.inst.onFirstBeat?.Invoke();
+            MusicRef.inst.beatSequencer.beatEvent.RemoveListener(this.OnFirstBeat);
+            print("music manaager, on first beat");
+        }
+    }
 
     //private void OnStartToPlay()
     //{
@@ -210,11 +220,6 @@ public class MusicManager : MonoBehaviour
     //    print("on stop");
     //    StopChord(curChord, curInstrument);
     //}
-
-    private void OnTunnelEnter()
-    {
-
-    }
 
 
     public void OnReset(InputAction.CallbackContext context)

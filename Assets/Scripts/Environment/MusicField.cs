@@ -19,16 +19,11 @@ public class MusicField
     public bool isEdgeMid;
     public LineRenderer lineRend;
     public Chord chord;
+    public bool available;
+    public bool isBuildingUp;
 
     // Private variables
     public Color color;
-    //public Color Color
-    //{
-    //    get { return color; }
-    //    private set { color = value; }
-    //}
-
-
 
 
 
@@ -55,12 +50,9 @@ public class MusicField
 
 
 
+    // ----------------------------- public functions ----------------------------
 
 
-
-
-
-    // Functions
 
 
     /// <summary>
@@ -81,18 +73,9 @@ public class MusicField
     }
 
 
-
-    //public void UpdateLineRenderer(Vector3 start, Vector3 end)
-    //{
-    //    this.lineRend.positionCount = 2;
-    //    this.lineRend.SetPositions(new Vector3[] { start, end });
-    //}
-
-
     /// <summary>
     /// Store color and change material color of line renderer.
     /// </summary>
-    /// <param name="color"></param>
     public void SetColor(Color color)
     {
         this.color = color;
@@ -101,15 +84,24 @@ public class MusicField
 
 
 
-    public void Set(int ID, Vector3 start, Vector3 end, bool isCorner)
-    {
-        this.ID = ID;
-        this.start = start;
-        this.end = end;
-        this.isCorner = isCorner;
+    //public void Set(int ID, Vector3 start, Vector3 end, bool isCorner)
+    //{
+    //    this.ID = ID;
+    //    this.start = start;
+    //    this.end = end;
+    //    this.isCorner = isCorner;
 
-        this.start.z = Player.inst.transform.position.z - 0.001f;
-        this.end.z = Player.inst.transform.position.z - 0.001f;
+    //    this.start.z = Player.inst.transform.position.z - 0.001f;
+    //    this.end.z = Player.inst.transform.position.z - 0.001f;
+    //}
+
+    public void SetContent(Type fieldType, Chord chord, Color color, bool available, bool isBuildingUp)
+    {
+        this.type = fieldType;
+        this.chord = chord;
+        this.color = color;
+        this.available = available;
+        this.isBuildingUp = isBuildingUp;
     }
 
     public static bool IsCorner(int ID)
@@ -203,13 +195,13 @@ public class MusicField
 
 
 
-public class PlayerEdgePart : MusicField
+public class PlayerField : MusicField
 {
     public Vector3[] positions;
     
 
     // Contructor
-    public PlayerEdgePart(Type type, LineRenderer lineRend)
+    public PlayerField(Type type, LineRenderer lineRend)
     {
         this.type = type;
         base.lineRend = lineRend;
@@ -242,7 +234,7 @@ public class PlayerEdgePart : MusicField
     {
         this.lineRend.startWidth = VisualController.inst.edgePartThickness;
         this.lineRend.endWidth = VisualController.inst.edgePartThickness;
-        SetOpacity(0.9f);
+        SetOpacity(0.5f);
     }
 
     public void SetToPlay()
@@ -311,7 +303,7 @@ public class Edge
 
 
 
-// -------------------------------- EDGE PARTS -------------------------------
+// --------------------------- Music field set --------------------------
 
 
 
@@ -338,13 +330,15 @@ public static class MusicFieldSet
     /// Store data (chords, colors, types, available, isBuildingUp) in each field; data only, no material assignments
     /// </summary>
     /// <param name="fieldsToAssign">Length == edges * divisions (att 15).</param>
-    /// <param name="chords">First array length is types.length, second arrays vary.</param>
+    /// <param name="chords">First array.length == types.length, second arrays.length == vary.</param>
     /// <param name="colors">Length == types.length.</param>
     /// <param name="availables">Length == edges * divisions (att 15).</param>
     /// <param name="buildUps">Length == edges * divisions (att 15)</param>
-    public static void StoreDataInFields(MusicField[] fieldsToAssign, Chord[][] chords, Color[] colors, MusicField.Type[] fieldTypes, bool[] availables, bool [] buildUps)
+    public static MusicField[] StoreDataInFields(MusicField[] fieldsToAssign, MusicField.Type[] fieldTypes, Chord[][] chords, Color[] colors, bool[] availables, bool [] buildUps)
     {
         var edgePartIDs = ExtensionMethods.IntToList(VisualController.inst.FieldsCount, true);
+        var fieldsPerEdge = VisualController.inst.fieldsPerEdge;
+        var fieldsCount = VisualController.inst.FieldsCount;
 
         // 1. Gehe jeden chordType durch (3)
         for (int i = 0; i < chords.Length; i++)
@@ -361,35 +355,32 @@ public static class MusicFieldSet
 
                 if (i == 0)
                 {
-                    // get corner fields
-                    int ID1 = ExtensionMethods.Modulo(j * VisualController.inst.fieldsPerEdge - 1, VisualController.inst.FieldsCount);
-                    int ID2 = j * VisualController.inst.fieldsPerEdge;
+                    // get CORNER fields
+                    int ID1 = ExtensionMethods.Modulo(j * fieldsPerEdge - 1, fieldsCount);
+                    int ID2 = j * fieldsPerEdge;
                     edgePartIDs.Remove(ID1);
                     edgePartIDs.Remove(ID2);
 
                     // assign
-                    TunnelData.fields[ID1].chord = chord;
-                    TunnelData.fields[ID2].chord = chord;
-                    //TunnelData.edgeParts[ID1].SetColor(colors[i]);
-                    //TunnelData.edgeParts[ID2].SetColor(colors[i]);
-                    TunnelData.fields[ID1].color = colors[i];
-                    TunnelData.fields[ID2].color = colors[i];
+                    fieldsToAssign[ID1].SetContent(fieldTypes[ID1], chord, colors[i], availables[ID1], buildUps[ID1]);
+                    fieldsToAssign[ID2].SetContent(fieldTypes[ID2], chord, colors[i], availables[ID2], buildUps[ID2]);
+
                 }
                 else
                 {
-                    // get random field
+                    // get random other field
                     int randID_index = Random.Range(0, edgePartIDs.Count);
                     int randID = edgePartIDs[randID_index];
 
                     edgePartIDs.Remove(randID);
 
                     // assign
-                    TunnelData.fields[randID].chord = chord;
-                    //TunnelData.edgeParts[randID].SetColor(colors[i]);
-                    TunnelData.fields[randID].color = colors[i];
+                    fieldsToAssign[randID].SetContent(fieldTypes[randID], chord, colors[randID], availables[randID], buildUps[randID]);
                 }
             }
         }
+
+        return fieldsToAssign;
     }
 
     public static void SwitchEdgeParts()
