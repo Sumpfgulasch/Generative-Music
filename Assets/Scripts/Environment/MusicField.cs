@@ -83,7 +83,7 @@ public class MusicField
     }
 
     /// <summary>
-    /// Set the z-position of the line renderer.
+    /// Set the z-position of the line renderer. Set whole position, dependant on start- & end-positions.
     /// </summary>
     public void SetZPos(float zPos)
     {
@@ -237,7 +237,7 @@ public class PlayerField : MusicField
         this.isCorner = isCorner;
 
         for (int i=0; i<positions.Length; i++)
-            this.positions[i].z = Player.inst.transform.position.z - 0.002f;
+            this.positions[i].z = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
     }
 
     public void SetVisible(bool value)
@@ -249,17 +249,39 @@ public class PlayerField : MusicField
 
     public void SetToFocus()
     {
-        this.lineRend.startWidth = VisualController.inst.edgePartThickness;
-        this.lineRend.endWidth = VisualController.inst.edgePartThickness;
-        SetOpacity(0.5f);
+        this.lineRend.startWidth = VisualController.inst.playerFieldFocusThickness;
+        this.lineRend.endWidth = VisualController.inst.playerFieldFocusThickness;
+        SetOpacity(1f);
+
+        float zPos = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
+        SetZPos(zPos);
     }
 
     public void SetToPlay()
     {
-        this.lineRend.startWidth = VisualController.inst.playerEdgePartThickness;
-        this.lineRend.endWidth = VisualController.inst.playerEdgePartThickness;
+        this.lineRend.startWidth = VisualController.inst.playerFieldThickness;
+        this.lineRend.endWidth = VisualController.inst.playerFieldThickness;
+
+        float zPos = Player.inst.transform.position.z - (VisualController.inst.fieldsBeforeSurface + 0.001f);
+        SetZPos(zPos);
+        
         SetOpacity(1);
     }
+
+
+    /// <summary>
+    /// Set z pos only.
+    /// </summary>
+    public void SetZPos(float zPos)
+    {
+        for (int i = 0; i < this.lineRend.positionCount; i++)
+        {
+            Vector3 newPos = this.lineRend.GetPosition(i);
+            newPos.z = zPos;
+            this.lineRend.SetPosition(i, newPos);
+        }
+    }
+
 
     /// <summary>
     /// Set opacity of the line renderer material.
@@ -272,7 +294,7 @@ public class PlayerField : MusicField
         this.lineRend.material.color = newColor;
     }
 
-    
+
 
     public void UpdateLineRenderer()
     {
@@ -283,6 +305,8 @@ public class PlayerField : MusicField
         }
         else
         {
+            // add empty line renderer positions, to prevent bending
+
             List<Vector3> addedLineRendPositions = this.positions.ToList();
             Vector3 cornerPos = addedLineRendPositions[1];
             addedLineRendPositions.Insert(1, cornerPos);

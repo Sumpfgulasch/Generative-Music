@@ -12,9 +12,13 @@ public class VisualController : MonoBehaviour
     public int tunnelVertices = 3;
     public bool showCursor = true;
     [Range(0.001f, 0.05f)]
-    public float edgePartThickness = 0.01f;
+    public float fieldThickness = 0.01f;
     [Range(0.001f, 0.05f)]
-    public float playerEdgePartThickness = 0.03f;
+    public float playerFieldThickness = 0.03f;
+    [Range(0.001f, 0.05f)]
+    public float playerFieldFocusThickness = 0.02f;
+    public float playerFieldBeforeSurface = 0.002f;
+    public float fieldsBeforeSurface = 0.01f;
 
     // Properties
     public int FieldsCount

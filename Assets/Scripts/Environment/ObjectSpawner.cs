@@ -181,7 +181,8 @@ public class ObjectSpawner : MonoBehaviour
             yield return null;
         }
 
-        field.SetZPos(playerZpos);
+        field.SetZPos(playerZpos - VisualController.inst.fieldsBeforeSurface);
+
         field.isBuildingUp = false;
 
         // aktiviere variablen

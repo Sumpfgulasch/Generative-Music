@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Linq;
 
 public static class PlayerData
 {
@@ -100,7 +101,7 @@ public static class PlayerData
             }
         }
 
-        // Current edgePart & edgePartPercentage
+        // Current field & edge percentage
         RaycastHit hit;
         Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit);
         Vector3 playerPointOnEnv = new Vector3(hit.point.x, hit.point.y, player.outerVertices[0].z);
@@ -113,6 +114,19 @@ public static class PlayerData
         var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
 
         player.curField.ID = curEdgePartID;
+
+        #region secondary, id
+        // Seondary fields, ID
+        for (int i = 0; i < player.curSecondaryFields.Length; i++)
+        {
+            int secID = (curEdgePartID + (i+1) * VisualController.inst.fieldsPerEdge) % VisualController.inst.FieldsCount;
+            player.curSecondaryFields[i].ID = secID;
+            Vector3 start = TunnelData.fields[secID].start;
+            Vector3 end = TunnelData.fields[secID].end;
+            var curSecFieldsPositions = new Vector3[] { start, end };
+            player.curSecondaryFields[i].positions = curSecFieldsPositions;
+        }
+        #endregion
 
         // Edge part change?
         if (curEdgePartID != lastEdgePartID)
@@ -140,12 +154,38 @@ public static class PlayerData
                 int leftCornerID = ExtensionMethods.Modulo(curEdgePartID - 1, VisualController.inst.FieldsCount);
                 Vector3 leftCornerPos = TunnelData.fields[leftCornerID].start;
                 curEdgePart_positions.Insert(0, leftCornerPos);
+
+                #region secondary
+                // secondary
+                for (int i=0; i<player.curSecondaryFields.Length; i++)
+                {
+                    int curID = player.curSecondaryFields[i].ID;
+                    leftCornerID = ExtensionMethods.Modulo(curID - 1, VisualController.inst.FieldsCount);
+                    leftCornerPos = TunnelData.fields[leftCornerID].start;
+                    var temp = player.curSecondaryFields[i].positions.ToList();
+                    temp.Insert(0, leftCornerPos);
+                    player.curSecondaryFields[i].positions = temp.ToArray();
+                }
+                #endregion
             }
             else
             {
                 int rightCornerID = ExtensionMethods.Modulo(curEdgePartID + 1, VisualController.inst.FieldsCount);
                 Vector3 rightCornerPos = TunnelData.fields[rightCornerID].end;
                 curEdgePart_positions.Add(rightCornerPos);
+
+                #region secondary
+                // secondary
+                for (int i = 0; i < player.curSecondaryFields.Length; i++)
+                {
+                    int curID = player.curSecondaryFields[i].ID;
+                    rightCornerID = ExtensionMethods.Modulo(curID + 1, VisualController.inst.FieldsCount);
+                    rightCornerPos = TunnelData.fields[rightCornerID].end;
+                    var temp = player.curSecondaryFields[i].positions.ToList();
+                    temp.Insert(0, rightCornerPos);
+                    player.curSecondaryFields[i].positions = temp.ToArray();
+                }
+                #endregion
             }
             // No edgePartChange in corners
             bool lastIDisCorner = MusicField.IsCorner(lastEdgePartID);

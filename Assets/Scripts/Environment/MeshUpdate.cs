@@ -195,6 +195,9 @@ public static class MeshUpdate
                 Vector3 start = TunnelData.vertices[i] + (((TunnelData.vertices[(i + 1) % TunnelData.vertices.Length] - TunnelData.vertices[i]) / VisualController.inst.fieldsPerEdge) * j);
                 Vector3 end = TunnelData.vertices[i] + (((TunnelData.vertices[(i + 1) % TunnelData.vertices.Length] - TunnelData.vertices[i]) / VisualController.inst.fieldsPerEdge) * (j+1));
 
+                start.z -= VisualController.inst.fieldsBeforeSurface;
+                end.z -= VisualController.inst.fieldsBeforeSurface;
+
                 int ID = i * VisualController.inst.fieldsPerEdge + j;
 
                 // assign
@@ -209,15 +212,21 @@ public static class MeshUpdate
         if (Player.inst.curEdge.firstTouch)
         {
             Player.inst.curField.SetToPlay();
+            foreach(PlayerField secField in Player.inst.curSecondaryFields)
+                secField.SetVisible(true);
         }
         else if (Player.inst.curEdge.leave)
         {
             Player.inst.curField.SetToFocus();
+            foreach (PlayerField secField in Player.inst.curSecondaryFields)
+                secField.SetVisible(false);
         }
 
         if (Player.inst.curField.changed)
         {
             Player.inst.curField.UpdateLineRenderer();
+            foreach (PlayerField secField in Player.inst.curSecondaryFields)
+                secField.UpdateLineRenderer();
         }
     }
 

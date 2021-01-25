@@ -168,7 +168,7 @@ public static class MeshCreation
             bool isCorner = MusicField.IsCorner(ID);
             bool isEdgeMid = MusicField.IsEdgeMid(ID);
             GameObject newObj = CreateContainer("Field" + ID, MeshRef.inst.musicFields_parent);
-            LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.edgePartThickness);
+            LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.fieldThickness);
 
             // Assign
             newFields[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
@@ -182,19 +182,19 @@ public static class MeshCreation
     {
         // == Create 1 gameObject with lineRenderer with empty positions
 
-        // EDGE PARTS
+        // FIELDS
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
-        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerEdgePartThickness);
+        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerFieldThickness);
         player.curField = new PlayerField(PlayerField.Type.Main, lineRend);
 
         // Seoncdary
-        player.curSecEdgeParts = new PlayerField[player.verticesCount - 1];
-        for (int i = 0; i < player.curSecEdgeParts.Length; i++)
+        player.curSecondaryFields = new PlayerField[player.verticesCount - 1];
+        for (int i = 0; i < player.curSecondaryFields.Length; i++)
         {
             GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.playerField_parent);
-            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerEdgePartThickness);
-            player.curSecEdgeParts[i] = new PlayerField(PlayerField.Type.Second, lineRend2);
+            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerFieldThickness);
+            player.curSecondaryFields[i] = new PlayerField(PlayerField.Type.Second, lineRend2);
             lineRend2.enabled = false;
         }
 
@@ -219,7 +219,7 @@ public static class MeshCreation
         return newObj;
     }
 
-    private static LineRenderer AddLineRenderer(this GameObject obj, int positionCount, Material material, float width)
+    private static LineRenderer AddLineRenderer(this GameObject obj, int positionCount, Material material, float width, int sortingOrder = 0)
     {
         LineRenderer lineRend = obj.AddComponent<LineRenderer>();
         lineRend.positionCount = positionCount;
