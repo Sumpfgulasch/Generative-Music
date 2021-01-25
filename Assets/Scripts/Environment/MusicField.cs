@@ -19,8 +19,8 @@ public class MusicField
     public bool isEdgeMid;
     public LineRenderer lineRend;
     public Chord chord;
-    public bool available;
-    public bool isBuildingUp;
+    public bool selectable;
+    public bool isBuildingUp; // -> is playable
 
     // Private variables
     public Color color;
@@ -98,12 +98,12 @@ public class MusicField
     /// <summary>
     /// Set data and set material color.
     /// </summary>
-    public void SetContent(Type fieldType, Chord chord, Color color, bool available, bool isBuildingUp)
+    public void SetContent(Type fieldType, Chord chord, Color color, bool selectable, bool isBuildingUp)
     {
         this.type = fieldType;
         this.chord = chord;
         this.color = color;
-        this.available = available;
+        this.selectable = selectable;
         this.isBuildingUp = isBuildingUp;
 
         this.lineRend.material.color = color;
@@ -191,6 +191,18 @@ public class MusicField
             return Vector3.zero;
         }
 
+    }
+
+    public static int NextFieldID(int curID, int direction)
+    {
+        int nextID = (curID + direction).Modulo(VisualController.inst.FieldsCount);
+
+        if (IsCorner(curID) && IsCorner(nextID))
+        {
+            nextID = (nextID + (int)Mathf.Sign(direction)).Modulo(VisualController.inst.FieldsCount);
+        }
+
+        return nextID;
     }
 }
 

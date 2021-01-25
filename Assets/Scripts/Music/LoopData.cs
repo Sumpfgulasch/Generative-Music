@@ -136,15 +136,15 @@ public static class LoopData
 
         // 5. fields
         var fieldTypes = new MusicField.Type[FieldsCount];
-        var availables = new bool[FieldsCount];
+        var selectables = new bool[FieldsCount];
         var buildUps = new bool[FieldsCount];
         for (int i=0; i < FieldsCount; i++)
         {
             fieldTypes[i] = MusicField.Type.Chord;
-            availables[i] = false;
-            buildUps[i] = false;
+            selectables[i] = true;
+            buildUps[i] = true;
         }
-        TunnelData.fields = MusicFieldSet.StoreDataInFields(TunnelData.fields, fieldTypes, chords, colors, availables, buildUps);
+        TunnelData.fields = MusicFieldSet.StoreDataInFields(TunnelData.fields, fieldTypes, chords, colors, selectables, buildUps);
 
         Player.curFieldSet = TunnelData.fields;
 

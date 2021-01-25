@@ -112,16 +112,16 @@ public static class PlayerData
         Vector3 curEdgePart_end = TunnelData.fields[curEdgePartID].end;
         var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
 
-        player.curEdgePart.ID = curEdgePartID;
+        player.curField.ID = curEdgePartID;
 
         // Edge part change?
         if (curEdgePartID != lastEdgePartID)
         {
-            player.curEdgePart.changed = true;
+            player.curField.changed = true;
         }
         else
         {
-            player.curEdgePart.changed = false;
+            player.curField.changed = false;
         }
 
         // Edge change?
@@ -151,19 +151,19 @@ public static class PlayerData
             bool lastIDisCorner = MusicField.IsCorner(lastEdgePartID);
             bool lastIDisClose = Mathf.Abs(curEdgePartID - lastEdgePartID) == 1 || Mathf.Abs(curEdgePartID - lastEdgePartID) == VisualController.inst.FieldsCount - 1;
             if (lastIDisCorner && lastIDisClose)
-                player.curEdgePart.changed = false;
+                player.curField.changed = false;
         }
 
 
         // Events (etwas unschön...)
-        if (player.curEdgePart.changed)
+        if (player.curField.changed)
         {
             GameEvents.inst.EdgePartChange();
         }
 
 
         // ASSIGN
-        player.curEdgePart.Set(curEdgePartID, curEdgePart_positions.ToArray(), isCorner);
+        player.curField.Set(curEdgePartID, curEdgePart_positions.ToArray(), isCorner);
 
 
 

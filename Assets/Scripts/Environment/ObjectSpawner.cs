@@ -38,8 +38,11 @@ public class ObjectSpawner : MonoBehaviour
     {
         FPS = Screen.currentResolution.refreshRate;
 
+        GetData();
+
         // EVENTS
         MusicRef.inst.beatSequencer.beatEvent.AddListener(OnBeat);
+        GameEvents.inst.onFirstBeat += InstantiateFirstObjects_beat;
     }
 
 
@@ -50,9 +53,7 @@ public class ObjectSpawner : MonoBehaviour
 
     public void InitSpawn()
     {
-        // Init
-        GetData();
-        InstantiateFirstObjects();
+        
     }
     
 
@@ -90,9 +91,11 @@ public class ObjectSpawner : MonoBehaviour
         distancePerBeat = tunnelLength / LoopData.beatsPerBar;
 
         playerZpos = Player.inst.transform.position.z;
+
+        movingObjects = new List<GameObject>();
     }
 
-    private void InstantiateFirstObjects()
+    private void InstantiateFirstObjects_start()
     {
         float initalZPos = playerZpos + distancePerBeat;
         movingObjects = new List<GameObject>();
@@ -102,6 +105,17 @@ public class ObjectSpawner : MonoBehaviour
             GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
             
             newObj = Instantiate(newObj, new Vector3(0, 0, initalZPos + i * tunnelLength), Quaternion.identity);
+            movingObjects.Add(newObj);
+        }
+    }
+
+    public void InstantiateFirstObjects_beat()
+    {
+        for (int i = 0; i < maxObjects - 1; i++)
+        {
+            GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
+
+            newObj = Instantiate(newObj, new Vector3(0, 0, playerZpos + i * tunnelLength), Quaternion.identity);
             movingObjects.Add(newObj);
         }
     }
@@ -141,7 +155,6 @@ public class ObjectSpawner : MonoBehaviour
         float zSpawn = playerZpos + distancePerBeat * beatsToStart;
         float durationTime = durationInBeats * LoopData.timePerBeat;
         float timeToWait = durationTime / (fields.Length - 1);
-        print("time to wait: " + timeToWait + ", durationTime: " + durationTime + ", timePerBeat: " + LoopData.timePerBeat);
 
         for (int i=0; i<fields.Length; i++)
         {
@@ -167,5 +180,10 @@ public class ObjectSpawner : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
+
+        field.SetZPos(playerZpos);
+        field.isBuildingUp = false;
+
+        // aktiviere variablen
     }
 }

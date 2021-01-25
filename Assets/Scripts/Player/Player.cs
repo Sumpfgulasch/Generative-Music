@@ -9,8 +9,8 @@ public class Player : MonoBehaviour
     public static Player inst;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
     public enum ActionState { none, stickToEdge };
-    [HideInInspector] public PositionState positionState = PositionState.noTunnel;
-    [HideInInspector] public ActionState actionState = ActionState.none;
+    public PositionState positionState = PositionState.noTunnel;
+    public ActionState actionState = ActionState.none;
 
     // Public variables
     [Header("General stuff")]
@@ -43,7 +43,6 @@ public class Player : MonoBehaviour
     public float bounceRecoverTime = 0.5f;
 
     [Header("Keyboard")]
-    public float kb_scaleSpeed = 1f;
     [Range(0.1f, 1f)]
     public float kb_slowScale = 0.9f;
     public float kb_rotationSpeed = 1f;
@@ -54,6 +53,7 @@ public class Player : MonoBehaviour
     [Header("All button devices")]
     [Range(0.01f, 1f)]
     public float bt_rotationDamp = 0.4f;
+    public float bt_scaleDamp = 1f;
     public float bt_selectionPressTime = 0.3f;
     public float bt_selectionFrequency = 0.13f;
     public float bt_play_selectionPressTime = 0.7f;
@@ -75,7 +75,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public Transform[] innerVertices_obj;
     [HideInInspector] public float velocity;
     [HideInInspector] public Vector3 mousePos;
-    [HideInInspector] public PlayerField curEdgePart;
+    [HideInInspector] public PlayerField curField;
     [HideInInspector] public PlayerField[] curSecEdgeParts;
     [HideInInspector] public Edge curEdge;
     [HideInInspector] public Edge[] curSecEdges;
@@ -119,24 +119,12 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        //var playerControls = GameManager.inst.playerControls;
-        //makeMusicAction = playerControls.Gameplay.MakeMusic;
-
-
-        // todo: other actions
-
-        // Add listeners
-        //makeMusicAction.performed += OnMakeMusicStarted;
-        //makeMusicAction.canceled += OnMakeMusic;
-        
 
     }
 
     private void OnEnable()
     {
-        //makeMusicAction.Enable();
-        //selectRightAction.Enable();
-        //selectLeftAction.Enable();
+
     }
 
     void Start()
@@ -244,56 +232,14 @@ public class Player : MonoBehaviour
             {
                 StickToEdge(curSide);
             }
-
         }
-        // HACK
-        //else if (actionState == ActionState.none)
-        //    ButtonScale(-1);
 
-
-
-        // regular move
-        //if (actionState == ActionState.none)
-        //{
-        //    // Mouse
-        //    if (!useKeyboard)
-        //    {
-        //        if (positionState == PositionState.inside || positionState == PositionState.innerEdge)
-        //            MoveTowardsMouse("inner");
-        //        else
-        //            MoveTowardsMouse("outer");
-        //    }
-
-        //    // HACK
-        //    if (useKeyboard)
-        //        ButtonScale(-1);
-        //}
-        //// action: stick to edge
-        //else if (actionState == ActionState.stickToEdge)
-        //{
-        //    if (startPosState == PositionState.inside || startPosState == PositionState.innerEdge)
-        //    {
-        //        StickToEdge("inner");
-        //    }
-        //    else
-        //    {
-        //        StickToEdge("outer");
-        //    }
-        //}
-
-    }
-
-
-    private void ButtonScale(int direction)
-    {
-        this.transform.localScale += new Vector3(kb_scaleSpeed * 2, kb_scaleSpeed * 2, 0) * direction;
-        this.transform.localScale = this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);              // clamp
     }
 
 
     public Vector3 GetNextTargetRotation(int direction)
     {
-        int curID = curEdgePart.ID;
+        int curID = curField.ID;
         Vector3 targetPos = MusicField.NextEdgePartMid(curID, direction);
 
         return targetPos;
@@ -631,47 +577,57 @@ public class Player : MonoBehaviour
     {
         // = rotate to next field, with break; if player is making music, do stickToEdge(), too
 
-        var targetPos = GetNextTargetRotation(direction);
+        int nextID = MusicField.NextFieldID(curField.ID, direction);
 
-        float maxTime = 1.2f;
-        float timer = 0;
-
-        while (timer<maxTime)
+        if (curFieldSet[nextID].selectable)
         {
-            RotateToTarget(targetPos);
+            var targetPos = GetNextTargetRotation(direction);
 
+            float maxTime = 1.2f;
+            float timer = 0;
 
-            // unschöner hack
-            if (actionState == ActionState.stickToEdge)
+            while (timer < maxTime)
             {
-                StickToEdge(curSide);
+                RotateToTarget(targetPos);
+
+                if (actionState == ActionState.stickToEdge)
+                {
+                    StickToEdge(curSide);
+                }
+
+                timer += Time.deltaTime;
+
+                yield return null;
             }
-
-
-            timer += Time.deltaTime;
-
-            yield return null;
         }
+        else
+        {
+            // TO DO: PerformNotDoable();
+        }
+
+        
     }
 
-    private IEnumerator DampedScale(float targetScale)
+    /// <summary>
+    /// Scales the player to a target scale over time.
+    /// </summary>
+    public IEnumerator DampedScale(float targetScale, float timeToStart = 0)
     {
+        yield return new WaitForSeconds(timeToStart);
+
         float maxTime = 2.2f;
         float timer = 0;
         Vector3 maxScale = new Vector3(targetScale, targetScale, 1);
 
-        float fraction = 0.04f;
-
         while (timer < maxTime)
         {
             //print("damped scale: " + timer);
-            Vector3 scaleSpeed = (maxScale - this.transform.localScale) * fraction;
+            Vector3 scaleSpeed = (maxScale - this.transform.localScale) * bt_scaleDamp * deltaTime;
             this.transform.localScale += scaleSpeed;
 
             timer += Time.deltaTime;
             yield return null;
         }
-        
     }
 
 

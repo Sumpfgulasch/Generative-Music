@@ -57,6 +57,7 @@ public class MusicManager : MonoBehaviour
 
         // EVENTS
         MusicRef.inst.beatSequencer.beatEvent.AddListener(OnFirstBeat);
+        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnBeat);
     }
     
     void Update()
@@ -93,7 +94,7 @@ public class MusicManager : MonoBehaviour
             }
 
             // EDGE PART CHANGE
-            else if (player.curEdgePart.changed)
+            else if (player.curField.changed)
             {
                 StopChord(curChord, curInstrument);
 
@@ -135,22 +136,26 @@ public class MusicManager : MonoBehaviour
         velocity = GetVelocity();
         curChord = GetChord();
 
-        int ID = player.curEdgePart.ID;
+        int ID = player.curField.ID;
         var fieldType = player.curFieldSet[ID].type;
 
-        switch (fieldType)
+        // nur wenn sich feld nicht aufbaut
+        if (!player.curFieldSet[ID].isBuildingUp)
         {
-            case MusicField.Type.Chord:
-                PlayChord(curChord, curInstrument, velocity);
-                break;
+            switch (fieldType)
+            {
+                case MusicField.Type.Chord:
+                    PlayChord(curChord, curInstrument, velocity);
+                    break;
 
-            case MusicField.Type.Modulation:
-                MusicFieldSet.SwitchEdgeParts();
-                break;
+                case MusicField.Type.Modulation:
+                    MusicFieldSet.SwitchEdgeParts();
+                    break;
 
-            case MusicField.Type.Pitch:
-                break;
+                case MusicField.Type.Pitch:
+                    break;
 
+            }
         }
     }
 
@@ -165,7 +170,7 @@ public class MusicManager : MonoBehaviour
     private Chord GetChord()
     {
         // = Get chord from currently touched edgePart
-        int playerID = player.curEdgePart.ID;
+        int playerID = player.curField.ID;
         Chord chord = player.curFieldSet[playerID].chord;
 
         return chord;
@@ -184,42 +189,18 @@ public class MusicManager : MonoBehaviour
         {
             GameEvents.inst.onFirstBeat?.Invoke();
             MusicRef.inst.beatSequencer.beatEvent.RemoveListener(this.OnFirstBeat);
-            print("music manaager, on first beat");
+            print("on first beat");
         }
     }
 
-    //private void OnStartToPlay()
-    //{
-    //    print("on start; curInstrument: " + curInstrument);
-    //    velocity = GetVelocity();
-    //    curChord = GetChord();
+    private void OnBeat(int beat)
+    {
+        if (beat % LoopData.beatsPerBar == 0)
+        {
+            GameEvents.inst.onBeat?.Invoke(beat/LoopData.beatsPerBar);
+        }
+    }
 
-    //    PlayChord(curChord, curInstrument, velocity);
-
-    //    #region pitch
-    //    // calc pitch
-    //    SetFirstPitchRange(ref minPitch, ref maxPitch);
-    //    #endregion
-    //}
-
-    //private void OnChangeEdgePart()
-    //{
-    //    if (!player.curEdge.firstTouch)
-    //    {
-    //        print("on change");
-    //        StopChord(curChord, curInstrument);
-
-    //        curChord = GetChord();
-
-    //        PlayChord(curChord, curInstrument, velocity);
-    //    }
-    //}
-
-    //private void OnStopToPlay()
-    //{
-    //    print("on stop");
-    //    StopChord(curChord, curInstrument);
-    //}
 
 
     public void OnReset(InputAction.CallbackContext context)

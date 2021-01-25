@@ -19,8 +19,6 @@ public class GameplayManager : MonoBehaviour
         // 2. Fill with content
         LoopData.Init();
 
-        ObjectSpawner.inst.InitSpawn();
-
 
         // EVENTS
         GameEvents.inst.onFirstBeat += OnFirstBeat;
@@ -36,9 +34,11 @@ public class GameplayManager : MonoBehaviour
 
     private void OnFirstBeat()
     {
-        // gefährlich; könnte nicht klappen, wenn durch lags hier noch kein tunnel-collider ist
         MeshUpdate.UpdateFieldsPositions();
-        
+
+        //ObjectSpawner.inst.InstantiateFirstObjects_beat();
+
+        StartCoroutine(Player.inst.DampedScale(Player.inst.scaleMin, 0.0f));
 
         // 3. Move one after another to front & activate
         StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, 3, 1));

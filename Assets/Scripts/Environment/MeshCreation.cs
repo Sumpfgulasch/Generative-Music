@@ -186,7 +186,7 @@ public static class MeshCreation
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
         LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerEdgePartThickness);
-        player.curEdgePart = new PlayerField(PlayerField.Type.Main, lineRend);
+        player.curField = new PlayerField(PlayerField.Type.Main, lineRend);
 
         // Seoncdary
         player.curSecEdgeParts = new PlayerField[player.verticesCount - 1];
@@ -226,6 +226,9 @@ public static class MeshCreation
         lineRend.startWidth = width;
         lineRend.endWidth = width;
         lineRend.material = material;
+
+        Vector3[] positions = new Vector3[] { Vector3.zero, Vector3.zero };
+        lineRend.SetPositions(positions);
 
         return lineRend;
     }

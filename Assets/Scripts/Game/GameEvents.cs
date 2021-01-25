@@ -14,6 +14,7 @@ public class GameEvents : MonoBehaviour
     public Action onLeave;
 
     public Action onFirstBeat;
+    public Action<int> onBeat;
 
     void Start()
     {
@@ -39,6 +40,8 @@ public class GameEvents : MonoBehaviour
     {
         onLeave?.Invoke();
     }
+
+    
 
 
 

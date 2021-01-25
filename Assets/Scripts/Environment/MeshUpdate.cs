@@ -208,16 +208,16 @@ public static class MeshUpdate
         // Player
         if (Player.inst.curEdge.firstTouch)
         {
-            Player.inst.curEdgePart.SetToPlay();
+            Player.inst.curField.SetToPlay();
         }
         else if (Player.inst.curEdge.leave)
         {
-            Player.inst.curEdgePart.SetToFocus();
+            Player.inst.curField.SetToFocus();
         }
 
-        if (Player.inst.curEdgePart.changed)
+        if (Player.inst.curField.changed)
         {
-            Player.inst.curEdgePart.UpdateLineRenderer();
+            Player.inst.curField.UpdateLineRenderer();
         }
     }
 
