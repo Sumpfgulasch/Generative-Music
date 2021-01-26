@@ -10,11 +10,18 @@ public class GameplayManager : MonoBehaviour
         
     }
 
-    void Start()
+    IEnumerator Start()
     {
+        
+
         // 1. Create meshes & Instantiate all fields (invisible)
         MeshCreation.CreatePlayerMeshes();
         MeshCreation.InitFields();
+
+        yield return new WaitForFixedUpdate(); yield return new WaitForEndOfFrame();    // warten, weil raycast sonst noch keine collider trifft
+
+        MeshUpdate.UpdateFieldsPositions();
+
 
         // 2. Fill with content
         LoopData.Init();
@@ -22,6 +29,9 @@ public class GameplayManager : MonoBehaviour
 
         // EVENTS
         GameEvents.inst.onFirstBeat += OnFirstBeat;
+        GameEvents.inst.onSecondBeat += OnSecondBeat;
+
+        yield return null;
     }
 
 
@@ -34,13 +44,17 @@ public class GameplayManager : MonoBehaviour
 
     private void OnFirstBeat()
     {
-        MeshUpdate.UpdateFieldsPositions();
-
-        //ObjectSpawner.inst.InstantiateFirstObjects_beat();
-
+        // Player shrink animation
         StartCoroutine(Player.inst.DampedScale(Player.inst.scaleMin, 0.0f));
+    }
 
-        // 3. Move one after another to front & activate
-        StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, 3, 1));
+    private void OnSecondBeat()
+    {
+        // Spawn Tunnels
+        StartCoroutine(ObjectSpawner.inst.InstantiateFirstTunnels(0,2,2));      // initial
+        GameEvents.inst.onBeat += ObjectSpawner.inst.OnBeat;                    // regular
+
+        // Spawn fields
+        StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, 3, 3, 1));
     }
 }

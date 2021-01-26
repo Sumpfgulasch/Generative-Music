@@ -205,6 +205,14 @@ public static class MeshCreation
             player.curSecEdges[i] = new Edge();
     }
 
+    /// <summary>
+    /// Collider for selection with the mouse.
+    /// </summary>
+    private static void CreateMouseCollider()
+    {
+
+    }
+
 
 
 

@@ -14,6 +14,7 @@ public class GameEvents : MonoBehaviour
     public Action onLeave;
 
     public Action onFirstBeat;
+    public Action onSecondBeat;
     public Action<int> onBeat;
 
     void Start()
@@ -31,7 +32,7 @@ public class GameEvents : MonoBehaviour
         onFirstTouch?.Invoke();
     }
 
-    public void EdgePartChange()
+    public void FieldChange()
     {
         onEdgePartChange?.Invoke();
     }

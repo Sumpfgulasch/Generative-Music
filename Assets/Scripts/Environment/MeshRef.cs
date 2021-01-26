@@ -22,9 +22,8 @@ public class MeshRef : MonoBehaviour
     [Space]
     public Transform musicFields_parent;
     public Material musicFields_mat;
-    //public Color envEdgePart_mainKey;
-    //public Color envEdgePart_corner;
-    //public Color envEdgePart_edgeMid;
+    [Space]
+    public Transform envContainer;
 
 
     // Start is called before the first frame update

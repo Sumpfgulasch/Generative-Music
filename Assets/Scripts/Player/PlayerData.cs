@@ -198,7 +198,7 @@ public static class PlayerData
         // Events (etwas unschön...)
         if (player.curField.changed)
         {
-            GameEvents.inst.EdgePartChange();
+            GameEvents.inst.FieldChange();
         }
 
 

@@ -41,8 +41,7 @@ public class ObjectSpawner : MonoBehaviour
         GetData();
 
         // EVENTS
-        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnBeat);
-        GameEvents.inst.onFirstBeat += InstantiateFirstObjects_beat;
+        //MusicRef.inst.beatSequencer.beatEvent.AddListener(ObjectSpawner.inst.OnBeat);
     }
 
 
@@ -61,11 +60,11 @@ public class ObjectSpawner : MonoBehaviour
 
 
 
-    private void OnBeat(int beat)
+    public void OnBeat(int beat)
     {
         if (beat == 0)
         {
-            SpawnObject();
+            SpawnTunnel();
             DeleteFarObjects();
         }
     }
@@ -95,37 +94,77 @@ public class ObjectSpawner : MonoBehaviour
         movingObjects = new List<GameObject>();
     }
 
-    private void InstantiateFirstObjects_start()
-    {
-        float initalZPos = playerZpos + distancePerBeat;
-        movingObjects = new List<GameObject>();
+    //private void InstantiateFirstObjects_start()
+    //{
+    //    float initalZPos = playerZpos + distancePerBeat;
+    //    movingObjects = new List<GameObject>();
 
-        for (int i = 0; i < maxObjects-1; i++)
-        {
-            GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
+    //    for (int i = 0; i < maxObjects-1; i++)
+    //    {
+    //        GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
             
-            newObj = Instantiate(newObj, new Vector3(0, 0, initalZPos + i * tunnelLength), Quaternion.identity);
-            movingObjects.Add(newObj);
-        }
-    }
+    //        newObj = Instantiate(newObj, new Vector3(0, 0, initalZPos + i * tunnelLength), Quaternion.identity);
+    //        movingObjects.Add(newObj);
+    //    }
+    //}
 
-    public void InstantiateFirstObjects_beat()
+
+    public IEnumerator InstantiateFirstTunnels(float timeToSpawnInBeats, float spawnDistanceInBeats, int amount)
     {
-        for (int i = 0; i < maxObjects - 1; i++)
+        // 1. wait
+        float waitTime = timeToSpawnInBeats * LoopData.timePerBeat;
+        yield return new WaitForSeconds(waitTime);
+
+        // 2. Spawn
+        for (int i = 0; i < amount; i++)
         {
             GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
 
-            newObj = Instantiate(newObj, new Vector3(0, 0, playerZpos + i * tunnelLength), Quaternion.identity);
+            float zSpawn = playerZpos + distancePerBeat * spawnDistanceInBeats;
+
+            newObj = Instantiate(newObj, new Vector3(0, 0, zSpawn + i * tunnelLength), Quaternion.identity);
             movingObjects.Add(newObj);
+
+            // move milk surface from back to front
+            //if (i == 0)
+            //{
+            //    StartCoroutine(MoveObjectFromBackToFront(MeshRef.inst.innerSurface_mf.gameObject, newObj.transform));
+            //}
         }
+        yield return null;
     }
 
-    private void SpawnObject()
+
+    private void SpawnTunnel()
     {
         GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
         newObj = Instantiate(newObj, new Vector3(0, 0, playerZpos + (maxObjects - 1) * tunnelLength), Quaternion.identity);
         movingObjects.Add(newObj);
     }
+
+
+    private IEnumerator MoveObjectFromBackToFront(GameObject obj, Transform parent)
+    {
+        obj.GetComponent<MeshRenderer>().enabled = true;
+
+        float zPos = parent.position.z;
+
+        while (zPos > playerZpos)
+        {
+            obj.transform.position = parent.position;
+            zPos = obj.transform.position.z;
+            yield return null;
+        }
+        
+    }
+
+    private IEnumerator SetObjectVisible(GameObject obj, float timeToWait)
+    {
+        yield return new WaitForSeconds(timeToWait);
+
+        obj.GetComponent<MeshRenderer>().enabled = true;
+    }
+
 
     private void DeleteFarObjects()
     {
@@ -147,34 +186,46 @@ public class ObjectSpawner : MonoBehaviour
     /// Move each field displaced from back to front. Replace old fields when done.
     /// </summary>
     /// <param name="fields"></param>
-    /// <param name="beatsToStart">Mesured in beats [1 bar == beats per bar].</param>
+    /// <param name="spawnDistanceInBeats">Mesured in beats [1 bar == beats per bar].</param>
     /// <param name="durationInBeats">Measured in beats.</param>
     /// <returns></returns>
-    public IEnumerator SpawnMusicFields(MusicField[] fields, float beatsToStart, float durationInBeats)
+    public IEnumerator SpawnMusicFields(MusicField[] fields, float timeToSpawnInBeats, float spawnDistanceInBeats, float durationInBeats)
     {
-        float zSpawn = playerZpos + distancePerBeat * beatsToStart;
+        // 1. wait
+        float waitTime = timeToSpawnInBeats * LoopData.timePerBeat;
+        yield return new WaitForSeconds(waitTime);
+
+        // 2. instantiate all, wait between
+        //float zSpawn = playerZpos + distancePerBeat * spawnDistanceInBeats;
         float durationTime = durationInBeats * LoopData.timePerBeat;
         float timeToWait = durationTime / (fields.Length - 1);
 
         for (int i=0; i<fields.Length; i++)
         {
-            StartCoroutine(MoveFieldFromBackToFront(fields[i], zSpawn));
-            //Debug.Log("instantiate; time: " + Time.time);
+            StartCoroutine(MoveFieldFromBackToFront(fields[i], spawnDistanceInBeats, durationInBeats));
+
+            // milk surface
+            if (i == fields.Length-1)
+            {
+                float time = spawnDistanceInBeats * LoopData.timePerBeat;
+                StartCoroutine(SetObjectVisible(MeshRef.inst.innerSurface_mf.gameObject, time));
+            }
             yield return new WaitForSeconds(timeToWait);
         }
     }
 
 
-    private IEnumerator MoveFieldFromBackToFront(MusicField field, float zSpawn)
+    private IEnumerator MoveFieldFromBackToFront(MusicField field, float spawnDistanceInBeats, float durationInBeats)
     {
-        float beatsToStart = (zSpawn - playerZpos) / distancePerBeat;
-        float timeToFinish = beatsToStart * LoopData.timePerBeat;
+        float zSpawn = playerZpos + distancePerBeat * spawnDistanceInBeats;
+        float duration = spawnDistanceInBeats * LoopData.timePerBeat;
+
         float timer = 0;
         float zPos = zSpawn;
 
-        while (timer < timeToFinish)
+        while (timer < duration)
         {
-            zPos = zPos - moveSpeed * deltaTime;
+            zPos -= moveSpeed * deltaTime;
             field.SetZPos(zPos);
 
             timer += Time.deltaTime;

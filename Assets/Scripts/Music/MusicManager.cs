@@ -56,7 +56,7 @@ public class MusicManager : MonoBehaviour
         //controllers[0].SetPitchWheel(0);
 
         // EVENTS
-        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnFirstBeat);
+        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnFirstBeats);
         MusicRef.inst.beatSequencer.beatEvent.AddListener(OnBeat);
     }
     
@@ -183,13 +183,18 @@ public class MusicManager : MonoBehaviour
 
 
 
-    private void OnFirstBeat(int beat)
+    private void OnFirstBeats(int beat)
     {
         if (beat == 0)
         {
             GameEvents.inst.onFirstBeat?.Invoke();
-            MusicRef.inst.beatSequencer.beatEvent.RemoveListener(this.OnFirstBeat);
             print("on first beat");
+        }
+        else if (beat / LoopData.beatsPerBar == 1)
+        {
+            GameEvents.inst.onSecondBeat?.Invoke();
+            MusicRef.inst.beatSequencer.beatEvent.RemoveListener(this.OnFirstBeats);
+            print("on second beat");
         }
     }
 

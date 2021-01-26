@@ -95,7 +95,7 @@ public class Player : MonoBehaviour
     private RaycastHit envPlayerIntersection;
     private float fastWeight = 1f;
     private float mouseX, mouseY, mouseDelta;
-    private float mouseToEnvDistance;
+    private float mouseToTunnelDistance;
     private float startScale;
     Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
@@ -191,9 +191,9 @@ public class Player : MonoBehaviour
         {
             curPlayerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
             tunnelToMidDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
-            mouseToEnvDistance = ((Vector2)mousePos - (Vector2)envPlayerIntersection.point).magnitude;
+            mouseToTunnelDistance = ((Vector2)mousePos - (Vector2)envPlayerIntersection.point).magnitude;
             if (((Vector2)mousePos - (Vector2)midPoint).magnitude < ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude)
-                mouseToEnvDistance *= -1;
+                mouseToTunnelDistance *= -1;
         }
         for (int i = 0; i < outerVertices.Length; i++)
         {
@@ -210,6 +210,8 @@ public class Player : MonoBehaviour
         // Scale value
         scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
         scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+        
+        Debug.DrawLine(envPlayerIntersection.point, midPoint);
     }
 
 
@@ -621,7 +623,6 @@ public class Player : MonoBehaviour
 
         while (timer < maxTime)
         {
-            //print("damped scale: " + timer);
             Vector3 scaleSpeed = (maxScale - this.transform.localScale) * bt_scaleDamp * deltaTime;
             this.transform.localScale += scaleSpeed;
 
