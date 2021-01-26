@@ -207,11 +207,11 @@ public static class MeshCreation
     }
 
     /// <summary>
-    /// Collider for selection with the mouse.
+    /// Collider for selection with the mouse. Fill with vertices from TunnelData.
     /// </summary>
-    private static void CreateMouseCollider()
+    public static void InitMouseCollider()
     {
-
+        MeshRef.inst.mouseColllider.points = ExtensionMethods.Vector3ToVector2(TunnelData.vertices);
     }
 
 

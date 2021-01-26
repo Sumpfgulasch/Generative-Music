@@ -23,7 +23,7 @@ public class MeshRef : MonoBehaviour
     public Transform musicFields_parent;
     public Material musicFields_mat;
     [Space]
-    public Transform envContainer;
+    public PolygonCollider2D mouseColllider;
 
 
     // Start is called before the first frame update

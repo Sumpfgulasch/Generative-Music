@@ -211,4 +211,15 @@ public static class ExtensionMethods
 
         return myString;
     }
+
+    public static Vector2[] Vector3ToVector2(Vector3[] array)
+    {
+        List<Vector2> list = new List<Vector2>();
+        foreach(Vector3 vec3 in array)
+        {
+            list.Add(vec3);
+        }
+
+        return list.ToArray();
+    }
 }
