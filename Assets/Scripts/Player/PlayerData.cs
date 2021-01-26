@@ -182,7 +182,7 @@ public static class PlayerData
                     rightCornerID = ExtensionMethods.Modulo(curID + 1, VisualController.inst.FieldsCount);
                     rightCornerPos = TunnelData.fields[rightCornerID].end;
                     var temp = player.curSecondaryFields[i].positions.ToList();
-                    temp.Insert(0, rightCornerPos);
+                    temp.Add(rightCornerPos);
                     player.curSecondaryFields[i].positions = temp.ToArray();
                 }
                 #endregion
@@ -193,6 +193,9 @@ public static class PlayerData
             if (lastIDisCorner && lastIDisClose)
                 player.curField.changed = false;
         }
+
+        foreach (MusicField secField in player.curSecondaryFields)
+            secField.isCorner = isCorner;
 
 
         // Events (etwas unschön...)

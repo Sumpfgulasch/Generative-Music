@@ -218,11 +218,14 @@ public class PlayerField : MusicField
     
 
     // Contructor
+    /// <summary>
+    /// Assign type and line renderer.
+    /// </summary>
     public PlayerField(Type type, LineRenderer lineRend)
     {
         this.type = type;
         base.lineRend = lineRend;
-        SetToFocus();
+        //SetToFocus();
     }
 
     public new enum Type {Main, Second};
@@ -246,7 +249,9 @@ public class PlayerField : MusicField
     }
 
     
-
+    /// <summary>
+    /// Set line renderer positions. Change z-position.
+    /// </summary>
     public void SetToFocus()
     {
         this.lineRend.startWidth = VisualController.inst.playerFieldFocusThickness;
@@ -257,10 +262,13 @@ public class PlayerField : MusicField
         SetZPos(zPos);
     }
 
+    /// <summary>
+    /// Set line renderer positions. Change z-position.
+    /// </summary>
     public void SetToPlay()
     {
-        this.lineRend.startWidth = VisualController.inst.playerFieldThickness;
-        this.lineRend.endWidth = VisualController.inst.playerFieldThickness;
+        this.lineRend.startWidth = VisualController.inst.playerFieldPlayThickness;
+        this.lineRend.endWidth = VisualController.inst.playerFieldPlayThickness;
 
         float zPos = Player.inst.transform.position.z - (VisualController.inst.fieldsBeforeSurface + 0.001f);
         SetZPos(zPos);
@@ -272,7 +280,7 @@ public class PlayerField : MusicField
     /// <summary>
     /// Set z pos only.
     /// </summary>
-    public void SetZPos(float zPos)
+    new public void SetZPos(float zPos)
     {
         for (int i = 0; i < this.lineRend.positionCount; i++)
         {

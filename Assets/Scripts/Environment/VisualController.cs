@@ -14,9 +14,11 @@ public class VisualController : MonoBehaviour
     [Range(0.001f, 0.05f)]
     public float fieldThickness = 0.01f;
     [Range(0.001f, 0.05f)]
-    public float playerFieldThickness = 0.03f;
+    public float playerFieldPlayThickness = 0.03f;
     [Range(0.001f, 0.05f)]
     public float playerFieldFocusThickness = 0.02f;
+    [Range(0.001f, 0.05f)]
+    public float playerSecFieldThickness = 0.01f;
     public float playerFieldBeforeSurface = 0.002f;
     public float fieldsBeforeSurface = 0.01f;
 

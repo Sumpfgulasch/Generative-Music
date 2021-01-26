@@ -185,15 +185,16 @@ public static class MeshCreation
         // FIELDS
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
-        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerFieldThickness);
+        LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerFieldPlayThickness);
         player.curField = new PlayerField(PlayerField.Type.Main, lineRend);
+        player.curField.SetToFocus();
 
         // Seoncdary
         player.curSecondaryFields = new PlayerField[player.verticesCount - 1];
         for (int i = 0; i < player.curSecondaryFields.Length; i++)
         {
             GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.playerField_parent);
-            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerFieldThickness);
+            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerSecFieldThickness);
             player.curSecondaryFields[i] = new PlayerField(PlayerField.Type.Second, lineRend2);
             lineRend2.enabled = false;
         }

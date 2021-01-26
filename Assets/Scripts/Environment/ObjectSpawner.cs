@@ -196,7 +196,6 @@ public class ObjectSpawner : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         // 2. instantiate all, wait between
-        //float zSpawn = playerZpos + distancePerBeat * spawnDistanceInBeats;
         float durationTime = durationInBeats * LoopData.timePerBeat;
         float timeToWait = durationTime / (fields.Length - 1);
 
