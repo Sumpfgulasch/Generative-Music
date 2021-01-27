@@ -162,7 +162,7 @@ public class MusicField
             return TunnelData.fields[ID].end;
     }
 
-    public static Vector3 NextEdgePartMid(int curID, int direction)
+    public static Vector3 NextFieldMid(int curID, int direction)
     {
         // = take the mid of corners
 

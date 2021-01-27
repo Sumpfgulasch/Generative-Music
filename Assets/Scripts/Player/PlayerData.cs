@@ -104,8 +104,8 @@ public static class PlayerData
         // Current field & edge percentage
         RaycastHit hit;
         Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit);
-        Vector3 playerPointOnEnv = new Vector3(hit.point.x, hit.point.y, player.outerVertices[0].z);
-        player.curEdge.percentage = Mathf.Clamp01((playerPointOnEnv - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
+        Vector3 playerPointOnTunnel = new Vector3(hit.point.x, hit.point.y, player.outerVertices[0].z);
+        player.curEdge.percentage = Mathf.Clamp01((playerPointOnTunnel - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
         curEdgePartID = ((int)(player.curEdge.percentage.
             Remap(0, 1f, 0, VisualController.inst.fieldsPerEdge)
             + curEdgeIndex * VisualController.inst.fieldsPerEdge)) % (TunnelData.vertices.Length * VisualController.inst.fieldsPerEdge); // gar kein bock mehr

@@ -242,7 +242,7 @@ public class Player : MonoBehaviour
     public Vector3 GetNextTargetRotation(int direction)
     {
         int curID = curField.ID;
-        Vector3 targetPos = MusicField.NextEdgePartMid(curID, direction);
+        Vector3 targetPos = MusicField.NextFieldMid(curID, direction);
 
         return targetPos;
     }
@@ -264,7 +264,7 @@ public class Player : MonoBehaviour
         }
 
         // Hack2 (bringt nix)
-        CalcMovementData();
+        //CalcMovementData();
     }
 
 
