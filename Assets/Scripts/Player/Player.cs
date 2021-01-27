@@ -103,7 +103,7 @@ public class Player : MonoBehaviour
     private float startScale;
     Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
-    private IEnumerator rotateEnumerator, triggerRotateEnumerator, scaleOutEnumerator, scaleEnumerator;
+    private IEnumerator rotateEnumerator, triggerRotationEnumerator, scaleOutEnumerator, scaleEnumerator;
     private IEnumerable rotateEnumerable;
     private float selectionPressTime, selectionFrequency;
     private enum Side { inner, outer};
@@ -266,9 +266,6 @@ public class Player : MonoBehaviour
         {
             this.transform.eulerAngles += new Vector3(0, 0, 0.1f);
         }
-
-        // Hack2 (bringt nix)
-        //CalcMovementData();
     }
 
 
@@ -359,6 +356,9 @@ public class Player : MonoBehaviour
         velocity = Mathf.Clamp(velocity, LoopData.minVelocity, LoopData.maxVelocity);
         return velocity;
     }
+
+
+
     /// <summary>
     /// Set data, collider size and stick to edge.
     /// </summary>
@@ -380,6 +380,7 @@ public class Player : MonoBehaviour
         // Events
         GameEvents.inst.FirstTouch();
     }
+
 
     /// <summary>
     /// Set data, collider size and scale back to origin.
@@ -476,16 +477,16 @@ public class Player : MonoBehaviour
 
     public void OnSelectNext(InputAction.CallbackContext context)
     {
-        
-
         if (context.performed)
         {
             int direction = (int)context.ReadValue<float>();
+            
+            // 2. Rotate to next field
             rotateEnumerable = RotateToNextField(direction);
-            triggerRotateEnumerator = ButtonPressBehaviour1(rotateEnumerable, selectionPressTime, selectionFrequency);
+            triggerRotationEnumerator = ButtonPressBehaviour1(rotateEnumerable, selectionPressTime, selectionFrequency);
 
             StopCoroutine(rotateEnumerator);
-            StartCoroutine(triggerRotateEnumerator);
+            StartCoroutine(triggerRotationEnumerator);
 
             if (actionState == ActionState.none)
             {
@@ -498,7 +499,7 @@ public class Player : MonoBehaviour
         }
         else if (context.canceled)
         {
-            StopCoroutine(triggerRotateEnumerator);
+            StopCoroutine(triggerRotationEnumerator);
         }
 
         
@@ -548,11 +549,16 @@ public class Player : MonoBehaviour
     {
         // = rotate to next field, with break; if player is making music, do stickToEdge(), too
 
+        // 1. Get & set next ID
         int nextID = MusicField.NextFieldID(curField.ID, direction);
+        //curField.ID = nextID;
+
+        GameEvents.inst.FieldChange();
 
         if (curFieldSet[nextID].selectable)
         {
             var targetPos = GetNextTargetRotation(direction);
+            curField.ID = nextID;
 
             float maxTime = 1.2f;
             float timer = 0;

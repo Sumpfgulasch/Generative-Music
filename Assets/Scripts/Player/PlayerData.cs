@@ -21,6 +21,7 @@ public static class PlayerData
     {
         player = Player.inst;
         midPoint = Player.inst.transform.position;
+        player.curField.ID = 4;
     }
 
 
@@ -90,8 +91,8 @@ public static class PlayerData
             if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, TunnelData.vertices[i], TunnelData.vertices[(i + 1) % 3]))
             {
                 // Current edge (main & sec)
-                player.curEdge.start = TunnelData.vertices[i];           // i beginnt immer beim environmentTriangle UNTEN LINKS!
-                player.curEdge.end = TunnelData.vertices[(i + 1) % 3]; // im Uhrzeigersinn (wie alle anderen Vertex-Arrays)
+                player.curEdge.start = TunnelData.vertices[i];          // i beginnt immer beim environmentTriangle UNTEN LINKS!
+                player.curEdge.end = TunnelData.vertices[(i + 1) % 3];  // im Uhrzeigersinn (wie alle anderen Vertex-Arrays)
                 for (int j = 0; j < player.curSecEdges.Length; j++)
                 {
                     player.curSecEdges[j].start = TunnelData.vertices[(i + 1 + j) % 3];
@@ -109,11 +110,13 @@ public static class PlayerData
         curFieldID = ((int)(player.curEdge.percentage.
             Remap(0, 1f, 0, VisualController.inst.fieldsPerEdge)
             + curEdgeIndex * VisualController.inst.fieldsPerEdge)) % (TunnelData.vertices.Length * VisualController.inst.fieldsPerEdge); // gar kein bock mehr
+        curFieldID = player.curField.ID;        // hack
         Vector3 curEdgePart_start = TunnelData.fields[curFieldID].start;
         Vector3 curEdgePart_end = TunnelData.fields[curFieldID].end;
         var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
 
-        player.curField.ID = curFieldID;
+        // -------- nicht mehr
+        //player.curField.ID = curFieldID;
 
         #region secondary, id
         // Seondary fields, ID
