@@ -14,12 +14,14 @@ public class MusicManager : MonoBehaviour
     [Tooltip("Number of chord degrees that make up the edgeParts in the beginning.")]
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;
+    [Range(0, 1f)]
+    public float velocity = 0.1f;
 
 
     [HideInInspector] public Chord curChord;
 
     // Private variables
-    private float velocity;
+
     private float minPitch, maxPitch;
     private float curPitch = 0;
     private AudioHelm.HelmController curInstrument;
@@ -71,7 +73,7 @@ public class MusicManager : MonoBehaviour
 
     private void ManageChordPlaying()
     {
-        //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curEdgePart.changed + ", leave: " + player.curEdge.leave);
+        //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curField.changed + ", leave: " + player.curEdge.leave);
         if (player.actionState == Player.ActionState.stickToEdge)
         {
             // EDGE CHANGE
@@ -133,7 +135,6 @@ public class MusicManager : MonoBehaviour
 
     private void PlayField()
     {
-        velocity = GetVelocity();
         curChord = GetChord();
 
         int ID = player.curField.ID;
@@ -162,10 +163,10 @@ public class MusicManager : MonoBehaviour
     
 
 
-    private float GetVelocity()
-    {
-        return Player.inst.GetVelocityFromDistance();
-    }
+    //private float GetVelocity()
+    //{
+    //    return Player.inst.GetVelocityFromDistance();
+    //}
 
     private Chord GetChord()
     {

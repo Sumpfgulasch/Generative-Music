@@ -355,6 +355,49 @@ public class Player : MonoBehaviour
         velocity = Mathf.Clamp(velocity, LoopData.minVelocity, LoopData.maxVelocity);
         return velocity;
     }
+    /// <summary>
+    /// Set data and stick to edge.
+    /// </summary>
+    private void PlayMovement(Side side)
+    {
+        actionState = ActionState.stickToEdge;
+        curSide = side;
+        StopCoroutine(scaleEnumerator);
+        StickToEdge(curSide);
+
+        // press frequencies
+        selectionPressTime = bt_play_selectionPressTime;
+        selectionFrequency = bt_play_selectionFrequency;
+
+        // Events
+        GameEvents.inst.FirstTouch();
+    }
+
+    /// <summary>
+    /// Set data and scale back to origin.
+    /// </summary>
+    private void StopPlayMovement(Side side)
+    {
+        actionState = ActionState.none;
+
+        if (side == Side.inner)
+        {
+            scaleEnumerator = DampedScale(scaleMin);
+        }
+        else
+        {
+            scaleEnumerator = DampedScale(scaleMax);
+        }
+        
+        StartCoroutine(scaleEnumerator);
+
+        // press frequencies
+        selectionPressTime = bt_selectionPressTime;
+        selectionFrequency = bt_selectionFrequency;
+
+        // Events
+        GameEvents.inst.Leave();
+    }
 
 
 
@@ -372,38 +415,12 @@ public class Player : MonoBehaviour
 
             if (context.performed)
             {
-                // state & movement
-                actionState = Player.ActionState.stickToEdge;
-                curSide = Side.inner;
-                StopCoroutine(scaleEnumerator);
-                StickToEdge(curSide);
-
-                // start variables; todo: entfernen weil nicht mehr gebraucht (? was ist mit maus)
-                startScale = this.transform.localScale.x; // für velocity
-                //startPosState = positionState;
-
-                // press frequencies
-                selectionPressTime = bt_play_selectionPressTime;
-                selectionFrequency = bt_play_selectionFrequency;
-
-                // Events
-                GameEvents.inst.FirstTouch();
+                PlayMovement(Side.inner);
 
             }
             else if (context.canceled)
             {
-                // state
-                actionState = Player.ActionState.none;
-
-                scaleEnumerator = DampedScale(scaleMin);
-                StartCoroutine(scaleEnumerator);
-
-                // press frequencies
-                selectionPressTime = bt_selectionPressTime;
-                selectionFrequency = bt_selectionFrequency;
-
-                // Events
-                GameEvents.inst.Leave();
+                StopPlayMovement(Side.inner);
             }
         }
     }
@@ -419,34 +436,11 @@ public class Player : MonoBehaviour
 
             if (context.performed)
             {
-                // state & movement
-                actionState = Player.ActionState.stickToEdge;
-                curSide = Side.outer;
-                StopCoroutine(scaleEnumerator);
-                StickToEdge(curSide);
-
-                // press frequencies
-                selectionPressTime = bt_play_selectionPressTime;
-                selectionFrequency = bt_play_selectionFrequency;
-
-                // Events
-                GameEvents.inst.FirstTouch();
-
+                PlayMovement(Side.outer);
             }
             else if (context.canceled)
             {
-                // state
-                actionState = Player.ActionState.none;
-                // to do: coroutine um in ursprungs-pos zu gehen -> max scale
-                scaleEnumerator = DampedScale(scaleMax);
-                StartCoroutine(scaleEnumerator);
-
-                // press frequencies
-                selectionPressTime = bt_selectionPressTime;
-                selectionFrequency = bt_selectionFrequency;
-
-                // Events
-                GameEvents.inst.Leave();
+                StopPlayMovement(Side.outer);
             }
         }
     }
@@ -461,42 +455,11 @@ public class Player : MonoBehaviour
 
             if (context.performed)
             {
-                // state & movement
-                actionState = Player.ActionState.stickToEdge;
-                StopCoroutine(scaleEnumerator);
-                StickToEdge(curSide);
-
-                // press frequencies
-                selectionPressTime = bt_play_selectionPressTime;
-                selectionFrequency = bt_play_selectionFrequency;
-
-                // Events
-                GameEvents.inst.FirstTouch();
-
+                PlayMovement(curSide);
             }
             else if (context.canceled)
             {
-                // state
-                actionState = Player.ActionState.none;
-                // to do: coroutine um in ursprungs-pos zu gehen -> max scale
-                if (curSide == Side.outer)
-                {
-                    scaleEnumerator = DampedScale(scaleMax);
-                    StartCoroutine(scaleEnumerator);
-                }
-                else
-                {
-                    scaleEnumerator = DampedScale(scaleMin);
-                    StartCoroutine(scaleEnumerator);
-                }
-                    
-
-                // press frequencies
-                selectionPressTime = bt_selectionPressTime;
-                selectionFrequency = bt_selectionFrequency;
-
-                // Events
-                GameEvents.inst.Leave();
+                StopPlayMovement(curSide);
             }
         }
     }
