@@ -113,7 +113,7 @@ public static class PlayerData
         curFieldID = player.curField.ID;        // hack
         Vector3 curEdgePart_start = TunnelData.fields[curFieldID].start;
         Vector3 curEdgePart_end = TunnelData.fields[curFieldID].end;
-        var curEdgePart_positions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
+        var curFieldPositions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
 
         // -------- nicht mehr
         //player.curField.ID = curFieldID;
@@ -157,7 +157,7 @@ public static class PlayerData
             {
                 int leftCornerID = ExtensionMethods.Modulo(curFieldID - 1, VisualController.inst.FieldsCount);
                 Vector3 leftCornerPos = TunnelData.fields[leftCornerID].start;
-                curEdgePart_positions.Insert(0, leftCornerPos);
+                curFieldPositions.Insert(0, leftCornerPos);
 
                 #region secondary
                 // secondary
@@ -176,7 +176,7 @@ public static class PlayerData
             {
                 int rightCornerID = ExtensionMethods.Modulo(curFieldID + 1, VisualController.inst.FieldsCount);
                 Vector3 rightCornerPos = TunnelData.fields[rightCornerID].end;
-                curEdgePart_positions.Add(rightCornerPos);
+                curFieldPositions.Add(rightCornerPos);
 
                 #region secondary
                 // secondary
@@ -210,7 +210,7 @@ public static class PlayerData
 
 
         // ASSIGN
-        player.curField.Set(curFieldID, curEdgePart_positions.ToArray(), isCorner);
+        player.curField.Set(curFieldID, curFieldPositions.ToArray(), isCorner);
 
 
 
@@ -239,6 +239,12 @@ public static class PlayerData
         lastEdge_start = player.curEdge.start;
         lastEdge_end = player.curEdge.end;
         lastFieldID = curFieldID;
+    }
+
+
+    public static int GetIDfromRaycast(Vector3 origin, Vector3 direction)
+    {
+
     }
 
 

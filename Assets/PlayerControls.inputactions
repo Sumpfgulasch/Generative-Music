@@ -38,6 +38,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "66ef7965-e90c-4953-a915-cafd51458ee1",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Reset",
                     "type": "Button",
                     "id": "8297cf6e-367f-44d3-9511-d5aa49f07ec1",
@@ -231,6 +239,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Play",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "04cd9d96-384e-4c8b-b50f-39b376b8ce3c",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4a3b9d9a-b9c6-430c-a756-0d8f608688f1",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

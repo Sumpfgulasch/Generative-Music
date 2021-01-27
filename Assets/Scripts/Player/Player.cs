@@ -329,9 +329,9 @@ public class Player : MonoBehaviour
 
     void GetInput()
     {
-        mousePos = Mouse.current.position.ReadValue();
-        mousePos.z = this.transform.position.z;
-        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+        //mousePos = Mouse.current.position.ReadValue();
+        //mousePos.z = this.transform.position.z;
+        //mousePos = Camera.main.ScreenToWorldPoint(mousePos);
     }
 
     
@@ -470,10 +470,7 @@ public class Player : MonoBehaviour
             }
         }
     }
-
-
-
-
+    
 
     public void OnSelectNext(InputAction.CallbackContext context)
     {
@@ -501,9 +498,26 @@ public class Player : MonoBehaviour
         {
             StopCoroutine(triggerRotationEnumerator);
         }
-
-        
     }
+
+
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        Vector3 pointerPos = context.ReadValue<Vector2>();
+        pointerPos.z = midPoint.z;
+        pointerPos = Camera.main.ScreenToWorldPoint(pointerPos);
+        Vector3 pointerVec = pointerPos - midPoint;
+        RaycastHit hit;
+        if (Physics.Raycast(midPoint, pointerVec, out hit))
+        {
+
+        }
+
+        Debug.DrawLine(midPoint, pointerPos, Color.red, 1f);
+
+        print("pointerPos: " + pointerPos);
+    }
+
 
     private IEnumerator ButtonPressBehaviour1 (IEnumerable enumerable, float startPressTime, float frequency)
     {
