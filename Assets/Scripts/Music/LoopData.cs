@@ -166,7 +166,6 @@ public static class LoopData
         {
             // Increase cycle
             curCycle++;
-            //Debug.Log("curCycle: " + curCycle);
 
 
         }

@@ -230,6 +230,15 @@ public static class MeshUpdate
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="size">[0,1]</param>
+    public static void SetMouseColliderSize(float size)
+    {
+        MeshRef.inst.mouseColllider.transform.localScale = new Vector3(size, size, 1);
+    }
+
 
 
 }

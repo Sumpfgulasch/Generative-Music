@@ -22,6 +22,10 @@ public class Player : MonoBehaviour
     public bool useKeyboard;
 
     [Header("Mouse")]
+    [Range(0.1f,1)]
+    public float mouseColliderSize_play;
+    [Range(0.1f, 1)]
+    public float mouseColliderSize_move;
     public float rotationMaxSpeed = 5f;
     [Range(0, 1f)] public float rotationTargetVectorFactor = 0.1f;
     [Range(0, 1f)] public float scaleTargetVectorFactor = 0.05f;
@@ -356,10 +360,11 @@ public class Player : MonoBehaviour
         return velocity;
     }
     /// <summary>
-    /// Set data and stick to edge.
+    /// Set data, collider size and stick to edge.
     /// </summary>
     private void PlayMovement(Side side)
     {
+        lastActionState = actionState;
         actionState = ActionState.stickToEdge;
         curSide = side;
         StopCoroutine(scaleEnumerator);
@@ -369,15 +374,19 @@ public class Player : MonoBehaviour
         selectionPressTime = bt_play_selectionPressTime;
         selectionFrequency = bt_play_selectionFrequency;
 
+        // set mouse collider
+        MeshUpdate.SetMouseColliderSize(mouseColliderSize_play);
+
         // Events
         GameEvents.inst.FirstTouch();
     }
 
     /// <summary>
-    /// Set data and scale back to origin.
+    /// Set data, collider size and scale back to origin.
     /// </summary>
     private void StopPlayMovement(Side side)
     {
+        lastActionState = actionState;
         actionState = ActionState.none;
 
         if (side == Side.inner)
@@ -395,6 +404,9 @@ public class Player : MonoBehaviour
         selectionPressTime = bt_selectionPressTime;
         selectionFrequency = bt_selectionFrequency;
 
+        // set mouse collider
+        MeshUpdate.SetMouseColliderSize(mouseColliderSize_move);
+
         // Events
         GameEvents.inst.Leave();
     }
@@ -411,8 +423,6 @@ public class Player : MonoBehaviour
 
         if (positionState != PositionState.noTunnel)
         {
-            lastActionState = actionState;
-
             if (context.performed)
             {
                 PlayMovement(Side.inner);
@@ -432,8 +442,6 @@ public class Player : MonoBehaviour
 
         if (positionState != PositionState.noTunnel)
         {
-            lastActionState = actionState;
-
             if (context.performed)
             {
                 PlayMovement(Side.outer);
@@ -451,8 +459,6 @@ public class Player : MonoBehaviour
 
         if (positionState != PositionState.noTunnel)
         {
-            lastActionState = actionState;
-
             if (context.performed)
             {
                 PlayMovement(curSide);

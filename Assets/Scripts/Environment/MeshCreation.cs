@@ -212,6 +212,7 @@ public static class MeshCreation
     public static void InitMouseCollider()
     {
         MeshRef.inst.mouseColllider.points = ExtensionMethods.Vector3ToVector2(TunnelData.vertices);
+        MeshUpdate.SetMouseColliderSize(Player.inst.mouseColliderSize_move);
     }
 
 
