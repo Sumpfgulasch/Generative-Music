@@ -52,7 +52,7 @@ public static class PlayerData
             float innerVertexToEnvDistance = (player.innerVertices[0] - (hit.point + (player.innerVertices[0] - hit.point).normalized * player.stickToOuterEdge_holeSize)).magnitude;
 
             float stickToEdgeTolerance = player.stickToEdgeTolerance;
-            if (player.actionState == Player.ActionState.stickToEdge)
+            if (player.actionState == Player.ActionState.StickToEdge)
                 stickToEdgeTolerance *= 3f;
 
             // States
@@ -164,7 +164,7 @@ public static class PlayerData
 
 
         // First edge touch
-        if (player.actionState == Player.ActionState.stickToEdge && player.lastActionState == Player.ActionState.none)
+        if (player.actionState == Player.ActionState.StickToEdge && player.lastActionState == Player.ActionState.none)
         {
             player.curEdge.firstTouch = true;
             //Debug.Log("first edge touch");
@@ -173,7 +173,7 @@ public static class PlayerData
             player.curEdge.firstTouch = false;
 
         // Leave edge // to rework
-        if (player.actionState == Player.ActionState.none && player.lastActionState == Player.ActionState.stickToEdge)
+        if (player.actionState == Player.ActionState.none && player.lastActionState == Player.ActionState.StickToEdge)
         {
             player.curEdge.leave = true;
             //Debug.Log("leave");
@@ -191,7 +191,7 @@ public static class PlayerData
 
 
     /// <summary>
-    /// For mouse and gamepad-stick selection. [to do: dont set player.curSecEdges here]
+    /// For mouse and gamepad-stick selection. Start in playerMid. [to do: dont set player.curSecEdges here]
     /// </summary>
     /// <param name="direction">Direction from mouse position to midPoint or value from gamepad stick input.</param>
     /// <returns></returns>
@@ -246,11 +246,12 @@ public static class PlayerData
     /// <returns></returns>
     public static void SetDataByID(int ID)
     {
-        // 0. last-variables
+        // 0. last-variables                                // TO DO: nicht der beste ort hier (?)
         player.lastActionState = player.actionState;
         lastEdge_start = player.curEdge.start;
         lastEdge_end = player.curEdge.end;
         lastFieldID = player.curField.ID;
+
 
         // 1. Calc positions & isCorner
         Vector3 curFieldStart = TunnelData.fields[ID].start;
@@ -322,9 +323,9 @@ public static class PlayerData
     }
 
     /// <summary>
-    /// Check if a new pointer position has a new ID and if a new ID is actually a new field.
+    /// Check if an ID is a new field. Fire FieldChange-Events.
     /// </summary>
-    public static bool FieldHasChanged()
+    public static bool FieldHasChanged(int ID)
     {
         // ID changed?
         if (player.curField.ID != lastFieldID)
@@ -334,7 +335,7 @@ public static class PlayerData
             if (!curIDisCorner)
             {
                 player.curField.changed = true;     // TO DO: to remove
-                GameEvents.inst.FieldChange();
+                //GameEvents.inst.FieldChange();
                 return true;
             }
             else
@@ -350,7 +351,7 @@ public static class PlayerData
                 else
                 {
                     player.curField.changed = true;     // TO DO: to remove
-                    GameEvents.inst.FieldChange();
+                    //GameEvents.inst.FieldChange();
                     return true;
                 }
             }

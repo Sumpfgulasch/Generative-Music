@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     // stuff
     public static Player inst;
     public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
-    public enum ActionState { none, stickToEdge };
+    public enum ActionState { none, StickToEdge };
     public PositionState positionState = PositionState.noTunnel;
     public ActionState actionState = ActionState.none;
 
@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public Edge curEdge;
     [HideInInspector] public Edge[] curSecEdges;
     [HideInInspector] public bool tunnelEnter;
-    [HideInInspector] public MusicField[] curFieldSet;
+    [HideInInspector] public MusicField[] curFields;
 
 
 
@@ -103,19 +103,21 @@ public class Player : MonoBehaviour
     private float startScale;
     Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
-    private IEnumerator rotateEnumerator, triggerRotationEnumerator, scaleOutEnumerator, scaleEnumerator;
-    private IEnumerable rotateEnumerable;
-    private float selectionPressTime, selectionFrequency;
+    private IEnumerator triggerRotRoutine, scaleOutEnumerator, scaleEnumerator;
+    private IEnumerable rotateRoutine;
+    private float curRotPressTime, curRotFrequency;
+    private List<IEnumerator> curRotateRoutines = new List<IEnumerator>();
+    private List<IEnumerator> curTriggerRoutines = new List<IEnumerator>();
     private enum Side { inner, outer};
     private Side curSide = Side.inner;
 
 
 
     // get set
-    MusicManager musicManager { get { return MusicManager.inst; } }
-    VisualController visualController { get { return VisualController.inst; } }
+    MusicManager MusicManager { get { return MusicManager.inst; } }
+    VisualController VisualController { get { return VisualController.inst; } }
 
-    private float deltaTime { get { return Time.deltaTime * GameManager.inst.FPS; } }
+    private float DeltaTime { get { return Time.deltaTime * GameManager.inst.FPS; } }
 
     
 
@@ -135,12 +137,13 @@ public class Player : MonoBehaviour
     {
         inst = this;
         midPoint = this.transform.position;
-        rotateEnumerator = RotateToNextField(1).GetEnumerator(); // hack inits
+        //enumerator = RotateToNextField(1).GetEnumerator();          // hack inits
+        triggerRotRoutine = TriggerRoutineFrequently(RotateToNextField(1), curRotPressTime, curRotFrequency, curRotateRoutines, curTriggerRoutines);
         scaleOutEnumerator = DampedScale(scaleMax);
         scaleEnumerator = DampedScale(scaleMin);
 
-        selectionPressTime = bt_selectionPressTime;
-        selectionFrequency = bt_selectionFrequency;
+        curRotPressTime = bt_selectionPressTime;
+        curRotFrequency = bt_selectionFrequency;
     }
 
 
@@ -234,40 +237,14 @@ public class Player : MonoBehaviour
                 MoveTowardsMouse(curSide);
             }
             // action: stick to edge
-            else if (actionState == ActionState.stickToEdge)
+            else if (actionState == ActionState.StickToEdge)
             {
                 StickToEdge(curSide);
             }
         }
 
     }
-
-
-    public Vector3 GetNextTargetRotation(int direction)
-    {
-        int curID = curField.ID;
-        Vector3 targetPos = MusicField.NextFieldMid(curID, direction);
-
-        return targetPos;
-    }
-
-    private void RotateToTarget(Vector3 targetPos)
-    {
-        Vector3 targetVec = targetPos - this.transform.position;
-        Vector3 curVec = outerVertices[0] - this.transform.position;
-
-        float nextRot = Vector2.SignedAngle(curVec, targetVec) * bt_rotationDamp * deltaTime;
-
-        this.transform.eulerAngles += new Vector3(this.transform.eulerAngles.x, this.transform.eulerAngles.y, nextRot);
-
-        // Hack1 (gegen 180° & 60° Winkel)
-        if ((Mathf.Abs(this.transform.eulerAngles.z) > 180f - 0.1f && Mathf.Abs(this.transform.eulerAngles.z) < 180f + 0.1f) ||
-            Mathf.Abs(this.transform.eulerAngles.z) > 60f - 0.1f && Mathf.Abs(this.transform.eulerAngles.z) < 60f + 0.1f)
-        {
-            this.transform.eulerAngles += new Vector3(0, 0, 0.1f);
-        }
-    }
-
+    
 
 
     void MoveTowardsMouse(Side side)
@@ -360,19 +337,19 @@ public class Player : MonoBehaviour
 
 
     /// <summary>
-    /// Set data, collider size and stick to edge.
+    /// Set data (actionState, curSide, press times), change collider size and stick to edge.
     /// </summary>
     private void PlayMovement(Side side)
     {
         lastActionState = actionState;
-        actionState = ActionState.stickToEdge;
+        actionState = ActionState.StickToEdge;
         curSide = side;
         StopCoroutine(scaleEnumerator);
         StickToEdge(curSide);
 
         // press frequencies
-        selectionPressTime = bt_play_selectionPressTime;
-        selectionFrequency = bt_play_selectionFrequency;
+        curRotPressTime = bt_play_selectionPressTime;
+        curRotFrequency = bt_play_selectionFrequency;
 
         // set mouse collider
         MeshUpdate.SetMouseColliderSize(mouseColliderSize_play);
@@ -402,8 +379,8 @@ public class Player : MonoBehaviour
         StartCoroutine(scaleEnumerator);
 
         // press frequencies
-        selectionPressTime = bt_selectionPressTime;
-        selectionFrequency = bt_selectionFrequency;
+        curRotPressTime = bt_selectionPressTime;
+        curRotFrequency = bt_selectionFrequency;
 
         // set mouse collider
         MeshUpdate.SetMouseColliderSize(mouseColliderSize_move);
@@ -420,14 +397,11 @@ public class Player : MonoBehaviour
 
     public void OnPlayInside(InputAction.CallbackContext context)
     {
-        // = SET ACTION STATES
-
         if (positionState != PositionState.noTunnel)
         {
             if (context.performed)
             {
                 PlayMovement(Side.inner);
-
             }
             else if (context.canceled)
             {
@@ -435,12 +409,9 @@ public class Player : MonoBehaviour
             }
         }
     }
-
-    // to do: kürzen
+    
     public void OnPlayOutside(InputAction.CallbackContext context)
     {
-        // = SET ACTION STATES
-
         if (positionState != PositionState.noTunnel)
         {
             if (context.performed)
@@ -456,8 +427,6 @@ public class Player : MonoBehaviour
 
     public void OnPlay(InputAction.CallbackContext context)
     {
-        // = SET ACTION STATES
-
         if (positionState != PositionState.noTunnel)
         {
             if (context.performed)
@@ -476,15 +445,18 @@ public class Player : MonoBehaviour
     {
         if (context.performed)
         {
+            // 1. Get input
             int direction = (int)context.ReadValue<float>();
             
             // 2. Rotate to next field
-            rotateEnumerable = RotateToNextField(direction);
-            triggerRotationEnumerator = ButtonPressBehaviour1(rotateEnumerable, selectionPressTime, selectionFrequency);
+            var rotateRoutine = RotateToNextField(direction);
+            triggerRotRoutine = TriggerRoutineFrequently(rotateRoutine, curRotPressTime, curRotFrequency, curRotateRoutines, curTriggerRoutines);
 
-            StopCoroutine(rotateEnumerator);
-            StartCoroutine(triggerRotationEnumerator);
+            StopCoroutines(curRotateRoutines);
+            StopCoroutine(triggerRotRoutine);           // TO DO (maybe): statt einzelne routine, liste von routines stoppen
 
+            StartCoroutine(triggerRotRoutine);
+            
             if (actionState == ActionState.none)
             {
                 // hier rhythmisch
@@ -496,42 +468,93 @@ public class Player : MonoBehaviour
         }
         else if (context.canceled)
         {
-            StopCoroutine(triggerRotationEnumerator);
+            StopCoroutine(triggerRotRoutine);
         }
     }
 
-
+    /// <summary>
+    /// For mouse movement so far.
+    /// </summary>
     public void OnMove(InputAction.CallbackContext context)
     {
-        Vector3 pointerPos = context.ReadValue<Vector2>();
-        pointerPos.z = midPoint.z;
-        pointerPos = Camera.main.ScreenToWorldPoint(pointerPos);
-        Vector3 pointerVec = pointerPos - midPoint;
-        RaycastHit hit;
-        if (Physics.Raycast(midPoint, pointerVec, out hit))
+        // 1. Get mouse vector
+        var pointerPos = context.ReadValue<Vector2>();
+        var mouseDirection = ConvertMouseToDirection(pointerPos);
+
+        // 2. Get & set data (ID, positions, ...)
+        var newID = PlayerData.GetIDfromRaycast(mouseDirection);
+        PlayerData.SetDataByID(newID);
+        var fieldChanged = PlayerData.FieldHasChanged(newID);
+
+        if (fieldChanged)
         {
+            StopCoroutines(curRotateRoutines);
 
+            var rotateRoutine = RotateToID(newID);
+            curRotateRoutines.Add(rotateRoutine);
+
+            // 3. Rotate!
+            StartCoroutine(rotateRoutine);
         }
-
         Debug.DrawLine(midPoint, pointerPos, Color.red, 1f);
-
-        print("pointerPos: " + pointerPos);
     }
 
 
-    private IEnumerator ButtonPressBehaviour1 (IEnumerable enumerable, float startPressTime, float frequency)
-    {
-        // = Call a coroutine frequently to simulate button behaviour: trigger immediatly, wait for press time, trigger frequently
-        // Info: enumerable als Argument, weil ich jedes mal einen neuen enumerator erzeugen muss, sonst wird die coroutine nicht erneut aufgerufen
 
+
+    // ------------------------------ Rotation methods ------------------------------
+
+
+    /// <summary>
+    /// Stop all routines in a list and remove them from the list.
+    /// </summary>
+    /// <param name="routines"></param>
+    private void StopCoroutines(List<IEnumerator> routines)
+    {
+        foreach (IEnumerator routine in routines)
+        {
+            StopCoroutine(routine);
+        }
+        routines = new List<IEnumerator>();
+    }
+
+
+    /// <summary>
+    /// Converts the input value by the input system to a direction, starting at midPoint.
+    /// </summary>
+    /// <param name="input">Value by input system.</param>
+    private Vector3 ConvertMouseToDirection(Vector2 input)
+    {
+        Vector3 pointerPos = input;
+        pointerPos.z = midPoint.z;
+        pointerPos = Camera.main.ScreenToWorldPoint(pointerPos);
+        Vector3 pointerDirection = pointerPos - midPoint;
+
+        if (pointerDirection.z != 0)
+            Debug.LogError("wrong mouse pos.z-value");
+
+        return pointerDirection;
+    }
+
+    /// <summary>
+    /// Call a coroutine frequently to simulate button behaviour: trigger immediatly, wait for press time, trigger frequently.
+    /// </summary>
+    /// <param name="routine">The routine. Enumerable als Argument, weil ich jedes mal einen neuen enumerator erzeugen muss, sonst wird die coroutine nicht erneut aufgerufen</param>
+    /// <param name="startWaitTime"></param>
+    /// <param name="frequency"></param>
+    /// <param name="routineRefList">Empty list, to be able to quit all routines later.</param>
+    /// <returns></returns>
+    private IEnumerator TriggerRoutineFrequently (IEnumerable routine, float startWaitTime, float frequency, List<IEnumerator> routineRefList, List<IEnumerator> thisRoutineRefList)
+    {
         float timer = 0;
 
         // 1. Initial
-        rotateEnumerator = enumerable.GetEnumerator();
-        StartCoroutine(rotateEnumerator);
+        IEnumerator enumerator = routine.GetEnumerator();
+        routineRefList.Add(enumerator);
+        StartCoroutine(enumerator);
 
         // 2. Press time
-        while (timer < startPressTime)
+        while (timer < startWaitTime)
         {
             timer += Time.deltaTime;
             yield return null;
@@ -543,10 +566,11 @@ public class Player : MonoBehaviour
         {
             if (timer >= frequency)
             {
-                StopCoroutine(rotateEnumerator);
+                StopCoroutines(routineRefList);
 
-                rotateEnumerator = enumerable.GetEnumerator();
-                StartCoroutine(rotateEnumerator);
+                enumerator = routine.GetEnumerator();
+                routineRefList.Add(enumerator);
+                StartCoroutine(enumerator);
 
                 timer -= frequency;
             }
@@ -558,30 +582,36 @@ public class Player : MonoBehaviour
         
     }
     
-
+    /// <summary>
+    /// Single rotation routine: Rotate in the given direction to the adjacent field, if possible. Get and set data (curID, fieldPos, ...), fire event.
+    /// </summary>
+    /// <param name="direction">[1 or -1]</param>
     private IEnumerable RotateToNextField(int direction)
     {
-        // = rotate to next field, with break; if player is making music, do stickToEdge(), too
-
-        // 1. Get & set next ID
+        // 1. Get next ID
         int nextID = MusicField.NextFieldID(curField.ID, direction);
-        //curField.ID = nextID;
-
-        GameEvents.inst.FieldChange();
-
-        if (curFieldSet[nextID].selectable)
+        
+        // 2. Selectable?
+        if (curFields[nextID].selectable)                             // TO DO: sollte hier nicht rein
         {
-            var targetPos = GetNextTargetRotation(direction);
-            curField.ID = nextID;
+            // 3. Get target rotation
+            var targetPos = MusicField.FieldMid(nextID);
+
+            // 4. Set data (ID, ...)
+            PlayerData.SetDataByID(nextID);
+
+            // 5. Event
+            GameEvents.inst.FieldChange();
 
             float maxTime = 1.2f;
             float timer = 0;
 
+            // 5. ROTATE TO ID
             while (timer < maxTime)
             {
                 RotateToTarget(targetPos);
 
-                if (actionState == ActionState.stickToEdge)
+                if (actionState == ActionState.StickToEdge)
                 {
                     StickToEdge(curSide);
                 }
@@ -593,10 +623,40 @@ public class Player : MonoBehaviour
         }
         else
         {
-            // TO DO: PerformNotDoable();
+            // TO DO: Perform NotDoable-Animation;
         }
+    }
 
-        
+    private IEnumerator RotateToID(int ID)
+    {
+        // 1. Selectable?
+        if (curFields[ID].selectable)
+        {
+            // 2. Event
+            GameEvents.inst.FieldChange();
+
+            // 3. Target rotation
+            var targetPos = MusicField.FieldMid(ID);
+
+            float maxTime = 1.2f;
+            float timer = 0;
+
+            // 4. ROTATE TO ID
+            while (timer < maxTime)
+            {
+                RotateToTarget(targetPos);
+
+                if (actionState == ActionState.StickToEdge)
+                {
+                    StickToEdge(curSide);
+                }
+
+                timer += Time.deltaTime;
+
+                yield return null;
+            }
+        }
+        yield return null;
     }
 
     /// <summary>
@@ -612,11 +672,38 @@ public class Player : MonoBehaviour
 
         while (timer < maxTime)
         {
-            Vector3 scaleSpeed = (maxScale - this.transform.localScale) * bt_scaleDamp * deltaTime;
+            Vector3 scaleSpeed = (maxScale - this.transform.localScale) * bt_scaleDamp * DeltaTime;
             this.transform.localScale += scaleSpeed;
 
             timer += Time.deltaTime;
             yield return null;
+        }
+    }
+
+    //public Vector3 GetTargetRotation(int targetID)
+    //{
+    //    Vector3 targetPos = MusicField.FieldMid(targetID);
+
+    //    return targetPos;
+    //}
+
+    /// <summary>
+    /// Perform Rotation. Damped by bt_rotationDamp.
+    /// </summary>
+    private void RotateToTarget(Vector3 targetPos)
+    {
+        Vector3 targetVec = targetPos - this.transform.position;                                                            // TO DO: animation curve, statt damping
+        Vector3 curVec = outerVertices[0] - this.transform.position;
+
+        float nextRot = Vector2.SignedAngle(curVec, targetVec) * bt_rotationDamp * DeltaTime;
+
+        this.transform.eulerAngles += new Vector3(this.transform.eulerAngles.x, this.transform.eulerAngles.y, nextRot);
+
+        // Hack (gegen 180° & 60° Winkel)
+        if ((Mathf.Abs(this.transform.eulerAngles.z) > 180f - 0.1f && Mathf.Abs(this.transform.eulerAngles.z) < 180f + 0.1f) ||
+            Mathf.Abs(this.transform.eulerAngles.z) > 60f - 0.1f && Mathf.Abs(this.transform.eulerAngles.z) < 60f + 0.1f)
+        {
+            this.transform.eulerAngles += new Vector3(0, 0, 0.1f);
         }
     }
 

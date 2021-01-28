@@ -146,7 +146,7 @@ public static class LoopData
         }
         TunnelData.fields = MusicFieldSet.StoreDataInFields(TunnelData.fields, fieldTypes, chords, colors, selectables, buildUps);
 
-        Player.curFieldSet = TunnelData.fields;
+        Player.curFields = TunnelData.fields;
 
         // 6. Beat data
         GetBeatData();

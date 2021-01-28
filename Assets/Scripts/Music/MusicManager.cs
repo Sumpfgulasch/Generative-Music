@@ -74,7 +74,7 @@ public class MusicManager : MonoBehaviour
     private void ManageChordPlaying()
     {
         //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curField.changed + ", leave: " + player.curEdge.leave);
-        if (player.actionState == Player.ActionState.stickToEdge)
+        if (player.actionState == Player.ActionState.StickToEdge)
         {
             // EDGE CHANGE
             //if (player.curEdge.changed)
@@ -138,10 +138,10 @@ public class MusicManager : MonoBehaviour
         curChord = GetChord();
 
         int ID = player.curField.ID;
-        var fieldType = player.curFieldSet[ID].type;
+        var fieldType = player.curFields[ID].type;
 
         // nur wenn sich feld nicht aufbaut
-        if (!player.curFieldSet[ID].isBuildingUp)
+        if (!player.curFields[ID].isBuildingUp)
         {
             switch (fieldType)
             {
@@ -172,7 +172,7 @@ public class MusicManager : MonoBehaviour
     {
         // = Get chord from currently touched edgePart
         int playerID = player.curField.ID;
-        Chord chord = player.curFieldSet[playerID].chord;
+        Chord chord = player.curFields[playerID].chord;
 
         return chord;
     }

@@ -162,34 +162,57 @@ public class MusicField
             return TunnelData.fields[ID].end;
     }
 
-    public static Vector3 NextFieldMid(int curID, int direction)
+    private static Vector3 RegularFieldMid(int ID)
     {
-        // = take the mid of corners
+        Vector3 position = (TunnelData.fields[ID].start + TunnelData.fields[ID].end) / 2f;
 
-        int nextID = (curID + direction).Modulo(VisualController.inst.FieldsCount);
-        Vector3 position;
+        return position;
+    }
 
-        if (!IsCorner(nextID))
+    /// <summary>
+    /// Returns the mid point of any field, given by an ID. Respect corner IDs, too.
+    /// </summary>
+    /// <param name="targetID"></param>
+    /// <returns></returns>
+    public static Vector3 FieldMid(int targetID)
+    {
+        if (IsCorner(targetID))
         {
-            position = (TunnelData.fields[nextID].start + TunnelData.fields[nextID].end) / 2f;
-            return position;
-        }
-        else if (!IsCorner(curID) && IsCorner(nextID))
-        {
-            position = CornerPosition(nextID);
-            return position;
-        }
-        else if (IsCorner(curID) && IsCorner(nextID))
-        {
-            nextID = (nextID + (int) Mathf.Sign(direction)).Modulo(VisualController.inst.FieldsCount);
-            position = (TunnelData.fields[nextID].start + TunnelData.fields[nextID].end) / 2f;
-            return position;
+            return CornerPosition(targetID);
         }
         else
         {
-            Debug.LogError("wrong values");
-            return Vector3.zero;
+            return RegularFieldMid(targetID);
         }
+
+        #region old
+        // = take the mid of corners
+
+        //int nextID = (curID + direction).Modulo(VisualController.inst.FieldsCount);
+        //Vector3 position;
+
+        //if (!IsCorner(nextID))
+        //{
+        //    position = (TunnelData.fields[nextID].start + TunnelData.fields[nextID].end) / 2f;
+        //    return position;
+        //}
+        //else if (!IsCorner(curID) && IsCorner(nextID))
+        //{
+        //    position = CornerPosition(nextID);
+        //    return position;
+        //}
+        //else if (IsCorner(curID) && IsCorner(nextID))
+        //{
+        //    nextID = (nextID + (int) Mathf.Sign(direction)).Modulo(VisualController.inst.FieldsCount);
+        //    position = (TunnelData.fields[nextID].start + TunnelData.fields[nextID].end) / 2f;
+        //    return position;
+        //}
+        //else
+        //{
+        //    Debug.LogError("wrong values");
+        //    return Vector3.zero;
+        //}
+        #endregion
 
     }
 
