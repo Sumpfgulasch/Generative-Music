@@ -21,6 +21,10 @@ public class VisualController : MonoBehaviour
     public float playerSecFieldThickness = 0.01f;
     public float playerFieldBeforeSurface = 0.002f;
     public float fieldsBeforeSurface = 0.01f;
+    [Range(0.1f, 1)]
+    public float mouseColliderSize_play = 0.7f;
+    [Range(0.1f, 1)]
+    public float mouseColliderSize_move = 0.3f;
 
     // Properties
     public int FieldsCount

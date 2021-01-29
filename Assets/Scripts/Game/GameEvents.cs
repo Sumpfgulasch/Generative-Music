@@ -9,9 +9,9 @@ public class GameEvents : MonoBehaviour
     public static GameEvents inst;
 
     public Action onTunnelEnter;
-    public Action onFirstTouch;
+    public Action onFieldStart;
     public Action<PlayerField> onFieldChange;
-    public Action onLeave;
+    public Action onFieldLeave;
 
     public Action onFirstBeat;
     public Action onSecondBeat;
@@ -29,9 +29,9 @@ public class GameEvents : MonoBehaviour
         onTunnelEnter?.Invoke();
     }
 
-    public void FirstTouch()
+    public void FieldStart()
     {
-        onFirstTouch?.Invoke();
+        onFieldStart?.Invoke();
     }
 
     public void FieldChange(PlayerField fieldData)
@@ -39,9 +39,9 @@ public class GameEvents : MonoBehaviour
         onFieldChange?.Invoke(fieldData);
     }
 
-    public void Leave()
+    public void FieldLeave()
     {
-        onLeave?.Invoke();
+        onFieldLeave?.Invoke();
     }
 
     

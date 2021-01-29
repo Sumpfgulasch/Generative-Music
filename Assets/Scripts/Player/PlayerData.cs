@@ -30,84 +30,51 @@ public static class PlayerData
     // ----------------------------- Public methods ----------------------------
 
 
+    #region SetPositionStates
+    //public static void SetPositionStates()
+    //{
+    //    player.lastPosState = player.positionState;
 
-    public static void SetPositionStates()
-    {
-        player.lastPosState = player.positionState;
+    //    RaycastHit hit;
+    //    if (Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit))
+    //    {
+    //        // Calculations
+    //        float playerRadius = (player.outerVertices[0] - midPoint).magnitude;
+    //        float envDistance = (hit.point - midPoint).magnitude;
+    //        float playerToEnvDistance = Mathf.Abs(playerRadius - envDistance);
+    //        float innerVertexToEnvDistance = (player.innerVertices[0] - (hit.point + (player.innerVertices[0] - hit.point).normalized * player.stickToOuterEdge_holeSize)).magnitude;
 
-        RaycastHit hit;
-        if (Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit))
-        {
-            // Calculations
-            float playerRadius = (player.outerVertices[0] - midPoint).magnitude;
-            float envDistance = (hit.point - midPoint).magnitude;
-            float playerToEnvDistance = Mathf.Abs(playerRadius - envDistance);
-            float innerVertexToEnvDistance = (player.innerVertices[0] - (hit.point + (player.innerVertices[0] - hit.point).normalized * player.stickToOuterEdge_holeSize)).magnitude;
+    //        float stickToEdgeTolerance = player.stickToEdgeTolerance;
+    //        if (player.actionState == Player.ActionState.Play)
+    //            stickToEdgeTolerance *= 3f;
 
-            float stickToEdgeTolerance = player.stickToEdgeTolerance;
-            if (player.actionState == Player.ActionState.StickToEdge)
-                stickToEdgeTolerance *= 3f;
+    //        // States
+    //        if (playerToEnvDistance < stickToEdgeTolerance)
+    //            player.positionState = Player.PositionState.InnerEdge;
+    //        else if (innerVertexToEnvDistance < stickToEdgeTolerance)
+    //            player.positionState = Player.PositionState.OuterEdge;
+    //        else if (playerRadius < envDistance)
+    //            player.positionState = Player.PositionState.Inside;
+    //        else
+    //            player.positionState = Player.PositionState.Outside;
+    //    }
+    //    else
+    //        player.positionState = Player.PositionState.NoTunnel;
 
-            // States
-            if (playerToEnvDistance < stickToEdgeTolerance)
-                player.positionState = Player.PositionState.innerEdge;
-            else if (innerVertexToEnvDistance < stickToEdgeTolerance)
-                player.positionState = Player.PositionState.outerEdge;
-            else if (playerRadius < envDistance)
-                player.positionState = Player.PositionState.inside;
-            else
-                player.positionState = Player.PositionState.outside;
-        }
-        else
-            player.positionState = Player.PositionState.noTunnel;
-
-        // Tunnel enter?
-        if (player.positionState != Player.PositionState.noTunnel && player.lastPosState == Player.PositionState.noTunnel)
-        {
-            player.tunnelEnter = true;
-            GameEvents.inst.TunnelStart();
-        }
-        else
-        {
-            player.tunnelEnter = false;
-        }
-    }
-
-
-
-    public static void CalcEdgeData()
-    {
-
-        // --------------------------------- TO REWORK --------------------------------
+    //    // Tunnel enter?
+    //    if (player.positionState != Player.PositionState.NoTunnel && player.lastPosState == Player.PositionState.NoTunnel)
+    //    {
+    //        player.tunnelEnter = true;
+    //        GameEvents.inst.TunnelStart();
+    //    }
+    //    else
+    //    {
+    //        player.tunnelEnter = false;
+    //    }
+    //}
+    #endregion
 
         
-        // Edge change?
-        if (player.curEdge.start == lastEdge_start && player.curEdge.end == lastEdge_end)
-            player.curEdge.changed = false;
-        else
-            player.curEdge.changed = true;
-
-
-
-        // First edge touch
-        if (player.actionState == Player.ActionState.StickToEdge && player.lastActionState == Player.ActionState.none)
-        {
-            player.curEdge.firstTouch = true;
-            //Debug.Log("first edge touch");
-        }
-        else
-            player.curEdge.firstTouch = false;
-
-        // Leave edge // to rework
-        if (player.actionState == Player.ActionState.none && player.lastActionState == Player.ActionState.StickToEdge)
-        {
-            player.curEdge.leave = true;
-            //Debug.Log("leave");
-        }
-        else
-            player.curEdge.leave = false;
-    }
-
 
     /// <summary>
     /// Return the current ID. For mouse and gamepad-stick selection. Start in playerMid and send ray. Set curEdges (!).
@@ -162,7 +129,6 @@ public static class PlayerData
     public static PlayerField GetDataByID(int ID)
     {
         // 0. last-variables
-        player.lastActionState = player.actionState;
         lastEdge_start = player.curEdge.start;
         lastEdge_end = player.curEdge.end;
         lastFieldID = player.curField.ID;
@@ -255,8 +221,6 @@ public static class PlayerData
             bool curIDisCorner = MusicField.IsCorner(player.curField.ID);
             if (!curIDisCorner)
             {
-                player.curField.changed = true;     // TO DO: to remove
-                //GameEvents.inst.FieldChange();
                 return true;
             }
             else
@@ -266,29 +230,18 @@ public static class PlayerData
                 bool lastIDisClose = Mathf.Abs(curID - lastFieldID) == 1 || Mathf.Abs(curID - lastFieldID) == VisualController.inst.FieldsCount - 1;
                 if (lastIDisCorner && lastIDisClose)
                 {
-                    player.curField.changed = false;    // TO DO: to remove
                     return false;
                 }
                 else
                 {
-                    player.curField.changed = true;     // TO DO: to remove
-                    //GameEvents.inst.FieldChange();
                     return true;
                 }
             }
         }
         else
         {
-            player.curField.changed = false;    // TO DO: to remove
             return false;
         }
-    }
-
-
-
-    public static void AddCornerPosition(int ID)
-    {
-        
     }
 
 

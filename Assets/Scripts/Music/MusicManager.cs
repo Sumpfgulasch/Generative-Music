@@ -32,8 +32,8 @@ public class MusicManager : MonoBehaviour
 
 
     // Properties
-    Player player { get { return Player.inst; } }
-    VisualController visualController { get { return VisualController.inst; } }
+    Player Player { get { return Player.inst; } }
+    VisualController VisualController { get { return VisualController.inst; } }
 
 
 
@@ -54,12 +54,17 @@ public class MusicManager : MonoBehaviour
     {
         // Init
         inst = this;
+        curChord = Chords.c4Major;          // stupid inits
+        curInstrument = Instrument.inner;
 
         //controllers[0].SetPitchWheel(0);
 
-        // EVENTS
+        // EVENT SUBSCRIPTION
         MusicRef.inst.beatSequencer.beatEvent.AddListener(OnFirstBeats);
         MusicRef.inst.beatSequencer.beatEvent.AddListener(OnBeat);
+        GameEvents.inst.onFieldStart += OnFieldStart;
+        GameEvents.inst.onFieldChange += OnFieldChange;
+        GameEvents.inst.onFieldLeave += OnFieldLeave;
     }
     
     void Update()
@@ -74,7 +79,7 @@ public class MusicManager : MonoBehaviour
     private void ManageChordPlaying()
     {
         //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curField.changed + ", leave: " + player.curEdge.leave);
-        if (player.actionState == Player.ActionState.StickToEdge)
+        if (Player.actionState == Player.ActionState.Play)
         {
             // EDGE CHANGE
             //if (player.curEdge.changed)
@@ -85,9 +90,9 @@ public class MusicManager : MonoBehaviour
             //}
 
             // FIRST EDGE TOUCH
-            if (player.curEdge.firstTouch)
+            if (Player.curEdge.firstTouch)
             {
-                PlayField();
+                //PlayField();
 
                 #region pitch
                 // calc pitch
@@ -96,21 +101,21 @@ public class MusicManager : MonoBehaviour
             }
 
             // EDGE PART CHANGE
-            else if (player.curField.changed)
+            else if (Player.curField.changed)
             {
-                StopChord(curChord, curInstrument);
+                //StopChord(curChord, curInstrument);
 
-                curChord = GetChord();
+                //curChord = GetChord();
 
-                PlayChord(curChord, curInstrument, velocity);
+                //PlayChord(curChord, curInstrument, velocity);
             }
         }
         else
         {
             // LEAVE EDGE
-            if (player.curEdge.leave)
+            if (Player.curEdge.leave)
             {
-                StopChord(curChord, curInstrument);
+                //StopChord(curChord, curInstrument);
             }
         }
 
@@ -137,11 +142,11 @@ public class MusicManager : MonoBehaviour
     {
         curChord = GetChord();
 
-        int ID = player.curField.ID;
-        var fieldType = player.curFields[ID].type;
+        int ID = Player.curField.ID;
+        var fieldType = Player.curFields[ID].type;
 
         // nur wenn sich feld nicht aufbaut
-        if (!player.curFields[ID].isBuildingUp)
+        if (!Player.curFields[ID].isBuildingUp)
         {
             switch (fieldType)
             {
@@ -171,8 +176,8 @@ public class MusicManager : MonoBehaviour
     private Chord GetChord()
     {
         // = Get chord from currently touched edgePart
-        int playerID = player.curField.ID;
-        Chord chord = player.curFields[playerID].chord;
+        int playerID = Player.curField.ID;
+        Chord chord = Player.curFields[playerID].chord;
 
         return chord;
     }
@@ -184,30 +189,37 @@ public class MusicManager : MonoBehaviour
 
 
 
-    private void OnFirstBeats(int beat)
+    // Fields
+    private void OnFieldStart()
     {
-        if (beat == 0)
+        PlayField();
+
+        #region pitch
+        // calc pitch
+        SetFirstPitchRange(ref minPitch, ref maxPitch);
+        #endregion
+    }
+
+    private void OnFieldChange(PlayerField data)
+    {
+        if (Player.actionState == Player.ActionState.Play)
         {
-            GameEvents.inst.onFirstBeat?.Invoke();
-            print("on first beat");
-        }
-        else if (beat / LoopData.beatsPerBar == 1)
-        {
-            GameEvents.inst.onSecondBeat?.Invoke();
-            MusicRef.inst.beatSequencer.beatEvent.RemoveListener(this.OnFirstBeats);
-            print("on second beat");
+            StopChord(curChord, curInstrument);
+
+            curChord = GetChord();
+
+            PlayChord(curChord, curInstrument, velocity);
         }
     }
 
-    private void OnBeat(int beat)
+    private void OnFieldLeave()
     {
-        if (beat % LoopData.beatsPerBar == 0)
-        {
-            GameEvents.inst.onBeat?.Invoke(beat/LoopData.beatsPerBar);
-        }
+        StopChord(curChord, curInstrument);
     }
 
 
+
+    // Input
 
     public void OnReset(InputAction.CallbackContext context)
     {
@@ -235,19 +247,46 @@ public class MusicManager : MonoBehaviour
 
 
 
+    // Beats
+
+    private void OnFirstBeats(int beat)
+    {
+        if (beat == 0)
+        {
+            GameEvents.inst.onFirstBeat?.Invoke();
+            print("on first beat");
+        }
+        else if (beat / LoopData.beatsPerBar == 1)
+        {
+            GameEvents.inst.onSecondBeat?.Invoke();
+            MusicRef.inst.beatSequencer.beatEvent.RemoveListener(this.OnFirstBeats);
+            print("on second beat");
+        }
+    }
+
+    private void OnBeat(int beat)
+    {
+        if (beat % LoopData.beatsPerBar == 0)
+        {
+            GameEvents.inst.onBeat?.Invoke(beat / LoopData.beatsPerBar);
+        }
+    }
+
+
+
 
     // ------------------------- Pitch -------------------------------
 
     private void SetFirstPitchRange(ref float min, ref float max)
     {
         float randRange = Random.Range(maxEdgePitchIntervalRange, 0);
-        min = curPitch - randRange * player.curEdge.percentage;
-        max = curPitch + randRange * (1 - player.curEdge.percentage);
+        min = curPitch - randRange * Player.curEdge.percentage;
+        max = curPitch + randRange * (1 - Player.curEdge.percentage);
     }
 
     private void SetNextPitchRange(ref float min, ref float max)
     {
-        if (player.curRotSpeed < 0)
+        if (Player.curRotSpeed < 0)
         {
             // Clockwise
             min = max;

@@ -7,10 +7,10 @@ public class Player : MonoBehaviour
 {
     // stuff
     public static Player inst;
-    public enum PositionState { inside, outside, innerEdge, outerEdge, noTunnel };
-    public enum ActionState { none, StickToEdge };
-    public PositionState positionState = PositionState.noTunnel;
-    public ActionState actionState = ActionState.none;
+    public enum PositionState { Inside, Outside, InnerEdge, OuterEdge, NoTunnel };
+    public enum ActionState { None, Play };
+    public PositionState positionState = PositionState.NoTunnel;
+    public ActionState actionState = ActionState.None;
 
     // Public variables
     [Header("General stuff")]
@@ -22,10 +22,6 @@ public class Player : MonoBehaviour
     public bool useKeyboard;
 
     [Header("Mouse")]
-    [Range(0.1f,1)]
-    public float mouseColliderSize_play;
-    [Range(0.1f, 1)]
-    public float mouseColliderSize_move;
     public float rotationMaxSpeed = 5f;
     [Range(0, 1f)] public float rotationTargetVectorFactor = 0.1f;
     [Range(0, 1f)] public float scaleTargetVectorFactor = 0.05f;
@@ -65,9 +61,6 @@ public class Player : MonoBehaviour
 
 
     // Public attributes
-    [HideInInspector] public PositionState lastPosState;
-    [HideInInspector] public ActionState lastActionState;
-    [HideInInspector] public PositionState startPosState;
     [HideInInspector] public float curRotSpeed;
     [HideInInspector] public bool startedBounce = false;
     [HideInInspector] public Vector3[] outerVertices = new Vector3[3];
@@ -103,7 +96,7 @@ public class Player : MonoBehaviour
     private float startScale;
     Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
-    private IEnumerator triggerRotRoutine, scaleOutEnumerator, scaleEnumerator;
+    private IEnumerator triggerRotRoutine, scaleOutEnumerator, scaleRoutine;
     private IEnumerable rotateRoutine;
     private float curRotPressTime, curRotFrequency;
     private List<IEnumerator> curRotateRoutines = new List<IEnumerator>();
@@ -140,7 +133,7 @@ public class Player : MonoBehaviour
         //enumerator = RotateToNextField(1).GetEnumerator();          // hack inits
         triggerRotRoutine = TriggerRoutineFrequently(RotateToNextField(1), curRotPressTime, curRotFrequency, curRotateRoutines);
         scaleOutEnumerator = DampedScale(scaleMax);
-        scaleEnumerator = DampedScale(scaleMin);
+        scaleRoutine = DampedScale(scaleMin);
 
         curRotPressTime = bt_selectionPressTime;
         curRotFrequency = bt_selectionFrequency;
@@ -163,15 +156,8 @@ public class Player : MonoBehaviour
     void ManageMovement()
     {
         // 1. Handle Data
-        GetInput();
         GetVertices();
-        PlayerData.SetPositionStates();
-        //PlayerData.SetActionStates();
         CalcMovementData();
-        PlayerData.CalcEdgeData();
-
-        // 2. Perform movement
-        PerformMovement();
     }
 
 
@@ -219,31 +205,7 @@ public class Player : MonoBehaviour
         scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
     }
 
-
-
     
-
-    void PerformMovement()
-    {
-        // = manage states
-        
-        if (!useKeyboard) // to do: an maus und input system anpassen
-        {
-            // regular move
-            if (actionState == ActionState.none)
-            {
-                MoveTowardsMouse(curSide);
-            }
-            // action: stick to edge
-            else if (actionState == ActionState.StickToEdge)
-            {
-                StickToEdge(curSide);
-            }
-        }
-
-    }
-    
-
 
     void MoveTowardsMouse(Side side)
     {
@@ -301,14 +263,6 @@ public class Player : MonoBehaviour
             this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
     }
 
-
-    void GetInput()
-    {
-        //mousePos = Mouse.current.position.ReadValue();
-        //mousePos.z = this.transform.position.z;
-        //mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-    }
-
     
 
 
@@ -339,10 +293,9 @@ public class Player : MonoBehaviour
     /// </summary>
     private void PlayMovement(Side side)
     {
-        lastActionState = actionState;
-        actionState = ActionState.StickToEdge;
+        actionState = ActionState.Play;
         curSide = side;
-        StopCoroutine(scaleEnumerator);
+        StopCoroutine(scaleRoutine);
         StickToEdge(curSide);
 
         // press frequencies
@@ -350,10 +303,10 @@ public class Player : MonoBehaviour
         curRotFrequency = bt_play_selectionFrequency;
 
         // set mouse collider
-        MeshUpdate.SetMouseColliderSize(mouseColliderSize_play);
+        MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_play);
 
         // Events
-        GameEvents.inst.FirstTouch();
+        GameEvents.inst.FieldStart();
     }
 
 
@@ -362,29 +315,28 @@ public class Player : MonoBehaviour
     /// </summary>
     private void StopPlayMovement(Side side)
     {
-        lastActionState = actionState;
-        actionState = ActionState.none;
+        actionState = ActionState.None;
 
         if (side == Side.inner)
         {
-            scaleEnumerator = DampedScale(scaleMin);
+            scaleRoutine = DampedScale(scaleMin);
         }
         else
         {
-            scaleEnumerator = DampedScale(scaleMax);
+            scaleRoutine = DampedScale(scaleMax);
         }
         
-        StartCoroutine(scaleEnumerator);
+        StartCoroutine(scaleRoutine);
 
         // press frequencies
         curRotPressTime = bt_selectionPressTime;
         curRotFrequency = bt_selectionFrequency;
 
         // set mouse collider
-        MeshUpdate.SetMouseColliderSize(mouseColliderSize_move);
+        MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_move);
 
         // Events
-        GameEvents.inst.Leave();
+        GameEvents.inst.FieldLeave();
     }
 
 
@@ -395,7 +347,7 @@ public class Player : MonoBehaviour
 
     public void OnPlayInside(InputAction.CallbackContext context)
     {
-        if (positionState != PositionState.noTunnel)
+        if (positionState != PositionState.NoTunnel)
         {
             if (context.performed)
             {
@@ -410,7 +362,7 @@ public class Player : MonoBehaviour
     
     public void OnPlayOutside(InputAction.CallbackContext context)
     {
-        if (positionState != PositionState.noTunnel)
+        if (positionState != PositionState.NoTunnel)
         {
             if (context.performed)
             {
@@ -425,7 +377,7 @@ public class Player : MonoBehaviour
 
     public void OnPlay(InputAction.CallbackContext context)
     {
-        if (positionState != PositionState.noTunnel)
+        if (positionState != PositionState.NoTunnel)
         {
             if (context.performed)
             {
@@ -456,7 +408,7 @@ public class Player : MonoBehaviour
             
             StartCoroutine(triggerRotRoutine);
             
-            if (actionState == ActionState.none)
+            if (actionState == ActionState.None)
             {
                 // hier rhythmisch
             }
@@ -467,7 +419,6 @@ public class Player : MonoBehaviour
         }
         else if (context.canceled)
         {
-            ////StopCoroutine(triggerRotRoutine);
             StopCoroutines(curTriggerRoutines);
         }
     }
@@ -512,6 +463,7 @@ public class Player : MonoBehaviour
     // ------------------------------ Rotation methods ------------------------------
 
 
+
     /// <summary>
     /// Stop all routines in a list and remove them from the list.
     /// </summary>
@@ -538,8 +490,7 @@ public class Player : MonoBehaviour
 
         return pointerDirection;
     }
-
-
+    
 
     private bool MouseHitsMouseCollider(Vector2 input)
     {
@@ -555,8 +506,7 @@ public class Player : MonoBehaviour
         }
         return false;
     }
-
-
+    
 
     /// <summary>
     /// Call a coroutine frequently to simulate button behaviour: trigger immediatly, wait for press time, trigger frequently.
@@ -603,6 +553,7 @@ public class Player : MonoBehaviour
 
         
     }
+
     
     /// <summary>
     /// Single rotation routine: Rotate in the given direction to the adjacent field, if possible. Get and set data (curID, fieldPos, ...), fire event.
@@ -620,7 +571,6 @@ public class Player : MonoBehaviour
             var data = PlayerData.GetDataByID(nextID);
 
             // FIRE EVENT
-            print("rotate to adjacent field, fire event");
             GameEvents.inst.FieldChange(data);                              // TO DO: gehört hier nicht rein!!!
 
             // 3. Get target rotation
@@ -635,7 +585,7 @@ public class Player : MonoBehaviour
             {
                 RotateToTarget(targetPos);
 
-                if (actionState == ActionState.StickToEdge)
+                if (actionState == ActionState.Play)
                 {
                     StickToEdge(curSide);
                 }
@@ -650,6 +600,7 @@ public class Player : MonoBehaviour
             // TO DO: Perform NotDoable-Animation;
         }
     }
+
 
     /// <summary>
     /// Rotate over time to a given ID. Calculates the proper field mid position automatically. Used for all fields that are not adjacent.
@@ -671,7 +622,7 @@ public class Player : MonoBehaviour
             {
                 RotateToTarget(targetPos);
 
-                if (actionState == ActionState.StickToEdge)
+                if (actionState == ActionState.Play)
                 {
                     StickToEdge(curSide);
                 }
@@ -683,6 +634,7 @@ public class Player : MonoBehaviour
         }
         yield return null;
     }
+
 
     /// <summary>
     /// Scales the player to a target scale over time.
@@ -705,12 +657,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    //public Vector3 GetTargetRotation(int targetID)
-    //{
-    //    Vector3 targetPos = MusicField.FieldMid(targetID);
-
-    //    return targetPos;
-    //}
 
     /// <summary>
     /// Perform Rotation. Damped by bt_rotationDamp.

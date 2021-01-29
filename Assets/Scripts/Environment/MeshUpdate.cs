@@ -1,13 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 public static class MeshUpdate
 {
     // Private variables
     private static Vector3 playerMid;
     private static Transform thisTransform;
+
+    //Action<InputAction.CallbackContext> MoveSubscriptionHandler;
     
     // Constructor
     static MeshUpdate()
@@ -15,8 +19,20 @@ public static class MeshUpdate
         playerMid = Player.inst.transform.position;
         thisTransform = VisualController.inst.transform;
 
+        #region Malte Tipps event subscription
+        //Action<InputAction.CallbackContext> GeileFunktionSubscriptionHandler = ctx => GEILEFUNKTION();  //Erstellt den Handler mit dem man Subscribed/UnSubscribed
+        //controls.EditMode.AddVertex.performed += GeileFunktionSubscriptionHandler //subscribed den handler(der die GEILEFUNKTION beinhaltet) zur EditMode map, an den AddVertex command, wenn er performed wurde
+        //controls.EditMode.AddVertex.performed -= GeileFunktionSubscriptionHandler //Durch den Handler kann nun auch unsubscribed werden
+        #endregion
+
         // Event subscription
         GameEvents.inst.onFieldChange += OnFieldChange;
+
+        
+        PlayerControls controls = new PlayerControls();
+        controls.Enable();
+        controls.Gameplay.Move.performed += context => OnMove(context);
+        Debug.Log("MeshUpdate Constructor");
     }
 
 
@@ -261,12 +277,58 @@ public static class MeshUpdate
         }
     }
 
+
+
     // --------------------------------- Events --------------------------------
+
+
+    
     private static void OnFieldChange(PlayerField data)
     {
         UpdatePlayerLineRenderer(data);
         //foreach (PlayerField secField in Player.inst.curSecondaryFields)          // TO DO
         //    secField.UpdatePlayerLineRenderer(data);
+    }
+
+    public static void OnMove(InputAction.CallbackContext context)
+    {
+        // TO DO: doppelt berechnet, in player
+
+        var input = context.ReadValue<Vector2>();
+
+        var mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, playerMid.z));
+        mousePos.z = playerMid.z - 1;
+
+        var ray = new Ray(mousePos, Vector3.forward);
+        var hit = Physics2D.GetRayIntersection(ray, 3);
+
+        if (Player.inst.actionState == Player.ActionState.None) 
+            {
+            if (hit && hit.collider.tag.Equals("MouseCollider"))
+            {
+                Player.inst.curField.SetColor(Color.white);
+                Player.inst.curField.SetOpacity(0);
+            }
+            else
+            {
+                Player.inst.curField.SetColor(Color.white);
+                Player.inst.curField.SetOpacity(1f);
+            }
+        }
+        else
+        {
+            if (hit && hit.collider.tag.Equals("MouseCollider"))
+            {
+                Player.inst.curField.SetColor(Color.white);
+                Player.inst.curField.SetOpacity(1f);
+            }
+            else
+            {
+                Player.inst.curField.SetColor(Color.white);
+                Player.inst.curField.SetOpacity(1f);
+            }
+        }
+        
     }
 
 
