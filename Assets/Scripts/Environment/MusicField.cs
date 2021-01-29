@@ -262,9 +262,6 @@ public class PlayerField : MusicField
 
     public void Set(int ID, Vector3[] positions, bool isCorner)
     {
-        if (positions.Length == 3)
-            Debug.Log("MusicField.Set in corner gets called");
-
         this.ID = ID;
         this.positions = positions;
         this.isCorner = isCorner;

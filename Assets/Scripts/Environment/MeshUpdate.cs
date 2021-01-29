@@ -264,9 +264,6 @@ public static class MeshUpdate
     // --------------------------------- Events --------------------------------
     private static void OnFieldChange(PlayerField data)
     {
-        Debug.Log("Meshupdate: field change event gets called. player.curPos.length: " + Player.inst.curField.positions.Length + ", curID: " + Player.inst.curField.ID);
-        //Debug.Log("Meshupdate: Field change event gets called; data.positions.length: " + data.positions.Length + ", data.ID: " + data.ID);
-
         UpdatePlayerLineRenderer(data);
         //foreach (PlayerField secField in Player.inst.curSecondaryFields)          // TO DO
         //    secField.UpdatePlayerLineRenderer(data);

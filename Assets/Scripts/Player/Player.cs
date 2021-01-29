@@ -138,7 +138,7 @@ public class Player : MonoBehaviour
         inst = this;
         midPoint = this.transform.position;
         //enumerator = RotateToNextField(1).GetEnumerator();          // hack inits
-        triggerRotRoutine = TriggerRoutineFrequently(RotateToNextField(1), curRotPressTime, curRotFrequency, curRotateRoutines, curTriggerRoutines);
+        triggerRotRoutine = TriggerRoutineFrequently(RotateToNextField(1), curRotPressTime, curRotFrequency, curRotateRoutines);
         scaleOutEnumerator = DampedScale(scaleMax);
         scaleEnumerator = DampedScale(scaleMin);
 
@@ -445,14 +445,15 @@ public class Player : MonoBehaviour
         {
             // 1. Get input
             int direction = (int)context.ReadValue<float>();
-            
+
             // 2. Rotate to next field
-            var rotateRoutine = RotateToNextField(direction);
-            triggerRotRoutine = TriggerRoutineFrequently(rotateRoutine, curRotPressTime, curRotFrequency, curRotateRoutines, curTriggerRoutines);
-
+            StopCoroutines(curTriggerRoutines);
             StopCoroutines(curRotateRoutines);
-            StopCoroutine(triggerRotRoutine);           // TO DO (maybe): statt einzelne routine, liste von routines stoppen
 
+            var rotateRoutine = RotateToNextField(direction);
+            triggerRotRoutine = TriggerRoutineFrequently(rotateRoutine, curRotPressTime, curRotFrequency, curRotateRoutines);
+            curTriggerRoutines.Add(triggerRotRoutine);
+            
             StartCoroutine(triggerRotRoutine);
             
             if (actionState == ActionState.none)
@@ -466,7 +467,8 @@ public class Player : MonoBehaviour
         }
         else if (context.canceled)
         {
-            StopCoroutine(triggerRotRoutine);
+            ////StopCoroutine(triggerRotRoutine);
+            StopCoroutines(curTriggerRoutines);
         }
     }
 
@@ -475,27 +477,32 @@ public class Player : MonoBehaviour
     /// </summary>
     public void OnMove(InputAction.CallbackContext context)
     {
-        // 1. Get mouse vector
         var pointerPos = context.ReadValue<Vector2>();
-        var mouseDirection = ConvertMouseToDirection(pointerPos);
+        var allowedToSelect = !MouseHitsMouseCollider(pointerPos);
 
-        // 2. Get & set data (ID, positions, ...)
-        var ID = PlayerData.GetIDfromRaycast(mouseDirection);
-        var data = PlayerData.GetDataByID(ID);
-        var fieldChanged = PlayerData.FieldHasChanged();
-
-        if (fieldChanged)
+        // 1. Allowed to select? 
+        if (allowedToSelect)
         {
-            GameEvents.inst.FieldChange(data);
+            var mouseDirection = ConvertMouseToDirection(pointerPos);
 
-            StopCoroutines(curRotateRoutines);
-            StopCoroutines(curTriggerRoutines);
+            // 2. Get & set data (ID, positions, ...)
+            var ID = PlayerData.GetIDfromRaycast(mouseDirection);
+            var data = PlayerData.GetDataByID(ID);
+            var fieldChanged = PlayerData.FieldHasChanged();
 
-            var rotateRoutine = RotateToID(ID);
-            curRotateRoutines.Add(rotateRoutine);
+            if (fieldChanged)
+            {
+                GameEvents.inst.FieldChange(data);
 
-            // 3. Rotate!
-            StartCoroutine(rotateRoutine);
+                StopCoroutines(curRotateRoutines);
+                StopCoroutines(curTriggerRoutines);
+
+                var rotateRoutine = RotateToID(ID);
+                curRotateRoutines.Add(rotateRoutine);
+
+                // 3. Rotate!
+                StartCoroutine(rotateRoutine);
+            }
         }
     }
 
@@ -522,20 +529,34 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Converts the input value by the input system to a direction, starting at midPoint.
     /// </summary>
-    /// <param name="input">Value by input system.</param>
+    /// <param name="input">Mouse screen pos. Value by input system.</param>
     private Vector3 ConvertMouseToDirection(Vector2 input)
     {
-        //Vector3 pointerPos = input;
-        //pointerPos.z = midPoint.z;
         Vector3 pointerPos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
         pointerPos.z = midPoint.z;
         Vector3 pointerDirection = pointerPos - midPoint;
 
-        if (pointerDirection.z != 0)
-            Debug.LogError("wrong mouse pos.z-value; mousePos.z: " + pointerPos.z + ", midPoint.z: " + midPoint.z);
-
         return pointerDirection;
     }
+
+
+
+    private bool MouseHitsMouseCollider(Vector2 input)
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
+        mousePos.z = midPoint.z - 1;
+
+        var ray = new Ray(mousePos, Vector3.forward);
+        var hit = Physics2D.GetRayIntersection(ray,3);
+        if (hit)
+        {
+            if (hit.collider.tag.Equals("MouseCollider"))
+                return true;
+        }
+        return false;
+    }
+
+
 
     /// <summary>
     /// Call a coroutine frequently to simulate button behaviour: trigger immediatly, wait for press time, trigger frequently.
@@ -545,7 +566,7 @@ public class Player : MonoBehaviour
     /// <param name="frequency"></param>
     /// <param name="routineRefList">Empty list, to be able to quit all routines later.</param>
     /// <returns></returns>
-    private IEnumerator TriggerRoutineFrequently (IEnumerable routine, float startWaitTime, float frequency, List<IEnumerator> routineRefList, List<IEnumerator> thisRoutineRefList)
+    private IEnumerator TriggerRoutineFrequently (IEnumerable routine, float startWaitTime, float frequency, List<IEnumerator> routineRefList)
     {
         float timer = 0;
 
