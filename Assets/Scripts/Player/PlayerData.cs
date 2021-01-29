@@ -11,7 +11,6 @@ public static class PlayerData
     private static Player player;
     private static Vector3 midPoint;
     private static int lastFieldID = 4;
-    private static int curFieldID;
     private static Vector3 lastEdge_start, lastEdge_end;
     private static Vector3 lastEdge;
     private static float playerZpos;
@@ -30,12 +29,6 @@ public static class PlayerData
 
     // ----------------------------- Public methods ----------------------------
 
-
-
-    public static void OnMovementChanged()
-    {
-
-    }
 
 
     public static void SetPositionStates()
@@ -84,82 +77,15 @@ public static class PlayerData
 
     public static void CalcEdgeData()
     {
-        #region calc
-        //Vector2 intersection = Vector2.zero;
-        //Vector3 mousePos_extended = midPoint + (player.mousePos - midPoint).normalized * 10f;
-        //int curEdgeIndex = 0;
-        //for (int i = 0; i < player.outerVertices.Length; i++)
-        //{
-        //    Vector3 playerMainVertex_extended = midPoint + ((player.outerVertices[0] - midPoint).normalized * 10f);
-        //    if (ExtensionMethods.LineSegmentsIntersection(out intersection, playerMainVertex_extended, midPoint, TunnelData.vertices[i], TunnelData.vertices[(i + 1) % 3]))
-        //    {
-        //        // Current edge (main & sec)
-        //        player.curEdge.start = TunnelData.vertices[i];          // i beginnt immer beim TunnelTriangle UNTEN LINKS!
-        //        player.curEdge.end = TunnelData.vertices[(i + 1) % 3];
-        //        for (int j = 0; j < player.curSecEdges.Length; j++)
-        //        {
-        //            player.curSecEdges[j].start = TunnelData.vertices[(i + 1 + j) % 3];
-        //            player.curSecEdges[j].end = TunnelData.vertices[(i + 2 + j) % 3];
-        //        }
-        //        curEdgeIndex = i;
-        //    }
-        //}
 
-        //// Current field (& edge percentage)
-        //RaycastHit hit;
-        //Physics.Raycast(midPoint, player.outerVertices[0] - midPoint, out hit);
-        //Vector3 playerPointOnTunnel = new Vector3(hit.point.x, hit.point.y, player.outerVertices[0].z);
-        //player.curEdge.percentage = Mathf.Clamp01((playerPointOnTunnel - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
-        //curFieldID = ((int)(player.curEdge.percentage.
-        //    Remap(0, 1f, 0, VisualController.inst.fieldsPerEdge)
-        //    + curEdgeIndex * VisualController.inst.fieldsPerEdge)) % (TunnelData.vertices.Length * VisualController.inst.fieldsPerEdge); // gar kein bock mehr
-        //curFieldID = player.curField.ID;        // hack
-        //Vector3 curEdgePart_start = TunnelData.fields[curFieldID].start;
-        //Vector3 curEdgePart_end = TunnelData.fields[curFieldID].end;
-        //var curFieldPositions = new List<Vector3> { curEdgePart_start, curEdgePart_end };
-
-        // -------- nicht mehr
-        //player.curField.ID = curFieldID;
-
-        //#region secondary, id
-        //// Seondary fields, ID
-        //for (int i = 0; i < player.curSecondaryFields.Length; i++)
-        //{
-        //    int secID = (curFieldID + (i+1) * VisualController.inst.fieldsPerEdge) % VisualController.inst.FieldsCount;
-        //    player.curSecondaryFields[i].ID = secID;
-        //    Vector3 start = TunnelData.fields[secID].start;
-        //    Vector3 end = TunnelData.fields[secID].end;
-        //    var curSecFieldsPositions = new Vector3[] { start, end };
-        //    player.curSecondaryFields[i].positions = curSecFieldsPositions;
-        //}
-        //#endregion
-        #endregion
+        // --------------------------------- TO REWORK --------------------------------
 
         
-
         // Edge change?
         if (player.curEdge.start == lastEdge_start && player.curEdge.end == lastEdge_end)
             player.curEdge.changed = false;
         else
             player.curEdge.changed = true;
-
-
-        
-
-        //foreach (MusicField secField in player.curSecondaryFields)
-        //    secField.isCorner = isCorner;
-
-
-        // Events (etwas unschön...)
-        if (player.curField.changed)
-        {
-            GameEvents.inst.FieldChange();
-        }
-
-
-        // ASSIGN
-        //player.curField.Set(curFieldID, curFieldPositions.ToArray(), isCorner);
-
 
 
 
@@ -180,44 +106,34 @@ public static class PlayerData
         }
         else
             player.curEdge.leave = false;
-
-
-        //// last variables
-        //player.lastActionState = player.actionState;
-        //lastEdge_start = player.curEdge.start;
-        //lastEdge_end = player.curEdge.end;
-        //lastFieldID = curFieldID;
     }
 
 
     /// <summary>
-    /// For mouse and gamepad-stick selection. Start in playerMid. [to do: dont set player.curSecEdges here]
+    /// Return the current ID. For mouse and gamepad-stick selection. Start in playerMid and send ray. Set curEdges (!).
     /// </summary>
     /// <param name="direction">Direction from mouse position to midPoint or value from gamepad stick input.</param>
-    /// <returns></returns>
     public static int GetIDfromRaycast(Vector2 direction)
     {
         // 1. Cur edge
-        Vector2 intersection = Vector2.zero;
-        Vector3 curEdgeStart = Vector3.zero;
-        Vector3 curEdgeEnd = Vector3.zero;
+        Vector2 intersection;
         Vector3 mousePos_extended = midPoint + (Vector3) direction.normalized * 10f;
         int curEdgeIndex = 0;
         for (int i = 0; i < player.outerVertices.Length; i++)
         {
-            //Vector3 playerMainVertex_extended = midPoint + ((player.outerVertices[0] - midPoint).normalized * 10f);
             if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, TunnelData.vertices[i], TunnelData.vertices[(i + 1) % TunnelData.vertices.Length]))
             {
-                curEdgeStart = TunnelData.vertices[i];
-                curEdgeEnd = TunnelData.vertices[(i + 1) % TunnelData.vertices.Length];
+                player.curEdge.start = TunnelData.vertices[i];
+                player.curEdge.end = TunnelData.vertices[(i + 1) % TunnelData.vertices.Length];
                 #region secondary edges: positions
                 for (int j = 0; j < player.curSecEdges.Length; j++)
                 {
                     player.curSecEdges[j].start = TunnelData.vertices[(i + 1 + j) % TunnelData.vertices.Length];    // TO DO: player.curSecEdges sollten hier eig nicht gesetzt werden
                     player.curSecEdges[j].end = TunnelData.vertices[(i + 2 + j) % TunnelData.vertices.Length];
                 }
-                curEdgeIndex = i;
                 #endregion
+                curEdgeIndex = i;
+                // To do (irgendwann, wenn relevant): set cur edge ID
             }
         }
 
@@ -226,11 +142,10 @@ public static class PlayerData
         Physics.Raycast(midPoint, direction, out hit);
 
         Vector3 pointerPosOnEdge = new Vector3(hit.point.x, hit.point.y, playerZpos);
-        Debug.DrawLine(pointerPosOnEdge, midPoint, Color.red, 1f);
 
-        player.curEdge.percentage = Mathf.Clamp01((pointerPosOnEdge - curEdgeStart).magnitude / (player.curEdge.end - curEdgeEnd).magnitude);
-
-        curFieldID = ((int)(player.curEdge.percentage.                  // gar kein bock mehr
+        player.curEdge.percentage = Mathf.Clamp01((pointerPosOnEdge - player.curEdge.start).magnitude / (player.curEdge.end - player.curEdge.start).magnitude);
+        
+        int curFieldID = ((int)(player.curEdge.percentage.                  // gar kein bock mehr
             Remap(0, 1f, 0, VisualController.inst.fieldsPerEdge)
             + curEdgeIndex * VisualController.inst.fieldsPerEdge)) 
             % (VisualController.inst.FieldsCount);
@@ -244,9 +159,9 @@ public static class PlayerData
     /// Set data: ID, positions, sec IDs, sec positions (+curEdge, percentage, isCorner).
     /// </summary>
     /// <returns></returns>
-    public static void SetDataByID(int ID)
+    public static PlayerField GetDataByID(int ID)
     {
-        // 0. last-variables                                // TO DO: nicht der beste ort hier (?)
+        // 0. last-variables
         player.lastActionState = player.actionState;
         lastEdge_start = player.curEdge.start;
         lastEdge_end = player.curEdge.end;
@@ -270,13 +185,13 @@ public static class PlayerData
         }
         #endregion
 
-        bool isCorner = MusicField.IsCorner(player.curField.ID);
+        bool isCorner = MusicField.IsCorner(ID);
         if (isCorner)
         {
             // Add third position (left or right)
-            if (MusicField.IsCorner_RightPart(player.curField.ID))
+            if (MusicField.IsCorner_RightPart(ID))
             {
-                int leftCornerID = ExtensionMethods.Modulo(player.curField.ID - 1, VisualController.inst.FieldsCount);
+                int leftCornerID = ExtensionMethods.Modulo(ID - 1, VisualController.inst.FieldsCount);
                 Vector3 leftCornerPos = TunnelData.fields[leftCornerID].start;
                 curFieldPositions.Insert(0, leftCornerPos);
 
@@ -295,7 +210,7 @@ public static class PlayerData
             }
             else
             {
-                int rightCornerID = ExtensionMethods.Modulo(player.curField.ID + 1, VisualController.inst.FieldsCount);
+                int rightCornerID = ExtensionMethods.Modulo(ID + 1, VisualController.inst.FieldsCount);
                 Vector3 rightCornerPos = TunnelData.fields[rightCornerID].end;
                 curFieldPositions.Add(rightCornerPos);
 
@@ -316,19 +231,25 @@ public static class PlayerData
         foreach (MusicField secField in player.curSecondaryFields)
             secField.isCorner = isCorner;
 
-        // 2. Set (sec-field-variables get set before individually)
+        // 2. Set                                               // TO DO: to remove?
         player.curField.Set(ID, curFieldPositions.ToArray(), isCorner);
-        
-        // To do (irgendwann, wenn relevant): set cur edge
+        // (sec - field - variables get set before individually)
+
+        PlayerField data = new PlayerField(ID, curFieldPositions.ToArray(), isCorner);
+
+        return data;
+
     }
 
     /// <summary>
     /// Check if an ID is a new field. Fire FieldChange-Events.
     /// </summary>
-    public static bool FieldHasChanged(int ID)
+    public static bool FieldHasChanged()
     {
+        int curID = player.curField.ID;
+
         // ID changed?
-        if (player.curField.ID != lastFieldID)
+        if (curID != lastFieldID)
         {
             // No corner?
             bool curIDisCorner = MusicField.IsCorner(player.curField.ID);
@@ -342,7 +263,7 @@ public static class PlayerData
             {
                 // last ID corner & close?
                 bool lastIDisCorner = MusicField.IsCorner(lastFieldID);
-                bool lastIDisClose = Mathf.Abs(curFieldID - lastFieldID) == 1 || Mathf.Abs(curFieldID - lastFieldID) == VisualController.inst.FieldsCount - 1;
+                bool lastIDisClose = Mathf.Abs(curID - lastFieldID) == 1 || Mathf.Abs(curID - lastFieldID) == VisualController.inst.FieldsCount - 1;
                 if (lastIDisCorner && lastIDisClose)
                 {
                     player.curField.changed = false;    // TO DO: to remove

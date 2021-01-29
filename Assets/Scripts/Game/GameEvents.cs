@@ -10,12 +10,14 @@ public class GameEvents : MonoBehaviour
 
     public Action onTunnelEnter;
     public Action onFirstTouch;
-    public Action onEdgePartChange;
+    public Action<PlayerField> onFieldChange;
     public Action onLeave;
 
     public Action onFirstBeat;
     public Action onSecondBeat;
     public Action<int> onBeat;
+
+   
 
     void Start()
     {
@@ -32,9 +34,9 @@ public class GameEvents : MonoBehaviour
         onFirstTouch?.Invoke();
     }
 
-    public void FieldChange()
+    public void FieldChange(PlayerField fieldData)
     {
-        onEdgePartChange?.Invoke();
+        onFieldChange?.Invoke(fieldData);
     }
 
     public void Leave()

@@ -14,6 +14,9 @@ public static class MeshUpdate
     {
         playerMid = Player.inst.transform.position;
         thisTransform = VisualController.inst.transform;
+
+        // Event subscription
+        GameEvents.inst.onFieldChange += OnFieldChange;
     }
 
 
@@ -153,7 +156,7 @@ public static class MeshUpdate
     }
 
 
-
+    #region DrawTunnelEdges
     //private static void DrawEnvironmentEdges()
     //{
     //    // = Draw lineRenderer lines for each edge (3)
@@ -177,14 +180,16 @@ public static class MeshUpdate
     //    MeshRef.inst.envEdges_lr.positionCount = newPositions.Count;
     //    MeshRef.inst.envEdges_lr.SetPositions(newPositions.ToArray());
     //}
+    #endregion
 
 
+    /// <summary>
+    /// Abhängig von sich veränderndem Tunnel setze die Punkte für LineRenderer aller MusicFields
+    /// </summary>
     private static void UpdateFieldsVertices()
     {
-        // = Abhängig von sich veränderndem Tunnel setze die Punkte für LineRenderer aller Edgeparts (von Tunnel & Spieler)
-        // to do: Update (1) LineRenderer, (2)
+        // Tunnel
 
-        // Environment
         if (TunnelData.vertices[0] == Vector3.zero)
             Debug.LogError("Tried to get tunnel vertices too early, no collider yet.");
         for (int i = 0; i < TunnelData.vertices.Length; i++)
@@ -224,16 +229,54 @@ public static class MeshUpdate
 
         if (Player.inst.curField.changed)
         {
-            Player.inst.curField.UpdateLineRenderer();
-            foreach (PlayerField secField in Player.inst.curSecondaryFields)
-                secField.UpdateLineRenderer();
+            //Player.inst.curField.UpdateLineRenderer();
+            //foreach (PlayerField secField in Player.inst.curSecondaryFields)
+            //    secField.UpdateLineRenderer();
         }
     }
 
+
     /// <summary>
-    /// 
+    /// Set line renderer positions from data. In corners add identical positions to prevent bending lines.
     /// </summary>
-    /// <param name="size">[0,1]</param>
+    public static void UpdatePlayerLineRenderer(PlayerField data)
+    {
+        var curField = Player.inst.curField;
+        if (!data.isCorner)
+        {
+            curField.lineRend.positionCount = data.positions.Length;
+            curField.lineRend.SetPositions(data.positions);
+        }
+        else
+        {
+            //corners: add empty line renderer positions, to prevent bending
+            List<Vector3> newPositions = data.positions.ToList();
+            Vector3 cornerPos = newPositions[1];
+            newPositions.Insert(1, cornerPos);
+            newPositions.Insert(1, cornerPos);
+
+
+            curField.lineRend.positionCount = newPositions.Count;
+            curField.lineRend.SetPositions(newPositions.ToArray());
+        }
+    }
+
+    // --------------------------------- Events --------------------------------
+    private static void OnFieldChange(PlayerField data)
+    {
+        Debug.Log("Meshupdate: field change event gets called. player.curPos.length: " + Player.inst.curField.positions.Length + ", curID: " + Player.inst.curField.ID);
+        //Debug.Log("Meshupdate: Field change event gets called; data.positions.length: " + data.positions.Length + ", data.ID: " + data.ID);
+
+        UpdatePlayerLineRenderer(data);
+        //foreach (PlayerField secField in Player.inst.curSecondaryFields)          // TO DO
+        //    secField.UpdatePlayerLineRenderer(data);
+    }
+
+
+    /// <summary>
+    /// Defines when fieldChanges are allowed.
+    /// </summary>
+    /// <param name="size">[0 - 1]</param>
     public static void SetMouseColliderSize(float size)
     {
         MeshRef.inst.mouseColllider.transform.localScale = new Vector3(size, size, 1);

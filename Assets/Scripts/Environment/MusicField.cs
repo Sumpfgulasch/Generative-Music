@@ -238,31 +238,38 @@ public class MusicField
 public class PlayerField : MusicField
 {
     public Vector3[] positions;
-    
-
-    // Contructor
-    /// <summary>
-    /// Assign type and line renderer.
-    /// </summary>
-    public PlayerField(Type type, LineRenderer lineRend)
-    {
-        this.type = type;
-        base.lineRend = lineRend;
-        //SetToFocus();
-    }
-
-    public new enum Type {Main, Second};
+    public new enum Type { Main, Second };
     public new Type type;
     public bool changed;
 
 
-    public void Set(int ID, Vector3[] positions, bool isCorner)
+    // Contructors
+    public PlayerField(Type type, LineRenderer lineRend)
+    {
+        this.type = type;
+        base.lineRend = lineRend;
+    }
+
+    public PlayerField(int ID, Vector3[] positions, bool isCorner)
     {
         this.ID = ID;
         this.positions = positions;
         this.isCorner = isCorner;
+    }
 
-        for (int i=0; i<positions.Length; i++)
+
+    // Functions
+
+    public void Set(int ID, Vector3[] positions, bool isCorner)
+    {
+        if (positions.Length == 3)
+            Debug.Log("MusicField.Set in corner gets called");
+
+        this.ID = ID;
+        this.positions = positions;
+        this.isCorner = isCorner;
+
+        for (int i=0; i< positions.Length; i++)
             this.positions[i].z = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
     }
 
@@ -326,29 +333,6 @@ public class PlayerField : MusicField
     }
 
 
-
-    public void UpdateLineRenderer()
-    {
-        if (!isCorner)
-        {
-            this.lineRend.positionCount = this.positions.Length;
-            this.lineRend.SetPositions(this.positions);
-        }
-        else
-        {
-            // add empty line renderer positions, to prevent bending
-
-            List<Vector3> addedLineRendPositions = this.positions.ToList();
-            Vector3 cornerPos = addedLineRendPositions[1];
-            addedLineRendPositions.Insert(1, cornerPos);
-            addedLineRendPositions.Insert(1, cornerPos);
-
-
-            this.lineRend.positionCount = addedLineRendPositions.Count;
-            this.lineRend.SetPositions(addedLineRendPositions.ToArray());
-        }
-        
-    }
 
 }
 

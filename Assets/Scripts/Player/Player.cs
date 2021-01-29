@@ -217,8 +217,6 @@ public class Player : MonoBehaviour
         // Scale value
         scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
         scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-        
-        Debug.DrawLine(envPlayerIntersection.point, midPoint);
     }
 
 
@@ -482,21 +480,23 @@ public class Player : MonoBehaviour
         var mouseDirection = ConvertMouseToDirection(pointerPos);
 
         // 2. Get & set data (ID, positions, ...)
-        var newID = PlayerData.GetIDfromRaycast(mouseDirection);
-        PlayerData.SetDataByID(newID);
-        var fieldChanged = PlayerData.FieldHasChanged(newID);
+        var ID = PlayerData.GetIDfromRaycast(mouseDirection);
+        var data = PlayerData.GetDataByID(ID);
+        var fieldChanged = PlayerData.FieldHasChanged();
 
         if (fieldChanged)
         {
-            StopCoroutines(curRotateRoutines);
+            GameEvents.inst.FieldChange(data);
 
-            var rotateRoutine = RotateToID(newID);
+            StopCoroutines(curRotateRoutines);
+            StopCoroutines(curTriggerRoutines);
+
+            var rotateRoutine = RotateToID(ID);
             curRotateRoutines.Add(rotateRoutine);
 
             // 3. Rotate!
             StartCoroutine(rotateRoutine);
         }
-        Debug.DrawLine(midPoint, pointerPos, Color.red, 1f);
     }
 
 
@@ -525,13 +525,14 @@ public class Player : MonoBehaviour
     /// <param name="input">Value by input system.</param>
     private Vector3 ConvertMouseToDirection(Vector2 input)
     {
-        Vector3 pointerPos = input;
+        //Vector3 pointerPos = input;
+        //pointerPos.z = midPoint.z;
+        Vector3 pointerPos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
         pointerPos.z = midPoint.z;
-        pointerPos = Camera.main.ScreenToWorldPoint(pointerPos);
         Vector3 pointerDirection = pointerPos - midPoint;
 
         if (pointerDirection.z != 0)
-            Debug.LogError("wrong mouse pos.z-value");
+            Debug.LogError("wrong mouse pos.z-value; mousePos.z: " + pointerPos.z + ", midPoint.z: " + midPoint.z);
 
         return pointerDirection;
     }
@@ -592,21 +593,23 @@ public class Player : MonoBehaviour
         int nextID = MusicField.NextFieldID(curField.ID, direction);
         
         // 2. Selectable?
-        if (curFields[nextID].selectable)                             // TO DO: sollte hier nicht rein
+        if (curFields[nextID].selectable)                               // TO DO: sollte hier nicht rein (?)
         {
+            // 4. Set data (ID, ...)
+            var data = PlayerData.GetDataByID(nextID);
+
+            // FIRE EVENT
+            print("rotate to adjacent field, fire event");
+            GameEvents.inst.FieldChange(data);                              // TO DO: gehört hier nicht rein!!!
+
             // 3. Get target rotation
             var targetPos = MusicField.FieldMid(nextID);
 
-            // 4. Set data (ID, ...)
-            PlayerData.SetDataByID(nextID);
-
-            // 5. Event
-            GameEvents.inst.FieldChange();
-
-            float maxTime = 1.2f;
-            float timer = 0;
+            
 
             // 5. ROTATE TO ID
+            float maxTime = 1.2f;
+            float timer = 0;
             while (timer < maxTime)
             {
                 RotateToTarget(targetPos);
@@ -627,13 +630,14 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Rotate over time to a given ID. Calculates the proper field mid position automatically. Used for all fields that are not adjacent.
+    /// </summary>
     private IEnumerator RotateToID(int ID)
     {
         // 1. Selectable?
         if (curFields[ID].selectable)
         {
-            // 2. Event
-            GameEvents.inst.FieldChange();
 
             // 3. Target rotation
             var targetPos = MusicField.FieldMid(ID);
