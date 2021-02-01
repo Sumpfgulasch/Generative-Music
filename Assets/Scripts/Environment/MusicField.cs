@@ -15,6 +15,8 @@ public class MusicField
     public Type type;
     public Vector3 start;
     public Vector3 end;
+    public Vector3 mid;
+    public Vector3[] positions;
     public bool isCorner;
     public bool isEdgeMid;
     public LineRenderer lineRend;
@@ -56,20 +58,23 @@ public class MusicField
 
 
     /// <summary>
-    /// Sets vertices variables.
+    /// Set the position-variables. Set z-position to fieldsBeforeSurface-value.
     /// </summary>
-    /// <param name="start">Start Position.</param>
-    /// <param name="end">End position.</param>
-    public void UpdateVertices(Vector3 start, Vector3 end)
+    public void UpdateVertices(Vector3 start, Vector3 mid, Vector3 end, Vector3[] positions)
     {
-        start.z = Player.inst.transform.position.z - 0.001f;
-        end.z = Player.inst.transform.position.z - 0.001f;
+        // 1. Set z-position
+        float zPos = Player.inst.transform.position.z - VisualController.inst.fieldsBeforeSurface;
+        start.z = zPos;
+        mid.z = zPos;
+        end.z = zPos;
+        for (int i=0; i<positions.Length; i++)
+            positions[i].z = zPos;
 
+        // 2. Assign
         this.start = start;
+        this.mid = mid;
         this.end = end;
-        
-        //this.lineRend.positionCount = 2;
-        //this.lineRend.SetPositions(new Vector3[] { start, end });
+        this.positions = positions;
     }
 
 
@@ -111,7 +116,18 @@ public class MusicField
 
     public static bool IsCorner(int ID)
     {
-        if ((ID + 1) % VisualController.inst.fieldsPerEdge == 0 || ID % VisualController.inst.fieldsPerEdge == 0)
+        #region old
+        //if ((ID + 1) % VisualController.inst.fieldsPerEdge == 0 || ID % VisualController.inst.fieldsPerEdge == 0)
+        //{
+        //    return true;
+        //}
+        //else
+        //{
+        //    return false;
+        //}
+        #endregion
+
+        if (ID % (VisualController.inst.fieldsPerEdge - 1) == 0)
         {
             return true;
         }
@@ -123,9 +139,9 @@ public class MusicField
 
     public static bool IsEdgeMid(int ID)
     {
-        int testID = ID + (VisualController.inst.fieldsPerEdge / 2 + 1);
+        int testID = ID + ((VisualController.inst.fieldsPerEdge - 1) / 2);
 
-        if (testID % VisualController.inst.fieldsPerEdge == 0)
+        if (testID % (VisualController.inst.fieldsPerEdge - 1) == 0)
         {
             return true;
         }
@@ -135,95 +151,75 @@ public class MusicField
         }
     }
 
-    public static bool IsCorner_RightPart(int ID)
-    {
-        if (ID % VisualController.inst.fieldsPerEdge == 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    //public static bool IsCorner_RightPart(int ID)
+    //{
+    //    if (ID % VisualController.inst.fieldsPerEdge == 0)
+    //    {
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        return false;
+    //    }
+    //}
 
-    public static Vector3 CornerPosition(int ID)
-    {
-        if (!IsCorner(ID)) 
-        {
-            Debug.Log("Error! Wrong ID, no corner.");
-            return Vector3.zero;
-        }
-        else if(IsCorner_RightPart(ID))
-        {
-            return TunnelData.fields[ID].start;
-        }
-        else
-            return TunnelData.fields[ID].end;
-    }
+    //public static Vector3 CornerPosition(int ID)
+    //{
+    //    if (!IsCorner(ID)) 
+    //    {
+    //        Debug.Log("Error! Wrong ID, no corner.");
+    //        return Vector3.zero;
+    //    }
+    //    else if(IsCorner_RightPart(ID))
+    //    {
+    //        return TunnelData.fields[ID].start;
+    //    }
+    //    else
+    //        return TunnelData.fields[ID].end;
+    //}
 
-    private static Vector3 RegularFieldMid(int ID)
-    {
-        Vector3 position = (TunnelData.fields[ID].start + TunnelData.fields[ID].end) / 2f;
 
-        return position;
-    }
+    //private static Vector3 RegularFieldMid(int ID)
+    //{
+    //    Vector3 position = (TunnelData.fields[ID].start + TunnelData.fields[ID].end) / 2f;
+
+    //    return position;
+    //}
+
 
     /// <summary>
     /// Returns the mid point of any field, given by an ID. Respect corner IDs, too.
     /// </summary>
     /// <param name="targetID"></param>
     /// <returns></returns>
-    public static Vector3 FieldMid(int targetID)
-    {
-        if (IsCorner(targetID))
-        {
-            return CornerPosition(targetID);
-        }
-        else
-        {
-            return RegularFieldMid(targetID);
-        }
+    //public static Vector3 FieldMid(int targetID)
+    //{
+    //    if (IsCorner(targetID))
+    //    {
+    //        return CornerPosition(targetID);
+    //    }
+    //    else
+    //    {
+    //        return RegularFieldMid(targetID);
+    //    }
 
-        #region old
-        // = take the mid of corners
 
-        //int nextID = (curID + direction).Modulo(VisualController.inst.FieldsCount);
-        //Vector3 position;
 
-        //if (!IsCorner(nextID))
-        //{
-        //    position = (TunnelData.fields[nextID].start + TunnelData.fields[nextID].end) / 2f;
-        //    return position;
-        //}
-        //else if (!IsCorner(curID) && IsCorner(nextID))
-        //{
-        //    position = CornerPosition(nextID);
-        //    return position;
-        //}
-        //else if (IsCorner(curID) && IsCorner(nextID))
-        //{
-        //    nextID = (nextID + (int) Mathf.Sign(direction)).Modulo(VisualController.inst.FieldsCount);
-        //    position = (TunnelData.fields[nextID].start + TunnelData.fields[nextID].end) / 2f;
-        //    return position;
-        //}
-        //else
-        //{
-        //    Debug.LogError("wrong values");
-        //    return Vector3.zero;
-        //}
-        #endregion
+    //}
 
-    }
-
+    /// <summary>
+    /// Get the adjacent field ID to a given ID.
+    /// </summary>
     public static int NextFieldID(int curID, int direction)
     {
-        int nextID = (curID + direction).Modulo(VisualController.inst.FieldsCount);
+        //int nextID = (curID + direction).Modulo(VisualController.inst.FieldsCount);
+        //if (IsCorner(curID) && IsCorner(nextID))
+        //{
+        //    nextID = (nextID + (int)Mathf.Sign(direction)).Modulo(VisualController.inst.FieldsCount);
+        //}
+        //return nextID;
 
-        if (IsCorner(curID) && IsCorner(nextID))
-        {
-            nextID = (nextID + (int)Mathf.Sign(direction)).Modulo(VisualController.inst.FieldsCount);
-        }
+        int nextID = ExtensionMethods.Modulo(curID + direction, TunnelData.FieldsCount);
 
         return nextID;
     }
@@ -237,11 +233,9 @@ public class MusicField
 
 public class PlayerField : MusicField
 {
-    public Vector3[] positions;
     public new enum Type { Main, Second };
     public new Type type;
-    public bool changed;
-
+    public Vector3[] secondaryPositions;
 
     // Contructors
     public PlayerField(Type type, LineRenderer lineRend)
@@ -250,20 +244,24 @@ public class PlayerField : MusicField
         base.lineRend = lineRend;
     }
 
-    public PlayerField(int ID, Vector3[] positions, bool isCorner)
+    public PlayerField(int ID, Vector3[] positions, Vector3 mid)
     {
         this.ID = ID;
         this.positions = positions;
-        this.isCorner = isCorner;
+        this.mid = mid;
     }
 
 
     // Functions
 
-    public void Set(int ID, Vector3[] positions, bool isCorner)
+    /// <summary>
+    /// Set variables. Set z-position.
+    /// </summary>
+    public void Set(int ID, Vector3[] positions, Vector3 mid, bool isCorner)
     {
         this.ID = ID;
         this.positions = positions;
+        this.mid = mid;
         this.isCorner = isCorner;
 
         for (int i=0; i< positions.Length; i++)
@@ -339,6 +337,7 @@ public class PlayerField : MusicField
 
 public class Edge
 {
+    public int ID;
     public bool changed;
     public float percentage;
     public Vector3 start, end;
@@ -389,9 +388,9 @@ public static class MusicFieldSet
     /// <param name="buildUps">Length == edges * divisions (att 15)</param>
     public static MusicField[] StoreDataInFields(MusicField[] fieldsToAssign, MusicField.Type[] fieldTypes, Chord[][] chords, Color[] colors, bool[] availables, bool [] buildUps)
     {
-        var edgePartIDs = ExtensionMethods.IntToList(VisualController.inst.FieldsCount, true);
+        var edgePartIDs = ExtensionMethods.IntToList(TunnelData.FieldsCount, true);
         var fieldsPerEdge = VisualController.inst.fieldsPerEdge;
-        var fieldsCount = VisualController.inst.FieldsCount;
+        var fieldsCount = TunnelData.FieldsCount;
 
         // 1. Gehe jeden chordType durch (3)
         for (int i = 0; i < chords.Length; i++)
@@ -428,8 +427,6 @@ public static class MusicFieldSet
                     edgePartIDs.Remove(randID);
 
                     // assign
-                    //Debug.Log("chord type: " + i + ", chord: " + j + ", randID: " + randID);
-                    //Debug.Log("field type: " + fieldTypes.Length + ", colors.length: " + colors.Length + ", availables.lenght: " + availables.Length + ", buildups.length: " + buildUps.Length);
                     fieldsToAssign[randID].SetContent(fieldTypes[randID], chord, colors[i], availables[randID], buildUps[randID]);
                 }
             }

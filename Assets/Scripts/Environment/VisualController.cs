@@ -26,11 +26,7 @@ public class VisualController : MonoBehaviour
     [Range(0.1f, 1)]
     public float mouseColliderSize_move = 0.3f;
 
-    // Properties
-    public int FieldsCount
-    {
-        get { return tunnelVertices * fieldsPerEdge; }
-    }    
+    
 
     void Start()
     {

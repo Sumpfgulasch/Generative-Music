@@ -82,7 +82,7 @@ public class Player : MonoBehaviour
 
 
     // private variables
-    protected private Vector3 midPoint;
+    private Vector3 midPoint;
     private float scaleTargetValue;
     private float curScaleSpeed = 0;
     private float rotTargetValue;
@@ -390,7 +390,9 @@ public class Player : MonoBehaviour
         }
     }
     
-
+    /// <summary>
+    /// Keyboard and button selection.
+    /// </summary>
     public void OnSelectNext(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -407,15 +409,6 @@ public class Player : MonoBehaviour
             curTriggerRoutines.Add(triggerRotRoutine);
             
             StartCoroutine(triggerRotRoutine);
-            
-            if (actionState == ActionState.None)
-            {
-                // hier rhythmisch
-            }
-            else
-            {
-                // hier tempo variierend
-            }
         }
         else if (context.canceled)
         {
@@ -438,7 +431,7 @@ public class Player : MonoBehaviour
 
             // 2. Get & set data (ID, positions, ...)
             var ID = PlayerData.GetIDfromRaycast(mouseDirection);
-            var data = PlayerData.GetDataByID(ID);
+            var data = PlayerData.SetDataByID(ID);
             var fieldChanged = PlayerData.FieldHasChanged();
 
             if (fieldChanged)
@@ -568,13 +561,13 @@ public class Player : MonoBehaviour
         if (curFields[nextID].selectable)                               // TO DO: sollte hier nicht rein (?)
         {
             // 4. Set data (ID, ...)
-            var data = PlayerData.GetDataByID(nextID);
+            var data = PlayerData.SetDataByID(nextID);
 
             // FIRE EVENT
             GameEvents.inst.FieldChange(data);                              // TO DO: gehört hier nicht rein!!!
 
             // 3. Get target rotation
-            var targetPos = MusicField.FieldMid(nextID);
+            var targetPos = data.mid;
 
             
 
@@ -612,7 +605,8 @@ public class Player : MonoBehaviour
         {
 
             // 3. Target rotation
-            var targetPos = MusicField.FieldMid(ID);
+            //var targetPos = MusicField.FieldMid(ID);
+            var targetPos = TunnelData.fields[ID].mid;
 
             float maxTime = 1.2f;
             float timer = 0;

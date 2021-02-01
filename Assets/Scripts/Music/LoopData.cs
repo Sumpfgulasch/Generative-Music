@@ -33,7 +33,7 @@ public static class LoopData
 
     // Properties
     private static Player Player { get { return Player.inst; } }
-    private static int FieldsCount { get { return VisualController.inst.FieldsCount; } }
+    private static int FieldsCount { get { return TunnelData.FieldsCount; } }
 
 
     // CONSTRUCTOR

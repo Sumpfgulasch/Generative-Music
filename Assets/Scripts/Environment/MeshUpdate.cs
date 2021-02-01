@@ -41,7 +41,7 @@ public static class MeshUpdate
     
 
     /// <summary>
-    /// Get vertices from tunnel, create form and update vertices variables of music fields. Set Z to player.z.
+    /// Get vertices from tunnel, create tunnel form and update vertices variables of music fields. Set Z to player.z.
     /// </summary>
     public static void UpdateFieldsPositions()
     {
@@ -200,29 +200,58 @@ public static class MeshUpdate
 
 
     /// <summary>
-    /// Abhängig von sich veränderndem Tunnel setze die Punkte für LineRenderer aller MusicFields
+    /// Set fields positions (dependant on the tunnel vertices) and store it in TunnelData.fields. Set fieldLength in TunnelData.
     /// </summary>
     private static void UpdateFieldsVertices()
     {
-        // Tunnel
-
         if (TunnelData.vertices[0] == Vector3.zero)
             Debug.LogError("Tried to get tunnel vertices too early, no collider yet.");
-        for (int i = 0; i < TunnelData.vertices.Length; i++)
+
+        // Set field length
+        float fieldLength = (TunnelData.vertices[1] - TunnelData.vertices[0]).magnitude / VisualController.inst.fieldsPerEdge;
+        TunnelData.fieldLength = fieldLength;
+
+
+        // 1. Iterate over edges
+        for (int edgeInd = 0; edgeInd < TunnelData.vertices.Length; edgeInd++)
         {
-            for (int j = 0; j < VisualController.inst.fieldsPerEdge; j++)
+            Vector3 edgeVec = TunnelData.vertices[(edgeInd + 1) % TunnelData.vertices.Length] - TunnelData.vertices[edgeInd];
+            Vector3 fieldVec = edgeVec.normalized * fieldLength;
+
+            // 2. Interate over fields per edge
+            for (int fieldInd = 0; fieldInd < VisualController.inst.fieldsPerEdge; fieldInd++)
             {
-                // calc
-                Vector3 start = TunnelData.vertices[i] + (((TunnelData.vertices[(i + 1) % TunnelData.vertices.Length] - TunnelData.vertices[i]) / VisualController.inst.fieldsPerEdge) * j);
-                Vector3 end = TunnelData.vertices[i] + (((TunnelData.vertices[(i + 1) % TunnelData.vertices.Length] - TunnelData.vertices[i]) / VisualController.inst.fieldsPerEdge) * (j+1));
+                int ID = edgeInd * (VisualController.inst.fieldsPerEdge - 1) + fieldInd;
 
-                start.z -= VisualController.inst.fieldsBeforeSurface;
-                end.z -= VisualController.inst.fieldsBeforeSurface;
+                Vector3 start, end, mid;
+                Vector3[] positions;
 
-                int ID = i * VisualController.inst.fieldsPerEdge + j;
+                // Regular field
+                bool isCorner = MusicField.IsCorner(ID);
+                if (!isCorner)
+                {
+                    start = TunnelData.vertices[edgeInd] + fieldVec * fieldInd;
+                    end = TunnelData.vertices[edgeInd] + fieldVec * (fieldInd + 1);
+                    mid = (start + end) / 2f;
+                    positions = new Vector3[] { start, end };
+                }
+                // Corner
+                else
+                {
+                    int oppositeIndex = ExtensionMethods.Modulo(edgeInd - 1, TunnelData.vertices.Length);
+                    Vector3 oppositeEdgeVec = TunnelData.vertices[oppositeIndex] - TunnelData.vertices[edgeInd];
+                    Vector3 oppositeFieldFec = oppositeEdgeVec.normalized * fieldLength;
 
-                // assign
-                TunnelData.fields[ID].UpdateVertices(start, end);
+                    start = TunnelData.vertices[edgeInd] + oppositeFieldFec;
+                    mid = TunnelData.vertices[edgeInd];
+                    end = TunnelData.vertices[edgeInd] + fieldVec;
+                    positions = new Vector3[] { start, mid, end };
+                }
+
+                // Assign
+                TunnelData.fields[ID].UpdateVertices(start, mid, end, positions);
+
+                // TO DO: vertices dem line renderer zuweisen, line renderer über andere funktion für start unvisible setzen
             }
         }
     }
@@ -242,13 +271,6 @@ public static class MeshUpdate
             foreach (PlayerField secField in Player.inst.curSecondaryFields)
                 secField.SetVisible(false);
         }
-
-        if (Player.inst.curField.changed)
-        {
-            //Player.inst.curField.UpdateLineRenderer();
-            //foreach (PlayerField secField in Player.inst.curSecondaryFields)
-            //    secField.UpdateLineRenderer();
-        }
     }
 
 
@@ -257,24 +279,48 @@ public static class MeshUpdate
     /// </summary>
     public static void UpdatePlayerLineRenderer(PlayerField data)
     {
+        // TO DO: mischung aus data & curField ist weird und unnötig
+
         var curField = Player.inst.curField;
+        Vector3[] positions;
+        int positionCount;
+
         if (!data.isCorner)
         {
-            curField.lineRend.positionCount = data.positions.Length;
-            curField.lineRend.SetPositions(data.positions);
+            // Regular field
+            positions = data.positions;
+            positionCount = data.positions.Length;
         }
         else
         {
-            //corners: add empty line renderer positions, to prevent bending
-            List<Vector3> newPositions = data.positions.ToList();
-            Vector3 cornerPos = newPositions[1];
-            newPositions.Insert(1, cornerPos);
-            newPositions.Insert(1, cornerPos);
-
-
-            curField.lineRend.positionCount = newPositions.Count;
-            curField.lineRend.SetPositions(newPositions.ToArray());
+            // Corner: add empty line renderer positions, to prevent bending
+            positions = PreventLineRendFromBending(data.positions);
+            positionCount = positions.Length;
         }
+
+        // Set
+        curField.lineRend.positionCount = positionCount;
+        curField.lineRend.SetPositions(positions);
+    }
+
+    /// <summary>
+    /// Douplicate most of the line renderer vertices to prevent it from unwanted bending.
+    /// </summary>
+    public static Vector3[] PreventLineRendFromBending(Vector3[] positions)
+    {
+        List<Vector3> newPositions = positions.ToList();
+        int counter = 0;
+
+        // skip first and last position
+        for (int i=1; i<positions.Length-1; i++)
+        {
+            Vector3 curPos = positions[i];
+            newPositions.Insert(i + counter, curPos);
+            newPositions.Insert(i + counter, curPos);
+            counter += 2;
+        }
+
+        return newPositions.ToArray();
     }
 
 

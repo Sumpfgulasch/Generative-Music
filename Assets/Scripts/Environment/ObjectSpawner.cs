@@ -94,20 +94,6 @@ public class ObjectSpawner : MonoBehaviour
         movingObjects = new List<GameObject>();
     }
 
-    //private void InstantiateFirstObjects_start()
-    //{
-    //    float initalZPos = playerZpos + distancePerBeat;
-    //    movingObjects = new List<GameObject>();
-
-    //    for (int i = 0; i < maxObjects-1; i++)
-    //    {
-    //        GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
-            
-    //        newObj = Instantiate(newObj, new Vector3(0, 0, initalZPos + i * tunnelLength), Quaternion.identity);
-    //        movingObjects.Add(newObj);
-    //    }
-    //}
-
 
     public IEnumerator InstantiateFirstTunnels(float timeToSpawnInBeats, float spawnDistanceInBeats, int amount)
     {

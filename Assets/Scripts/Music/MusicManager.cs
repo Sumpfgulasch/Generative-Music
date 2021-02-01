@@ -78,45 +78,17 @@ public class MusicManager : MonoBehaviour
 
     private void ManageChordPlaying()
     {
-        //print("firstEdgeTouch: " + player.curEdge.firstTouch + ", edgePartChange: " + player.curField.changed + ", leave: " + player.curEdge.leave);
         if (Player.actionState == Player.ActionState.Play)
         {
-            // EDGE CHANGE
-            //if (player.curEdge.changed)
-            //{
-            //    #region pitch
-            //    SetNextPitchRange(ref minPitch, ref maxPitch);
-            //    #endregion
-            //}
-
             // FIRST EDGE TOUCH
             if (Player.curEdge.firstTouch)
             {
-                //PlayField();
-
                 #region pitch
                 // calc pitch
                 SetFirstPitchRange(ref minPitch, ref maxPitch);
                 #endregion
             }
-
-            // EDGE PART CHANGE
-            else if (Player.curField.changed)
-            {
-                //StopChord(curChord, curInstrument);
-
-                //curChord = GetChord();
-
-                //PlayChord(curChord, curInstrument, velocity);
-            }
-        }
-        else
-        {
-            // LEAVE EDGE
-            if (Player.curEdge.leave)
-            {
-                //StopChord(curChord, curInstrument);
-            }
+            
         }
 
         #region Pitch
@@ -166,12 +138,7 @@ public class MusicManager : MonoBehaviour
     }
 
     
-
-
-    //private float GetVelocity()
-    //{
-    //    return Player.inst.GetVelocityFromDistance();
-    //}
+    
 
     private Chord GetChord()
     {
@@ -204,6 +171,8 @@ public class MusicManager : MonoBehaviour
     {
         if (Player.actionState == Player.ActionState.Play)
         {
+            // TO DO: get chord hier rein
+
             StopChord(curChord, curInstrument);
 
             curChord = GetChord();

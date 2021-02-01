@@ -154,11 +154,11 @@ public static class MeshCreation
     // ENVIRONMENT
 
     /// <summary>
-    /// Create game objects for a complete field set, with line renderers being unvisible (empty positions). Add data: ID, isCorner, isEdgeMid, lineRend.
+    /// Create game objects for a complete field set, with line renderers being unvisible (empty positions). Set data: ID, isCorner, isEdgeMid, lineRend.
     /// </summary>
     public static MusicField[] InstantiateFieldSet()
     {
-        int fieldsCount = VisualController.inst.FieldsCount;
+        int fieldsCount = TunnelData.FieldsCount;
         MusicField[] newFields = new MusicField[fieldsCount];
 
         for (int i = 0; i < fieldsCount; i++)
@@ -168,7 +168,7 @@ public static class MeshCreation
             bool isCorner = MusicField.IsCorner(ID);
             bool isEdgeMid = MusicField.IsEdgeMid(ID);
             GameObject newObj = CreateContainer("Field" + ID, MeshRef.inst.musicFields_parent);
-            LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.fieldThickness);
+            LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.fieldThickness);      // TO DO: init mit zwei empty lineRend positions?
 
             // Assign
             newFields[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
@@ -178,10 +178,11 @@ public static class MeshCreation
     }
 
     // PLAYER
+    /// <summary>
+    /// Instantiate 1 gameObject with lineRenderer with empty positions.
+    /// </summary>
     private static void CreatePlayerFields()
     {
-        // == Create 1 gameObject with lineRenderer with empty positions
-
         // FIELDS
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
