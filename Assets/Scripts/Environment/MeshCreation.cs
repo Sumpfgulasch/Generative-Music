@@ -168,7 +168,7 @@ public static class MeshCreation
             bool isCorner = MusicField.IsCorner(ID);
             bool isEdgeMid = MusicField.IsEdgeMid(ID);
             GameObject newObj = CreateContainer("Field" + ID, MeshRef.inst.musicFields_parent);
-            LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.fieldThickness);      // TO DO: init mit zwei empty lineRend positions?
+            LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.fieldThickness, false);      // TO DO: init mit zwei empty lineRend positions?
 
             // Assign
             newFields[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
@@ -230,13 +230,14 @@ public static class MeshCreation
         return newObj;
     }
 
-    private static LineRenderer AddLineRenderer(this GameObject obj, int positionCount, Material material, float width, int sortingOrder = 0)
+    private static LineRenderer AddLineRenderer(this GameObject obj, int positionCount, Material material, float width, bool enabled = true)
     {
         LineRenderer lineRend = obj.AddComponent<LineRenderer>();
         lineRend.positionCount = positionCount;
         lineRend.startWidth = width;
         lineRend.endWidth = width;
         lineRend.material = material;
+        lineRend.enabled = enabled;
 
         Vector3[] positions = new Vector3[] { Vector3.zero, Vector3.zero };
         lineRend.SetPositions(positions);

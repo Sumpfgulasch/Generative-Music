@@ -199,9 +199,13 @@ public class ObjectSpawner : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Enable line renderer and move from back to front, by setting the z-value.
+    /// </summary>
     private IEnumerator MoveFieldFromBackToFront(MusicField field, float spawnDistanceInBeats, float durationInBeats)
     {
+        field.lineRend.enabled = true;
+
         float zSpawn = playerZpos + distancePerBeat * spawnDistanceInBeats;
         float duration = spawnDistanceInBeats * LoopData.timePerBeat;
 

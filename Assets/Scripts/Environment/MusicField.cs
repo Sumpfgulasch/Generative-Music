@@ -58,7 +58,7 @@ public class MusicField
 
 
     /// <summary>
-    /// Set the position-variables. Set z-position to fieldsBeforeSurface-value.
+    /// Set line renderer and position-variables. Set z-position to fieldsBeforeSurface-value.
     /// </summary>
     public void UpdateVertices(Vector3 start, Vector3 mid, Vector3 end, Vector3[] positions)
     {
@@ -69,12 +69,17 @@ public class MusicField
         end.z = zPos;
         for (int i=0; i<positions.Length; i++)
             positions[i].z = zPos;
-
+        
         // 2. Assign
         this.start = start;
         this.mid = mid;
         this.end = end;
         this.positions = positions;
+
+        // 3. Set line renderer
+        var linePositions = MeshUpdate.PreventLineRendFromBending(positions);
+        lineRend.positionCount = linePositions.Length;
+        lineRend.SetPositions(linePositions);
     }
 
 
@@ -88,16 +93,16 @@ public class MusicField
     }
 
     /// <summary>
-    /// Set the z-position of the line renderer. Set whole position, dependant on start- & end-positions.
+    /// Set the z-positions of the line renderer.
     /// </summary>
     public void SetZPos(float zPos)
     {
-        Vector3 lineRendPos1 = this.start;
-        Vector3 lineRendPos2 = this.end;
-        lineRendPos1.z = zPos;
-        lineRendPos2.z = zPos;
-        this.lineRend.SetPosition(0, lineRendPos1);
-        this.lineRend.SetPosition(1, lineRendPos2);
+        for (int i=0; i<lineRend.positionCount; i++)
+        {
+            var newPos = lineRend.GetPosition(i);
+            newPos.z = zPos;
+            lineRend.SetPosition(i, newPos);
+        }
     }
 
     /// <summary>
