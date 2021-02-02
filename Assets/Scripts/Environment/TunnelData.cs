@@ -10,6 +10,7 @@ public static class TunnelData
     // Public attributes
     [HideInInspector] public static Vector3[] vertices = new Vector3[3];
     [HideInInspector] public static MusicField[] fields;
+    [HideInInspector] public static GameObject[] outerFields;
     [HideInInspector] public static float fieldLength;      // TO DO: update funktion schreiben und mit ... verknüpfen?
 
     // Properties

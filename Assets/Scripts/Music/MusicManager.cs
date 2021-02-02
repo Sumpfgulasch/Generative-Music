@@ -255,24 +255,24 @@ public class MusicManager : MonoBehaviour
 
     private void SetNextPitchRange(ref float min, ref float max)
     {
-        if (Player.curRotSpeed < 0)
-        {
-            // Clockwise
-            min = max;
-            if (Random.Range(0, 2) == 0)
-                max = max + Random.Range(1, maxEdgePitchIntervalRange);
-            else
-                max = min + Random.Range(-1, -maxEdgePitchIntervalRange);
-        }
-        else
-        {
-            // Counter-clockwise
-            max = min;
-            if (Random.Range(0, 2) == 0)
-                minPitch = minPitch + Random.Range(-1, -maxEdgePitchIntervalRange);
-            else
-                minPitch = maxPitch + Random.Range(1, maxEdgePitchIntervalRange);
-        }
+        //if (Player.curRotSpeed < 0)
+        //{
+        //    // Clockwise
+        //    min = max;
+        //    if (Random.Range(0, 2) == 0)
+        //        max = max + Random.Range(1, maxEdgePitchIntervalRange);
+        //    else
+        //        max = min + Random.Range(-1, -maxEdgePitchIntervalRange);
+        //}
+        //else
+        //{
+        //    // Counter-clockwise
+        //    max = min;
+        //    if (Random.Range(0, 2) == 0)
+        //        minPitch = minPitch + Random.Range(-1, -maxEdgePitchIntervalRange);
+        //    else
+        //        minPitch = maxPitch + Random.Range(1, maxEdgePitchIntervalRange);
+        //}
     }
 
 

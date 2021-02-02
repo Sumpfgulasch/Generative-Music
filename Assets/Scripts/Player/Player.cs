@@ -23,24 +23,12 @@ public class Player : MonoBehaviour
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
-    [Range(0, 1f)] public float rotationTargetVectorFactor = 0.1f;
-    [Range(0, 1f)] public float scaleTargetVectorFactor = 0.05f;
+    //[Range(0, 1f)] public float rotationTargetVectorFactor = 0.1f;
+    //[Range(0, 1f)] public float scaleTargetVectorFactor = 0.05f;
     public float scaleMax = 2.7f;
     public float scaleMin = 1f;
     public float scaleMaxSpeed = 0.05f;
-    [Range(0, 1f)] public float scaleDamp = 0.2f;
-    public float outsideSpeedMin = 2f;
-    [Range(0, 1f)] public float outsideSlowFac = 0.3f;
-    [Range(0, 1f)] public float scaleEdgeAcc = 0.05f;
-    [Range(1, 20f)] public float fastFactor = 3f;
-    [Header("Bounce")]
-    [Range(0.001f, 0.05f)] public float bounceEntrySpeedScale = 0.005f;
-    public float bounceEntrySpeedRot = 0.1f;
-    public float maxBounceSpeed = 0.01f;
-    public float bounceTime = 2f;
-    [Range(1, 20f)]
-    public float bounceFactor = 10f;
-    public float bounceRecoverTime = 0.5f;
+    public float minMouseToMidDistance = 0.3f;
 
     [Header("Keyboard")]
     [Range(0.1f, 1f)]
@@ -61,8 +49,7 @@ public class Player : MonoBehaviour
 
 
     // Public attributes
-    [HideInInspector] public float curRotSpeed;
-    [HideInInspector] public bool startedBounce = false;
+    //[HideInInspector] public float curRotSpeed;
     [HideInInspector] public Vector3[] outerVertices = new Vector3[3];
     [HideInInspector] public Vector3[] innerVertices = new Vector3[3];
     [HideInInspector] public Vector3[] outerVertices_mesh = new Vector3[3];
@@ -83,7 +70,7 @@ public class Player : MonoBehaviour
 
     // private variables
     private Vector3 midPoint;
-    private float scaleTargetValue;
+    //private float scaleTargetValue;
     private float curScaleSpeed = 0;
     private float rotTargetValue;
     private float mouseToPlayerDistance;
@@ -103,6 +90,7 @@ public class Player : MonoBehaviour
     private List<IEnumerator> curTriggerRoutines = new List<IEnumerator>();
     private enum Side { inner, outer};
     private Side curSide = Side.inner;
+    private Side curMouseSide, lastMouseSide;
 
 
 
@@ -130,7 +118,6 @@ public class Player : MonoBehaviour
     {
         inst = this;
         midPoint = this.transform.position;
-        //enumerator = RotateToNextField(1).GetEnumerator();          // hack inits
         triggerRotRoutine = TriggerRoutineFrequently(RotateToNextField(1), curRotPressTime, curRotFrequency, curRotateRoutines);
         scaleOutEnumerator = DampedScale(scaleMax);
         scaleRoutine = DampedScale(scaleMin);
@@ -169,12 +156,12 @@ public class Player : MonoBehaviour
     {
         // MOUSE
         // Rotation
-        Vector2 mouseToMid = mousePos - midPoint;
-        Vector2 playerAngleVec = outerVertices[0] - midPoint;
-        float curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
-        curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
-        rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
-        curRotSpeed = rotTargetValue;
+        //Vector2 mouseToMid = mousePos - midPoint;
+        //Vector2 playerAngleVec = outerVertices[0] - midPoint;
+        //float curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
+        //curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
+        //rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
+        //curRotSpeed = rotTargetValue;
 
         // Scale
         mouseToPlayerDistance = 0;
@@ -201,30 +188,30 @@ public class Player : MonoBehaviour
         }
 
         // Scale value
-        scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
-        scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
+        //scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
+        //scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
     }
 
     
 
-    void MoveTowardsMouse(Side side)
-    {
-        if (side == Side.inner)
-            // accalerate towards mouse
-            curScaleSpeed += scaleTargetValue;
-        else if (side == Side.outer)
-        {
-            curScaleSpeed = scaleTargetValue * outsideSlowFac;
-            curRotSpeed = rotTargetValue * outsideSlowFac;
-        }
-        // scale
-        curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;                  // damp
-        this.transform.localScale += new Vector3(curScaleSpeed * fastWeight, curScaleSpeed * fastWeight, 0);    // add
-        this.transform.localScale = this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);              // clamp
+    //void MoveTowardsMouse(Side side)
+    //{
+    //    if (side == Side.inner)
+    //        // accalerate towards mouse
+    //        curScaleSpeed += scaleTargetValue;
+    //    else if (side == Side.outer)
+    //    {
+    //        curScaleSpeed = scaleTargetValue * outsideSlowFac;
+    //        curRotSpeed = rotTargetValue * outsideSlowFac;
+    //    }
+    //    // scale
+    //    curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;                  // damp
+    //    this.transform.localScale += new Vector3(curScaleSpeed * fastWeight, curScaleSpeed * fastWeight, 0);    // add
+    //    this.transform.localScale = this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);              // clamp
 
-        // rotation
-        this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
-    }
+    //    // rotation
+    //    this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
+    //}
 
 
 
@@ -258,9 +245,9 @@ public class Player : MonoBehaviour
             curScaleSpeed = 0; // unschön
         }
 
-        // rotation
-        if (!useKeyboard)
-            this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
+        //// rotation
+        //if (!useKeyboard)
+        //    this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
     }
 
     
@@ -303,7 +290,7 @@ public class Player : MonoBehaviour
         curRotFrequency = bt_play_selectionFrequency;
 
         // set mouse collider
-        MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_play);
+        //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_play);
 
         // Events
         GameEvents.inst.FieldStart();
@@ -333,7 +320,7 @@ public class Player : MonoBehaviour
         curRotFrequency = bt_selectionFrequency;
 
         // set mouse collider
-        MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_move);
+        //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_move);
 
         // Events
         GameEvents.inst.FieldLeave();
@@ -341,7 +328,7 @@ public class Player : MonoBehaviour
 
 
 
-    // ------------------------------ Input Actions ------------------------------
+    // ---------------------------------- Events ----------------------------------
 
         
 
@@ -377,17 +364,17 @@ public class Player : MonoBehaviour
 
     public void OnPlay(InputAction.CallbackContext context)
     {
-        if (positionState != PositionState.NoTunnel)
-        {
-            if (context.performed)
-            {
-                PlayMovement(curSide);
-            }
-            else if (context.canceled)
-            {
-                StopPlayMovement(curSide);
-            }
-        }
+        //if (positionState != PositionState.NoTunnel)
+        //{
+        //    if (context.performed)
+        //    {
+        //        PlayMovement(curSide);
+        //    }
+        //    else if (context.canceled)
+        //    {
+        //        StopPlayMovement(curSide);
+        //    }
+        //}
     }
     
     /// <summary>
@@ -422,10 +409,17 @@ public class Player : MonoBehaviour
     public void OnMove(InputAction.CallbackContext context)
     {
         var pointerPos = context.ReadValue<Vector2>();
-        var allowedToSelect = !MouseHitsMouseCollider(pointerPos);
 
+        Side mouseSide = CheckForMouseSide(pointerPos);
+        bool mouseMiminumDistance = MouseHasMinimumDistance(pointerPos);
+        bool allowedToMove = true;
+        if (actionState == ActionState.Play && mouseSide == Side.inner)
+        {
+            allowedToMove = false;
+        }
+        
         // 1. Allowed to select? 
-        if (allowedToSelect)
+        if (mouseMiminumDistance && allowedToMove)
         {
             var mouseDirection = ConvertMouseToDirection(pointerPos);
 
@@ -484,20 +478,47 @@ public class Player : MonoBehaviour
         return pointerDirection;
     }
     
-
-    private bool MouseHitsMouseCollider(Vector2 input)
+    /// <summary>
+    /// Check if the mouse is inside or outside the MusicFields. Fire events if side changed!
+    /// </summary>
+    /// <param name="input">Position of the mouse from input system.</param>
+    private Side CheckForMouseSide(Vector2 input)
     {
+        // last
+        //lastMouseSide = curMouseSide;
+
+        // calc
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
         mousePos.z = midPoint.z - 1;
-
+        
         var ray = new Ray(mousePos, Vector3.forward);
         var hit = Physics2D.GetRayIntersection(ray,3);
-        if (hit)
+
+        // ray
+        if (hit && hit.collider.tag.Equals("MouseCollider"))
         {
-            if (hit.collider.tag.Equals("MouseCollider"))
-                return true;
+            GameEvents.inst.MouseInside();
+            return Side.inner;
         }
-        return false;
+        else
+        {
+            GameEvents.inst.MouseOutside();
+            return Side.outer;
+        }
+    }
+
+    /// <summary>
+    /// Check if the mouse has a miminum distance to the player mid.
+    /// </summary>
+    private bool MouseHasMinimumDistance(Vector2 input)
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
+        float distance = (mousePos - midPoint).magnitude;
+
+        if (distance >= minMouseToMidDistance)
+            return true;
+        else
+            return false;
     }
     
 

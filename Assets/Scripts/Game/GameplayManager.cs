@@ -20,6 +20,7 @@ public class GameplayManager : MonoBehaviour
         yield return new WaitForFixedUpdate(); yield return new WaitForEndOfFrame();    
 
         MeshUpdate.UpdateFieldsPositions();
+        MeshCreation.CreateOuterFields();
         MeshCreation.InitMouseCollider();
 
 

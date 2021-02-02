@@ -16,6 +16,8 @@ public class GameEvents : MonoBehaviour
     public Action onFirstBeat;
     public Action onSecondBeat;
     public Action<int> onBeat;
+    public Action onMouseInside;
+    public Action onMouseOutside;
 
    
 
@@ -44,7 +46,17 @@ public class GameEvents : MonoBehaviour
         onFieldLeave?.Invoke();
     }
 
-    
+    public void MouseOutside()
+    {
+        onMouseOutside?.Invoke();
+    }
+
+    public void MouseInside()
+    {
+        onMouseInside?.Invoke();
+    }
+
+
 
 
 

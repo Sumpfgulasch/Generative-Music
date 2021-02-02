@@ -26,13 +26,11 @@ public static class MeshUpdate
         #endregion
 
         // Event subscription
-        GameEvents.inst.onFieldChange += OnFieldChange;
-
+        //GameEvents.inst.onFieldChange += OnFieldChange;
         
-        PlayerControls controls = new PlayerControls();
-        controls.Enable();
-        controls.Gameplay.Move.performed += context => OnMove(context);
-        Debug.Log("MeshUpdate Constructor");
+        //PlayerControls controls = new PlayerControls();
+        //controls.Enable();
+        //controls.Gameplay.Move.performed += context => OnMove(context);
     }
 
 
@@ -171,33 +169,7 @@ public static class MeshUpdate
         }
     }
 
-
-    #region DrawTunnelEdges
-    //private static void DrawEnvironmentEdges()
-    //{
-    //    // = Draw lineRenderer lines for each edge (3)
-
-    //    // 1) Add extra points for LineRenderer
-    //    List<Vector3> newPositions = EnvironmentData.vertices.ToList();
-    //    int insertCounter = 0;
-    //    for (int i = 1; i < EnvironmentData.vertices.Length; i++)
-    //    {
-    //        // insert before
-    //        newPositions.Insert(i + insertCounter, EnvironmentData.vertices[i]);
-    //        insertCounter++;
-    //        // insert after
-    //        newPositions.Insert(i + 1 + insertCounter, EnvironmentData.vertices[i]);
-    //        insertCounter++;
-    //    }
-    //    newPositions.Add(EnvironmentData.vertices[0]);
-
-
-    //    // 2) Add to LineRenderer
-    //    MeshRef.inst.envEdges_lr.positionCount = newPositions.Count;
-    //    MeshRef.inst.envEdges_lr.SetPositions(newPositions.ToArray());
-    //}
-    #endregion
-
+    
 
     /// <summary>
     /// Set fields positions (dependant on the tunnel vertices) and store it in TunnelData.fields. Set fieldLength in TunnelData.
@@ -339,59 +311,10 @@ public static class MeshUpdate
 
     // --------------------------------- Events --------------------------------
 
-
-
-    private static void OnFieldChange(PlayerField data)
-    {
-        UpdatePlayerLineRenderer(data);
-        //foreach (PlayerField secField in Player.inst.curSecondaryFields)          // TO DO
-        //    secField.UpdatePlayerLineRenderer(data);
-    }
-
-    public static void OnMove(InputAction.CallbackContext context)
-    {
-        // TO DO: doppelt berechnet, in player
-
-        var input = context.ReadValue<Vector2>();
-
-        var mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, playerMid.z));
-        mousePos.z = playerMid.z - 1;
-
-        var ray = new Ray(mousePos, Vector3.forward);
-        var hit = Physics2D.GetRayIntersection(ray, 3);
-
-        if (Player.inst.actionState == Player.ActionState.None) 
-            {
-            if (hit && hit.collider.tag.Equals("MouseCollider"))
-            {
-                Player.inst.curField.SetColor(Color.white);
-                Player.inst.curField.SetOpacity(0);
-            }
-            else
-            {
-                Player.inst.curField.SetColor(Color.white);
-                Player.inst.curField.SetOpacity(1f);
-            }
-        }
-        else
-        {
-            if (hit && hit.collider.tag.Equals("MouseCollider"))
-            {
-                Player.inst.curField.SetColor(Color.white);
-                Player.inst.curField.SetOpacity(1f);
-            }
-            else
-            {
-                Player.inst.curField.SetColor(Color.white);
-                Player.inst.curField.SetOpacity(1f);
-            }
-        }
         
-    }
-
 
     /// <summary>
-    /// Defines when fieldChanges are allowed.
+    /// The mouse collider is for detecting when the mouse is inside or outside the MusicFields.
     /// </summary>
     /// <param name="size">[0 - 1]</param>
     public static void SetMouseColliderSize(float size)

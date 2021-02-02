@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public static class MeshCreation
 {
@@ -38,18 +39,18 @@ public static class MeshCreation
         CreatePlayerMesh(ref MeshRef.inst.innerPlayerMesh_mf);
 
         // Milk surface
-        CreateMesh(ref MeshRef.inst.innerSurface_mf, TunnelData.vertices);
-        CreateMesh(ref MeshRef.inst.innerMask_mf, Player.inst.outerVertices);
-        CreateMesh(ref MeshRef.inst.innerPlayerMask_mf, TunnelData.vertices);
+        CreateTriangleMesh(ref MeshRef.inst.innerSurface_mf, TunnelData.vertices);
+        CreateTriangleMesh(ref MeshRef.inst.innerMask_mf, Player.inst.outerVertices);
+        CreateTriangleMesh(ref MeshRef.inst.innerPlayerMask_mf, TunnelData.vertices);
 
         // Outer player
         CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
-        CreateMesh(ref MeshRef.inst.outerPlayerMask_mf, TunnelData.vertices);
+        CreateTriangleMesh(ref MeshRef.inst.outerPlayerMask_mf, TunnelData.vertices);
     }
 
 
     /// <summary>
-    /// Instantiates music fields and player fields, with line renderers but empty positions (-> not visible). Stores them in TunnelData.fields.
+    /// Instantiates music fields and player fields, with line renderers disabled. Stores them in TunnelData.fields.
     /// </summary>
     public static void InitFields()
     {
@@ -62,12 +63,12 @@ public static class MeshCreation
 
 
     // ----------------------------- Private methods ----------------------------
-    
 
+    /// <summary>
+    /// Create mesh form, create containers & set player variables.
+    /// </summary>
     private static void InitPlayer()
     {
-        // = Create mesh form, create containers & set player variables
-
         playerMid = Player.inst.transform.position;
 
         // Create containers
@@ -99,7 +100,7 @@ public static class MeshCreation
 
 
 
-    private static void CreateMesh(ref MeshFilter mf, Vector3[] vertices)
+    private static void CreateTriangleMesh(ref MeshFilter mf, Vector3[] vertices)
     {
         // = Used for any triangle mesh that is not the player
 
@@ -208,12 +209,39 @@ public static class MeshCreation
     }
 
     /// <summary>
+    /// Create Meshes.
+    /// </summary>
+    public static void CreateOuterFields()
+    {
+        // 1. Gehe jedes field durch
+        for (int i=0; i<TunnelData.FieldsCount; i++)
+        {
+            if (TunnelData.fields[i].isCorner)
+            {
+
+            }
+            else
+            {
+                Mesh mesh = new Mesh();
+                var positions = TunnelData.fields[i].positions;
+                var vertices = positions.ToList();
+                for (int j=0; j<positions.Length; j++)
+                {
+                    var newPos = positions[j];
+                    newPos.z = -1;
+                    //vertices.Add // TO DO: hier weiter
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Collider for selection with the mouse. Fill with vertices from TunnelData.
     /// </summary>
     public static void InitMouseCollider()
     {
         MeshRef.inst.mouseColllider.points = ExtensionMethods.Vector3ToVector2(TunnelData.vertices);
-        MeshUpdate.SetMouseColliderSize(VisualController.inst.mouseColliderSize_move);
+        MeshUpdate.SetMouseColliderSize(VisualController.inst.mouseColliderSize_play);
     }
 
 
