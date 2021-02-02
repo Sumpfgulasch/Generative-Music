@@ -127,7 +127,7 @@ public class MusicManager : MonoBehaviour
                     break;
 
                 case MusicField.Type.Modulation:
-                    MusicFieldSet.SwitchEdgeParts();
+                    //MusicFieldSet.SwitchEdgeParts();
                     break;
 
                 case MusicField.Type.Pitch:

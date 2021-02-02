@@ -362,21 +362,7 @@ public class Edge
 public static class MusicFieldSet
 {
     // == Operations for complete MusicFieldSets
-
-
-    public static Color[] RandomColors(int types)
-    {
-        // == Get a random color for each type
-
-        Color[] colors = new Color[types];
-        for (int i=0; i < types; i++)
-        {
-            Color randColor = new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f));
-            colors[i] = randColor;
-        }
-        return colors;
-    }
-
+    
 
     /// <summary>
     /// Store data (chords, colors, types, available, isBuildingUp) in each field; data only, no material assignments
@@ -388,56 +374,42 @@ public static class MusicFieldSet
     /// <param name="buildUps">Length == edges * divisions (att 15)</param>
     public static MusicField[] StoreDataInFields(MusicField[] fieldsToAssign, MusicField.Type[] fieldTypes, Chord[][] chords, Color[] colors, bool[] availables, bool [] buildUps)
     {
-        var edgePartIDs = ExtensionMethods.IntToList(TunnelData.FieldsCount, true);
+        var fieldIDs = ExtensionMethods.IntToList(TunnelData.FieldsCount, true);
         var fieldsPerEdge = VisualController.inst.fieldsPerEdge;
         var fieldsCount = TunnelData.FieldsCount;
 
         // 1. Gehe jeden chordType durch (3)
-        for (int i = 0; i < chords.Length; i++)
+        for (int chordTypeIndex = 0; chordTypeIndex < chords.Length; chordTypeIndex++)
         {
-            var curChords = chords[i].ToList();
+            var curChords = chords[chordTypeIndex].ToList();
 
             // 2. Gehe jeden chord durch (3-5)
-            for (int j = 0; j < chords[i].Length; j++)
+            for (int chordIndex = 0; chordIndex < chords[chordTypeIndex].Length; chordIndex++)
             {
-
-                // chord
                 var chord = curChords[0];
                 curChords.RemoveAt(0);
+                int ID;
 
-                if (i == 0)
+                // get CORNER fields
+                if (chordTypeIndex == 0)
                 {
-                    // get CORNER fields
-                    int ID1 = ExtensionMethods.Modulo(j * fieldsPerEdge - 1, fieldsCount);
-                    int ID2 = j * fieldsPerEdge;
-                    edgePartIDs.Remove(ID1);
-                    edgePartIDs.Remove(ID2);
-
-                    // assign
-                    fieldsToAssign[ID1].SetContent(fieldTypes[ID1], chord, colors[i], availables[ID1], buildUps[ID1]);
-                    fieldsToAssign[ID2].SetContent(fieldTypes[ID2], chord, colors[i], availables[ID2], buildUps[ID2]);
-
+                    ID = chordIndex * (fieldsPerEdge-1);
+                    fieldIDs.Remove(ID);
                 }
+                // get random other field
                 else
                 {
-                    // get random other field
-                    int randID_index = Random.Range(0, edgePartIDs.Count);
-                    int randID = edgePartIDs[randID_index];
-
-                    edgePartIDs.Remove(randID);
-
-                    // assign
-                    fieldsToAssign[randID].SetContent(fieldTypes[randID], chord, colors[i], availables[randID], buildUps[randID]);
+                    int randID_index = Random.Range(0, fieldIDs.Count);
+                    ID = fieldIDs[randID_index];
                 }
+
+                fieldIDs.Remove(ID);
+
+                fieldsToAssign[ID].SetContent(fieldTypes[ID], chord, colors[chordTypeIndex], availables[ID], buildUps[ID]);
             }
         }
 
         return fieldsToAssign;
-    }
-
-    public static void SwitchEdgeParts()
-    {
-
     }
 
 

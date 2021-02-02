@@ -39,7 +39,7 @@ public static class MusicUtil
 
 
     /// <summary>
-    /// Generate a chord in a key and move up or down. Tempo is defined by direction.
+    /// Generate a chord in a key and move up or down, related to a relation chord. Tempo is defined by direction.
     /// </summary>
     /// <param name="key">The key you wanna have.</param>
     /// <param name="degree">The degree of the wanted chord.</param>
@@ -153,53 +153,7 @@ public static class MusicUtil
 
         return allChords.ToArray();
     }
-
-
-
-    private static Chord DeepCopy(this Chord chord)
-    {
-        int[] notes = new int[chord.notes.Length];
-        for (int i = 0; i < notes.Length; i++)
-            notes[i] = chord.notes[i];
-
-        int degree = chord.degree;
-        int inversion = chord.inversion;
-        int baseNote = chord.baseNote;
-
-        Chord newChord = new Chord(notes, degree, inversion, baseNote);
-
-        return newChord;
-    }
-
-
-
-    public static string NoteNames(this int[] notes)
-    {
-        string noteNames = "";
-        foreach (int note in notes)
-        {
-            int octave = note / notesPerOctave - 1;
-            int modulo = note % notesPerOctave;
-
-            if (modulo == 0) noteNames = noteNames + "C" + octave.ToString() + ", ";
-            else if(modulo == 1) noteNames += "Cis" + octave.ToString() + ", ";
-            else if(modulo == 2) noteNames += "D" + octave.ToString() + ", ";
-            else if(modulo == 3) noteNames += "Dis" + octave.ToString() + ", ";
-            else if(modulo == 4) noteNames += "E" + octave.ToString() + ", ";
-            else if(modulo == 5) noteNames += "F" + octave.ToString() + ", ";
-            else if(modulo == 6) noteNames += "Fis" + octave.ToString() + ", ";
-            else if(modulo == 7) noteNames += "G" + octave.ToString() + ", ";
-            else if(modulo == 8) noteNames += "Gis" + octave.ToString() + ", ";
-            else if(modulo == 9) noteNames += "A" + octave.ToString() + ", ";
-            else if(modulo == 10) noteNames += "Ais" + octave.ToString() + ", ";
-            else if(modulo == 11) noteNames += "H" + octave.ToString() + ", ";
-        }
-
-        noteNames = noteNames.Substring(0, noteNames.Length - 2);
-
-        return noteNames;
-    }
-
+    
     
 
     /// <summary>
@@ -385,7 +339,7 @@ public static class MusicUtil
         return inversions.ToList();
     }
 
-    public static Chord[] AllChordInversions(Key key, int degree, int[] intervals, int minNote, int maxNote)
+    public static Chord[] AllBasicChordInversions(Key key, int degree, int[] intervals, int minNote, int maxNote)
     {
         // 1. Make chord
         Chord chord = Triad(key, degree, intervals, 0);
@@ -527,6 +481,53 @@ public static class MusicUtil
                 return false;
         }
         return true;
+    }
+
+
+
+    // Helper methods
+
+    private static Chord DeepCopy(this Chord chord)
+    {
+        int[] notes = new int[chord.notes.Length];
+        for (int i = 0; i < notes.Length; i++)
+            notes[i] = chord.notes[i];
+
+        int degree = chord.degree;
+        int inversion = chord.inversion;
+        int baseNote = chord.baseNote;
+
+        Chord newChord = new Chord(notes, degree, inversion, baseNote);
+
+        return newChord;
+    }
+    
+
+    public static string NoteNames(this int[] notes)
+    {
+        string noteNames = "";
+        foreach (int note in notes)
+        {
+            int octave = note / notesPerOctave - 1;
+            int modulo = note % notesPerOctave;
+
+            if (modulo == 0) noteNames = noteNames + "C" + octave.ToString() + ", ";
+            else if (modulo == 1) noteNames += "Cis" + octave.ToString() + ", ";
+            else if (modulo == 2) noteNames += "D" + octave.ToString() + ", ";
+            else if (modulo == 3) noteNames += "Dis" + octave.ToString() + ", ";
+            else if (modulo == 4) noteNames += "E" + octave.ToString() + ", ";
+            else if (modulo == 5) noteNames += "F" + octave.ToString() + ", ";
+            else if (modulo == 6) noteNames += "Fis" + octave.ToString() + ", ";
+            else if (modulo == 7) noteNames += "G" + octave.ToString() + ", ";
+            else if (modulo == 8) noteNames += "Gis" + octave.ToString() + ", ";
+            else if (modulo == 9) noteNames += "A" + octave.ToString() + ", ";
+            else if (modulo == 10) noteNames += "Ais" + octave.ToString() + ", ";
+            else if (modulo == 11) noteNames += "H" + octave.ToString() + ", ";
+        }
+
+        noteNames = noteNames.Substring(0, noteNames.Length - 2);
+
+        return noteNames;
     }
 
 }

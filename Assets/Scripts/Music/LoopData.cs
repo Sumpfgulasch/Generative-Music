@@ -39,6 +39,9 @@ public static class LoopData
     // CONSTRUCTOR
     static LoopData()
     {
+        // EVENT subscription
+        MusicRef.inst.beatSequencer.beatEvent.AddListener(ManageSpawning);
+
         GetBeatData();
     }
 
@@ -93,9 +96,6 @@ public static class LoopData
     /// </summary>
     public static void Init()
     {
-        // -1. Loop events
-        MusicRef.inst.beatSequencer.beatEvent.AddListener(ManageSpawning);
-
         // 0. Weights
         //weights = InitWeights();
 
@@ -120,7 +120,7 @@ public static class LoopData
         // individual count
         int[] individualCounts = MusicGenerationLogic.RandomChordTypeCounts(chordTypeCount);
         // colors
-        var colors = MusicFieldSet.RandomColors(chordTypeCount);                    // to do?: eig nicht nötig hier
+        var colors = MeshUpdate.RandomColors(chordTypeCount);
         // assign!
         chordTypes = new ChordData[chordTypeCount];
         for (int i = 0; i < chordTypeCount; i++)

@@ -100,10 +100,12 @@ public static class MusicGenerationLogic
         return key;
     }
 
+    /// <summary>
+    /// Return an int[] with the desired individual chord counts of each degree.
+    /// </summary>
     public static int[] RandomChordTypeCounts(int allChordTypes)
     {
-        // = returne einen int[] mit den gewünschten individuellen anzahlen von Feldern der jeweiligen chord degrees
-        int remainingFields = TunnelData.FieldsCount - VisualController.inst.tunnelVertices;      // Hack
+        int remainingFields = TunnelData.FieldsCount;
         int[] chordTypeCounts = new int[allChordTypes];
         int fields;
 
@@ -124,7 +126,10 @@ public static class MusicGenerationLogic
     }
 
 
-
+    /// <summary>
+    /// Get chords for all MusicFields. First array is chordTypes / degrees, second array is the individual chords.
+    /// </summary>
+    /// <returns></returns>
     public static Chord[][] RandomChordsFromData(Key key, ChordData[] chordTypes, int minNote, int maxNote)
     {
         // 1. Get all possible chords from data, within contraints (toneRange, chordData)
@@ -150,7 +155,7 @@ public static class MusicGenerationLogic
             int degree = chordTypes[i].degree;
             int[] intervals = chordTypes[i].intervals;
             //Chord basicChord = MusicUtil.Triad(key, degree, intervals);
-            basicChords[i] = MusicUtil.AllChordInversions(key, degree, intervals, minNote, maxNote);
+            basicChords[i] = MusicUtil.AllBasicChordInversions(key, degree, intervals, minNote, maxNote);
             bigChords[i] = MusicUtil.AllBigTriads(key, degree, intervals, minNote, maxNote);
         }
 
@@ -172,7 +177,7 @@ public static class MusicGenerationLogic
         {
             Chord[] relevantChords;
             // random: basic chord or big chord?
-            if (ExtensionMethods.Probability(0f))
+            if (ExtensionMethods.Probability(0f))           // Hack: only big chords
             {
                 relevantChords = chords[0][i];
             }
@@ -187,32 +192,14 @@ public static class MusicGenerationLogic
             for (int j=0; j<chordTypes[i].individualCount; j++)
             {
                 int randIndex = Random.Range(0, relevantChords_list.Count);
-                //Debug.Log("indivTypeCount[" + i + "]: " + chordTypes[i].individualCount + ", relevantChords-array[" + i + "].length: " + relevantChords.Length + ", relevantChords_list.count: " + relevantChords_list.Count + ", randIndex: " + randIndex);
                 finalChords[i][j] = relevantChords_list[randIndex];
                 if (relevantChords_list.Count > 1)
                     relevantChords_list.RemoveAt(randIndex);            // hack
             }
-
         }
-
-        //Debug.Log("final lengths. type1:" + finalChords[0].Length + "; type2: " + finalChords[1].Length + ", type3: " + finalChords[2].Length);
-        //for (int i=0; i<finalChords.Length; i++)
-        //{
-        //    for (int j=0; j<finalChords[i].Length; j++)
-        //    {
-        //        Debug.Log("i: " + i + ", j: " + j + ", chord: " + finalChords[i][j].notes.AsNames());
-        //    }
-        //}
-
-
-
+        
         return finalChords;
     }
-
-
-    
-
-    // Weitere Funktion: Akkordstruktur- und Stellung abhängig von Tonlage (unten weite Intervalle)
 
 
 }

@@ -125,6 +125,9 @@ public static class ExtensionMethods
         return tArray;
     }
 
+    /// <summary>
+    /// Works for positive and negative values.
+    /// </summary>
     public static int Modulo(this int value, int modulo)
     {
         return ((value % modulo) + modulo) % modulo;

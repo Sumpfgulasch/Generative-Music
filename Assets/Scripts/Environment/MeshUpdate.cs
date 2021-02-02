@@ -219,7 +219,7 @@ public static class MeshUpdate
             Vector3 fieldVec = edgeVec.normalized * fieldLength;
 
             // 2. Interate over fields per edge
-            for (int fieldInd = 0; fieldInd < VisualController.inst.fieldsPerEdge; fieldInd++)
+            for (int fieldInd = 0; fieldInd < VisualController.inst.fieldsPerEdge - 1; fieldInd++)
             {
                 int ID = edgeInd * (VisualController.inst.fieldsPerEdge - 1) + fieldInd;
 
@@ -324,11 +324,23 @@ public static class MeshUpdate
     }
 
 
+    public static Color[] RandomColors(int types)
+    {
+        Color[] colors = new Color[types];
+        for (int i = 0; i < types; i++)
+        {
+            Color randColor = new Color(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
+            colors[i] = randColor;
+        }
+        return colors;
+    }
+
+
 
     // --------------------------------- Events --------------------------------
 
 
-    
+
     private static void OnFieldChange(PlayerField data)
     {
         UpdatePlayerLineRenderer(data);

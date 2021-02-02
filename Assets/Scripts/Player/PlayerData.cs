@@ -70,13 +70,13 @@ public static class PlayerData
         Physics.Raycast(midPoint, direction, out hit);
 
         Vector3 pointerPosOnEdge = new Vector3(hit.point.x, hit.point.y, playerZpos);
-
-        Player.curEdge.percentage = Mathf.Clamp01((pointerPosOnEdge - curEdgeStart).magnitude / (curEdgeEnd - curEdgeStart).magnitude);
         
-        int curFieldID = ((int)(Player.curEdge.percentage.                  // gar kein bock mehr
-            Remap(0, 1f, 0, VisualController.inst.fieldsPerEdge)
-            + curEdgeIndex * VisualController.inst.fieldsPerEdge)) 
-            % (TunnelData.FieldsCount);
+        Player.curEdge.percentage = Mathf.Clamp01((pointerPosOnEdge - curEdgeStart).magnitude / (curEdgeEnd - curEdgeStart).magnitude);
+        int curEdgePercentage_quantized = (int)(Player.curEdge.percentage.Remap(0, 1f, 0, VisualController.inst.fieldsPerEdge));
+
+        int fieldsPerEdge = VisualController.inst.fieldsPerEdge;
+
+        int curFieldID = (curEdgeIndex * (fieldsPerEdge - 1) + curEdgePercentage_quantized) % TunnelData.FieldsCount;
 
         return curFieldID;
     }
@@ -96,12 +96,14 @@ public static class PlayerData
 
         MusicField[] fields = TunnelData.fields;
 
-        // 1. SET (curField & secFields: ID, positions, mid)
+        // 1. SET
+        // Primary
         Player.curField.Set(ID, fields[ID].positions, fields[ID].mid, fields[ID].isCorner);
 
+        // Secondary
         for (int i = 0; i < Player.curSecondaryFields.Length; i++)
         {
-            int secID = (ID + ((i + 1) * (VisualController.inst.fieldsPerEdge - 1)) % TunnelData.FieldsCount);
+            int secID = (ID + ((i + 1) * (VisualController.inst.fieldsPerEdge - 1))) % TunnelData.FieldsCount;
             Player.curSecondaryFields[i].Set(secID, fields[secID].positions, fields[secID].mid, fields[secID].isCorner);
         }
         // TO DO: set current edge (start, end, ID; percentage already set)
