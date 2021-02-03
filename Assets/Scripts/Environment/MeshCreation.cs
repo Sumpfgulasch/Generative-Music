@@ -10,7 +10,7 @@ public static class MeshCreation
 
 
     // Get/set
-    static Player player { get { return Player.inst; } }
+    static Player Player { get { return Player.inst; } }
 
 
 
@@ -54,7 +54,10 @@ public static class MeshCreation
     /// </summary>
     public static void InitFields()
     {
+        // Music fields
         TunnelData.fields = InstantiateFieldSet();
+
+        // Player fields
         CreatePlayerFields();
     }
 
@@ -65,7 +68,7 @@ public static class MeshCreation
     // ----------------------------- Private methods ----------------------------
 
     /// <summary>
-    /// Create mesh form, create containers & set player variables.
+    /// Create mesh form, create containers and set player variables.
     /// </summary>
     private static void InitPlayer()
     {
@@ -180,7 +183,7 @@ public static class MeshCreation
 
     // PLAYER
     /// <summary>
-    /// Instantiate 1 gameObject with lineRenderer with empty positions.
+    /// Instantiate 1 gameObject with lineRenderer with empty positions and disabled.
     /// </summary>
     private static void CreatePlayerFields()
     {
@@ -188,24 +191,24 @@ public static class MeshCreation
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
         LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerFieldPlayThickness);
-        player.curField = new PlayerField(PlayerField.Type.Main, lineRend);
-        player.curField.SetToFocus();
+        Player.curField = new PlayerField(PlayerField.Type.Main, lineRend);
+        Player.curField.SetToFocus();
 
         // Seoncdary
-        player.curSecondaryFields = new PlayerField[player.verticesCount - 1];
-        for (int i = 0; i < player.curSecondaryFields.Length; i++)
+        Player.curSecondaryFields = new PlayerField[Player.verticesCount - 1];
+        for (int i = 0; i < Player.curSecondaryFields.Length; i++)
         {
             GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.playerField_parent);
             LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerSecFieldThickness);
-            player.curSecondaryFields[i] = new PlayerField(PlayerField.Type.Second, lineRend2);
+            Player.curSecondaryFields[i] = new PlayerField(PlayerField.Type.Second, lineRend2);
             lineRend2.enabled = false;
         }
 
         // EDGES
-        player.curEdge = new Edge();
-        player.curSecEdges = new Edge[player.verticesCount - 1];
-        for (int i = 0; i < player.curSecEdges.Length; i++)
-            player.curSecEdges[i] = new Edge();
+        Player.curEdge = new Edge();
+        Player.curSecEdges = new Edge[Player.verticesCount - 1];
+        for (int i = 0; i < Player.curSecEdges.Length; i++)
+            Player.curSecEdges[i] = new Edge();
     }
 
     /// <summary>
@@ -213,30 +216,84 @@ public static class MeshCreation
     /// </summary>
     public static void CreateOuterFields()
     {
-        // 1. Gehe jedes field durch
         for (int i=0; i<TunnelData.FieldsCount; i++)
         {
-            if (TunnelData.fields[i].isCorner)
-            {
-
-            }
-            else
-            {
-                Mesh mesh = new Mesh();
-                var positions = TunnelData.fields[i].positions;
-                var vertices = positions.ToList();
-                for (int j=0; j<positions.Length; j++)
-                {
-                    var newPos = positions[j];
-                    newPos.z = -1;
-                    //vertices.Add // TO DO: hier weiter
-                }
-            }
+            var outerfield = CreateOuterField(i);
+            TunnelData.fields[i].outerSurface = outerfield;
         }
     }
 
+    private static MeshRenderer CreateOuterField(int index)
+    {
+        // 0. Container & components
+        GameObject outerField = CreateContainer("OuterField" + index, MeshRef.inst.outerFields_parent);
+        var meshRenderer = outerField.AddComponent<MeshRenderer>();
+        var meshFilter = outerField.AddComponent<MeshFilter>();
+        
+        // 1. Positions
+        var fieldPositions = TunnelData.fields[index].positions;
+        var vertices = fieldPositions.ToList();
+        for (int j = 0; j < fieldPositions.Length; j++)
+        {
+            var pos = fieldPositions[j];
+            pos.z = -1;
+            vertices.Add(pos);
+        }
+
+        // 2. Triangles & normals
+        int[] triangles;
+        Vector3[] normals;
+
+        if (TunnelData.fields[index].isCorner)
+        {
+            // Corner?
+            triangles = new int[]
+            {
+                0, 3, 4,
+                4, 1, 0,
+                1, 4, 5,
+                5, 2, 1
+            };
+
+            normals = new Vector3[]
+            {
+                Vector3.Cross(vertices[0] - vertices[1], vertices[4] - vertices[1]),
+                Vector3.Cross(vertices[0] - vertices[1], vertices[4] - vertices[1]),
+                Vector3.Cross(vertices[1] - vertices[2], vertices[5] - vertices[2]),
+                Vector3.Cross(vertices[1] - vertices[2], vertices[5] - vertices[2])
+            };
+        }
+        else
+        {
+            // Regular?
+            triangles = new int[]
+            {
+                0, 2, 3,
+                3, 1, 0
+            };
+
+            normals = new Vector3[]
+            {
+                Vector3.Cross(vertices[0] - vertices[1], vertices[3] - vertices[1]),
+                Vector3.Cross(vertices[0] - vertices[1], vertices[3] - vertices[1])
+            };
+        }
+
+        // Assign
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices.ToArray();
+        mesh.triangles = triangles;
+        mesh.normals = normals;
+        meshFilter.mesh = mesh;
+
+        meshRenderer.enabled = false;
+
+        return meshRenderer;
+    }
+
+
     /// <summary>
-    /// Collider for selection with the mouse. Fill with vertices from TunnelData.
+    /// Collider for selection with the mouse. Fill with vertices from TunnelData-form.
     /// </summary>
     public static void InitMouseCollider()
     {

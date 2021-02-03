@@ -23,6 +23,7 @@ public class MeshRef : MonoBehaviour
     public Transform musicFields_parent;
     public Material musicFields_mat;
     public Transform outerFields_parent;
+    public Material outerFields_mat;
     [Space]
     public PolygonCollider2D mouseColllider;
 

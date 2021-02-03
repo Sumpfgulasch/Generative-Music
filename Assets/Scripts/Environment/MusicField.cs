@@ -23,6 +23,7 @@ public class MusicField
     public Chord chord;
     public bool selectable;
     public bool isBuildingUp; // -> is playable
+    public MeshRenderer outerSurface;
 
     // Private variables
     public Color color;

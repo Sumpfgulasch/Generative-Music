@@ -806,6 +806,7 @@ MonoBehaviour:
   musicFields_parent: {fileID: 435366411}
   musicFields_mat: {fileID: 2100000, guid: 57ab6980aaf19b84eb09b4431d663b73, type: 2}
   outerFields_parent: {fileID: 564628300}
+  outerFields_mat: {fileID: 2100000, guid: 59120b8887ee751408e167ea953a1731, type: 2}
   mouseColllider: {fileID: 264125172}
 --- !u!1 &812451688
 GameObject:
