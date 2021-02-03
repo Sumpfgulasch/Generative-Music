@@ -12,21 +12,14 @@ public class GameplayManager : MonoBehaviour
 
     IEnumerator Start()
     {
-        MeshCreation.CreatePlayerMeshes();
-        MeshCreation.InitFields();
-
         // Wait (cause raycasts wouldnt hit any collider)
         yield return new WaitForFixedUpdate(); yield return new WaitForEndOfFrame();
-
-        // 1. Create meshes & Instantiate all fields (invisible)
         
-
-        MeshUpdate.UpdateFieldsPositions();
-        //MeshCreation.CreateOuterFields();
-        MeshCreation.InitMouseCollider();
-
-
-        // 2. Fill with content
+        // 1. Create all meshes
+        Debug.Log("Create all 1");
+        MeshCreation.CreateAll();
+        
+        // 2. Fill fields with last content (colors, chords)
         LoopData.Init();
 
 

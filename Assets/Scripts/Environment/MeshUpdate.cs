@@ -37,16 +37,7 @@ public static class MeshUpdate
 
     // ----------------------------- public methods ----------------------------
     
-
-    /// <summary>
-    /// Get vertices from tunnel, create tunnel form and update vertices variables of music fields. Set Z to player.z.
-    /// </summary>
-    public static void UpdateFieldsPositions()
-    {
-        // 1. Tunnel
-        GetTunnelVertices();                // einmalig
-        UpdateFieldsVertices();             // einmalig
-    }
+        
 
 
     /// <summary>
@@ -54,12 +45,8 @@ public static class MeshUpdate
     /// </summary>
     public static void UpdatePlayer()
     {
-        // 1. Player
-        SetPlayerFieldVisibility();         // regelmäßig       to do: auf input verschieben
-        SetPlayerWidth();                   // regelmäßig       to do: auf input verschieben
-
         // 2. Mischmasch
-        UpdateSurfacesTransforms();         // to do: siehe Funktion
+        UpdatePlayerFormVertices();         // to do: siehe Funktion
     }
 
 
@@ -71,8 +58,10 @@ public static class MeshUpdate
     
 
 
-
-    private static void GetTunnelVertices()
+        /// <summary>
+        /// Set TunnelData.vertices, fitting into the current outer triangle-collider.
+        /// </summary>
+    public static void GetTunnelVertices()
     {
         // 1) init
         RaycastHit[] edgeHits = new RaycastHit[3];
@@ -82,15 +71,16 @@ public static class MeshUpdate
         // 2) Prepare raycast
         for (int i = 0; i < Player.inst.verticesCount; i++)
         {
-            Vector3 playerEdgeMid = Player.inst.outerVertices[i] + ((Player.inst.outerVertices[(i + 1) % 3] - Player.inst.outerVertices[i]) / 2f);
-            playerEdgeMid.z = MeshRef.inst.tunnelEdges_lr.transform.position.z;
-            Vector3 directionOut = (playerEdgeMid - playerMid).normalized;
+            Quaternion rot = Quaternion.Euler(0, 0, -i * (360 / Player.inst.verticesCount)+60); // +60 == Hack; i== negativ, damit clockwise (object-z zeigt weg von spieler, ist sozusag. um 180° gedreht)
+            Vector3 nextDirection = rot * Vector3.up;
+
             RaycastHit hit;
 
             // 3) Raycasts from player to environment
-            if (Physics.Raycast(playerMid, directionOut, out hit))
+            if (Physics.Raycast(playerMid, nextDirection, out hit))
             {
                 edgeHits[i] = hit;
+                Debug.DrawLine(hit.point, playerMid, Color.red, 5f);
             }
         }
         // 4) Final: Construct environment triangle by line intersections
@@ -115,13 +105,19 @@ public static class MeshUpdate
                 else if (intersection.y > 0.1f)
                     TunnelData.vertices[1] = intersection;
                 else
-                    TunnelData.vertices[2] = intersection;
+                    TunnelData.vertices[2] = intersection;  // HIER FEHLER
             }
+
+            Debug.Log("GetTunnelVertices; i: " + i + ", TunnelData.vertices[i]: " + TunnelData.vertices[i]);
+        }
+        for (int i=0; i< TunnelData.vertices.Length; i++)
+        {
+            Debug.DrawLine(TunnelData.vertices[i], TunnelData.vertices[(i + 1) % 3], Color.green, 5f);
         }
     }
 
 
-    private static void UpdateSurfacesTransforms()
+    private static void UpdatePlayerFormVertices()
     {
         // == Sämtliche Mesh-Vertices (innerPlayer, outerPlayer, Milch-Fläche, Masken) setzen, abhängig von TunnelData und Spieler-Transform
 
@@ -129,7 +125,7 @@ public static class MeshUpdate
 
         // Inner surface
         MeshRef.inst.innerSurface_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(TunnelData.vertices, thisTransform);
-        MeshRef.inst.innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(Player.inst.outerVertices, thisTransform);
+        MeshRef.inst.innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(Player.inst.OuterVertices, thisTransform);
         MeshRef.inst.innerPlayerMesh_mf.transform.localPosition = Vector3.zero;
 
         // Outer player
@@ -142,24 +138,23 @@ public static class MeshUpdate
 
 
 
-    private static void SetPlayerWidth()
+    public static void UpdatePlayerWidth()
     {
         if (Player.inst.constantInnerWidth)
         {
             float neededWidthPerc = Mathf.Clamp01(Player.inst.innerWidth / Player.inst.transform.localScale.x);
             Vector3[] newVertices = MeshRef.inst.innerPlayerMesh_mf.mesh.vertices;
 
-            if ((Player.inst.outerVertices[0] - Player.inst.innerVertices[0]).magnitude != Player.inst.innerWidth)
+            if ((Player.inst.OuterVertices[0] - Player.inst.InnerVertices[0]).magnitude != Player.inst.innerWidth)
             {
-                //TO DO: if draußen auf wand skalieren ist nicht aktiv
                 for (int i = 0; i < Player.inst.verticesCount; i++)
                 {
                     // change innerVertices only
                     Vector3 newVertex = (Player.inst.outerVertices_mesh[i] - Vector3.zero).normalized * (1 - neededWidthPerc);
                     newVertices[(i * 2) + 1] = newVertex;
                     Player.inst.innerVertices_mesh[i] = newVertex;
-                    Player.inst.innerVertices_obj[i].position = playerMid + (Player.inst.outerVertices[i] - playerMid) * (1 - neededWidthPerc);
-                    Player.inst.innerVertices[i] = Player.inst.innerVertices_obj[i].position;
+                    Player.inst.innerVertices_obj[i].position = playerMid + (Player.inst.OuterVertices[i] - playerMid) * (1 - neededWidthPerc);
+                    Player.inst.InnerVertices[i] = Player.inst.innerVertices_obj[i].position;
                 }
             }
             MeshRef.inst.innerPlayerMesh_mf.mesh.vertices = newVertices;
@@ -172,9 +167,9 @@ public static class MeshUpdate
     
 
     /// <summary>
-    /// Set fields positions (dependant on the tunnel vertices) and store it in TunnelData.fields. Set fieldLength in TunnelData.
+    /// Set a given fields.positions, dependant on the tunnel vertices. Set fieldLength in TunnelData.
     /// </summary>
-    private static void UpdateFieldsVertices()
+    public static MusicField[] UpdateFieldsVertices(MusicField[] fields)
     {
         if (TunnelData.vertices[0] == Vector3.zero)
             Debug.LogError("Tried to get tunnel vertices too early, no collider yet.");
@@ -221,29 +216,31 @@ public static class MeshUpdate
                 }
 
                 // Assign
-                TunnelData.fields[ID].UpdateVertices(start, mid, end, positions);
+                fields[ID].UpdateVertices(start, mid, end, positions);
 
                 // TO DO: vertices dem line renderer zuweisen, line renderer über andere funktion für start unvisible setzen
             }
         }
+
+        return fields;
     }
 
-    private static void SetPlayerFieldVisibility()
-    {
-        // Player
-        if (Player.inst.curEdge.firstTouch)
-        {
-            Player.inst.curField.SetToPlay();
-            foreach(PlayerField secField in Player.inst.curSecondaryFields)
-                secField.SetVisible(true);
-        }
-        else if (Player.inst.curEdge.leave)
-        {
-            Player.inst.curField.SetToFocus();
-            foreach (PlayerField secField in Player.inst.curSecondaryFields)
-                secField.SetVisible(false);
-        }
-    }
+    //private static void SetPlayerFieldVisibility()
+    //{
+    //    // Player
+    //    if (Player.inst.curEdge.firstTouch)
+    //    {
+    //        //Player.inst.curField.SetToPlay();
+    //        //foreach(PlayerField secField in Player.inst.curSecondaryFields)
+    //        //    secField.SetVisible(true);
+    //    }
+    //    else if (Player.inst.curEdge.leave)
+    //    {
+    //        //Player.inst.curField.SetToFocus();
+    //        //foreach (PlayerField secField in Player.inst.curSecondaryFields)
+    //        //    secField.SetVisible(false);
+    //    }
+    //}
 
 
     /// <summary>

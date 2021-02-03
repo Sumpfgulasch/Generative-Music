@@ -239,14 +239,14 @@ public class MusicField
 
 public class PlayerField : MusicField
 {
-    public new enum Type { Main, Second };
-    public new Type type;
+    //public new enum Type { Main, Second };
+    //public new Type type;
     public Vector3[] secondaryPositions;
 
     // Contructors
-    public PlayerField(Type type, LineRenderer lineRend)
+    public PlayerField(LineRenderer lineRend)
     {
-        this.type = type;
+        //this.type = type;
         base.lineRend = lineRend;
     }
 
@@ -281,7 +281,7 @@ public class PlayerField : MusicField
 
     
     /// <summary>
-    /// Set line renderer positions. Change z-position.
+    /// Change line renderer width, opacity and z-position.
     /// </summary>
     public void SetToFocus()
     {
@@ -294,7 +294,7 @@ public class PlayerField : MusicField
     }
 
     /// <summary>
-    /// Set line renderer positions. Change z-position.
+    /// Change line renderer width, opacity and z-position.
     /// </summary>
     public void SetToPlay()
     {

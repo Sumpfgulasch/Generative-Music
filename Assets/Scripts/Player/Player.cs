@@ -23,8 +23,6 @@ public class Player : MonoBehaviour
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
-    //[Range(0, 1f)] public float rotationTargetVectorFactor = 0.1f;
-    //[Range(0, 1f)] public float scaleTargetVectorFactor = 0.05f;
     public float scaleMax = 2.7f;
     public float scaleMin = 1f;
     public float scaleMaxSpeed = 0.05f;
@@ -49,9 +47,6 @@ public class Player : MonoBehaviour
 
 
     // Public attributes
-    //[HideInInspector] public float curRotSpeed;
-    [HideInInspector] public Vector3[] outerVertices = new Vector3[3];
-    [HideInInspector] public Vector3[] innerVertices = new Vector3[3];
     [HideInInspector] public Vector3[] outerVertices_mesh = new Vector3[3];
     [HideInInspector] public Vector3[] innerVertices_mesh = new Vector3[3];
     [HideInInspector] public float curInnerWidth;
@@ -70,16 +65,10 @@ public class Player : MonoBehaviour
 
     // private variables
     private Vector3 midPoint;
-    //private float scaleTargetValue;
     private float curScaleSpeed = 0;
     private float rotTargetValue;
-    private float mouseToPlayerDistance;
-    private float curPlayerRadius;
-    private float tunnelToMidDistance;
-    private RaycastHit envPlayerIntersection;
     private float fastWeight = 1f;
     private float mouseX, mouseY, mouseDelta;
-    private float mouseToTunnelDistance;
     private float startScale;
     Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
@@ -94,13 +83,32 @@ public class Player : MonoBehaviour
 
 
 
-    // get set
+    // Properties
     MusicManager MusicManager { get { return MusicManager.inst; } }
     VisualController VisualController { get { return VisualController.inst; } }
-
     private float DeltaTime { get { return Time.deltaTime * GameManager.inst.FPS; } }
-
+    private Vector3[] outerVertices = new Vector3[3];
+    [HideInInspector] public Vector3[] OuterVertices
+    {
+        get
+        {
+            for (int i = 0; i < verticesCount; i++)
+                outerVertices[i] = outerVertices_obj[i].position;
+            return outerVertices;
+        }
+    }
+    private Vector3[] innerVertices = new Vector3[3];
+    [HideInInspector] public Vector3[] InnerVertices
+    {
+        get
+        {
+            for (int i = 0; i < verticesCount; i++)
+                innerVertices[i] = innerVertices_obj[i].position;
+            return innerVertices;
+        }
+    }
     
+
 
 
 
@@ -117,7 +125,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         inst = this;
-        midPoint = this.transform.position;
+        midPoint = transform.position;
         triggerRotRoutine = TriggerRoutineFrequently(RotateToNextField(1), curRotPressTime, curRotFrequency, curRotateRoutines);
         scaleOutEnumerator = DampedScale(scaleMax);
         scaleRoutine = DampedScale(scaleMin);
@@ -126,103 +134,36 @@ public class Player : MonoBehaviour
         curRotFrequency = bt_selectionFrequency;
     }
 
-
-
-
+    
 
     void Update()
     {
-        ManageMovement();
+        
     }
 
 
 
-
-    // ----------------------------- Main method ----------------------------
-
-    void ManageMovement()
-    {
-        // 1. Handle Data
-        GetVertices();
-        CalcMovementData();
-    }
 
 
     // ----------------------------- Private methods ----------------------------
 
-
-    // MOUSE
-    void CalcMovementData()
-    {
-        // MOUSE
-        // Rotation
-        //Vector2 mouseToMid = mousePos - midPoint;
-        //Vector2 playerAngleVec = outerVertices[0] - midPoint;
-        //float curPlayerRot = -Vector2.SignedAngle(mouseToMid, playerAngleVec);
-        //curPlayerRot = Mathf.Clamp(curPlayerRot, -rotationMaxSpeed, rotationMaxSpeed); // = max speed
-        //rotTargetValue = rotationTargetVectorFactor * curPlayerRot;
-        //curRotSpeed = rotTargetValue;
-
-        // Scale
-        mouseToPlayerDistance = 0;
-        Vector2 intersection = Vector2.zero;
-        Vector3 mousePos_extended = midPoint + (mousePos - midPoint).normalized * 10f;
-        if (Physics.Raycast(midPoint, outerVertices[0], out envPlayerIntersection))
-        {
-            curPlayerRadius = ((Vector2)outerVertices[0] - (Vector2)midPoint).magnitude;
-            tunnelToMidDistance = ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude;
-            mouseToTunnelDistance = ((Vector2)mousePos - (Vector2)envPlayerIntersection.point).magnitude;
-            if (((Vector2)mousePos - (Vector2)midPoint).magnitude < ((Vector2)envPlayerIntersection.point - (Vector2)midPoint).magnitude)
-                mouseToTunnelDistance *= -1;
-        }
-        for (int i = 0; i < outerVertices.Length; i++)
-        {
-            if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, outerVertices[i], outerVertices[(i + 1) % 3]))
-            {
-                mouseToPlayerDistance = ((Vector2)mousePos - intersection).magnitude;
-                if ((mousePos - midPoint).magnitude < (intersection - (Vector2)midPoint).magnitude)
-                {
-                    mouseToPlayerDistance *= -1; // Maus ist innerhalb Dreieck
-                }
-            }
-        }
-
-        // Scale value
-        //scaleTargetValue = mouseToPlayerDistance * scaleTargetVectorFactor;
-        //scaleTargetValue = Mathf.Clamp(scaleTargetValue, -scaleMaxSpeed, scaleMaxSpeed);
-    }
-
+        
     
-
-    //void MoveTowardsMouse(Side side)
-    //{
-    //    if (side == Side.inner)
-    //        // accalerate towards mouse
-    //        curScaleSpeed += scaleTargetValue;
-    //    else if (side == Side.outer)
-    //    {
-    //        curScaleSpeed = scaleTargetValue * outsideSlowFac;
-    //        curRotSpeed = rotTargetValue * outsideSlowFac;
-    //    }
-    //    // scale
-    //    curScaleSpeed = Mathf.Clamp(curScaleSpeed, -scaleMaxSpeed, scaleMaxSpeed) * scaleDamp;                  // damp
-    //    this.transform.localScale += new Vector3(curScaleSpeed * fastWeight, curScaleSpeed * fastWeight, 0);    // add
-    //    this.transform.localScale = this.transform.localScale.ClampVector3_2D(scaleMin, scaleMax);              // clamp
-
-    //    // rotation
-    //    this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
-    //}
-
-
 
     void StickToEdge(Side side)
     {
+        // calc
+        float curPlayerRadius = ((Vector2)OuterVertices[0] - (Vector2)midPoint).magnitude;
+        float tunnelToMidDistance = 0;
+        RaycastHit hit;
+        if (Physics.Raycast(midPoint, OuterVertices[0], out hit))
+            tunnelToMidDistance = ((Vector2)hit.point - (Vector2)midPoint).magnitude;
 
         // SCALE only
         if (side == Side.inner)
         {
-            float borderTargetScaleFactor = tunnelToMidDistance / curPlayerRadius;
-            this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+            float targetScaleFactor = tunnelToMidDistance / curPlayerRadius;
+            transform.localScale = new Vector3(transform.localScale.x * targetScaleFactor, transform.localScale.y * targetScaleFactor, transform.localScale.z);
             curScaleSpeed = 0; // unschön
 
             // TO DO: bounce?
@@ -232,38 +173,21 @@ public class Player : MonoBehaviour
         {
             if (constantInnerWidth)
             {
-                float borderTargetScaleFactor = (tunnelToMidDistance + innerWidth + stickToOuterEdge_holeSize) / curPlayerRadius;
-                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+                float targetScaleFactor = (tunnelToMidDistance + innerWidth + stickToOuterEdge_holeSize) / curPlayerRadius;
+                transform.localScale = new Vector3(transform.localScale.x * targetScaleFactor, transform.localScale.y * targetScaleFactor, transform.localScale.z);
 
             }
             else
             {
-                float innerVertexDistance = (innerVertices[0] - midPoint).magnitude;
-                float borderTargetScaleFactor = (tunnelToMidDistance + stickToOuterEdge_holeSize) / innerVertexDistance;
-                this.transform.localScale = new Vector3(this.transform.localScale.x * borderTargetScaleFactor, this.transform.localScale.y * borderTargetScaleFactor, this.transform.localScale.z);
+                float innerVertexDistance = (InnerVertices[0] - midPoint).magnitude;
+                float targetScaleFactor = (tunnelToMidDistance + stickToOuterEdge_holeSize) / innerVertexDistance;
+                transform.localScale = new Vector3(transform.localScale.x * targetScaleFactor, transform.localScale.y * targetScaleFactor, transform.localScale.z);
             }
             curScaleSpeed = 0; // unschön
         }
-
-        //// rotation
-        //if (!useKeyboard)
-        //    this.transform.eulerAngles += new Vector3(0, 0, curRotSpeed * fastWeight);
     }
 
     
-
-
-
-    void GetVertices()
-    {
-        // get positions from childed vertex-gameobjects
-        for (int i = 0; i < verticesCount; i++)
-        {
-            outerVertices[i] = outerVertices_obj[i].position;
-            innerVertices[i] = innerVertices_obj[i].position;
-        }
-    }
-
 
     public float GetVelocityFromDistance()
     {
@@ -276,7 +200,7 @@ public class Player : MonoBehaviour
 
 
     /// <summary>
-    /// Set data (actionState, curSide, press times), change collider size and stick to edge.
+    /// Set data (actionState, curSide, press times), change collider size and stick to edge. Update player width(!).
     /// </summary>
     private void PlayMovement(Side side)
     {
@@ -291,6 +215,8 @@ public class Player : MonoBehaviour
 
         // set mouse collider
         //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_play);
+
+        MeshUpdate.UpdatePlayerWidth();
 
         // Events
         GameEvents.inst.FieldStart();
@@ -652,7 +578,7 @@ public class Player : MonoBehaviour
 
 
     /// <summary>
-    /// Scales the player to a target scale over time.
+    /// Scale the player over time, starting quick and becoming slow. Also update the player width(!). Used for when the player releases the play-button.
     /// </summary>
     public IEnumerator DampedScale(float targetScale, float timeToStart = 0)
     {
@@ -667,6 +593,8 @@ public class Player : MonoBehaviour
             Vector3 scaleSpeed = (maxScale - this.transform.localScale) * bt_scaleDamp * DeltaTime;
             this.transform.localScale += scaleSpeed;
 
+            MeshUpdate.UpdatePlayerWidth();
+
             timer += Time.deltaTime;
             yield return null;
         }
@@ -679,7 +607,7 @@ public class Player : MonoBehaviour
     private void RotateToTarget(Vector3 targetPos)
     {
         Vector3 targetVec = targetPos - this.transform.position;                                                            // TO DO: animation curve, statt damping
-        Vector3 curVec = outerVertices[0] - this.transform.position;
+        Vector3 curVec = OuterVertices[0] - this.transform.position;
 
         float nextRot = Vector2.SignedAngle(curVec, targetVec) * bt_rotationDamp * DeltaTime;
 

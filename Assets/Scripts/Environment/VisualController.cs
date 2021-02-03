@@ -50,7 +50,7 @@ public class VisualController : MonoBehaviour
 
     void Update()
     {
-        MeshUpdate.UpdatePlayer();
+        
     }
 
 
@@ -58,7 +58,9 @@ public class VisualController : MonoBehaviour
     // ----------------------------- Events ----------------------------
 
 
-
+    /// <summary>
+    /// Change player visibility
+    /// </summary>
     private void OnFieldChange(PlayerField data)
     {
         MeshUpdate.UpdatePlayerLineRenderer(data);
@@ -66,42 +68,30 @@ public class VisualController : MonoBehaviour
         //    secField.UpdatePlayerLineRenderer(data);
     }
 
+    /// <summary>
+    /// Change player visibility.
+    /// </summary>
+    public void OnPlay(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Player.inst.curField.SetToPlay();
+            foreach (PlayerField secField in Player.inst.curSecondaryFields)
+                secField.SetVisible(true);
+        }
+
+        else if (context.canceled)
+        {
+            Player.inst.curField.SetToFocus();
+            foreach (PlayerField secField in Player.inst.curSecondaryFields)
+                secField.SetVisible(false);
+        }
+    }
+
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        //var input = context.ReadValue<Vector2>();
-        //var mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, playerMid.z));
-        //mousePos.z = playerMid.z - 1;
 
-        //var ray = new Ray(mousePos, Vector3.forward);
-        //var hit = Physics2D.GetRayIntersection(ray, 3);
-
-        //if (Player.actionState == Player.ActionState.None)
-        //{
-        //    if (hit && hit.collider.tag.Equals("MouseCollider"))
-        //    {
-        //        Player.curField.SetColor(Color.white);
-        //        Player.curField.SetOpacity(0);
-        //    }
-        //    else
-        //    {
-        //        Player.curField.SetColor(Color.white);
-        //        Player.curField.SetOpacity(1f);
-        //    }
-        //}
-        //else
-        //{
-        //    if (hit && hit.collider.tag.Equals("MouseCollider"))
-        //    {
-        //        Player.curField.SetColor(Color.white);
-        //        Player.curField.SetOpacity(1f);
-        //    }
-        //    else
-        //    {
-        //        Player.curField.SetColor(Color.white);
-        //        Player.curField.SetOpacity(1f);
-        //    }
-        //}
     }
 
 

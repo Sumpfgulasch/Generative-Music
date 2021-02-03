@@ -47,7 +47,7 @@ public static class PlayerData
         Vector3 curEdgeStart = Vector3.zero;
         Vector3 curEdgeEnd = Vector3.zero;
         int curEdgeIndex = 0;
-        for (int i = 0; i < Player.outerVertices.Length; i++)
+        for (int i = 0; i < Player.OuterVertices.Length; i++)
         {
             if (ExtensionMethods.LineSegmentsIntersection(out intersection, mousePos_extended, midPoint, TunnelData.vertices[i], TunnelData.vertices[(i + 1) % TunnelData.vertices.Length]))
             {

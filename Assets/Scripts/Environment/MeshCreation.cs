@@ -28,11 +28,26 @@ public static class MeshCreation
 
     // ----------------------------- Public methods ----------------------------
 
-    /// <summary>
-    /// Create all player meshes
-    /// </summary>
-    public static void CreatePlayerMeshes()
+
+
+    public static void CreateAll()
     {
+        Debug.Log("Create all 2");
+        MeshUpdate.GetTunnelVertices();
+
+        CreateFields();
+        CreatePlayer();
+
+        InitMouseCollider();
+    }
+
+
+    /// <summary>
+    /// Create all player meshes that define its form.
+    /// </summary>
+    public static void CreatePlayerForm()
+    {
+        // FORM
         InitPlayer();
 
         // Inner player
@@ -40,24 +55,36 @@ public static class MeshCreation
 
         // Milk surface
         CreateTriangleMesh(ref MeshRef.inst.innerSurface_mf, TunnelData.vertices);
-        CreateTriangleMesh(ref MeshRef.inst.innerMask_mf, Player.inst.outerVertices);
+        CreateTriangleMesh(ref MeshRef.inst.innerMask_mf, Player.inst.OuterVertices);
         CreateTriangleMesh(ref MeshRef.inst.innerPlayerMask_mf, TunnelData.vertices);
 
         // Outer player
         CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
         CreateTriangleMesh(ref MeshRef.inst.outerPlayerMask_mf, TunnelData.vertices);
+
+        // FIELDS
+        // cur field
+        // sec fields
+
     }
 
 
     /// <summary>
-    /// Instantiates music fields and player fields, with line renderers disabled. Stores them in TunnelData.fields.
+    /// Create all MusicField-meshes (line renderers and outer surfaces), initialize with data (positions, isCorner, ...) and assign to TunnelData.fields
     /// </summary>
-    public static void InitFields()
+    public static void CreateFields()
     {
-        // Music fields
-        TunnelData.fields = InstantiateFieldSet();
+        Debug.Log("FieldSetCreate");
+        TunnelData.fields = CreateFieldSet();
+        
+    }
 
-        // Player fields
+    public static void CreatePlayer()
+    {
+        CreatePlayerForm();
+
+        MeshUpdate.UpdatePlayer();
+
         CreatePlayerFields();
     }
 
@@ -78,6 +105,7 @@ public static class MeshCreation
         GameObject vertices = CreateContainer("Vertices", Player.inst.transform);
         GameObject outside = CreateContainer("Outside", vertices.transform);
         GameObject inside = CreateContainer("Inside", vertices.transform);
+        Debug.Log("InitPlayer()");
 
         for (int i = 0; i < Player.inst.verticesCount; i++)
         {
@@ -95,6 +123,7 @@ public static class MeshCreation
 
             // Assign positions to Player
             Player.inst.outerVertices_obj[i] = newOuterVert.transform;
+            Debug.Log("InitPlayer(); i: " + i + ", outerVertex.position: " + newOuterVert.transform.position);
             Player.inst.innerVertices_obj[i] = newInnerVert.transform;
             Player.inst.outerVertices_mesh[i] = nextOuterVertex;
             Player.inst.innerVertices_mesh[i] = nextInnerVertex;
@@ -158,13 +187,14 @@ public static class MeshCreation
     // ENVIRONMENT
 
     /// <summary>
-    /// Create game objects for a complete field set, with line renderers being unvisible (empty positions). Set data: ID, isCorner, isEdgeMid, lineRend.
+    /// Create a complete field set, with parented gameObjects, line renderers and outer surfaces. Initialize with data (ID, positions, isCorner, isEdgeMid, lineRend) and return the field set.
     /// </summary>
-    public static MusicField[] InstantiateFieldSet()
+    public static MusicField[] CreateFieldSet()
     {
         int fieldsCount = TunnelData.FieldsCount;
-        MusicField[] newFields = new MusicField[fieldsCount];
+        MusicField[] fields = new MusicField[fieldsCount];
 
+        // 1. Create gameObjects, lineRenderers and initialize with data (no positions)
         for (int i = 0; i < fieldsCount; i++)
         {
             // Get data
@@ -172,18 +202,24 @@ public static class MeshCreation
             bool isCorner = MusicField.IsCorner(ID);
             bool isEdgeMid = MusicField.IsEdgeMid(ID);
             GameObject newObj = CreateContainer("Field" + ID, MeshRef.inst.musicFields_parent);
-            LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.musicFields_mat, VisualController.inst.fieldThickness, false);      // TO DO: init mit zwei empty lineRend positions?
+            LineRenderer lineRend = newObj.AddLineRenderer(0, MeshRef.inst.musicFields_mat, VisualController.inst.fieldThickness, false);      // TO DO: init mit zwei empty lineRend positions?
 
             // Assign
-            newFields[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
+            fields[ID] = new MusicField(ID, lineRend, isCorner, isEdgeMid);
         }
 
-        return newFields;
+        // 2. Assign positions
+        fields = MeshUpdate.UpdateFieldsVertices(fields);
+
+        // 3. OuterFields
+        CreateOuterFields();
+
+        return fields;
     }
 
     // PLAYER
     /// <summary>
-    /// Instantiate 1 gameObject with lineRenderer with empty positions and disabled.
+    /// Create LineRenderers for current and secondary fields (disabled). Assign to Player.curField.lineRend. Initialize curField.outerSurface (index = 0, disabled).
     /// </summary>
     private static void CreatePlayerFields()
     {
@@ -191,7 +227,7 @@ public static class MeshCreation
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
         LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerFieldPlayThickness);
-        Player.curField = new PlayerField(PlayerField.Type.Main, lineRend);
+        Player.curField = new PlayerField(lineRend);
         Player.curField.SetToFocus();
 
         // Seoncdary
@@ -200,7 +236,7 @@ public static class MeshCreation
         {
             GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.playerField_parent);
             LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerSecFieldThickness);
-            Player.curSecondaryFields[i] = new PlayerField(PlayerField.Type.Second, lineRend2);
+            Player.curSecondaryFields[i] = new PlayerField(lineRend2);
             lineRend2.enabled = false;
         }
 
@@ -209,10 +245,15 @@ public static class MeshCreation
         Player.curSecEdges = new Edge[Player.verticesCount - 1];
         for (int i = 0; i < Player.curSecEdges.Length; i++)
             Player.curSecEdges[i] = new Edge();
+
+        // Init outerSurface
+        Player.curField.outerSurface = TunnelData.fields[0].outerSurface;
+        Player.curField.outerSurface.enabled = false;
     }
 
+
     /// <summary>
-    /// Create Meshes.
+    /// Create outer field meshes for each field. Assign to TunnelData.fields.outerSurface.
     /// </summary>
     public static void CreateOuterFields()
     {
