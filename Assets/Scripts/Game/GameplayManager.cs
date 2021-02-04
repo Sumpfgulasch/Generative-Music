@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class GameplayManager : MonoBehaviour
 {
+    public static GameplayManager inst;
+
+    [Header("Spawning")]
+    public int timeToSpawnTunnel_inBeats = 8;
+    public float tunnelSpawnDistance_InBeats = 2;
+    public int maxTunnelsAtOnce = 2;
+    [Space]
+    public float timeToSpawnFields_inBeats = 3;
+    public float fieldsSpawnDistance_inBeats = 3f;
+    public float fieldsSpawnDuration_inBeats = 1f;
 
     private void OnEnable()
     {
@@ -12,6 +22,8 @@ public class GameplayManager : MonoBehaviour
 
     IEnumerator Start()
     {
+        inst = this;
+
         // Wait (cause raycasts wouldnt hit any collider)
         yield return new WaitForFixedUpdate(); yield return new WaitForEndOfFrame();
         
@@ -42,13 +54,14 @@ public class GameplayManager : MonoBehaviour
         StartCoroutine(Player.inst.DampedScale(Player.inst.scaleMin, 0.0f));
     }
 
+    // start on second beat spawning stuff because first beat is not synced yet
     private void OnSecondBeat()
     {
         // Spawn Tunnels
-        StartCoroutine(ObjectSpawner.inst.InstantiateFirstTunnels(0,2,2));      // initial
-        GameEvents.inst.onBeat += ObjectSpawner.inst.OnBeat;                    // regular
+        StartCoroutine(ObjectSpawner.inst.InstantiateFirstTunnels(timeToSpawnTunnel_inBeats, tunnelSpawnDistance_InBeats));     // initial
+        // regular event subscription in ObjectSpawner-coroutine (!!)
 
         // Spawn fields
-        StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, 3, 3, 1));
+        StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, timeToSpawnFields_inBeats, fieldsSpawnDistance_inBeats, fieldsSpawnDuration_inBeats));
     }
 }

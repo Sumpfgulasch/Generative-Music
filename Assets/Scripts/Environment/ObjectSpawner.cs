@@ -8,7 +8,7 @@ public class ObjectSpawner : MonoBehaviour
     [Header("Objects")]
     public static ObjectSpawner inst;
     public List<GameObject> availableObjects;
-    public int maxObjects;
+    //public int maxObjects;
 
     [HideInInspector] public float moveSpeed;
 
@@ -54,7 +54,7 @@ public class ObjectSpawner : MonoBehaviour
     {
         
     }
-    
+
 
     // ------------------------------ Events ------------------------------
 
@@ -94,15 +94,22 @@ public class ObjectSpawner : MonoBehaviour
         movingObjects = new List<GameObject>();
     }
 
-
-    public IEnumerator InstantiateFirstTunnels(float timeToSpawnInBeats, float spawnDistanceInBeats, int amount)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="timeToSpawnInBeats">Time in beats that passes until the first tunnel gets instantiated.</param>
+    /// <param name="spawnDistanceInBeats"></param>
+    public IEnumerator InstantiateFirstTunnels(float timeToSpawnInBeats, float spawnDistanceInBeats)
     {
         // 1. wait
         float waitTime = timeToSpawnInBeats * LoopData.timePerBeat;
         yield return new WaitForSeconds(waitTime);
 
-        // 2. Spawn
-        for (int i = 0; i < amount; i++)
+        // 2. EVENT SUBSCRIPTION
+        GameEvents.inst.onBeat += OnBeat;
+
+        // 3. Spawn
+        for (int i = 0; i < GameplayManager.inst.maxTunnelsAtOnce; i++)
         {
             GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
 
@@ -124,7 +131,7 @@ public class ObjectSpawner : MonoBehaviour
     private void SpawnTunnel()
     {
         GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
-        newObj = Instantiate(newObj, new Vector3(0, 0, playerZpos + (maxObjects - 1) * tunnelLength), Quaternion.identity);
+        newObj = Instantiate(newObj, new Vector3(0, 0, playerZpos + (GameplayManager.inst.maxTunnelsAtOnce - 1) * tunnelLength), Quaternion.identity);
         movingObjects.Add(newObj);
     }
 
@@ -172,8 +179,8 @@ public class ObjectSpawner : MonoBehaviour
     /// Move each field displaced from back to front. Replace old fields when done.
     /// </summary>
     /// <param name="fields"></param>
-    /// <param name="spawnDistanceInBeats">Mesured in beats [1 bar == beats per bar].</param>
-    /// <param name="durationInBeats">Measured in beats.</param>
+    /// <param name="spawnDistanceInBeats">The distance from the player in beats, where the first music fields gets instantiated.</param>
+    /// <param name="durationInBeats">The time that passes from the first to the last instantiation of a field.</param>
     /// <returns></returns>
     public IEnumerator SpawnMusicFields(MusicField[] fields, float timeToSpawnInBeats, float spawnDistanceInBeats, float durationInBeats)
     {

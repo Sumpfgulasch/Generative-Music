@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
     private List<IEnumerator> curRotateRoutines = new List<IEnumerator>();
     private List<IEnumerator> curTriggerRoutines = new List<IEnumerator>();
     private enum Side { inner, outer};
-    private Side curSide = Side.inner;
+    private Side curPlayerSide = Side.inner;
     private Side curMouseSide, lastMouseSide;
 
 
@@ -205,9 +205,9 @@ public class Player : MonoBehaviour
     private void PlayMovement(Side side)
     {
         actionState = ActionState.Play;
-        curSide = side;
+        curPlayerSide = side;
         StopCoroutine(scaleRoutine);
-        StickToEdge(curSide);
+        StickToEdge(curPlayerSide);
 
         // press frequencies
         curRotPressTime = bt_play_selectionPressTime;
@@ -411,26 +411,34 @@ public class Player : MonoBehaviour
     private Side CheckForMouseSide(Vector2 input)
     {
         // last
-        //lastMouseSide = curMouseSide;
+        lastMouseSide = curMouseSide;
 
         // calc
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
+        var mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
         mousePos.z = midPoint.z - 1;
-        
         var ray = new Ray(mousePos, Vector3.forward);
         var hit = Physics2D.GetRayIntersection(ray,3);
 
         // ray
         if (hit && hit.collider.tag.Equals("MouseCollider"))
         {
-            GameEvents.inst.MouseInside();
-            return Side.inner;
+            curMouseSide = Side.inner;
         }
         else
         {
-            GameEvents.inst.MouseOutside();
-            return Side.outer;
+            curMouseSide = Side.outer;
         }
+
+        // FIRE EVENT
+        if (curMouseSide != lastMouseSide)
+        {
+            if (curMouseSide == Side.inner)
+                GameEvents.inst.MouseInside();
+            else
+                GameEvents.inst.MouseOutside();
+        }
+
+        return curMouseSide;
     }
 
     /// <summary>
@@ -527,7 +535,7 @@ public class Player : MonoBehaviour
 
                 if (actionState == ActionState.Play)
                 {
-                    StickToEdge(curSide);
+                    StickToEdge(curPlayerSide);
                 }
 
                 timer += Time.deltaTime;
@@ -564,7 +572,7 @@ public class Player : MonoBehaviour
 
                 if (actionState == ActionState.Play)
                 {
-                    StickToEdge(curSide);
+                    StickToEdge(curPlayerSide);
                 }
 
                 timer += Time.deltaTime;

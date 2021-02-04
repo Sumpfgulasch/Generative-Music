@@ -216,23 +216,34 @@ public static class MeshUpdate
 
         return fields;
     }
+    
 
-    //private static void SetPlayerFieldVisibility()
-    //{
-    //    // Player
-    //    if (Player.inst.curEdge.firstTouch)
-    //    {
-    //        //Player.inst.curField.SetToPlay();
-    //        //foreach(PlayerField secField in Player.inst.curSecondaryFields)
-    //        //    secField.SetVisible(true);
-    //    }
-    //    else if (Player.inst.curEdge.leave)
-    //    {
-    //        //Player.inst.curField.SetToFocus();
-    //        //foreach (PlayerField secField in Player.inst.curSecondaryFields)
-    //        //    secField.SetVisible(false);
-    //    }
-    //}
+    /// <summary>
+    /// Set lineRenderer positions and outerSurface positions to current ID.
+    /// </summary>
+    public static void UpdatePlayerFieldVisibility()
+    {
+        var curField = Player.inst.curField;
+
+        // Line renderer: Change positions
+        if (curField.isCorner)
+        {
+            var positions = MeshUpdate.PreventLineRendFromBending(curField.positions);
+            var positionCount = positions.Length;
+            curField.lineRend.positionCount = positionCount;
+            curField.lineRend.SetPositions(positions);
+        }
+        else
+        {
+            curField.lineRend.positionCount = curField.positions.Length;
+            curField.lineRend.SetPositions(curField.positions);
+        }
+
+        // Outer surface: disable old, enable new
+        curField.outerSurface.enabled = false;
+        curField.outerSurface = Player.inst.curFieldSet[curField.ID].outerSurface;
+        curField.outerSurface.enabled = true;
+    }
 
 
 

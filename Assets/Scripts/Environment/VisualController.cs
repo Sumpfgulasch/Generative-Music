@@ -65,9 +65,7 @@ public class VisualController : MonoBehaviour
     /// </summary>
     private void OnFieldChange(PlayerField data)
     {
-        //MeshUpdate.UpdatePlayerField(data);
-
-        Player.inst.curField.UpdateVisibility();
+        MeshUpdate.UpdatePlayerFieldVisibility();
 
         //foreach (PlayerField secField in Player.inst.curSecondaryFields)          // TO DO
         //    secField.UpdatePlayerLineRenderer(data);
@@ -107,13 +105,13 @@ public class VisualController : MonoBehaviour
     {
         if (Player.actionState == Player.ActionState.Play)
         {
-            // set outer mesh.opacity(0.7);
-            //print("set outer mesh.opacity(0.7)");
+            Player.curField.SetOpacity(0.7f);
+            print("0.7");
         }
         else
         {
-            // set outer mesh opacity(0.2f);
-            //print("set outer mesh opacity(0.2f)");
+            Player.curField.SetOpacity(0.2f);
+            print("0.2");
         }
     }
 
@@ -121,13 +119,13 @@ public class VisualController : MonoBehaviour
     {
         if (Player.actionState == Player.ActionState.Play)
         {
-            // set outer mesh opacity(1f);
-            //print("set outer mesh opacity(1f)");
+            Player.curField.SetOpacity(1);
+            print("1");
         }
         else
         {
-            // set outer mesh opacity(0.5f);
-            //print("set outer mesh opacity(0.5f)");
+            Player.curField.SetOpacity(0.5f);
+            print("0.5");
         }
     }
 

@@ -189,34 +189,7 @@ public class PlayerField : MusicField
 
 
     // Functions
-
-        /// <summary>
-        /// Set lineRenderer positions and outerSurface positions to current ID.
-        /// </summary>
-    public void UpdateVisibility()
-    {
-        var curField = Player.inst.curField;
-
-        // Line renderer: Change positions
-        if (curField.isCorner)
-        {
-            var positions = MeshUpdate.PreventLineRendFromBending(curField.positions);
-            var positionCount = positions.Length;
-            lineRend.positionCount = positionCount;
-            lineRend.SetPositions(positions);
-        }
-        else
-        {
-            lineRend.positionCount = curField.positions.Length;
-            lineRend.SetPositions(curField.positions);
-        }
-
-        // Outer surface: disable old, enable new
-        curField.outerSurface.enabled = false;
-        curField.outerSurface = Player.inst.curFieldSet[curField.ID].outerSurface;
-        curField.outerSurface.enabled = true;
-    }
-
+    
     /// <summary>
     /// Set variables. Set z-position.
     /// </summary>
@@ -244,7 +217,6 @@ public class PlayerField : MusicField
     {
         this.lineRend.startWidth = VisualController.inst.playerFieldFocusThickness;
         this.lineRend.endWidth = VisualController.inst.playerFieldFocusThickness;
-        SetOpacity(1f);
 
         float zPos = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
         SetZPos(zPos);
@@ -260,8 +232,6 @@ public class PlayerField : MusicField
 
         float zPos = Player.inst.transform.position.z - (VisualController.inst.fieldsBeforeSurface + 0.001f);
         SetZPos(zPos);
-        
-        SetOpacity(1);
     }
 
 
@@ -280,14 +250,14 @@ public class PlayerField : MusicField
 
 
     /// <summary>
-    /// Set opacity of the line renderer material.
+    /// Set opacity of the outer surface (!) - not the line renderer.
     /// </summary>
     /// <param name="opacity">Opacity. 0 == transparent [0, 1].</param>
     public void SetOpacity(float opacity)
     {
-        Color newColor = this.lineRend.material.color;
+        Color newColor = outerSurface.material.color;
         newColor.a = opacity;
-        this.lineRend.material.color = newColor;
+        outerSurface.material.color = newColor;
     }
 
 
