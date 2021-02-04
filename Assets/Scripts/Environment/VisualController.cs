@@ -105,12 +105,12 @@ public class VisualController : MonoBehaviour
     {
         if (Player.actionState == Player.ActionState.Play)
         {
-            Player.curField.SetOpacity(0.7f);
+            Player.curField.SetOpacity(0.6f);
             print("0.7");
         }
         else
         {
-            Player.curField.SetOpacity(0.2f);
+            Player.curField.SetOpacity(0.02f);
             print("0.2");
         }
     }
@@ -124,7 +124,7 @@ public class VisualController : MonoBehaviour
         }
         else
         {
-            Player.curField.SetOpacity(0.5f);
+            Player.curField.SetOpacity(0.3f);
             print("0.5");
         }
     }

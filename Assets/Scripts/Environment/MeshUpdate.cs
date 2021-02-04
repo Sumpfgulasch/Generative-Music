@@ -209,8 +209,6 @@ public static class MeshUpdate
 
                 // Assign
                 fields[ID].SetVertices(start, mid, end, positions);
-
-                // TO DO: vertices dem line renderer zuweisen, line renderer über andere funktion für start unvisible setzen
             }
         }
 
@@ -228,7 +226,7 @@ public static class MeshUpdate
         // Line renderer: Change positions
         if (curField.isCorner)
         {
-            var positions = MeshUpdate.PreventLineRendFromBending(curField.positions);
+            var positions = PreventLineRendFromBending(curField.positions);
             var positionCount = positions.Length;
             curField.lineRend.positionCount = positionCount;
             curField.lineRend.SetPositions(positions);
@@ -245,39 +243,7 @@ public static class MeshUpdate
         curField.outerSurface.enabled = true;
     }
 
-
-
-
-    /// <summary>
-    /// Set line renderer positions from data. In corners add identical positions to prevent bending lines.
-    /// </summary>
-    //public static void UpdatePlayerField(PlayerField data)
-    //{
-    //    // TO DO: mischung aus data & curField ist weird und unnötig
-
-    //    var curField = Player.inst.curField;
-    //    Vector3[] positions;
-    //    int positionCount;
-
-    //    if (!data.isCorner)
-    //    {
-    //        // Regular field
-    //        positions = data.positions;
-    //        positionCount = data.positions.Length;
-    //    }
-    //    else
-    //    {
-    //        // Corner: add empty line renderer positions, to prevent bending
-    //        positions = PreventLineRendFromBending(data.positions);
-    //        positionCount = positions.Length;
-    //    }
-
-    //    // Set
-    //    curField.lineRend.positionCount = positionCount;
-    //    curField.lineRend.SetPositions(positions);
-    //}
-
-
+    
 
     /// <summary>
     /// Douplicate most of the line renderer vertices to prevent it from unwanted bending.
