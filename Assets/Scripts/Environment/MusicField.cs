@@ -61,7 +61,7 @@ public class MusicField
     /// <summary>
     /// Set line renderer and position-variables. Set z-position to fieldsBeforeSurface-value.
     /// </summary>
-    public void UpdateVertices(Vector3 start, Vector3 mid, Vector3 end, Vector3[] positions)
+    public void SetVertices(Vector3 start, Vector3 mid, Vector3 end, Vector3[] positions)
     {
         // 1. Set z-position
         float zPos = Player.inst.transform.position.z - VisualController.inst.fieldsBeforeSurface;
@@ -122,17 +122,6 @@ public class MusicField
 
     public static bool IsCorner(int ID)
     {
-        #region old
-        //if ((ID + 1) % VisualController.inst.fieldsPerEdge == 0 || ID % VisualController.inst.fieldsPerEdge == 0)
-        //{
-        //    return true;
-        //}
-        //else
-        //{
-        //    return false;
-        //}
-        #endregion
-
         if (ID % (VisualController.inst.fieldsPerEdge - 1) == 0)
         {
             return true;
@@ -157,74 +146,14 @@ public class MusicField
         }
     }
 
-    //public static bool IsCorner_RightPart(int ID)
-    //{
-    //    if (ID % VisualController.inst.fieldsPerEdge == 0)
-    //    {
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        return false;
-    //    }
-    //}
+    
 
-    //public static Vector3 CornerPosition(int ID)
-    //{
-    //    if (!IsCorner(ID)) 
-    //    {
-    //        Debug.Log("Error! Wrong ID, no corner.");
-    //        return Vector3.zero;
-    //    }
-    //    else if(IsCorner_RightPart(ID))
-    //    {
-    //        return TunnelData.fields[ID].start;
-    //    }
-    //    else
-    //        return TunnelData.fields[ID].end;
-    //}
-
-
-    //private static Vector3 RegularFieldMid(int ID)
-    //{
-    //    Vector3 position = (TunnelData.fields[ID].start + TunnelData.fields[ID].end) / 2f;
-
-    //    return position;
-    //}
-
-
-    /// <summary>
-    /// Returns the mid point of any field, given by an ID. Respect corner IDs, too.
-    /// </summary>
-    /// <param name="targetID"></param>
-    /// <returns></returns>
-    //public static Vector3 FieldMid(int targetID)
-    //{
-    //    if (IsCorner(targetID))
-    //    {
-    //        return CornerPosition(targetID);
-    //    }
-    //    else
-    //    {
-    //        return RegularFieldMid(targetID);
-    //    }
-
-
-
-    //}
 
     /// <summary>
     /// Get the adjacent field ID to a given ID.
     /// </summary>
     public static int NextFieldID(int curID, int direction)
     {
-        //int nextID = (curID + direction).Modulo(VisualController.inst.FieldsCount);
-        //if (IsCorner(curID) && IsCorner(nextID))
-        //{
-        //    nextID = (nextID + (int)Mathf.Sign(direction)).Modulo(VisualController.inst.FieldsCount);
-        //}
-        //return nextID;
-
         int nextID = ExtensionMethods.Modulo(curID + direction, TunnelData.FieldsCount);
 
         return nextID;
@@ -260,6 +189,33 @@ public class PlayerField : MusicField
 
 
     // Functions
+
+        /// <summary>
+        /// Set lineRenderer positions and outerSurface positions to current ID.
+        /// </summary>
+    public void UpdateVisibility()
+    {
+        var curField = Player.inst.curField;
+
+        // Line renderer: Change positions
+        if (curField.isCorner)
+        {
+            var positions = MeshUpdate.PreventLineRendFromBending(curField.positions);
+            var positionCount = positions.Length;
+            lineRend.positionCount = positionCount;
+            lineRend.SetPositions(positions);
+        }
+        else
+        {
+            lineRend.positionCount = curField.positions.Length;
+            lineRend.SetPositions(curField.positions);
+        }
+
+        // Outer surface: disable old, enable new
+        curField.outerSurface.enabled = false;
+        curField.outerSurface = Player.inst.curFieldSet[curField.ID].outerSurface;
+        curField.outerSurface.enabled = true;
+    }
 
     /// <summary>
     /// Set variables. Set z-position.

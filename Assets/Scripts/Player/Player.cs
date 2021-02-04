@@ -59,7 +59,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public Edge curEdge;
     [HideInInspector] public Edge[] curSecEdges;
     [HideInInspector] public bool tunnelEnter;
-    [HideInInspector] public MusicField[] curFields;
+    [HideInInspector] public MusicField[] curFieldSet;
 
 
 
@@ -505,7 +505,7 @@ public class Player : MonoBehaviour
         int nextID = MusicField.NextFieldID(curField.ID, direction);
         
         // 2. Selectable?
-        if (curFields[nextID].selectable)                               // TO DO: sollte hier nicht rein (?)
+        if (curFieldSet[nextID].selectable)                               // TO DO: sollte hier nicht rein (?)
         {
             // 4. Set data (ID, ...)
             var data = PlayerData.SetDataByID(nextID);
@@ -548,7 +548,7 @@ public class Player : MonoBehaviour
     private IEnumerator RotateToID(int ID)
     {
         // 1. Selectable?
-        if (curFields[ID].selectable)
+        if (curFieldSet[ID].selectable)
         {
 
             // 3. Target rotation

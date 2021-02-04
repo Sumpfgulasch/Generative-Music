@@ -22,9 +22,7 @@ public static class PlayerData
     //Constructor
     static PlayerData()
     {
-        //player = Player.inst;
         midPoint = Player.inst.transform.position;
-        //Player.curField.ID = VisualController.inst.fieldsPerEdge - 1;
         playerZpos = midPoint.z;
     }
 

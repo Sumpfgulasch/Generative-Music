@@ -115,10 +115,10 @@ public class MusicManager : MonoBehaviour
         curChord = GetChord();
 
         int ID = Player.curField.ID;
-        var fieldType = Player.curFields[ID].type;
+        var fieldType = Player.curFieldSet[ID].type;
 
         // nur wenn sich feld nicht aufbaut
-        if (!Player.curFields[ID].isBuildingUp)
+        if (!Player.curFieldSet[ID].isBuildingUp)
         {
             switch (fieldType)
             {
@@ -144,7 +144,7 @@ public class MusicManager : MonoBehaviour
     {
         // = Get chord from currently touched edgePart
         int playerID = Player.curField.ID;
-        Chord chord = Player.curFields[playerID].chord;
+        Chord chord = Player.curFieldSet[playerID].chord;
 
         return chord;
     }

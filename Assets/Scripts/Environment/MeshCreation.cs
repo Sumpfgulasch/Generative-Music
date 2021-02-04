@@ -56,6 +56,7 @@ public static class MeshCreation
         CreateTriangleMesh(ref MeshRef.inst.innerSurface_mf, TunnelData.vertices);
         CreateTriangleMesh(ref MeshRef.inst.innerMask_mf, Player.inst.OuterVertices);
         CreateTriangleMesh(ref MeshRef.inst.innerPlayerMask_mf, TunnelData.vertices);
+        MeshRef.inst.milkSurface_parent.gameObject.SetActive(VisualController.inst.showMilkSurface);
 
         // Outer player
         CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
@@ -223,6 +224,7 @@ public static class MeshCreation
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
         LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerFieldPlayThickness);
+        lineRend.enabled = VisualController.inst.showPlayerLinerend;
         Player.curField = new PlayerField(lineRend, VisualController.inst.fieldsPerEdge - 1);
         Player.curField.SetToFocus();
 

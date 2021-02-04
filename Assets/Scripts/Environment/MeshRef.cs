@@ -14,12 +14,12 @@ public class MeshRef : MonoBehaviour
     public MeshFilter outerPlayerMesh_mf;
     public MeshFilter outerPlayerMask_mf;
     [Space]
+    public Transform milkSurface_parent;
     public LineRenderer tunnelEdges_lr;
     [Space]
     public Transform playerField_parent;
     public Material playerField_mat;
     public Material playerFieldSec_mat;
-    [Space]
     public Transform musicFields_parent;
     public Material musicFields_mat;
     public Transform outerFields_parent;

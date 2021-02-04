@@ -12,6 +12,8 @@ public class VisualController : MonoBehaviour
     public int fieldsPerEdge = 6;
     public int tunnelVertices = 3;
     public bool showCursor = true;
+    public bool showMilkSurface = false;
+    public bool showPlayerLinerend = false;
     [Range(0.001f, 0.05f)]
     public float fieldThickness = 0.01f;
     [Range(0.001f, 0.05f)]
@@ -23,9 +25,9 @@ public class VisualController : MonoBehaviour
     public float playerFieldBeforeSurface = 0.002f;
     public float fieldsBeforeSurface = 0.01f;
     [Range(0.1f, 1)]
-    public float mouseColliderSize_play = 0.7f;
-    [Range(0.1f, 1)]
-    public float mouseColliderSize_move = 0.3f;
+    public float mouseColliderSize_play = 1;
+    //[Range(0.1f, 1)]
+    //public float mouseColliderSize_move = 0.3f;
 
     private Vector3 playerMid;
 
@@ -63,7 +65,10 @@ public class VisualController : MonoBehaviour
     /// </summary>
     private void OnFieldChange(PlayerField data)
     {
-        MeshUpdate.UpdatePlayerField(data);
+        //MeshUpdate.UpdatePlayerField(data);
+
+        Player.inst.curField.UpdateVisibility();
+
         //foreach (PlayerField secField in Player.inst.curSecondaryFields)          // TO DO
         //    secField.UpdatePlayerLineRenderer(data);
     }

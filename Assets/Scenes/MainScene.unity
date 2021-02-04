@@ -616,6 +616,34 @@ Transform:
   m_Father: {fileID: 169566239}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!83 &578222444
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!114 &700626522 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
@@ -773,6 +801,8 @@ MonoBehaviour:
   fieldsPerEdge: 5
   tunnelVertices: 3
   showCursor: 1
+  showMilkSurface: 0
+  showPlayerLinerend: 0
   fieldThickness: 0.01
   playerFieldPlayThickness: 0.03
   playerFieldFocusThickness: 0.02
@@ -780,7 +810,6 @@ MonoBehaviour:
   playerFieldBeforeSurface: 0.001
   fieldsBeforeSurface: 0.002
   mouseColliderSize_play: 1
-  mouseColliderSize_move: 0.238
 --- !u!114 &802206884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -799,6 +828,7 @@ MonoBehaviour:
   innerMask_mf: {fileID: 1129972158}
   outerPlayerMesh_mf: {fileID: 1217124484}
   outerPlayerMask_mf: {fileID: 1557100710}
+  milkSurface_parent: {fileID: 111902382}
   tunnelEdges_lr: {fileID: 842566487}
   playerField_parent: {fileID: 388762315}
   playerField_mat: {fileID: 2100000, guid: c6103466f6fc1b24bb64d56c433942d7, type: 2}
@@ -806,7 +836,7 @@ MonoBehaviour:
   musicFields_parent: {fileID: 435366411}
   musicFields_mat: {fileID: 2100000, guid: 57ab6980aaf19b84eb09b4431d663b73, type: 2}
   outerFields_parent: {fileID: 564628300}
-  outerFields_mat: {fileID: 2100000, guid: 59120b8887ee751408e167ea953a1731, type: 2}
+  outerFields_mat: {fileID: 2100000, guid: 14b2fda3c73bc3844b5d2f227f535e63, type: 2}
   mouseColllider: {fileID: 264125172}
 --- !u!1 &812451688
 GameObject:
@@ -1093,34 +1123,6 @@ Transform:
   m_Father: {fileID: 812451689}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!83 &881141562
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &924272494
 GameObject:
   m_ObjectHideFlags: 0
@@ -1684,6 +1686,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_queues: b80b0000
+--- !u!83 &1179066890
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &1217124481
 GameObject:
   m_ObjectHideFlags: 0
@@ -2215,34 +2245,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_queues: c6070000
---- !u!83 &1586125094
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1001 &1676658322
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2533,7 +2535,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 2224735792368419155, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 1586125094}
+  m_audioClip: {fileID: 578222444}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -2642,8 +2644,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1688490145}
-  m_LocalRotation: {x: 0.016230889, y: 0, z: 0, w: 0.9998683}
-  m_LocalPosition: {x: 0, y: 0.18, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 963194228}
@@ -2651,7 +2653,7 @@ Transform:
   - {fileID: 368025939}
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 1.86, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1744810423
 GameObject:
   m_ObjectHideFlags: 0
@@ -2837,7 +2839,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5925276600095122450, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 881141562}
+  m_audioClip: {fileID: 1179066890}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
