@@ -32,7 +32,6 @@ public static class MeshCreation
 
     public static void CreateAll()
     {
-        Debug.Log("Create all 2");
         MeshUpdate.GetTunnelVertices();
 
         CreateFields();
@@ -74,7 +73,6 @@ public static class MeshCreation
     /// </summary>
     public static void CreateFields()
     {
-        Debug.Log("FieldSetCreate");
         TunnelData.fields = CreateFieldSet();
         
     }
@@ -105,7 +103,6 @@ public static class MeshCreation
         GameObject vertices = CreateContainer("Vertices", Player.inst.transform);
         GameObject outside = CreateContainer("Outside", vertices.transform);
         GameObject inside = CreateContainer("Inside", vertices.transform);
-        Debug.Log("InitPlayer()");
 
         for (int i = 0; i < Player.inst.verticesCount; i++)
         {
@@ -123,7 +120,6 @@ public static class MeshCreation
 
             // Assign positions to Player
             Player.inst.outerVertices_obj[i] = newOuterVert.transform;
-            Debug.Log("InitPlayer(); i: " + i + ", outerVertex.position: " + newOuterVert.transform.position);
             Player.inst.innerVertices_obj[i] = newInnerVert.transform;
             Player.inst.outerVertices_mesh[i] = nextOuterVertex;
             Player.inst.innerVertices_mesh[i] = nextInnerVertex;
@@ -212,7 +208,7 @@ public static class MeshCreation
         fields = MeshUpdate.UpdateFieldsVertices(fields);
 
         // 3. OuterFields
-        CreateOuterFields();
+        CreateOuterFields(fields);
 
         return fields;
     }
@@ -227,7 +223,7 @@ public static class MeshCreation
         // Primary
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
         LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerFieldPlayThickness);
-        Player.curField = new PlayerField(lineRend);
+        Player.curField = new PlayerField(lineRend, VisualController.inst.fieldsPerEdge - 1);
         Player.curField.SetToFocus();
 
         // Seoncdary
@@ -236,7 +232,7 @@ public static class MeshCreation
         {
             GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.playerField_parent);
             LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerSecFieldThickness);
-            Player.curSecondaryFields[i] = new PlayerField(lineRend2);
+            Player.curSecondaryFields[i] = new PlayerField(lineRend2, 0);
             lineRend2.enabled = false;
         }
 
@@ -253,26 +249,35 @@ public static class MeshCreation
 
 
     /// <summary>
-    /// Create outer field meshes for each field. Assign to TunnelData.fields.outerSurface.
+    /// Create outer field meshes for each field. Assign to given fields.
     /// </summary>
-    public static void CreateOuterFields()
+    public static void CreateOuterFields(MusicField[] fields)
     {
-        for (int i=0; i<TunnelData.FieldsCount; i++)
+        for (int i=0; i<fields.Length; i++)
         {
-            var outerfield = CreateOuterField(i);
-            TunnelData.fields[i].outerSurface = outerfield;
+            int ID = fields[i].ID;
+            MeshRenderer outerfield = CreateOuterField(fields, ID);
+            fields[ID].outerSurface = outerfield;
+
+            // TO DO: nicht gut, dass argument direkt bearbeitet wird(?); sollte lieber neuen array erstellen und returnen
+            // TO DO: überprüfen, ob übergebene fields wirklich zugewiesen werden
         }
     }
 
-    private static MeshRenderer CreateOuterField(int index)
+    /// <summary>
+    /// Create an outer field (MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID / position.
+    /// </summary>
+    /// <param name="index">[0, fields.Length]</param>
+    private static MeshRenderer CreateOuterField(MusicField[] relevantFields, int index)
     {
         // 0. Container & components
         GameObject outerField = CreateContainer("OuterField" + index, MeshRef.inst.outerFields_parent);
         var meshRenderer = outerField.AddComponent<MeshRenderer>();
         var meshFilter = outerField.AddComponent<MeshFilter>();
-        
+        outerField.transform.position -= Player.inst.transform.position;
+
         // 1. Positions
-        var fieldPositions = TunnelData.fields[index].positions;
+        var fieldPositions = relevantFields[index].positions;
         var vertices = fieldPositions.ToList();
         for (int j = 0; j < fieldPositions.Length; j++)
         {
@@ -285,7 +290,7 @@ public static class MeshCreation
         int[] triangles;
         Vector3[] normals;
 
-        if (TunnelData.fields[index].isCorner)
+        if (relevantFields[index].isCorner)
         {
             // Corner?
             triangles = new int[]
@@ -324,8 +329,12 @@ public static class MeshCreation
         Mesh mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles;
-        mesh.normals = normals;
+        //mesh.normals = normals;
+        mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
+
+        meshRenderer.material = MeshRef.inst.outerFields_mat;
+        meshRenderer.material.color = relevantFields[index].lineRend.material.color;
 
         meshRenderer.enabled = false;
 

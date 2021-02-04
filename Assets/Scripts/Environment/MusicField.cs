@@ -244,10 +244,11 @@ public class PlayerField : MusicField
     public Vector3[] secondaryPositions;
 
     // Contructors
-    public PlayerField(LineRenderer lineRend)
+    public PlayerField(LineRenderer lineRend, int ID)
     {
         //this.type = type;
         base.lineRend = lineRend;
+        this.ID = ID;
     }
 
     public PlayerField(int ID, Vector3[] positions, Vector3 mid)

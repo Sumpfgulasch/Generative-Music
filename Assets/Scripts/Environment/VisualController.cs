@@ -63,7 +63,7 @@ public class VisualController : MonoBehaviour
     /// </summary>
     private void OnFieldChange(PlayerField data)
     {
-        MeshUpdate.UpdatePlayerLineRenderer(data);
+        MeshUpdate.UpdatePlayerField(data);
         //foreach (PlayerField secField in Player.inst.curSecondaryFields)          // TO DO
         //    secField.UpdatePlayerLineRenderer(data);
     }

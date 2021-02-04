@@ -41,12 +41,12 @@ public static class MeshUpdate
 
 
     /// <summary>
-    /// Set vertices and visibility of focused/played player field, set player width, set all mask-mesh-vertices (to do: sort out).
+    /// Set player width and form, to maintain the same width and correct masks.
     /// </summary>
     public static void UpdatePlayer()
     {
-        // 2. Mischmasch
-        UpdatePlayerFormVertices();         // to do: siehe Funktion
+        UpdatePlayerWidth();
+        UpdatePlayerFormVertices();
     }
 
 
@@ -80,7 +80,6 @@ public static class MeshUpdate
             if (Physics.Raycast(playerMid, nextDirection, out hit))
             {
                 edgeHits[i] = hit;
-                Debug.DrawLine(hit.point, playerMid, Color.red, 5f);
             }
         }
         // 4) Final: Construct environment triangle by line intersections
@@ -107,22 +106,15 @@ public static class MeshUpdate
                 else
                     TunnelData.vertices[2] = intersection;  // HIER FEHLER
             }
-
-            Debug.Log("GetTunnelVertices; i: " + i + ", TunnelData.vertices[i]: " + TunnelData.vertices[i]);
-        }
-        for (int i=0; i< TunnelData.vertices.Length; i++)
-        {
-            Debug.DrawLine(TunnelData.vertices[i], TunnelData.vertices[(i + 1) % 3], Color.green, 5f);
         }
     }
 
 
+    /// <summary>
+    /// Sämtliche Mesh-Vertices (innerPlayer, outerPlayer, Milch-Fläche, Masken) setzen, abhängig von TunnelData und Spieler-Transform
+    /// </summary>
     private static void UpdatePlayerFormVertices()
     {
-        // == Sämtliche Mesh-Vertices (innerPlayer, outerPlayer, Milch-Fläche, Masken) setzen, abhängig von TunnelData und Spieler-Transform
-
-        // To do: ausklamüsern, was nur bei Player-Input und Spielstart geupdated werden müsste
-
         // Inner surface
         MeshRef.inst.innerSurface_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(TunnelData.vertices, thisTransform);
         MeshRef.inst.innerMask_mf.mesh.vertices = ExtensionMethods.ConvertArrayFromWorldToLocal(Player.inst.OuterVertices, thisTransform);
@@ -138,7 +130,7 @@ public static class MeshUpdate
 
 
 
-    public static void UpdatePlayerWidth()
+    private static void UpdatePlayerWidth()
     {
         if (Player.inst.constantInnerWidth)
         {
@@ -246,7 +238,7 @@ public static class MeshUpdate
     /// <summary>
     /// Set line renderer positions from data. In corners add identical positions to prevent bending lines.
     /// </summary>
-    public static void UpdatePlayerLineRenderer(PlayerField data)
+    public static void UpdatePlayerField(PlayerField data)
     {
         // TO DO: mischung aus data & curField ist weird und unnötig
 

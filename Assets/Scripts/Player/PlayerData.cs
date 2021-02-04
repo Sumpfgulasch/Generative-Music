@@ -24,7 +24,7 @@ public static class PlayerData
     {
         //player = Player.inst;
         midPoint = Player.inst.transform.position;
-        Player.curField.ID = 4;
+        //Player.curField.ID = VisualController.inst.fieldsPerEdge - 1;
         playerZpos = midPoint.z;
     }
 

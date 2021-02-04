@@ -216,7 +216,7 @@ public class Player : MonoBehaviour
         // set mouse collider
         //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_play);
 
-        MeshUpdate.UpdatePlayerWidth();
+        MeshUpdate.UpdatePlayer();
 
         // Events
         GameEvents.inst.FieldStart();
@@ -552,7 +552,6 @@ public class Player : MonoBehaviour
         {
 
             // 3. Target rotation
-            //var targetPos = MusicField.FieldMid(ID);
             var targetPos = TunnelData.fields[ID].mid;
 
             float maxTime = 1.2f;
@@ -593,7 +592,7 @@ public class Player : MonoBehaviour
             Vector3 scaleSpeed = (maxScale - this.transform.localScale) * bt_scaleDamp * DeltaTime;
             this.transform.localScale += scaleSpeed;
 
-            MeshUpdate.UpdatePlayerWidth();
+            MeshUpdate.UpdatePlayer();
 
             timer += Time.deltaTime;
             yield return null;
@@ -602,10 +601,11 @@ public class Player : MonoBehaviour
 
 
     /// <summary>
-    /// Perform Rotation. Damped by bt_rotationDamp.
+    /// Perform rotation once. Damped by bt_rotationDamp. Update player mesh (!!).
     /// </summary>
     private void RotateToTarget(Vector3 targetPos)
     {
+        // 1. Rotate
         Vector3 targetVec = targetPos - this.transform.position;                                                            // TO DO: animation curve, statt damping
         Vector3 curVec = OuterVertices[0] - this.transform.position;
 
@@ -619,6 +619,9 @@ public class Player : MonoBehaviour
         {
             this.transform.eulerAngles += new Vector3(0, 0, 0.1f);
         }
+
+        // 2. Update player meshes
+        MeshUpdate.UpdatePlayer();
     }
 
 

@@ -16,13 +16,11 @@ public class GameplayManager : MonoBehaviour
         yield return new WaitForFixedUpdate(); yield return new WaitForEndOfFrame();
         
         // 1. Create all meshes
-        Debug.Log("Create all 1");
         MeshCreation.CreateAll();
         
-        // 2. Fill fields with last content (colors, chords)
+        // 2. Fill fields with last content (chords & colors)
         LoopData.Init();
-
-
+        
         // EVENTS
         GameEvents.inst.onFirstBeat += OnFirstBeat;
         GameEvents.inst.onSecondBeat += OnSecondBeat;
