@@ -25,11 +25,7 @@ public class MusicManager : MonoBehaviour
     private float minPitch, maxPitch;
     private float curPitch = 0;
     private AudioHelm.HelmController curInstrument;
-
-
-
-    // Calc variables
-
+    
 
     // Properties
     Player Player { get { return Player.inst; } }

@@ -26,8 +26,6 @@ public class VisualController : MonoBehaviour
     public float fieldsBeforeSurface = 0.01f;
     [Range(0.1f, 1)]
     public float mouseColliderSize_play = 1;
-    //[Range(0.1f, 1)]
-    //public float mouseColliderSize_move = 0.3f;
 
     private Vector3 playerMid;
 

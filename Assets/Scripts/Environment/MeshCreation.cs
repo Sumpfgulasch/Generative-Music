@@ -208,8 +208,8 @@ public static class MeshCreation
         // 2. Assign positions
         fields = MeshUpdate.UpdateFieldsVertices(fields);
 
-        // 3. OuterFields
-        CreateOuterFields(fields);
+        // 3. Surfaces
+        CreateFieldsSurfaces(fields);
 
         return fields;
     }
@@ -251,26 +251,25 @@ public static class MeshCreation
 
 
     /// <summary>
-    /// Create outer field meshes for each field. Assign to given fields.
+    /// Create field surface meshes for each field. Assign to given fields.
     /// </summary>
-    public static void CreateOuterFields(MusicField[] fields)
+    public static void CreateFieldsSurfaces(MusicField[] fields)
     {
         for (int i=0; i<fields.Length; i++)
         {
             int ID = fields[i].ID;
-            MeshRenderer outerfield = CreateOuterField(fields, ID);
+            MeshRenderer outerfield = CreateFieldSurfaces(fields, ID);
             fields[ID].outerSurface = outerfield;
 
             // TO DO: nicht gut, dass argument direkt bearbeitet wird(?); sollte lieber neuen array erstellen und returnen
-            // TO DO: überprüfen, ob übergebene fields wirklich zugewiesen werden
         }
     }
 
     /// <summary>
-    /// Create an outer field (MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID / position.
+    /// Create an outer and inner field surface (MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID.
     /// </summary>
     /// <param name="index">[0, fields.Length]</param>
-    private static MeshRenderer CreateOuterField(MusicField[] relevantFields, int index)
+    private static MeshRenderer CreateFieldSurfaces(MusicField[] relevantFields, int index)
     {
         // 0. Container & components
         GameObject outerField = CreateContainer("OuterField" + index, MeshRef.inst.outerFields_parent);

@@ -24,6 +24,7 @@ public class MusicField
     public bool selectable;
     public bool isBuildingUp; // -> is playable
     public MeshRenderer outerSurface;
+    public MeshRenderer innerSurface;
 
     // Private variables
     public Color color;
