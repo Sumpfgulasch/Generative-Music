@@ -25,6 +25,7 @@ public class MusicField
     public bool isBuildingUp; // -> is playable
     public MeshRenderer outerSurface;
     public MeshRenderer innerSurface;
+    public float surfaceOpacity = 1;
 
     // Private variables
     public Color color;
@@ -221,6 +222,8 @@ public class PlayerField : MusicField
 
         float zPos = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
         SetZPos(zPos);
+
+        SetOpacity(VisualController.inst.ms_focus_outside_fieldSurfaceOpacity); // to do: besser; fragen ob ...
     }
 
     /// <summary>
@@ -233,6 +236,8 @@ public class PlayerField : MusicField
 
         float zPos = Player.inst.transform.position.z - (VisualController.inst.fieldsBeforeSurface + 0.001f);
         SetZPos(zPos);
+
+        SetOpacity(VisualController.inst.ms_play_outside_fieldSurfaceOpacity);
     }
 
 
@@ -256,6 +261,7 @@ public class PlayerField : MusicField
     /// <param name="opacity">Opacity. 0 == transparent [0, 1].</param>
     public void SetOpacity(float opacity)
     {
+        surfaceOpacity = opacity;
         Color newColor = outerSurface.material.color;
         newColor.a = opacity;
         outerSurface.material.color = newColor;

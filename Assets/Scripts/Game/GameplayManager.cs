@@ -36,6 +36,8 @@ public class GameplayManager : MonoBehaviour
         // EVENTS
         GameEvents.inst.onFirstBeat += OnFirstBeat;
         GameEvents.inst.onSecondBeat += OnSecondBeat;
+        GameEvents.inst.onFieldStart += VisualController.inst.OnPlayStart;
+        GameEvents.inst.onFieldLeave += VisualController.inst.OnPlayEnd;
 
         yield return null;
     }

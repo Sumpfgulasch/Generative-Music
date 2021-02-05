@@ -56,7 +56,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_4DCFF0D8: 0.973
+    - Vector1_4DCFF0D8: 0.99
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -80,7 +80,7 @@ Material:
     - _WireframeVal: 0.005
     - _ZWrite: 1
     m_Colors:
-    - Color_F15F84FB: {r: 1, g: 0.0141509175, b: 0.6765446, a: 1}
+    - Color_F15F84FB: {r: 0.9221513, g: 0.01931207, b: 0.6324703, a: 1}
     - Vector2_C75933F2: {r: 4, g: 5, b: 0, a: 0}
     - _BackColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 0, g: 0, b: 0, a: 0}

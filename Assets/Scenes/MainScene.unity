@@ -572,6 +572,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bpm_: 60
   pause_: 0
+--- !u!83 &466566283
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &564628299
 GameObject:
   m_ObjectHideFlags: 0
@@ -710,6 +738,34 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!83 &749431339
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &802206878
 GameObject:
   m_ObjectHideFlags: 0
@@ -760,6 +816,7 @@ MonoBehaviour:
   tunnelVertices: 3
   showCursor: 1
   showMilkSurface: 0
+  mouseColliderSize_play: 1
   showPlayerLinerend: 0
   fieldThickness: 0.01
   playerFieldPlayThickness: 0.03
@@ -767,7 +824,10 @@ MonoBehaviour:
   playerSecFieldThickness: 0.018
   playerFieldBeforeSurface: 0.001
   fieldsBeforeSurface: 0.002
-  mouseColliderSize_play: 1
+  ms_focus_inside_fieldSurfaceOpacity: 0.03
+  ms_focus_outside_fieldSurfaceOpacity: 0.07
+  ms_play_inside_fieldSurfaceOpacity: 1
+  ms_play_outside_fieldSurfaceOpacity: 1
 --- !u!114 &802206884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -794,7 +854,7 @@ MonoBehaviour:
   musicFields_parent: {fileID: 435366411}
   musicFields_mat: {fileID: 2100000, guid: 57ab6980aaf19b84eb09b4431d663b73, type: 2}
   outerFields_parent: {fileID: 564628300}
-  outerFields_mat: {fileID: 2100000, guid: 14b2fda3c73bc3844b5d2f227f535e63, type: 2}
+  outerFields_mat: {fileID: 2100000, guid: 59120b8887ee751408e167ea953a1731, type: 2}
   mouseColllider: {fileID: 264125172}
 --- !u!1 &812451688
 GameObject:
@@ -830,34 +890,6 @@ Transform:
   m_Father: {fileID: 802206879}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!83 &830278288
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!120 &842566487
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -1077,34 +1109,6 @@ Transform:
   m_Father: {fileID: 1688490146}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!83 &868907116
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &870845147
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,7 +1840,6 @@ MonoBehaviour:
   verticesCount: 3
   innerWidth: 0.25
   constantInnerWidth: 1
-  stickToEdgeTolerance: 0.01
   stickToOuterEdge_holeSize: 0.03
   useKeyboard: 1
   rotationMaxSpeed: 100
@@ -2045,18 +2048,6 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1240982957}
         m_TargetAssemblyTypeName: Player, Assembly-CSharp
-        m_MethodName: OnPlay
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 802206880}
-        m_TargetAssemblyTypeName: VisualController, Assembly-CSharp
         m_MethodName: OnPlay
         m_Mode: 0
         m_Arguments:
@@ -2527,7 +2518,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 2224735792368419155, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 830278288}
+  m_audioClip: {fileID: 466566283}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -2831,7 +2822,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5925276600095122450, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 868907116}
+  m_audioClip: {fileID: 749431339}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

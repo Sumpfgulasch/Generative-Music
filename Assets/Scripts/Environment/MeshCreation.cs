@@ -226,8 +226,7 @@ public static class MeshCreation
         LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerFieldPlayThickness);
         lineRend.enabled = VisualController.inst.showPlayerLinerend;
         Player.curField = new PlayerField(lineRend, VisualController.inst.fieldsPerEdge - 1);
-        Player.curField.SetToFocus();
-
+        
         // Seoncdary
         Player.curSecondaryFields = new PlayerField[Player.verticesCount - 1];
         for (int i = 0; i < Player.curSecondaryFields.Length; i++)
@@ -244,9 +243,10 @@ public static class MeshCreation
         for (int i = 0; i < Player.curSecEdges.Length; i++)
             Player.curSecEdges[i] = new Edge();
 
-        // Init outerSurface
+        // Init field & outerSurface
         Player.curField.outerSurface = TunnelData.fields[0].outerSurface;
         Player.curField.outerSurface.enabled = false;
+        Player.curField.SetToFocus();
     }
 
 

@@ -217,7 +217,7 @@ public static class MeshUpdate
     
 
     /// <summary>
-    /// Set lineRenderer positions and outerSurface positions to current ID.
+    /// Set lineRenderer positions and outerSurface positions to current ID. Set outerSurface opacity.
     /// </summary>
     public static void UpdatePlayerFieldVisibility()
     {
@@ -237,10 +237,13 @@ public static class MeshUpdate
             curField.lineRend.SetPositions(curField.positions);
         }
 
-        // Outer surface: disable old, enable new
+        // Outer surface: disable old, enable new; set opacity to current value
         curField.outerSurface.enabled = false;
         curField.outerSurface = Player.inst.curFieldSet[curField.ID].outerSurface;
         curField.outerSurface.enabled = true;
+
+        curField.SetOpacity(curField.surfaceOpacity);
+
     }
 
     

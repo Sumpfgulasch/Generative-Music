@@ -8,11 +8,14 @@ public class VisualController : MonoBehaviour
     // public
     public static VisualController inst;
 
-    [Header("Settings")]
+    [Header("General settings")]
     public int fieldsPerEdge = 6;
     public int tunnelVertices = 3;
     public bool showCursor = true;
     public bool showMilkSurface = false;
+    [Range(0.1f, 1)]
+    public float mouseColliderSize_play = 1;
+    [Header("Fields line renderer")]
     public bool showPlayerLinerend = false;
     [Range(0.001f, 0.05f)]
     public float fieldThickness = 0.01f;
@@ -24,8 +27,15 @@ public class VisualController : MonoBehaviour
     public float playerSecFieldThickness = 0.01f;
     public float playerFieldBeforeSurface = 0.002f;
     public float fieldsBeforeSurface = 0.01f;
-    [Range(0.1f, 1)]
-    public float mouseColliderSize_play = 1;
+    [Header("Fields surfaces")]
+    [Range(0f, 1f)]
+    public float ms_focus_inside_fieldSurfaceOpacity = 0;
+    [Range(0f, 1f)]
+    public float ms_focus_outside_fieldSurfaceOpacity = 0.058f;
+    [Range(0f, 1f)]
+    public float ms_play_inside_fieldSurfaceOpacity = 1;
+    [Range(0f, 1f)]
+    public float ms_play_outside_fieldSurfaceOpacity = 1;
 
     private Vector3 playerMid;
 
@@ -72,21 +82,19 @@ public class VisualController : MonoBehaviour
     /// <summary>
     /// Change player visibility.
     /// </summary>
-    public void OnPlay(InputAction.CallbackContext context)
+    public void OnPlayStart()
     {
-        if (context.performed)
-        {
-            Player.inst.curField.SetToPlay();
-            foreach (PlayerField secField in Player.inst.curSecondaryFields)
-                secField.SetVisible(true);
-        }
+        Player.inst.curField.SetToPlay();
+        foreach (PlayerField secField in Player.inst.curSecondaryFields)
+            secField.SetVisible(true);
+    }
 
-        else if (context.canceled)
-        {
-            Player.inst.curField.SetToFocus();
-            foreach (PlayerField secField in Player.inst.curSecondaryFields)
-                secField.SetVisible(false);
-        }
+
+    public void OnPlayEnd()
+    {
+        Player.inst.curField.SetToFocus();
+        foreach (PlayerField secField in Player.inst.curSecondaryFields)
+            secField.SetVisible(false);
     }
 
 
@@ -101,29 +109,29 @@ public class VisualController : MonoBehaviour
     /// </summary>
     private void OnMouseInside()
     {
-        if (Player.actionState == Player.ActionState.Play)
+        if (Player.inst.actionState == Player.ActionState.Play)
         {
-            Player.curField.SetOpacity(0.6f);
-            print("0.7");
+            Player.inst.curField.SetOpacity(ms_play_inside_fieldSurfaceOpacity);
+            print(ms_play_inside_fieldSurfaceOpacity);
         }
         else
         {
-            Player.curField.SetOpacity(0.02f);
-            print("0.2");
+            Player.inst.curField.SetOpacity(ms_focus_inside_fieldSurfaceOpacity);
+            print(ms_focus_inside_fieldSurfaceOpacity);
         }
     }
 
     private void OnMouseOutside()
     {
-        if (Player.actionState == Player.ActionState.Play)
+        if (Player.inst.actionState == Player.ActionState.Play)
         {
-            Player.curField.SetOpacity(1);
-            print("1");
+            Player.inst.curField.SetOpacity(ms_play_outside_fieldSurfaceOpacity);
+            print(ms_play_outside_fieldSurfaceOpacity);
         }
         else
         {
-            Player.curField.SetOpacity(0.3f);
-            print("0.5");
+            Player.inst.curField.SetOpacity(ms_focus_outside_fieldSurfaceOpacity);
+            print(ms_focus_outside_fieldSurfaceOpacity);
         }
     }
 

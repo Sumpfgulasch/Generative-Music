@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
     public int verticesCount = 3;
     [Range(0, 1f)] public float innerWidth = 0.2f;
     public bool constantInnerWidth = true;
-    public float stickToEdgeTolerance = 0.01f;
+    //public float stickToEdgeTolerance = 0.01f;
     public float stickToOuterEdge_holeSize = 0.05f;
     public bool useKeyboard;
 
@@ -334,38 +334,41 @@ public class Player : MonoBehaviour
     /// </summary>
     public void OnMove(InputAction.CallbackContext context)
     {
-        var pointerPos = context.ReadValue<Vector2>();
-
-        Side mouseSide = CheckForMouseSide(pointerPos);
-        bool mouseMiminumDistance = MouseHasMinimumDistance(pointerPos);
-        bool allowedToMove = true;
-        if (actionState == ActionState.Play && mouseSide == Side.inner)
+        if (context.performed)
         {
-            allowedToMove = false;
-        }
-        
-        // 1. Allowed to select? 
-        if (mouseMiminumDistance && allowedToMove)
-        {
-            var mouseDirection = ConvertMouseToDirection(pointerPos);
+            var pointerPos = context.ReadValue<Vector2>();
 
-            // 2. Get & set data (ID, positions, ...)
-            var ID = PlayerData.GetIDfromRaycast(mouseDirection);
-            var data = PlayerData.SetDataByID(ID);
-            var fieldChanged = PlayerData.FieldHasChanged();
-
-            if (fieldChanged)
+            Side mouseSide = CheckForMouseSide(pointerPos);
+            bool mouseMiminumDistance = MouseHasMinimumDistance(pointerPos);
+            bool allowedToMove = true;
+            if (actionState == ActionState.Play && mouseSide == Side.inner)
             {
-                GameEvents.inst.FieldChange(data);
+                allowedToMove = false;
+            }
 
-                StopCoroutines(curRotateRoutines);
-                StopCoroutines(curTriggerRoutines);
+            // 1. Allowed to select? 
+            if (mouseMiminumDistance && allowedToMove)
+            {
+                var mouseDirection = ConvertMouseToDirection(pointerPos);
 
-                var rotateRoutine = RotateToID(ID);
-                curRotateRoutines.Add(rotateRoutine);
+                // 2. Get & set data (ID, positions, ...)
+                var ID = PlayerData.GetIDfromRaycast(mouseDirection);
+                var data = PlayerData.SetDataByID(ID);
+                var fieldChanged = PlayerData.FieldHasChanged();
 
-                // 3. Rotate!
-                StartCoroutine(rotateRoutine);
+                if (fieldChanged)
+                {
+                    GameEvents.inst.FieldChange(data);
+
+                    StopCoroutines(curRotateRoutines);
+                    StopCoroutines(curTriggerRoutines);
+
+                    var rotateRoutine = RotateToID(ID);
+                    curRotateRoutines.Add(rotateRoutine);
+
+                    // 3. Rotate!
+                    StartCoroutine(rotateRoutine);
+                }
             }
         }
     }
