@@ -112,12 +112,10 @@ public class VisualController : MonoBehaviour
         if (Player.inst.actionState == Player.ActionState.Play)
         {
             Player.inst.curField.SetOpacity(ms_play_inside_fieldSurfaceOpacity);
-            print(ms_play_inside_fieldSurfaceOpacity);
         }
         else
         {
             Player.inst.curField.SetOpacity(ms_focus_inside_fieldSurfaceOpacity);
-            print(ms_focus_inside_fieldSurfaceOpacity);
         }
     }
 
@@ -126,12 +124,10 @@ public class VisualController : MonoBehaviour
         if (Player.inst.actionState == Player.ActionState.Play)
         {
             Player.inst.curField.SetOpacity(ms_play_outside_fieldSurfaceOpacity);
-            print(ms_play_outside_fieldSurfaceOpacity);
         }
         else
         {
             Player.inst.curField.SetOpacity(ms_focus_outside_fieldSurfaceOpacity);
-            print(ms_focus_outside_fieldSurfaceOpacity);
         }
     }
 
