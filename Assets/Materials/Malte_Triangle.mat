@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Triangle
+  m_Name: Malte_Triangle
   m_Shader: {fileID: -6465566751694194690, guid: dfb7b524d0173f641bfa38728b3b477d, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
