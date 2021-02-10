@@ -92,6 +92,10 @@ public class Player : MonoBehaviour
     {
         get
         {
+            //if (outerVertices_obj[0] == null)
+            //{
+            //    Debug.LogError("outer vertices object is null");
+            //}
             for (int i = 0; i < verticesCount; i++)
                 outerVertices[i] = outerVertices_obj[i].position;
             return outerVertices;
