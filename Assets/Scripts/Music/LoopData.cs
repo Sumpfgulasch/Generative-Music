@@ -142,15 +142,14 @@ public static class LoopData
         {
             fieldTypes[i] = MusicField.Type.Chord;
             selectables[i] = true;
-            buildUps[i] = true;
+            buildUps[i] = false;
         }
-        TunnelData.fields = MusicFieldSet.StoreDataInFields(TunnelData.fields, fieldTypes, chords, colors, selectables, buildUps);
+        TunnelData.fields = MusicFieldSet.SetDataToFields(TunnelData.fields, fieldTypes, chords, colors, selectables, buildUps);
 
-        Player.curFieldSet = TunnelData.fields;
+        Player.inst.curFieldSet = TunnelData.fields;
 
         // 6. Beat data
         GetBeatData();
-
 
 
     }

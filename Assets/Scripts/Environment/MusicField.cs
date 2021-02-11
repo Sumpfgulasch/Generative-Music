@@ -8,7 +8,7 @@ using System.Linq;
 
 public class MusicField
 {
-    public enum Type { Chord, Modulation, Pitch};
+    public enum Type { Chord, Modulation, Pitch };
 
     // Properties
     public int ID;
@@ -24,8 +24,7 @@ public class MusicField
     public bool selectable;
     public bool isBuildingUp; // -> is playable
     public MeshRenderer outerSurface;
-    public MeshRenderer innerSurface;
-    public float surfaceOpacity = 1;
+    public float SurfaceOpacity { get; protected set; }
 
     // Private variables
     public Color color;
@@ -109,7 +108,7 @@ public class MusicField
     }
 
     /// <summary>
-    /// Set data and set material color.
+    /// Set data and set material colors.
     /// </summary>
     public void SetContent(Type fieldType, Chord chord, Color color, bool selectable, bool isBuildingUp)
     {
@@ -119,7 +118,12 @@ public class MusicField
         this.selectable = selectable;
         this.isBuildingUp = isBuildingUp;
 
-        this.lineRend.material.color = color;
+        float intensity = VisualController.inst.outerSurfaceIntensity;
+
+        this.lineRend.material.SetColor("_BaseColor", color);
+        this.lineRend.material.SetColor("_EmissionColor", color * intensity);
+        this.outerSurface.material.SetColor("_BaseColor", color);
+        this.outerSurface.material.SetColor("_EmissionColor", color * intensity);
     }
 
     public static bool IsCorner(int ID)
@@ -213,7 +217,7 @@ public class PlayerField : MusicField
 
     
     /// <summary>
-    /// Change line renderer width, opacity and z-position.
+    /// Change line renderer width, outerField-opacity (and z-position of line rend).
     /// </summary>
     public void SetToFocus()
     {
@@ -261,7 +265,7 @@ public class PlayerField : MusicField
     /// <param name="opacity">Opacity. 0 == transparent [0, 1].</param>
     public void SetOpacity(float opacity)
     {
-        surfaceOpacity = opacity;
+        SurfaceOpacity = opacity;
         Color newColor = outerSurface.material.color;
         newColor.a = opacity;
         outerSurface.material.color = newColor;
@@ -291,67 +295,4 @@ public class Edge
         this.changed = changed;
         this.percentage = percentage;
     }
-}
-
-
-
-// --------------------------- Music field set --------------------------
-
-
-
-public static class MusicFieldSet
-{
-    // == Operations for complete MusicFieldSets
-    
-
-    /// <summary>
-    /// Store data (chords, colors, types, available, isBuildingUp) in each field; data only, no material assignments
-    /// </summary>
-    /// <param name="fieldsToAssign">Length == edges * divisions (att 15).</param>
-    /// <param name="chords">First array.length == types.length, second arrays.length == vary.</param>
-    /// <param name="colors">Length == types.length.</param>
-    /// <param name="availables">Length == edges * divisions (att 15).</param>
-    /// <param name="buildUps">Length == edges * divisions (att 15)</param>
-    public static MusicField[] StoreDataInFields(MusicField[] fieldsToAssign, MusicField.Type[] fieldTypes, Chord[][] chords, Color[] colors, bool[] availables, bool [] buildUps)
-    {
-        var fieldIDs = ExtensionMethods.IntToList(TunnelData.FieldsCount, true);
-        var fieldsPerEdge = VisualController.inst.fieldsPerEdge;
-        var fieldsCount = TunnelData.FieldsCount;
-
-        // 1. Gehe jeden chordType durch (3)
-        for (int chordTypeIndex = 0; chordTypeIndex < chords.Length; chordTypeIndex++)
-        {
-            var curChords = chords[chordTypeIndex].ToList();
-
-            // 2. Gehe jeden chord durch (3-5)
-            for (int chordIndex = 0; chordIndex < chords[chordTypeIndex].Length; chordIndex++)
-            {
-                var chord = curChords[0];
-                curChords.RemoveAt(0);
-                int ID;
-
-                // get CORNER fields
-                if (chordTypeIndex == 0)
-                {
-                    ID = chordIndex * (fieldsPerEdge-1);
-                    fieldIDs.Remove(ID);
-                }
-                // get random other field
-                else
-                {
-                    int randID_index = Random.Range(0, fieldIDs.Count);
-                    ID = fieldIDs[randID_index];
-                }
-
-                fieldIDs.Remove(ID);
-
-                fieldsToAssign[ID].SetContent(fieldTypes[ID], chord, colors[chordTypeIndex], availables[ID], buildUps[ID]);
-            }
-        }
-
-        return fieldsToAssign;
-    }
-
-
-
 }

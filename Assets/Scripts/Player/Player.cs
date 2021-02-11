@@ -17,9 +17,7 @@ public class Player : MonoBehaviour
     public int verticesCount = 3;
     [Range(0, 1f)] public float innerWidth = 0.2f;
     public bool constantInnerWidth = true;
-    //public float stickToEdgeTolerance = 0.01f;
     public float stickToOuterEdge_holeSize = 0.05f;
-    public bool useKeyboard;
 
     [Header("Mouse")]
     public float rotationMaxSpeed = 5f;
@@ -65,12 +63,12 @@ public class Player : MonoBehaviour
 
     // private variables
     private Vector3 midPoint;
-    private float curScaleSpeed = 0;
-    private float rotTargetValue;
-    private float fastWeight = 1f;
-    private float mouseX, mouseY, mouseDelta;
-    private float startScale;
-    Vector3 targetPos = Vector3.up;
+    //private float curScaleSpeed = 0;
+    //private float rotTargetValue;
+    //private float fastWeight = 1f;
+    //private float mouseX, mouseY, mouseDelta;
+    //private float startScale;
+    //Vector3 targetPos = Vector3.up;
     private InputAction makeMusicAction, selectRightAction, selectLeftAction;
     private IEnumerator triggerRotRoutine, scaleOutEnumerator, scaleRoutine;
     private IEnumerable rotateRoutine;
@@ -78,7 +76,7 @@ public class Player : MonoBehaviour
     private List<IEnumerator> curRotateRoutines = new List<IEnumerator>();
     private List<IEnumerator> curTriggerRoutines = new List<IEnumerator>();
     private enum Side { inner, outer};
-    private Side curPlayerSide = Side.inner;
+    private Side curPlaySide = Side.inner;
     private Side curMouseSide, lastMouseSide;
 
 
@@ -92,13 +90,14 @@ public class Player : MonoBehaviour
     {
         get
         {
-            //if (outerVertices_obj[0] == null)
-            //{
-            //    Debug.LogError("outer vertices object is null");
-            //}
-            for (int i = 0; i < verticesCount; i++)
-                outerVertices[i] = outerVertices_obj[i].position;
-            return outerVertices;
+            if (outerVertices_obj[0] != null)
+            {
+                for (int i = 0; i < verticesCount; i++)
+                    outerVertices[i] = outerVertices_obj[i].position;
+                return outerVertices;
+            }
+            else
+                return null;
         }
     }
     private Vector3[] innerVertices = new Vector3[3];
@@ -106,9 +105,14 @@ public class Player : MonoBehaviour
     {
         get
         {
-            for (int i = 0; i < verticesCount; i++)
-                innerVertices[i] = innerVertices_obj[i].position;
-            return innerVertices;
+            if (innerVertices_obj[0] != null)
+            {
+                for (int i = 0; i < verticesCount; i++)
+                    innerVertices[i] = innerVertices_obj[i].position;
+                return innerVertices;
+            }
+            else
+                return null;
         }
     }
     
@@ -168,7 +172,6 @@ public class Player : MonoBehaviour
         {
             float targetScaleFactor = tunnelToMidDistance / curPlayerRadius;
             transform.localScale = new Vector3(transform.localScale.x * targetScaleFactor, transform.localScale.y * targetScaleFactor, transform.localScale.z);
-            curScaleSpeed = 0; // unschön
 
             // TO DO: bounce?
         }
@@ -187,20 +190,8 @@ public class Player : MonoBehaviour
                 float targetScaleFactor = (tunnelToMidDistance + stickToOuterEdge_holeSize) / innerVertexDistance;
                 transform.localScale = new Vector3(transform.localScale.x * targetScaleFactor, transform.localScale.y * targetScaleFactor, transform.localScale.z);
             }
-            curScaleSpeed = 0; // unschön
         }
     }
-
-    
-
-    public float GetVelocityFromDistance()
-    {
-        float scaleSize = this.transform.localScale.x - startScale;
-        velocity = scaleSize.Remap(scaleMin, 0.4f, LoopData.minVelocity, LoopData.maxVelocity);
-        velocity = Mathf.Clamp(velocity, LoopData.minVelocity, LoopData.maxVelocity);
-        return velocity;
-    }
-
 
 
     /// <summary>
@@ -209,9 +200,9 @@ public class Player : MonoBehaviour
     private void PlayMovement(Side side)
     {
         actionState = ActionState.Play;
-        curPlayerSide = side;
+        curPlaySide = side;
         StopCoroutine(scaleRoutine);
-        StickToEdge(curPlayerSide);
+        StickToEdge(curPlaySide);
 
         // press frequencies
         curRotPressTime = bt_play_selectionPressTime;
@@ -542,7 +533,7 @@ public class Player : MonoBehaviour
 
                 if (actionState == ActionState.Play)
                 {
-                    StickToEdge(curPlayerSide);
+                    StickToEdge(curPlaySide);
                 }
 
                 timer += Time.deltaTime;
@@ -579,7 +570,7 @@ public class Player : MonoBehaviour
 
                 if (actionState == ActionState.Play)
                 {
-                    StickToEdge(curPlayerSide);
+                    StickToEdge(curPlaySide);
                 }
 
                 timer += Time.deltaTime;

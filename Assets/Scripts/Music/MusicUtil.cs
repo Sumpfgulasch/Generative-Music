@@ -660,19 +660,10 @@ public class ChordData
 
 public class Key
 {
-    // Public attributes
-    private Scale.Name scale;            
     public Scale.Name Scale             // Name, z.b. Major
-    {
-        get { return scale; }
-        private set { scale = value; }
-    }
-    private int keyNote;
+    { get; private set; }
     public int KeyNote                  // Tiefster Grundton der Skala (Wert zwischen 0-11)
-    {
-        get { return keyNote; }
-        private set { keyNote = value; }
-    }
+    { get; private set; }
     public int keyNoteIndex;            // Index des tiefsten Skala-Grundtons in notes
     public int[] notes;                 // Alle verfügbaren Midi-Noten der Tonart aus 0-127 (length immer kleiner als 128!)
     public int notesPerOctave;          // Anzahl der Skala-Noten innerhalb einer Oktave; meist 7

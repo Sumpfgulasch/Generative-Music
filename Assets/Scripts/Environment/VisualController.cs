@@ -36,6 +36,9 @@ public class VisualController : MonoBehaviour
     public float ms_play_inside_fieldSurfaceOpacity = 1;
     [Range(0f, 1f)]
     public float ms_play_outside_fieldSurfaceOpacity = 1;
+    [Space]
+    [SerializeField]
+    public float outerSurfaceIntensity = 2.5f;
 
     private Vector3 playerMid;
 

@@ -114,7 +114,7 @@ public class MusicManager : MonoBehaviour
         var fieldType = Player.curFieldSet[ID].type;
 
         // nur wenn sich feld nicht aufbaut
-        if (!Player.curFieldSet[ID].isBuildingUp)
+        if (!Player.inst.curFieldSet[ID].isBuildingUp)
         {
             switch (fieldType)
             {
@@ -128,7 +128,6 @@ public class MusicManager : MonoBehaviour
 
                 case MusicField.Type.Pitch:
                     break;
-
             }
         }
     }
@@ -188,6 +187,8 @@ public class MusicManager : MonoBehaviour
 
     public void OnReset(InputAction.CallbackContext context)
     {
+        Instrument.inner.AllNotesOff();
+        Instrument.outer.AllNotesOff();
         if (context.performed)
         {
             LoopData.Init();

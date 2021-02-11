@@ -61,11 +61,6 @@ public static class MeshCreation
         // Outer player
         CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
         CreateTriangleMesh(ref MeshRef.inst.outerPlayerMask_mf, TunnelData.vertices);
-
-        // FIELDS
-        // cur field
-        // sec fields
-
     }
 
 

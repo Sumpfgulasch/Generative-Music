@@ -64,8 +64,7 @@ public static class PlayerData
         }
 
         // 2. Current field
-        RaycastHit hit;
-        Physics.Raycast(midPoint, direction, out hit);
+        Physics.Raycast(midPoint, direction, out RaycastHit hit);
 
         Vector3 pointerPosOnEdge = new Vector3(hit.point.x, hit.point.y, playerZpos);
         

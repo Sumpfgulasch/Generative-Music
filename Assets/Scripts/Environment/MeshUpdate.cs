@@ -243,7 +243,7 @@ public static class MeshUpdate
         curField.outerSurface = Player.inst.curFieldSet[curField.ID].outerSurface;
         curField.outerSurface.enabled = true;
 
-        curField.SetOpacity(curField.surfaceOpacity);
+        curField.SetOpacity(curField.SurfaceOpacity);
 
     }
 

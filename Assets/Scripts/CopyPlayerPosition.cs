@@ -19,20 +19,23 @@ public class CopyPlayerPosition : MonoBehaviour
         var outerVertices = Player.inst.OuterVertices;
         var innerVertices = Player.inst.InnerVertices;
 
-        if (copySide == Side.Inner)
+        if (outerVertices != null && innerVertices != null)
         {
-            if (innerVertices != null)
+            if (copySide == Side.Inner)
             {
-                transform.position = innerVertices[0];
+                if (innerVertices != null)
+                {
+                    transform.position = innerVertices[0];
+                }
             }
-        }
-        else
-        {
-            if (outerVertices != null)
+            else
             {
-                transform.position = outerVertices[0];
-            }
+                if (outerVertices != null)
+                {
+                    transform.position = outerVertices[0];
+                }
 
+            }
         }
     }
 }
