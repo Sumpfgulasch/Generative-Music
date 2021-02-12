@@ -63,12 +63,6 @@ public class MusicManager : MonoBehaviour
         GameEvents.inst.onFieldLeave += OnFieldLeave;
     }
     
-    void Update()
-    {
-        ManageChordPlaying();
-    }
-
-    
 
     
 
@@ -114,12 +108,13 @@ public class MusicManager : MonoBehaviour
         var fieldType = Player.curFieldSet[ID].type;
 
         // nur wenn sich feld nicht aufbaut
-        if (!Player.inst.curFieldSet[ID].isBuildingUp)
+        if (!Player.inst.curFieldSet[ID].isSpawning)
         {
             switch (fieldType)
             {
                 case MusicField.Type.Chord:
                     PlayChord(curChord, curInstrument, velocity);
+                    print("Chord: " + curChord.notes.NoteNames());
                     break;
 
                 case MusicField.Type.Modulation:
@@ -170,9 +165,11 @@ public class MusicManager : MonoBehaviour
 
             StopChord(curChord, curInstrument);
 
-            curChord = GetChord();
+            //curChord = GetChord();
 
-            PlayChord(curChord, curInstrument, velocity);
+            //PlayChord(curChord, curInstrument, velocity);
+
+            PlayField();
         }
     }
 

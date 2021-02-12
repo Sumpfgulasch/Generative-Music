@@ -166,10 +166,12 @@ public static class MeshCreation
         }
 
         // Assign
-        Mesh newMesh = new Mesh();
-        newMesh.vertices = vertices.ToArray();
-        newMesh.triangles = triangles.ToArray();
-        newMesh.normals = normals.ToArray();
+        Mesh newMesh = new Mesh
+        {
+            vertices = vertices.ToArray(),
+            triangles = triangles.ToArray(),
+            normals = normals.ToArray()
+        };
         newMesh.MarkDynamic();                      // for better performance
         mf.mesh = newMesh;
         // no UVs
@@ -239,8 +241,7 @@ public static class MeshCreation
             Player.curSecEdges[i] = new Edge();
 
         // Init field & outerSurface
-        Player.curField.outerSurface = TunnelData.fields[0].outerSurface;
-        Player.curField.outerSurface.enabled = false;
+        Player.curField.InitSurface();
         Player.curField.SetToFocus();
     }
 

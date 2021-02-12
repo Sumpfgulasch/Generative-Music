@@ -47,7 +47,6 @@ public static class MeshUpdate
     {
         UpdatePlayerWidth();
         UpdatePlayerFormVertices();
-        UpdatePlayerParticles();
     }
 
 
@@ -239,17 +238,7 @@ public static class MeshUpdate
         }
 
         // Outer surface: disable old, enable new; set opacity to current value
-        curField.outerSurface.enabled = false;
-        curField.outerSurface = Player.inst.curFieldSet[curField.ID].outerSurface;
-        curField.outerSurface.enabled = true;
-
-        curField.SetOpacity(curField.SurfaceOpacity);
-
-    }
-
-
-    private static void UpdatePlayerParticles()
-    {
+        curField.UpdateSurface();
 
     }
 

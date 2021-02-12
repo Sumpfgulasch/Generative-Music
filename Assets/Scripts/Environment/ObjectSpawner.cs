@@ -78,7 +78,7 @@ public class ObjectSpawner : MonoBehaviour
     /// <summary>
     /// Distance-related data to beats.
     /// </summary>
-    private void GetData()                                                  // to do: mit loopData-data mischen?
+    private void GetData()
     {
         Vector3 start = availableObjects[0].GetComponent<Move>().start.transform.position;
         Vector3 end = availableObjects[0].GetComponent<Move>().end.transform.position;
@@ -117,12 +117,6 @@ public class ObjectSpawner : MonoBehaviour
 
             newObj = Instantiate(newObj, new Vector3(0, 0, zSpawn + i * tunnelLength), Quaternion.identity);
             movingObjects.Add(newObj);
-
-            // move milk surface from back to front
-            //if (i == 0)
-            //{
-            //    StartCoroutine(MoveObjectFromBackToFront(MeshRef.inst.innerSurface_mf.gameObject, newObj.transform));
-            //}
         }
         yield return null;
     }
@@ -151,6 +145,11 @@ public class ObjectSpawner : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Make the MeshRenderer of a gameObject visible.
+    /// </summary>
+    /// <param name="obj">GameObject.</param>
+    /// <param name="timeToWait">Time to wait in seconds.</param>
     private IEnumerator SetObjectVisible(GameObject obj, float timeToWait)
     {
         yield return new WaitForSeconds(timeToWait);
@@ -178,7 +177,7 @@ public class ObjectSpawner : MonoBehaviour
     /// <summary>
     /// Move each field displaced from back to front. Replace old fields when done.
     /// </summary>
-    /// <param name="fields"></param>
+    /// <param name="fields">The fields to instantiante (make visible). Doesnt have to be a field set.</param>
     /// <param name="spawnDistanceInBeats">The distance from the player in beats, where the first music fields gets instantiated.</param>
     /// <param name="durationInBeats">The time that passes from the first to the last instantiation of a field.</param>
     /// <returns></returns>
@@ -204,10 +203,11 @@ public class ObjectSpawner : MonoBehaviour
             }
             yield return new WaitForSeconds(timeToWait);
         }
+        Player.inst.curFieldSet = fields;
     }
 
     /// <summary>
-    /// Enable line renderer and move from back to front, by setting the z-value.
+    /// Enable line renderer and move from back to front. Set isSpawning = true when done.
     /// </summary>
     private IEnumerator MoveFieldFromBackToFront(MusicField field, float spawnDistanceInBeats, float durationInBeats)
     {
@@ -230,7 +230,8 @@ public class ObjectSpawner : MonoBehaviour
 
         field.SetZPos(playerZpos - VisualController.inst.fieldsBeforeSurface);
 
-        field.isBuildingUp = false;
+        field.isSpawning = false;
+        // Player.inst.curField
 
         // aktiviere variablen
     }

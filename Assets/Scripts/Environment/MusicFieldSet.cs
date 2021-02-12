@@ -15,8 +15,8 @@ public static class MusicFieldSet
     /// <param name="chords">First array.length == types.length, second arrays.length == vary.</param>
     /// <param name="colors">Length == types.length.</param>
     /// <param name="availables">Length == edges * divisions (atm 15).</param>
-    /// <param name="buildUps">Length == edges * divisions (atm 15)</param>
-    public static MusicField[] SetDataToFields(MusicField[] fieldsToAssign, MusicField.Type[] fieldTypes, Chord[][] chords, Color[] colors, bool[] availables, bool[] buildUps)
+    /// <param name="spawnings">Length == edges * divisions (atm 15)</param>
+    public static MusicField[] SetDataToFields(MusicField[] fieldsToAssign, MusicField.Type[] fieldTypes, Chord[][] chords, Color[] colors, bool[] availables, bool[] spawnings)
     {
         var fieldIDs = ExtensionMethods.IntToList(TunnelData.FieldsCount, true);
         var fieldsPerEdge = VisualController.inst.fieldsPerEdge;
@@ -49,7 +49,7 @@ public static class MusicFieldSet
 
                 fieldIDs.Remove(ID);
 
-                fieldsToAssign[ID].SetContent(fieldTypes[ID], chord, colors[chordTypeIndex], availables[ID], buildUps[ID]);
+                fieldsToAssign[ID].SetContent(fieldTypes[ID], chord, colors[chordTypeIndex], availables[ID], spawnings[ID]);
             }
         }
 

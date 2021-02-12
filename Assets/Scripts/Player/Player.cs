@@ -257,13 +257,16 @@ public class Player : MonoBehaviour
     {
         if (positionState != PositionState.NoTunnel)
         {
-            if (context.performed)
+            if (curField.IsNotSpawning)                           // TO DO: genauer überlegen
             {
-                PlayMovement(Side.inner);
-            }
-            else if (context.canceled)
-            {
-                StopPlayMovement(Side.inner);
+                if (context.performed)
+                {
+                    PlayMovement(Side.inner);
+                }
+                else if (context.canceled)
+                {
+                    StopPlayMovement(Side.inner);
+                }
             }
         }
     }
@@ -283,20 +286,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void OnPlay(InputAction.CallbackContext context)
-    {
-        //if (positionState != PositionState.NoTunnel)
-        //{
-        //    if (context.performed)
-        //    {
-        //        PlayMovement(curSide);
-        //    }
-        //    else if (context.canceled)
-        //    {
-        //        StopPlayMovement(curSide);
-        //    }
-        //}
-    }
+    
     
     /// <summary>
     /// Keyboard and button selection.
@@ -511,7 +501,7 @@ public class Player : MonoBehaviour
         int nextID = MusicField.NextFieldID(curField.ID, direction);
         
         // 2. Selectable?
-        if (curFieldSet[nextID].selectable)                               // TO DO: sollte hier nicht rein (?)
+        if (curFieldSet[nextID].isSelectable)                               // TO DO: sollte hier nicht rein (?)
         {
             // 4. Set data (ID, ...)
             var data = PlayerData.SetDataByID(nextID);
@@ -554,7 +544,7 @@ public class Player : MonoBehaviour
     private IEnumerator RotateToID(int ID)
     {
         // 1. Selectable?
-        if (curFieldSet[ID].selectable)
+        if (curFieldSet[ID].isSelectable)
         {
 
             // 3. Target rotation

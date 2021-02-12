@@ -32,7 +32,13 @@ public class GameplayManager : MonoBehaviour
         
         // 2. Fill fields with last content (chords & colors)
         LoopData.Init();
-        
+        #region hack: isSpawning = true
+        for (int i=0; i< TunnelData.fields.Length; i++)
+        {
+            Player.inst.curFieldSet[i].isSpawning = true;
+        }
+        #endregion
+
         // EVENTS
         GameEvents.inst.onFirstBeat += OnFirstBeat;
         GameEvents.inst.onSecondBeat += OnSecondBeat;
@@ -61,7 +67,7 @@ public class GameplayManager : MonoBehaviour
     {
         // Spawn Tunnels
         StartCoroutine(ObjectSpawner.inst.InstantiateFirstTunnels(timeToSpawnTunnel_inBeats, tunnelSpawnDistance_InBeats));     // initial
-        // regular event subscription in ObjectSpawner-coroutine (!!)
+        // Regular event subscription in ObjectSpawner-coroutine (!!)
 
         // Spawn fields
         StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, timeToSpawnFields_inBeats, fieldsSpawnDistance_inBeats, fieldsSpawnDuration_inBeats));

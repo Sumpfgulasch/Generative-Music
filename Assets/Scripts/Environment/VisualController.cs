@@ -76,7 +76,10 @@ public class VisualController : MonoBehaviour
     /// </summary>
     private void OnFieldChange(PlayerField data)
     {
-        MeshUpdate.UpdatePlayerFieldVisibility();
+        if (data.IsNotSpawning && data.IsSelectable)
+        {
+            MeshUpdate.UpdatePlayerFieldVisibility();
+        }
 
         //foreach (PlayerField secField in Player.inst.curSecondaryFields)          // TO DO
         //    secField.UpdatePlayerLineRenderer(data);

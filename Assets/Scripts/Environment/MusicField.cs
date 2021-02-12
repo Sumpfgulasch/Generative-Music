@@ -21,8 +21,8 @@ public class MusicField
     public bool isEdgeMid;
     public LineRenderer lineRend;
     public Chord chord;
-    public bool selectable;
-    public bool isBuildingUp; // -> is playable
+    public bool isSelectable;
+    public bool isSpawning; // -> is playable
     public MeshRenderer outerSurface;
     public float SurfaceOpacity { get; protected set; }
 
@@ -115,8 +115,8 @@ public class MusicField
         this.type = fieldType;
         this.chord = chord;
         this.color = color;
-        this.selectable = selectable;
-        this.isBuildingUp = isBuildingUp;
+        this.isSelectable = selectable;
+        this.isSpawning = isBuildingUp;
 
         float intensity = VisualController.inst.outerSurfaceIntensity;
 
@@ -168,34 +168,58 @@ public class MusicField
 
 
 
+
+
 // -------------------------- Player Edge Part -------------------------
 
 
 
-public class PlayerField : MusicField
+
+
+public class PlayerField // : MusicField
 {
-    //public new enum Type { Main, Second };
-    //public new Type type;
-    public Vector3[] secondaryPositions;
+    public int ID;
+    
+    #region line renderer zeug
+    public LineRenderer lineRend;
+    public Vector3 start;
+    public Vector3 end;
+    public Vector3 mid;
+    public Vector3[] positions;
+    public bool isCorner;
+    public bool isEdgeMid;      
+    public Vector3[] secondaryPositions; // Alles nur Zeug für line renderer
+    #endregion
+
+    public bool IsSelectable { get { return Player.inst.curFieldSet[ID].isSelectable; } }
+    public bool IsNotSpawning { get { return !Player.inst.curFieldSet[ID].isSpawning; } }
+    public MeshRenderer OuterSurface { get; private set; }
+    public float SurfaceOpacity { get; private set; }
+
+    
 
     // Contructors
     public PlayerField(LineRenderer lineRend, int ID)
     {
-        //this.type = type;
-        base.lineRend = lineRend;
+        this.lineRend = lineRend;
         this.ID = ID;
     }
 
-    public PlayerField(int ID, Vector3[] positions, Vector3 mid)
-    {
-        this.ID = ID;
-        this.positions = positions;
-        this.mid = mid;
-    }
 
 
     // Functions
-    
+
+
+    /// <summary>
+    /// Assign a surface. Disable MeshRenderer.
+    /// </summary>
+    public void InitSurface()
+    {
+        OuterSurface = TunnelData.fields[0].outerSurface;
+        OuterSurface.enabled = false;
+    }
+
+
     /// <summary>
     /// Set variables. Set z-position.
     /// </summary>
@@ -248,7 +272,7 @@ public class PlayerField : MusicField
     /// <summary>
     /// Set z pos only.
     /// </summary>
-    new public void SetZPos(float zPos)
+    public void SetZPos(float zPos)
     {
         for (int i = 0; i < this.lineRend.positionCount; i++)
         {
@@ -266,9 +290,21 @@ public class PlayerField : MusicField
     public void SetOpacity(float opacity)
     {
         SurfaceOpacity = opacity;
-        Color newColor = outerSurface.material.color;
+        Color newColor = OuterSurface.material.color;
         newColor.a = opacity;
-        outerSurface.material.color = newColor;
+        OuterSurface.material.color = newColor;
+    }
+
+    /// <summary>
+    /// Enable MeshRenderer of outerSurface of current ID of the current fieldSet. Disable old. Set opacity.
+    /// </summary>
+    public void UpdateSurface()
+    {
+        OuterSurface.enabled = false;
+        OuterSurface = Player.inst.curFieldSet[ID].outerSurface;
+        OuterSurface.enabled = true;
+
+        SetOpacity(SurfaceOpacity);
     }
 
 

@@ -8,7 +8,7 @@ public static class LoopData
     // = Alle gebündelten generierten musikalischen Daten zur nächsten Stage
     // CONSTRAINTS werden HIER generiert: Anzahl Akkord-Stufen, Akkord-Stufen, Akkord-Strukturen, Tonumfang, Modulations-Felder (+Anzahl)
     // Was in MusicGeneration generiert wird: Konkrete Akkorde
-    // Gemanaged wird alles hier; fertige Akkorde werden in EdgeParts hinein gespeichert
+    // Gemanaged wird alles hier; fertige Akkorde werden in MusicFields hinein gespeichert
 
     // Constraints
     public static int chordTypeCount;
@@ -137,14 +137,14 @@ public static class LoopData
         // 5. fields
         var fieldTypes = new MusicField.Type[FieldsCount];
         var selectables = new bool[FieldsCount];
-        var buildUps = new bool[FieldsCount];
+        var spawnings = new bool[FieldsCount];
         for (int i=0; i < FieldsCount; i++)
         {
             fieldTypes[i] = MusicField.Type.Chord;
             selectables[i] = true;
-            buildUps[i] = false;
+            spawnings[i] = false;
         }
-        TunnelData.fields = MusicFieldSet.SetDataToFields(TunnelData.fields, fieldTypes, chords, colors, selectables, buildUps);
+        TunnelData.fields = MusicFieldSet.SetDataToFields(TunnelData.fields, fieldTypes, chords, colors, selectables, spawnings);
 
         Player.inst.curFieldSet = TunnelData.fields;
 
