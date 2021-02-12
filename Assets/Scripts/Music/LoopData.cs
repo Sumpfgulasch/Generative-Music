@@ -116,7 +116,7 @@ public static class LoopData
         // degrees
         int[] degrees = MusicGenerationLogic.RandomChordDegrees(curKey, chordTypeCount);
         // intervals
-        int[] intervals = new int[] { 1, 3, 5 };
+        int[] intervals = MusicManager.inst.intervals;
         // individual count
         int[] individualCounts = MusicGenerationLogic.RandomChordTypeCounts(chordTypeCount);
         // colors

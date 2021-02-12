@@ -265,15 +265,33 @@ public static class MeshUpdate
     }
 
 
-    public static Color[] RandomColors(int types)
+    public static Color[] RandomColors(int amount)
     {
-        Color[] colors = new Color[types];
-        for (int i = 0; i < types; i++)
+        Color[] colors = new Color[amount];
+        for (int i = 0; i < amount; i++)
         {
             Color randColor = new Color(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
             colors[i] = randColor;
         }
         return colors;
+    }
+
+
+    public static Color[] ColorsInRange(int amount)
+    {
+        float hueMin = UnityEngine.Random.Range(0, 1f);
+        //float hueMax = hueMin + VisualController.inst.fieldsHueRange;
+
+        float saturationStart = 0;      // generieren
+        // public float fieldsHueRange = 0.2f;
+        // public float fieldsSaturation = 0.8f;
+        // public float fieldsSaturationRange = 0.1f;
+        // public float fieldsValue = 0.7f;
+        // public float fieldsValueRange = 0;
+
+        Color color = UnityEngine.Random.ColorHSV();
+
+        return null;
     }
 
 

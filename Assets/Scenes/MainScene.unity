@@ -586,34 +586,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bpm_: 60
   pause_: 0
---- !u!83 &473896991
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &515413641
 GameObject:
   m_ObjectHideFlags: 0
@@ -878,6 +850,7 @@ GameObject:
   - component: {fileID: 802206879}
   - component: {fileID: 802206880}
   - component: {fileID: 802206884}
+  - component: {fileID: 802206881}
   m_Layer: 0
   m_Name: Visualisations
   m_TagString: Untagged
@@ -930,6 +903,18 @@ MonoBehaviour:
   ms_play_inside_fieldSurfaceOpacity: 1
   ms_play_outside_fieldSurfaceOpacity: 1
   outerSurfaceIntensity: 5
+--- !u!114 &802206881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802206878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a5a4e0f986fb5b44a9c88f382fc6232, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &802206884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6773,6 +6758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43ecce0480993054aad6c6f14d3c8753, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  intervals: 010000000300000005000000
   shortNotes_minPlayTime: 0.08
   maxEdgePitchIntervalRange: 14
   velocity: 0.1
@@ -7241,34 +7227,6 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!83 &1386910073
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &1471312895
 GameObject:
   m_ObjectHideFlags: 0
@@ -7425,7 +7383,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1000011088963288, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
       propertyPath: m_Name
-      value: DrumKit02Sequencer
+      value: BeatSequencer
       objectReference: {fileID: 0}
     - target: {fileID: 4000010964047018, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7706,7 +7664,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 2224735792368419155, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 473896991}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -8013,7 +7971,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5925276600095122450, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 1386910073}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

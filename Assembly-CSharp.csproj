@@ -87,6 +87,7 @@
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlJump.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\BounceAudio2d.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshCreation.cs" />
+    <Compile Include="Assets\Scripts\Environment\MusicFieldSet.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetHelmParameter.cs" />
     <Compile Include="Assets\Scripts\Additional stuff\SetRenderQueue.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ToggleParameter.cs" />
@@ -123,7 +124,7 @@
     <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\Environment\ObjectSpawner.cs" />
-    <Compile Include="Assets\Scripts\Environment\MusicFieldSet.cs" />
+    <Compile Include="Assets\Scripts\Environment\ColorHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Custom\Mask.shader" />
