@@ -75,7 +75,7 @@ public class Player : MonoBehaviour
     private float curRotPressTime, curRotFrequency;
     private List<IEnumerator> curRotateRoutines = new List<IEnumerator>();
     private List<IEnumerator> curTriggerRoutines = new List<IEnumerator>();
-    private enum Side { inner, outer};
+    public enum Side { inner, outer};
     private Side curPlaySide = Side.inner;
     private Side curMouseSide, lastMouseSide;
 
@@ -214,7 +214,7 @@ public class Player : MonoBehaviour
         MeshUpdate.UpdatePlayer();
 
         // Events
-        GameEvents.inst.FieldStart();
+        GameEvents.inst.FieldStart(side);
     }
 
 

@@ -32,6 +32,8 @@ public class MusicManager : MonoBehaviour
     Player Player { get { return Player.inst; } }
     VisualController VisualController { get { return VisualController.inst; } }
 
+    Player.Side curSide, lastSide;
+
 
 
     private void Awake()
@@ -148,9 +150,27 @@ public class MusicManager : MonoBehaviour
 
 
     // Fields
-    private void OnFieldStart()
+    private void OnFieldStart(Player.Side side)
     {
+        
+
         PlayField();
+
+        // HACK
+        if (side == Player.Side.inner)
+        {
+            lastSide = curSide;
+            curInstrument = Instrument.inner;
+            curSide = side;
+        }
+        else
+        {
+            lastSide = curSide;
+            curInstrument = Instrument.outer;
+            curSide = side;
+        }
+        if (curSide != lastSide)
+            PlayField();
 
         #region pitch
         // calc pitch
@@ -162,14 +182,7 @@ public class MusicManager : MonoBehaviour
     {
         if (Player.actionState == Player.ActionState.Play)
         {
-            // TO DO: get chord hier rein
-
             StopChord(curChord, curInstrument);
-
-            //curChord = GetChord();
-
-            //PlayChord(curChord, curInstrument, velocity);
-
             PlayField();
         }
     }
@@ -197,7 +210,7 @@ public class MusicManager : MonoBehaviour
     {
         if (context.performed)
         {
-            curInstrument = Instrument.inner;
+            //curInstrument = Instrument.inner;
         }
     }
 
@@ -205,7 +218,7 @@ public class MusicManager : MonoBehaviour
     {
         if (context.performed)
         {
-            curInstrument = Instrument.outer;
+            //curInstrument = Instrument.outer;
         }
     }
 

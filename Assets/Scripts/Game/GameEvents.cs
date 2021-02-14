@@ -9,7 +9,7 @@ public class GameEvents : MonoBehaviour
     public static GameEvents inst;
 
     public Action onTunnelEnter;
-    public Action onFieldStart;
+    public Action <Player.Side> onFieldStart;
     public Action<PlayerField> onFieldChange;
     public Action onFieldLeave;
 
@@ -31,9 +31,9 @@ public class GameEvents : MonoBehaviour
         onTunnelEnter?.Invoke();
     }
 
-    public void FieldStart()
+    public void FieldStart(Player.Side side)
     {
-        onFieldStart?.Invoke();
+        onFieldStart?.Invoke(side);
     }
 
     public void FieldChange(PlayerField fieldData)

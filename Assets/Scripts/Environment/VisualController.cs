@@ -98,7 +98,7 @@ public class VisualController : MonoBehaviour
     /// <summary>
     /// Change player visibility.
     /// </summary>
-    public void OnPlayStart()
+    public void OnPlayStart(Player.Side side)
     {
         Player.inst.curField.SetToPlay();
         foreach (PlayerField secField in Player.inst.curSecondaryFields)
