@@ -277,21 +277,94 @@ public static class MeshUpdate
     }
 
 
-    public static Color[] ColorsInRange(int amount)
+    /// <summary>
+    /// Create 12 colors. Sorted like IDs. Corners are similar. Rest is a bit distant and similar, too. Constraints are in VisalController.
+    /// </summary>
+    /// <returns>RGB colors. Length == TunnelData.FieldsCount</returns>
+    public static Color[] ColorsInRange()
     {
-        float hueMin = UnityEngine.Random.Range(0, 1f);
-        //float hueMax = hueMin + VisualController.inst.fieldsHueRange;
+        var vars = VisualController.inst;
 
-        float saturationStart = 0;      // generieren
-        // public float fieldsHueRange = 0.2f;
-        // public float fieldsSaturation = 0.8f;
-        // public float fieldsSaturationRange = 0.1f;
-        // public float fieldsValue = 0.7f;
-        // public float fieldsValueRange = 0;
+        // 1. Corner colors
+        float randHue = UnityEngine.Random.Range(0, 1f);
+        ColorHSV curColor = new ColorHSV(randHue, vars.fieldsSaturation, vars.fieldsValue);
+        ColorHSV[] cornerColors = new ColorHSV[vars.tunnelVertices];
 
-        Color color = UnityEngine.Random.ColorHSV();
+        for (int i=0; i<cornerColors.Length; i++)
+        {
+            cornerColors[i] = new ColorHSV(curColor.hue, curColor.saturation, curColor.value);
 
-        return null;
+            //Debug.Log("cornerColors.length: " + cornerColors.Length + ", i: " + i + ", hue: " + curColor.hue);
+
+            if (i == cornerColors.Length - 1)
+                break;
+
+            curColor.hue = (curColor.hue + vars.lineRendHue_CornerStep) % 1;
+            
+        }
+        // 2. Distance
+        curColor.hue = (curColor.hue + vars.lineRendHue_Corner2NoCornerDistance) % 1;
+
+        // 3. NoCorner colors
+        List<ColorHSV> noCornerColors = new List<ColorHSV>();
+        for (int i=0; i< vars.colorCount - 1; i++)
+        {
+            for (int j = 0; j < vars.tunnelVertices; j++) // hack; damit length == 9 (12-3)
+            {
+                noCornerColors.Add(
+                    new ColorHSV(curColor.hue, curColor.saturation, curColor.value)
+                    );
+            }
+            curColor.hue = (curColor.hue + vars.lineRendHue_NoCornerStep) % 1;
+            //Debug.Log("NoCornerColors.i: " + i + ", hue: " + curColor.hue);
+        }
+
+        // BERECHNUNG STIMMT
+
+        // 4. Assign
+        Color[] colors = new Color[TunnelData.FieldsCount];
+        int cornerCounter = 0;
+        //int noCornerCounter = 0;
+        for (int i=0; i<colors.Length; i++)
+        {
+            if (MusicField.IsCorner(i))
+            {
+                ColorHSV color = cornerColors[cornerCounter];
+                colors[i] = Color.HSVToRGB(color.hue, color.saturation, color.value);
+                cornerCounter++;
+                Debug.Log("corner.hue: " + color.hue);
+            }
+            else
+            {
+                //Debug.Log("i: " + i + ", noCornercolors.length: " + noCornerColors.Count);
+                int randNoCornerIndex = UnityEngine.Random.Range(0, noCornerColors.Count);
+                ColorHSV color = noCornerColors[randNoCornerIndex];
+                colors[i] = Color.HSVToRGB(color.hue, color.saturation, color.value);
+                noCornerColors.Remove(color);
+                Debug.Log("noCorner.hue: " + color.hue);
+            }
+        }
+
+        return colors;
+
+
+
+        // 1. Random hue
+        //float randHue = UnityEngine.Random.Range(0, 1f);
+        //ColorHSV color = new ColorHSV(randHue, vars.fieldsSaturation, vars.fieldsValue);
+        //colors[0] = Color.HSVToRGB(curColor.hue, curColor.saturation, curColor.value);
+
+        //// 2. Start distance
+        //curColor.hue = (curColor.hue + vars.lineRendHue_Corner2NoCornerDistance) % 1;
+
+        //// 3. Aufsteigende Farben
+        //for (int i=1; i<amount; i++)
+        //{
+        //    curColor.hue = (curColor.hue + vars.lineRendHue_NoCornerStep) % 1;
+        //    colors[i] = Color.HSVToRGB(curColor.hue, curColor.saturation, curColor.value);
+        //}
+
+        return colors;
     }
 
 

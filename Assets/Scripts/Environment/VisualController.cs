@@ -37,8 +37,18 @@ public class VisualController : MonoBehaviour
     [Range(0f, 1f)]
     public float ms_play_outside_fieldSurfaceOpacity = 1;
     [Space]
-    [SerializeField]
-    public float outerSurfaceIntensity = 2.5f;
+
+    [Header("Colors")]
+    public int colorCount = 4;
+    [Space]
+    [Range(0, 1f)] public float lineRendHue_CornerStep = 1 / 40f;
+    [Range(0, 1f)] public float lineRendHue_NoCornerStep = 1/12f;
+    [Range(0, 1f)] public float lineRendHue_Corner2NoCornerDistance = 0;
+    [Range(0, 1f)] public float fieldsSaturation = 0.8f;
+    [Range(0, 1f)] public float fieldsValue = 0.8f;
+    [Range(0, 20f)] public float surfaceIntensity = 5f;
+    [Range(0, 20f)] public float lineRendCornerIntensity = 5f;
+    [Range(0, 20f)] public float lineRendNoCornerIntensity = 3.2f;
 
     private Vector3 playerMid;
 

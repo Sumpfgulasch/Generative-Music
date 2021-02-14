@@ -114,16 +114,22 @@ public class MusicField
     {
         this.type = fieldType;
         this.chord = chord;
-        this.color = color;
+        //this.color = color;
         this.isSelectable = selectable;
         this.isSpawning = isBuildingUp;
 
-        float intensity = VisualController.inst.outerSurfaceIntensity;
+        float lineRendIntensity;
+        if (isCorner)
+            lineRendIntensity = VisualController.inst.lineRendCornerIntensity;
+        else
+            lineRendIntensity = VisualController.inst.lineRendNoCornerIntensity;
+        float surfaceIntensity = VisualController.inst.surfaceIntensity;
+
 
         this.lineRend.material.SetColor("_BaseColor", color);
-        this.lineRend.material.SetColor("_EmissionColor", color * intensity);
+        this.lineRend.material.SetColor("_EmissionColor", color * lineRendIntensity);
         this.outerSurface.material.SetColor("_BaseColor", color);
-        this.outerSurface.material.SetColor("_EmissionColor", color * intensity);
+        this.outerSurface.material.SetColor("_EmissionColor", color * surfaceIntensity);
     }
 
     public static bool IsCorner(int ID)

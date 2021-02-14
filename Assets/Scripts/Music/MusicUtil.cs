@@ -638,12 +638,12 @@ public class ChordData
     public Color color;
 
 
-    public ChordData(int degree, int[] intervals, int individualCount, Color color)
+    public ChordData(int degree, int[] intervals, int individualCount)//, Color color)
     {
         this.degree = degree;
         this.intervals = intervals;
         this.individualCount = individualCount;
-        this.color = color;
+        //this.color = color;
     }
 }
 

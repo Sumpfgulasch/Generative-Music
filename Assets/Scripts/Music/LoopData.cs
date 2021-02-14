@@ -120,12 +120,12 @@ public static class LoopData
         // individual count
         int[] individualCounts = MusicGenerationLogic.RandomChordTypeCounts(chordTypeCount);
         // colors
-        var colors = MeshUpdate.RandomColors(chordTypeCount);
+        var colors = MeshUpdate.ColorsInRange();
         // assign!
         chordTypes = new ChordData[chordTypeCount];
         for (int i = 0; i < chordTypeCount; i++)
         {
-            chordTypes[i] = new ChordData(degrees[i], intervals, individualCounts[i], colors[i]);
+            chordTypes[i] = new ChordData(degrees[i], intervals, individualCounts[i]);//, colors[i]);
         }
 
         int[] testArray = new int[] { curKey.KeyNote };

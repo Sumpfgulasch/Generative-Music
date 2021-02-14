@@ -13,7 +13,7 @@ public static class MusicFieldSet
     /// </summary>
     /// <param name="fieldsToAssign">Length == edges * divisions (atm 15).</param>
     /// <param name="chords">First array.length == types.length, second arrays.length == vary.</param>
-    /// <param name="colors">Length == types.length.</param>
+    /// <param name="colors">Length == fields.Length.</param>
     /// <param name="availables">Length == edges * divisions (atm 15).</param>
     /// <param name="spawnings">Length == edges * divisions (atm 15)</param>
     public static MusicField[] SetDataToFields(MusicField[] fieldsToAssign, MusicField.Type[] fieldTypes, Chord[][] chords, Color[] colors, bool[] availables, bool[] spawnings)
@@ -21,6 +21,8 @@ public static class MusicFieldSet
         var fieldIDs = ExtensionMethods.IntToList(TunnelData.FieldsCount, true);
         var fieldsPerEdge = VisualController.inst.fieldsPerEdge;
         var fieldsCount = TunnelData.FieldsCount;
+
+        int stupidCounter = 0;
 
         // 1. Gehe jeden chordType durch (3)
         for (int chordTypeIndex = 0; chordTypeIndex < chords.Length; chordTypeIndex++)
@@ -49,8 +51,17 @@ public static class MusicFieldSet
 
                 fieldIDs.Remove(ID);
 
-                fieldsToAssign[ID].SetContent(fieldTypes[ID], chord, colors[chordTypeIndex], availables[ID], spawnings[ID]);
+                //int stupidCounter = Random.Range(0, colors.Length);
+                fieldsToAssign[ID].SetContent(fieldTypes[ID], chord, colors[ID], availables[ID], spawnings[ID]);    // colors[chordTypeIndex]
+
+                stupidCounter++;
             }
+        }
+
+        // Unschön
+        for (int i=0; i<fieldsToAssign.Length; i++)
+        {
+
         }
 
         return fieldsToAssign;
