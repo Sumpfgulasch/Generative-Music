@@ -152,25 +152,29 @@ public class MusicManager : MonoBehaviour
     // Fields
     private void OnFieldStart(Player.Side side)
     {
-        
+        if (side == Player.Side.inner)
+            curInstrument = Instrument.inner;
+        else
+            curInstrument = Instrument.outer;
+
 
         PlayField();
 
         // HACK
-        if (side == Player.Side.inner)
-        {
-            lastSide = curSide;
-            curInstrument = Instrument.inner;
-            curSide = side;
-        }
-        else
-        {
-            lastSide = curSide;
-            curInstrument = Instrument.outer;
-            curSide = side;
-        }
-        if (curSide != lastSide)
-            PlayField();
+        //if (side == Player.Side.inner)
+        //{
+        //    lastSide = curSide;
+        //    curInstrument = Instrument.inner;
+        //    curSide = side;
+        //}
+        //else
+        //{
+        //    lastSide = curSide;
+        //    curInstrument = Instrument.outer;
+        //    curSide = side;
+        //}
+        //if (curSide != lastSide)
+        //    PlayField();
 
         #region pitch
         // calc pitch
