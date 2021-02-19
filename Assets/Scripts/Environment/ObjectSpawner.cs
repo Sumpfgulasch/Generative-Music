@@ -228,7 +228,9 @@ public class ObjectSpawner : MonoBehaviour
             yield return null;
         }
 
-        field.SetZPos(playerZpos - VisualController.inst.fieldsBeforeSurface);
+        float random = Random.Range(0, 4) * 0.1f;
+        //zPos = playerZpos - VisualController.inst.fieldsBeforeSurface;
+        field.SetZPos(playerZpos - VisualController.inst.fieldsBeforeSurface - random);
 
         field.isSpawning = false;
         // Player.inst.curField
