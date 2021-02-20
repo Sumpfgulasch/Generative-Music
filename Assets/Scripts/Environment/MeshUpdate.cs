@@ -280,7 +280,7 @@ public static class MeshUpdate
     /// <summary>
     /// Create 12 colors. Sorted like IDs. Corners are similar. Rest is a bit distant and similar, too. Constraints are in VisalController.
     /// </summary>
-    /// <returns>RGB colors. Length == TunnelData.FieldsCount</returns>
+    /// <returns>RGB colors (Length == FieldsCount). Used for BaseColor and EmissiveColor in MusicField.AssignColors().</returns>
     public static Color[] ColorsInRange()
     {
         var vars = VisualController.inst;
@@ -344,25 +344,6 @@ public static class MeshUpdate
                 Debug.Log("noCorner.hue: " + color.hue);
             }
         }
-
-        return colors;
-
-
-
-        // 1. Random hue
-        //float randHue = UnityEngine.Random.Range(0, 1f);
-        //ColorHSV color = new ColorHSV(randHue, vars.fieldsSaturation, vars.fieldsValue);
-        //colors[0] = Color.HSVToRGB(curColor.hue, curColor.saturation, curColor.value);
-
-        //// 2. Start distance
-        //curColor.hue = (curColor.hue + vars.lineRendHue_Corner2NoCornerDistance) % 1;
-
-        //// 3. Aufsteigende Farben
-        //for (int i=1; i<amount; i++)
-        //{
-        //    curColor.hue = (curColor.hue + vars.lineRendHue_NoCornerStep) % 1;
-        //    colors[i] = Color.HSVToRGB(curColor.hue, curColor.saturation, curColor.value);
-        //}
 
         return colors;
     }

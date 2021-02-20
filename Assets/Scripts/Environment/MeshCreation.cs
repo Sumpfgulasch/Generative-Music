@@ -247,31 +247,34 @@ public static class MeshCreation
 
 
     /// <summary>
-    /// Create field surface meshes for each field. Assign to given fields.
+    /// Create highlightSurface and fieldSurface for each field. Assign to given fields.
     /// </summary>
     public static void CreateFieldsSurfaces(MusicField[] fields)
     {
         for (int i=0; i<fields.Length; i++)
         {
             int ID = fields[i].ID;
-            MeshRenderer outerfield = CreateFieldSurfaces(fields, ID);
-            fields[ID].outerSurface = outerfield;
+            MeshRenderer highlightSurface = CreateFieldSurface(fields, ID, "HighlightSurface", MeshRef.inst.highlightSurfaces_parent, MeshRef.inst.highlightSurfaces_mat, 2f);
+            //MeshRenderer fieldSurface = CreateFieldSurface
+            fields[ID].highlightSurface = highlightSurface;
 
             // TO DO: nicht gut, dass argument direkt bearbeitet wird(?); sollte lieber neuen array erstellen und returnen
         }
     }
 
     /// <summary>
-    /// Create an outer and inner field surface (MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID.
+    /// Create a lane surface (gameObj, MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID.
     /// </summary>
     /// <param name="index">[0, fields.Length]</param>
-    private static MeshRenderer CreateFieldSurfaces(MusicField[] relevantFields, int index)
+    private static MeshRenderer CreateFieldSurface(MusicField[] relevantFields, int index, string name, Transform parent, Material material, float length = 1f)
     {
+        // name, parent, length
+
         // 0. Container & components
-        GameObject outerField = CreateContainer("OuterField" + index, MeshRef.inst.outerFields_parent);
-        var meshRenderer = outerField.AddComponent<MeshRenderer>();
-        var meshFilter = outerField.AddComponent<MeshFilter>();
-        outerField.transform.position -= Player.inst.transform.position;
+        GameObject laneSurface = CreateContainer(name + index, parent); // variables
+        var meshRenderer = laneSurface.AddComponent<MeshRenderer>();
+        var meshFilter = laneSurface.AddComponent<MeshFilter>();
+        laneSurface.transform.position -= Player.inst.transform.position;    // hack. für korrekte position
 
         // 1. Positions
         var fieldPositions = relevantFields[index].positions;
@@ -279,7 +282,7 @@ public static class MeshCreation
         for (int j = 0; j < fieldPositions.Length; j++)
         {
             var pos = fieldPositions[j];
-            pos.z = -1;
+            pos.z -= length;
             vertices.Add(pos);
         }
 
@@ -298,13 +301,13 @@ public static class MeshCreation
                 5, 2, 1
             };
 
-            normals = new Vector3[]
-            {
-                Vector3.Cross(vertices[0] - vertices[1], vertices[4] - vertices[1]),
-                Vector3.Cross(vertices[0] - vertices[1], vertices[4] - vertices[1]),
-                Vector3.Cross(vertices[1] - vertices[2], vertices[5] - vertices[2]),
-                Vector3.Cross(vertices[1] - vertices[2], vertices[5] - vertices[2])
-            };
+            //normals = new Vector3[]                                                           // unused so far
+            //{
+            //    Vector3.Cross(vertices[0] - vertices[1], vertices[4] - vertices[1]),
+            //    Vector3.Cross(vertices[0] - vertices[1], vertices[4] - vertices[1]),
+            //    Vector3.Cross(vertices[1] - vertices[2], vertices[5] - vertices[2]),
+            //    Vector3.Cross(vertices[1] - vertices[2], vertices[5] - vertices[2])
+            //};
         }
         else
         {
@@ -315,11 +318,11 @@ public static class MeshCreation
                 3, 1, 0
             };
 
-            normals = new Vector3[]
-            {
-                Vector3.Cross(vertices[0] - vertices[1], vertices[3] - vertices[1]),
-                Vector3.Cross(vertices[0] - vertices[1], vertices[3] - vertices[1])
-            };
+            //normals = new Vector3[]
+            //{
+            //    Vector3.Cross(vertices[0] - vertices[1], vertices[3] - vertices[1]),
+            //    Vector3.Cross(vertices[0] - vertices[1], vertices[3] - vertices[1])
+            //};
         }
 
         // Assign
@@ -330,8 +333,8 @@ public static class MeshCreation
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
 
-        meshRenderer.material = MeshRef.inst.outerFields_mat;
-        meshRenderer.material.color = relevantFields[index].lineRend.material.color;
+        meshRenderer.material = material;
+        //meshRenderer.material.color = relevantFields[index].lineRend.material.color;
 
         meshRenderer.enabled = false;
 

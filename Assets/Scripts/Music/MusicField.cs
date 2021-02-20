@@ -22,8 +22,9 @@ public class MusicField
     public LineRenderer lineRend;
     public Chord chord;
     public bool isSelectable;
-    public bool isSpawning; // -> is playable
-    public MeshRenderer outerSurface;
+    public bool isSpawning;
+    public MeshRenderer fieldSurface;
+    public MeshRenderer highlightSurface;
     public float SurfaceOpacity { get; protected set; }
 
     // Private variables
@@ -108,7 +109,7 @@ public class MusicField
     }
 
     /// <summary>
-    /// Set data and set material colors.
+    /// Set data (chord, fieldType, ...) and set material colors (baseColor and emissiveColor for lineRend, highlightSurface and fieldSurface).
     /// </summary>
     public void SetContent(Type fieldType, Chord chord, Color color, bool selectable, bool isBuildingUp)
     {
@@ -128,8 +129,8 @@ public class MusicField
 
         this.lineRend.material.SetColor("_BaseColor", color);
         this.lineRend.material.SetColor("_EmissionColor", color * lineRendIntensity);
-        this.outerSurface.material.SetColor("_BaseColor", color);
-        this.outerSurface.material.SetColor("_EmissionColor", color * surfaceIntensity);
+        this.highlightSurface.material.SetColor("_BaseColor", color);
+        this.highlightSurface.material.SetColor("_EmissionColor", color * surfaceIntensity);
     }
 
     public static bool IsCorner(int ID)
@@ -221,7 +222,7 @@ public class PlayerField // : MusicField
     /// </summary>
     public void InitSurface()
     {
-        OuterSurface = TunnelData.fields[0].outerSurface;
+        OuterSurface = TunnelData.fields[0].highlightSurface;
         OuterSurface.enabled = false;
     }
 
@@ -307,7 +308,7 @@ public class PlayerField // : MusicField
     public void UpdateSurface()
     {
         OuterSurface.enabled = false;
-        OuterSurface = Player.inst.curFieldSet[ID].outerSurface;
+        OuterSurface = Player.inst.curFieldSet[ID].highlightSurface;
         OuterSurface.enabled = true;
 
         SetOpacity(SurfaceOpacity);

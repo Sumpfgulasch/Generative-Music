@@ -26,16 +26,13 @@ public static class TunnelData
 
 
     // Private variables
-    private static Vector3 playerMid;
-    private static Player player;
 
 
 
     // Constructor
     static TunnelData()
     {
-        playerMid = Player.inst.transform.position;
-        player = Player.inst;
+        
     } 
 
     // ----------------------------- Public methods ----------------------------

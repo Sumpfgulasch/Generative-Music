@@ -6,7 +6,7 @@ public class MeshRef : MonoBehaviour
 {
     public static MeshRef inst;
 
-    [Header("References")]
+    [Header("Masks & meshes")]
     public MeshFilter innerPlayerMesh_mf;
     public MeshFilter innerPlayerMask_mf;
     public MeshFilter innerSurface_mf;
@@ -17,14 +17,15 @@ public class MeshRef : MonoBehaviour
     public Transform milkSurface_parent;
     public LineRenderer tunnelEdges_lr;
     [Space]
+    [Header("Fields & lane surfaces")]
     public Transform playerField_parent;
     public Material playerField_mat;
     public Material playerFieldSec_mat;
     public Transform musicFields_parent;
     public Material musicFields_mat;
-    public Transform outerFields_parent;
-    public Material outerFields_mat;
-    [Space]
+    public Transform highlightSurfaces_parent;
+    public Material highlightSurfaces_mat;
+    [Header("Diverse")]
     public PolygonCollider2D mouseColllider;
 
 
