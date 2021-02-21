@@ -279,7 +279,6 @@ public static class MeshCreation
         GameObject laneSurface = CreateContainer(name + index, parent);
         var meshRenderer = laneSurface.AddComponent<MeshRenderer>();
         var meshFilter = laneSurface.AddComponent<MeshFilter>();
-        laneSurface.transform.position -= Player.inst.transform.position;    // hack. für korrekte position
 
         // 1. Positions
         var fieldPositions = relevantFields[index].positions;

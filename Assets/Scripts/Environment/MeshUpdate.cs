@@ -267,6 +267,10 @@ public static class MeshUpdate
 
 
 
+    /// <summary>
+    /// Adjust height of fieldSurfaces and position of field lineRenderers, dependant on the chord notes' heights.
+    /// </summary>
+    /// <param name="fields"></param>
     public static void AdjustFieldHeights(MusicField[] fields)
     {
         var vars = VisualController.inst;
@@ -283,6 +287,7 @@ public static class MeshUpdate
 
             float targetScale = vars.minFieldSurfaceHeight + ExtensionMethods.Remap(curNote, lowestNote, highestNote, 0, vars.maxFieldSurfaceHeight);
 
+            fields[i].SetZPos(Player.inst.transform.position.z - targetScale);
             fields[i].fieldSurface.transform.localScale = new Vector3(1, 1, targetScale);
         }
     }

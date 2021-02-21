@@ -20,6 +20,7 @@ public class MusicManager : MonoBehaviour
 
 
     [HideInInspector] public Chord curChord;
+    [HideInInspector] public Chord lastChord;
 
     // Private variables
 
@@ -54,6 +55,7 @@ public class MusicManager : MonoBehaviour
         // Init
         inst = this;
         curChord = Chords.c4Major;          // stupid inits
+        lastChord = curChord;
         curInstrument = Instrument.inner;
 
         //controllers[0].SetPitchWheel(0);
@@ -105,6 +107,7 @@ public class MusicManager : MonoBehaviour
 
     private void PlayField()
     {
+        lastChord = curChord;
         curChord = GetChord();
 
         int ID = Player.curField.ID;

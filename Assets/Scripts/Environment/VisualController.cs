@@ -51,6 +51,10 @@ public class VisualController : MonoBehaviour
     [Range(0, 20f)] public float lineRendCornerIntensity = 5f;
     [Range(0, 20f)] public float lineRendNoCornerIntensity = 3.2f;
 
+    [Header("Other")]
+    public GUIStyle curChordTextStyle;
+    public GUIStyle lastChordTextStyle;
+
     private Vector3 playerMid;
 
     private Player Player { get { return Player.inst; } }
@@ -137,6 +141,22 @@ public class VisualController : MonoBehaviour
         {
             Player.inst.curField.SetOpacity(ms_focus_outside_fieldSurfaceOpacity);
         }
+    }
+
+
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(50, 50, 200, 70), 
+            "Chord: " + MusicManager.inst.curChord.notes.NoteNames(), 
+            curChordTextStyle);
+
+        GUI.Label(new Rect(50, 90, 200, 70),
+            "Chord: " + MusicManager.inst.lastChord.notes.NoteNames(),
+            lastChordTextStyle);
+
+        
+
+
     }
 
 
