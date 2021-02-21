@@ -119,13 +119,11 @@ public static class LoopData
         int[] intervals = MusicManager.inst.intervals;
         // individual count
         int[] individualCounts = MusicGenerationLogic.RandomChordTypeCounts(chordTypeCount);
-        // colors
-        var colors = MeshUpdate.ColorsInRange();
-        // assign!
+        // store!
         chordTypes = new ChordData[chordTypeCount];
         for (int i = 0; i < chordTypeCount; i++)
         {
-            chordTypes[i] = new ChordData(degrees[i], intervals, individualCounts[i]);//, colors[i]);
+            chordTypes[i] = new ChordData(degrees[i], intervals, individualCounts[i]);
         }
 
         int[] testArray = new int[] { curKey.KeyNote };
@@ -134,7 +132,10 @@ public static class LoopData
         // 4. chords
         Chord[][] chords = MusicGenerationLogic.RandomChordsFromData(curKey, chordTypes, toneRangeMin, toneRangeMax);
 
-        // 5. fields
+        // 5. colors
+        var colors = MeshUpdate.ColorsInRange();
+
+        // 6. set fields
         var fieldTypes = new MusicField.Type[FieldsCount];
         var selectables = new bool[FieldsCount];
         var spawnings = new bool[FieldsCount];
@@ -145,13 +146,13 @@ public static class LoopData
             spawnings[i] = false;
         }
         TunnelData.fields = MusicFieldSet.SetDataToFields(TunnelData.fields, fieldTypes, chords, colors, selectables, spawnings);
-
         Player.inst.curFieldSet = TunnelData.fields;
 
-        // 6. Beat data
+        // 7. field heights
+
+
+        // 8. Beat data
         GetBeatData();
-
-
     }
 
 

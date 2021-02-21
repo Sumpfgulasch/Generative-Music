@@ -71,12 +71,6 @@ public class VisualController : MonoBehaviour
     }
 
 
-    void Update()
-    {
-        
-    }
-
-
 
     // ----------------------------- Events ----------------------------
 
@@ -90,9 +84,6 @@ public class VisualController : MonoBehaviour
         {
             MeshUpdate.UpdatePlayerFieldVisibility();
         }
-
-        //foreach (PlayerField secField in Player.inst.curSecondaryFields)          // TO DO
-        //    secField.UpdatePlayerLineRenderer(data);
     }
 
     /// <summary>

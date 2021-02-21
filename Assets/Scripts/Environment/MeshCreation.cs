@@ -247,15 +247,22 @@ public static class MeshCreation
 
 
     /// <summary>
-    /// Create highlightSurface and fieldSurface for each field. Assign to given fields.
+    /// Create highlightSurface and fieldSurface for each field. Assign to given fields. Disabled MeshRenderers (!).
     /// </summary>
     public static void CreateFieldsSurfaces(MusicField[] fields)
     {
         for (int i=0; i<fields.Length; i++)
         {
             int ID = fields[i].ID;
-            MeshRenderer highlightSurface = CreateFieldSurface(fields, ID, "HighlightSurface", MeshRef.inst.highlightSurfaces_parent, MeshRef.inst.highlightSurfaces_mat, 2f);
-            //MeshRenderer fieldSurface = CreateFieldSurface
+            Transform parent_high = MeshRef.inst.highlightSurfaces_parent;
+            Material material_high = MeshRef.inst.highlightSurfaces_mat;
+            Transform parent_field = MeshRef.inst.fieldSurfaces_parent;
+            Material material_field = MeshRef.inst.fieldSurfaces_mat;
+
+            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field);
+            MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, 2f);
+
+            fields[ID].fieldSurface = fieldSurface;
             fields[ID].highlightSurface = highlightSurface;
 
             // TO DO: nicht gut, dass argument direkt bearbeitet wird(?); sollte lieber neuen array erstellen und returnen
@@ -263,15 +270,13 @@ public static class MeshCreation
     }
 
     /// <summary>
-    /// Create a lane surface (gameObj, MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID.
+    /// Create a lane surface (gameObj, MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID. Disable MeshRenderer (!).
     /// </summary>
     /// <param name="index">[0, fields.Length]</param>
-    private static MeshRenderer CreateFieldSurface(MusicField[] relevantFields, int index, string name, Transform parent, Material material, float length = 1f)
+    private static MeshRenderer CreateLaneSurface(MusicField[] relevantFields, int index, string name, Transform parent, Material material, float length = 1f)
     {
-        // name, parent, length
-
         // 0. Container & components
-        GameObject laneSurface = CreateContainer(name + index, parent); // variables
+        GameObject laneSurface = CreateContainer(name + index, parent);
         var meshRenderer = laneSurface.AddComponent<MeshRenderer>();
         var meshFilter = laneSurface.AddComponent<MeshFilter>();
         laneSurface.transform.position -= Player.inst.transform.position;    // hack. für korrekte position

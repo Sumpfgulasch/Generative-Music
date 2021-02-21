@@ -485,6 +485,7 @@ public static class MusicUtil
 
 
 
+
     // Helper methods
 
     private static Chord DeepCopy(this Chord chord)
@@ -528,6 +529,22 @@ public static class MusicUtil
         noteNames = noteNames.Substring(0, noteNames.Length - 2);
 
         return noteNames;
+    }
+
+
+
+    // Game specific methods
+
+    public static int HighestFieldNote(MusicField[] fields)
+    {
+        var firstNotes = fields[0].chord.notes;
+        int lowestNote = firstNotes[0];
+        int highestNote = firstNotes[firstNotes.Length - 1];
+        foreach (MusicField field in fields)
+        {
+            var curChord = field.chord.notes;
+            if (chordis)
+        }
     }
 
 }
@@ -618,13 +635,6 @@ public static class Chords
 
         // (partially) same intervals
     }
-
-
-}
-
-
-
-
 
 
 

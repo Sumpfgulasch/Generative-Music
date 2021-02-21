@@ -23,21 +23,21 @@ public static class MeshUpdate
         //Action<InputAction.CallbackContext> GeileFunktionSubscriptionHandler = ctx => GEILEFUNKTION();  //Erstellt den Handler mit dem man Subscribed/UnSubscribed
         //controls.EditMode.AddVertex.performed += GeileFunktionSubscriptionHandler //subscribed den handler(der die GEILEFUNKTION beinhaltet) zur EditMode map, an den AddVertex command, wenn er performed wurde
         //controls.EditMode.AddVertex.performed -= GeileFunktionSubscriptionHandler //Durch den Handler kann nun auch unsubscribed werden
-        #endregion
 
         // Event subscription
         //GameEvents.inst.onFieldChange += OnFieldChange;
-        
+
         //PlayerControls controls = new PlayerControls();
         //controls.Enable();
         //controls.Gameplay.Move.performed += context => OnMove(context);
+        #endregion
     }
 
 
 
     // ----------------------------- public methods ----------------------------
-    
-        
+
+
 
 
     /// <summary>
@@ -65,8 +65,8 @@ public static class MeshUpdate
     {
         // 1) init
         RaycastHit[] edgeHits = new RaycastHit[3];
-        var vertices = new Vector3[3];
-        Vector3 intersection = Vector3.zero;
+        //var vertices = new Vector3[3];
+        Vector3 intersection;// = Vector3.zero;
 
         // 2) Prepare raycast
         for (int i = 0; i < Player.inst.verticesCount; i++)
@@ -74,10 +74,8 @@ public static class MeshUpdate
             Quaternion rot = Quaternion.Euler(0, 0, -i * (360 / Player.inst.verticesCount)+60); // +60 == Hack; i== negativ, damit clockwise (object-z zeigt weg von spieler, ist sozusag. um 180° gedreht)
             Vector3 nextDirection = rot * Vector3.up;
 
-            RaycastHit hit;
-
             // 3) Raycasts from player to environment
-            if (Physics.Raycast(playerMid, nextDirection, out hit))
+            if (Physics.Raycast(playerMid, nextDirection, out RaycastHit hit))
             {
                 edgeHits[i] = hit;
             }
@@ -104,7 +102,7 @@ public static class MeshUpdate
                 else if (intersection.y > 0.1f)
                     TunnelData.vertices[1] = intersection;
                 else
-                    TunnelData.vertices[2] = intersection;  // HIER FEHLER
+                    TunnelData.vertices[2] = intersection;
             }
         }
     }
@@ -214,16 +212,21 @@ public static class MeshUpdate
 
         return fields;
     }
-    
+
 
     /// <summary>
-    /// Set lineRenderer positions and outerSurface positions to current ID. Set outerSurface opacity.
+    /// Set fieldSurface- and highlightSurface-references to current ID. (+Set lineRenderer positions, disabled). Set highlightSurface opacity.
     /// </summary>
     public static void UpdatePlayerFieldVisibility()
     {
         var curField = Player.inst.curField;
 
-        // Line renderer: Change positions
+        // 1. 
+
+        // 2. Highlight-surface: disable old, enable new; set opacity to current value
+        curField.UpdateSurface();
+
+        // 3. [currently disabled:] Line renderer positions
         if (curField.isCorner)
         {
             var positions = PreventLineRendFromBending(curField.positions);
@@ -237,12 +240,10 @@ public static class MeshUpdate
             curField.lineRend.SetPositions(curField.positions);
         }
 
-        // Outer surface: disable old, enable new; set opacity to current value
-        curField.UpdateSurface();
+        
 
     }
 
-    
 
     /// <summary>
     /// Douplicate most of the line renderer vertices to prevent it from unwanted bending.
@@ -262,6 +263,22 @@ public static class MeshUpdate
         }
 
         return newPositions.ToArray();
+    }
+
+
+
+    public static void AdjustFieldHeights(MusicField[] fields)
+    {
+        // 1. get highest & lowest note
+        var firstChord = fields[0].chord.notes;
+        int lowestNote = firstChord[0];
+        int highestNote = firstChord[firstChord.Length - 1];
+        foreach (MusicField field in fields)
+        {
+
+        }
+
+        // 2. set scale of gameObj
     }
 
 
@@ -294,8 +311,6 @@ public static class MeshUpdate
         {
             cornerColors[i] = new ColorHSV(curColor.hue, curColor.saturation, curColor.value);
 
-            //Debug.Log("cornerColors.length: " + cornerColors.Length + ", i: " + i + ", hue: " + curColor.hue);
-
             if (i == cornerColors.Length - 1)
                 break;
 
@@ -316,15 +331,11 @@ public static class MeshUpdate
                     );
             }
             curColor.hue = (curColor.hue + vars.lineRendHue_NoCornerStep) % 1;
-            //Debug.Log("NoCornerColors.i: " + i + ", hue: " + curColor.hue);
         }
-
-        // BERECHNUNG STIMMT
 
         // 4. Assign
         Color[] colors = new Color[TunnelData.FieldsCount];
         int cornerCounter = 0;
-        //int noCornerCounter = 0;
         for (int i=0; i<colors.Length; i++)
         {
             if (MusicField.IsCorner(i))
@@ -332,16 +343,13 @@ public static class MeshUpdate
                 ColorHSV color = cornerColors[cornerCounter];
                 colors[i] = Color.HSVToRGB(color.hue, color.saturation, color.value);
                 cornerCounter++;
-                Debug.Log("corner.hue: " + color.hue);
             }
             else
             {
-                //Debug.Log("i: " + i + ", noCornercolors.length: " + noCornerColors.Count);
                 int randNoCornerIndex = UnityEngine.Random.Range(0, noCornerColors.Count);
                 ColorHSV color = noCornerColors[randNoCornerIndex];
                 colors[i] = Color.HSVToRGB(color.hue, color.saturation, color.value);
                 noCornerColors.Remove(color);
-                Debug.Log("noCorner.hue: " + color.hue);
             }
         }
 

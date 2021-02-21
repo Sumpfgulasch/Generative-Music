@@ -11,8 +11,6 @@ public static class PlayerData
     //private static Player player;
     private static Vector3 midPoint;
     private static int lastFieldID = 4;
-    private static Vector3 lastEdge_start, lastEdge_end;
-    private static Vector3 lastEdge;
     private static float playerZpos;
 
     // Properties
@@ -87,8 +85,6 @@ public static class PlayerData
     public static PlayerField SetDataByID(int ID)
     {
         // 0. last-variables
-        lastEdge_start = Player.curEdge.start;
-        lastEdge_end = Player.curEdge.end;
         lastFieldID = Player.curField.ID;
 
         MusicField[] fields = TunnelData.fields;

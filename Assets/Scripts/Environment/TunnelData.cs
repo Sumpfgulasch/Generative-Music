@@ -22,30 +22,5 @@ public static class TunnelData
     {
         get { return vertices.Length * VisualController.inst.fieldsPerEdge - vertices.Length; }
     }
-
-
-
-    // Private variables
-
-
-
-    // Constructor
-    static TunnelData()
-    {
-        
-    } 
-
-    // ----------------------------- Public methods ----------------------------
-
-    
-
-
-
-
-    // ----------------------------- Private methods ----------------------------
-
-   
-
-
     
 }

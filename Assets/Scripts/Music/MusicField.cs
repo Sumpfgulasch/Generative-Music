@@ -303,7 +303,7 @@ public class PlayerField // : MusicField
     }
 
     /// <summary>
-    /// Enable MeshRenderer of outerSurface of current ID of the current fieldSet. Disable old. Set opacity.
+    /// Disable old, enable new. Set opacity to current value.
     /// </summary>
     public void UpdateSurface()
     {
