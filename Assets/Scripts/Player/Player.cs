@@ -335,6 +335,7 @@ public class Player : MonoBehaviour
             if (mouseMiminumDistance && allowedToMove)
             {
                 var mouseDirection = ConvertMouseToDirection(pointerPos);
+                
 
                 // 2. Get & set data (ID, positions, ...)
                 var ID = PlayerData.GetIDfromRaycast(mouseDirection);
@@ -385,8 +386,8 @@ public class Player : MonoBehaviour
     /// <param name="input">Mouse screen pos. Value by input system.</param>
     private Vector3 ConvertMouseToDirection(Vector2 input)
     {
-        Vector3 pointerPos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
-        pointerPos.z = midPoint.z;
+        var posToConvert = new Vector3(input.x, input.y, Camera.main.nearClipPlane);
+        Vector3 pointerPos = Camera.main.ScreenToWorldPoint(posToConvert);
         Vector3 pointerDirection = pointerPos - midPoint;
 
         return pointerDirection;
