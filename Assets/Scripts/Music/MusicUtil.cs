@@ -230,7 +230,7 @@ public static class MusicUtil
         if (direction > 0)
         {
             // 2. Check if chord is already higher; skip one iteration then
-            bool chordIsHigher = ChordIsHigher(invertedChord, relationChord);
+            bool chordIsHigher = ChordIsHigher(invertedChord.notes, relationChord.notes);
 
             for (int i=0; i < Mathf.Abs(direction); i++)
             {
@@ -243,7 +243,7 @@ public static class MusicUtil
         else if (direction < 0)
         {
             // 2. Check if chord is already lower; skip one iteration then
-            bool chordIsLower = ChordIsLower(invertedChord, relationChord);
+            bool chordIsLower = ChordIsLower(invertedChord.notes, relationChord.notes);
 
             for (int i = 0; i < Mathf.Abs(direction); i++)
             {
@@ -365,7 +365,7 @@ public static class MusicUtil
     {
         // Move lowest note one octave up
         int[] newNotes = chord.notes.ShiftBackward();
-        newNotes[newNotes.Length - 1] += MusicUtil.notesPerOctave;
+        newNotes[newNotes.Length - 1] += notesPerOctave;
         int newInversion = (chord.inversion + 1) % 3;
         Chord invertedChord = new Chord(newNotes, chord.degree, newInversion, chord.baseNote);
         
@@ -377,12 +377,16 @@ public static class MusicUtil
     {
         // Move highestNote one octave down
         int[] newNotes = chord.notes.ShiftForward();
-        newNotes[0] -= MusicUtil.notesPerOctave;
+        newNotes[0] -= notesPerOctave;
         int newInversion = ExtensionMethods.Modulo(chord.inversion - 1, 3);
         Chord invertedChord = new Chord(newNotes, chord.degree, newInversion, chord.baseNote);
 
         return invertedChord;
     }
+
+
+
+    // Distance related
 
 
     private static int ChordDistance(Chord chord1, Chord chord2)
@@ -402,11 +406,11 @@ public static class MusicUtil
     }
 
 
-    private static bool ChordIsHigher(Chord chord, Chord relationChord)
+    private static bool ChordIsHigher(int[] chordNotes, int[] relationChordNotes)
     {
         int lowestNotesDistance = 0;
         int highestNotesDistance = 0;
-        GetDistanceData(chord, relationChord, ref lowestNotesDistance, ref highestNotesDistance);
+        GetDistanceData(chordNotes, relationChordNotes, ref lowestNotesDistance, ref highestNotesDistance);
 
         if (lowestNotesDistance > 0)                                    // TO DO: vergleicht nicht mittlere Töne, können auch entscheidend sein
         {
@@ -426,11 +430,11 @@ public static class MusicUtil
             return false;
     }
 
-    private static bool ChordIsLower(Chord chord, Chord relationChord)
+    private static bool ChordIsLower(int[] chordNotes, int[] relationChordNotes)
     {
         int lowestNotesDistance = 0;
         int highestNotesDistance = 0;
-        GetDistanceData(chord, relationChord, ref lowestNotesDistance, ref highestNotesDistance);
+        GetDistanceData(chordNotes, relationChordNotes, ref lowestNotesDistance, ref highestNotesDistance);
 
         if (lowestNotesDistance < 0)                                    // TO DO: vergleicht nicht mittlere Töne, können auch entscheidend sein
         {
@@ -450,12 +454,12 @@ public static class MusicUtil
             return false;
     }
 
-    private static void GetDistanceData(Chord chord, Chord relationChord, ref int lowestNotesDistance, ref int highestNotesDistance)
+    private static void GetDistanceData(int[] chordNotes, int[] relationChordNotes, ref int lowestNotesDistance, ref int highestNotesDistance)
     {
-        int lowestNote1 = chord.notes[0];
-        int highestNote1 = chord.notes[chord.notes.Length - 1];
-        int lowestNote2 = relationChord.notes[0];
-        int highestNote2 = relationChord.notes[relationChord.notes.Length - 1];
+        int lowestNote1 = chordNotes[0];
+        int highestNote1 = chordNotes[chordNotes.Length - 1];
+        int lowestNote2 = relationChordNotes[0];
+        int highestNote2 = relationChordNotes[relationChordNotes.Length - 1];
 
         lowestNotesDistance = lowestNote1 - lowestNote2;
         highestNotesDistance = highestNote1 - highestNote2;
@@ -487,6 +491,7 @@ public static class MusicUtil
 
 
     // Helper methods
+
 
     private static Chord DeepCopy(this Chord chord)
     {
@@ -533,18 +538,53 @@ public static class MusicUtil
 
 
 
-    // Game specific methods
+    // Game specific
 
+
+    /// <summary>
+    /// Compare the highest note of each MusicField chord and return the highest one.
+    /// </summary>
+    /// <param name="fields">Meant to be a field set.</param>
     public static int HighestFieldNote(MusicField[] fields)
     {
-        var firstNotes = fields[0].chord.notes;
-        int lowestNote = firstNotes[0];
-        int highestNote = firstNotes[firstNotes.Length - 1];
+        int[] highestChordNotes = fields[0].chord.notes;
+        int lowestNotesDistance = 0, highestNotesDistance = 0;
+
         foreach (MusicField field in fields)
         {
-            var curChord = field.chord.notes;
-            if (chordis)
+            var curChordNotes = field.chord.notes;
+
+            GetDistanceData(curChordNotes, highestChordNotes, ref lowestNotesDistance, ref highestNotesDistance);
+
+            if (highestNotesDistance > 0)
+                highestChordNotes = curChordNotes;
         }
+
+        return highestChordNotes[highestChordNotes.Length - 1];
+    }
+
+
+    /// <summary>
+    /// Compare the highest note of each MusicField chord and return the lowest one.
+    /// </summary>
+    /// <param name="fields">Meant to be a field set.</param>
+    public static int LowestFieldNote(MusicField[] fields)
+    {
+        int[] lowestChordNotes = fields[0].chord.notes;
+        int lowestNotesDistance = 0, highestNotesDistance = 0;
+
+        foreach (MusicField field in fields)
+        {
+            var curChordNotes = field.chord.notes;
+
+            GetDistanceData(curChordNotes, lowestChordNotes, ref lowestNotesDistance, ref highestNotesDistance);
+
+            if (highestNotesDistance < 0)
+                lowestChordNotes = curChordNotes;
+        }
+
+        return lowestChordNotes[lowestChordNotes.Length - 1];
+        
     }
 
 }
@@ -595,7 +635,7 @@ public static class Chords
     public static Chord c3Major;
     public static Chord c4Major;
 
-    
+
 
     static Chords()
     {
@@ -635,6 +675,7 @@ public static class Chords
 
         // (partially) same intervals
     }
+}
 
 
 

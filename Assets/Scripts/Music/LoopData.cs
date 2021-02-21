@@ -146,10 +146,11 @@ public static class LoopData
             spawnings[i] = false;
         }
         TunnelData.fields = MusicFieldSet.SetDataToFields(TunnelData.fields, fieldTypes, chords, colors, selectables, spawnings);
-        Player.inst.curFieldSet = TunnelData.fields;
-
+        
         // 7. field heights
+        MeshUpdate.AdjustFieldHeights(TunnelData.fields);
 
+        Player.inst.curFieldSet = TunnelData.fields;
 
         // 8. Beat data
         GetBeatData();

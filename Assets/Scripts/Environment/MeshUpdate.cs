@@ -269,16 +269,22 @@ public static class MeshUpdate
 
     public static void AdjustFieldHeights(MusicField[] fields)
     {
-        // 1. get highest & lowest note
-        var firstChord = fields[0].chord.notes;
-        int lowestNote = firstChord[0];
-        int highestNote = firstChord[firstChord.Length - 1];
-        foreach (MusicField field in fields)
-        {
+        var vars = VisualController.inst;
 
-        }
+        // 1. get highest & lowest note
+        int lowestNote = MusicUtil.LowestFieldNote(fields);
+        int highestNote = MusicUtil.HighestFieldNote(fields);
 
         // 2. set scale of gameObj
+        for (int i=0; i<fields.Length; i++)
+        {
+            int[] curChordNotes = fields[i].chord.notes;
+            int curNote = curChordNotes[curChordNotes.Length - 1];
+
+            float targetScale = vars.minFieldSurfaceHeight + ExtensionMethods.Remap(curNote, lowestNote, highestNote, 0, vars.maxFieldSurfaceHeight);
+
+            fields[i].fieldSurface.transform.localScale = new Vector3(1, 1, targetScale);
+        }
     }
 
 

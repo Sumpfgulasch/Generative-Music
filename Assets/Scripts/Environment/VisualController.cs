@@ -36,7 +36,8 @@ public class VisualController : MonoBehaviour
     public float ms_play_inside_fieldSurfaceOpacity = 1;
     [Range(0f, 1f)]
     public float ms_play_outside_fieldSurfaceOpacity = 1;
-    [Space]
+    [Range(0, 0.5f)] public float minFieldSurfaceHeight = 0.1f;
+    [Range(0, 2.0f)] public float maxFieldSurfaceHeight = 0.4f;
 
     [Header("Colors")]
     public int colorCount = 4;
