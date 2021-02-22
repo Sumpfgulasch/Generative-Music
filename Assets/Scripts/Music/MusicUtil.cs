@@ -513,6 +513,7 @@ public static class MusicUtil
     {
         string noteNames = "";
         foreach (int note in notes)
+        //for (int i = notes.Length - 1; i >= 0; i--)
         {
             int octave = note / notesPerOctave - 1;
             int modulo = note % notesPerOctave;

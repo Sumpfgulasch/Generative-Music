@@ -103,8 +103,8 @@ public static class LoopData
         curKey = MusicGenerationLogic.RandomKey();
 
         // 2. tone range
-        toneRangeMin = curKey.KeyNote + MusicUtil.notesPerOctave * 3;
-        toneRangeMax = curKey.KeyNote + MusicUtil.notesPerOctave * 5;
+        toneRangeMin = curKey.KeyNote + MusicManager.inst.toneRange_startNote;      // 3
+        toneRangeMax = toneRangeMin + MusicManager.inst.toneRange;                  // 5
 
         // 3. velocity
         minVelocity = 0.08f;
