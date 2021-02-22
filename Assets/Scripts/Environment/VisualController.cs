@@ -21,6 +21,8 @@ public class VisualController : MonoBehaviour
     [Header("fields lineRend & surface")]
     [Range(0, 1f)] public float fieldsSaturation = 0.8f;
     [Range(0, 1f)] public float fieldsValue = 0.9f;
+    [Range(0, 1f)] public float fieldFoldOutTime = 0.3f;
+    public AnimationCurve fieldFoldOutCurve;
 
     [Header("Fields line renderer")]
     public bool showPlayerLinerend = false;

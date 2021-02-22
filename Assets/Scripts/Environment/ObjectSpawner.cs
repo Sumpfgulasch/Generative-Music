@@ -211,29 +211,46 @@ public class ObjectSpawner : MonoBehaviour
     /// </summary>
     private IEnumerator MoveFieldFromBackToFront(MusicField field, float spawnDistanceInBeats, float durationInBeats)
     {
+        // 0. Start
         field.lineRend.enabled = true;
-
-        float zSpawn = playerZpos + distancePerBeat * spawnDistanceInBeats;
+        
         float duration = spawnDistanceInBeats * LoopData.timePerBeat;
 
         float timer = 0;
-        float zPos = zSpawn;
+        float zPos = playerZpos + distancePerBeat * spawnDistanceInBeats;
 
+        // 1. Move lineRend to front
         while (timer < duration)
         {
             zPos -= moveSpeed * deltaTime;
-            field.SetZPos(zPos);
+            field.SetLineRendZPos(zPos);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        float random = Random.Range(0, 4) * 0.1f;
-        //zPos = playerZpos - VisualController.inst.fieldsBeforeSurface;
-        field.SetZPos(playerZpos - VisualController.inst.fieldsBeforeSurface - random);
+        // 2. "Fold" out fieldSurface
+        field.fieldSurface.enabled = true;
 
+        timer = 0;
+        duration = VisualController.inst.fieldFoldOutTime;
+
+        while (timer < duration)
+        {
+            // scale up fieldSurface & move lineRend to front
+            float remappedTimer = timer / duration; // remapped to 0-1
+            float curveValue = VisualController.inst.fieldFoldOutCurve.Evaluate(remappedTimer); // between 0-1
+            float curScale = curveValue.Remap(0, 1f, 0, field.height); // remapped to final
+
+            field.fieldSurface.transform.localScale = new Vector3(1, 1, curScale);
+            field.SetLineRendZPos(Player.inst.transform.position.z - curScale);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        field.fieldSurface.transform.localScale = new Vector3(1, 1, field.height);
+        field.SetLineRendZPos(Player.inst.transform.position.z - field.height);
         field.isSpawning = false;
-        // Player.inst.curField
 
         // aktiviere variablen
     }

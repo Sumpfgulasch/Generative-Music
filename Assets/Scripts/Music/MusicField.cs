@@ -99,7 +99,7 @@ public class MusicField
     /// <summary>
     /// Set the z-positions of the line renderer.
     /// </summary>
-    public void SetZPos(float zPos)
+    public void SetLineRendZPos(float zPos)
     {
         for (int i=0; i<lineRend.positionCount; i++)
         {

@@ -287,7 +287,7 @@ public static class MeshUpdate
 
             float targetScale = vars.minFieldSurfaceHeight + ExtensionMethods.Remap(curNote, lowestNote, highestNote, 0, vars.maxFieldSurfaceHeight);
 
-            fields[i].SetZPos(Player.inst.transform.position.z - targetScale);
+            fields[i].SetLineRendZPos(Player.inst.transform.position.z - targetScale);
             fields[i].fieldSurface.transform.localScale = new Vector3(1, 1, targetScale);
 
             fields[i].height = targetScale;

@@ -8,7 +8,7 @@ public class Move : MonoBehaviour
     public GameObject end;
     float FPS;
 
-    private float deltaTime
+    private float DeltaTime
     {
         get { return Time.deltaTime * FPS; }
     }
@@ -23,6 +23,8 @@ public class Move : MonoBehaviour
     void Start()
     {
         FPS = Screen.currentResolution.refreshRate;
+
+        // SET SHADER TILING (according to VisualController)
         var visualTiling = new Vector2(VisualController.inst.shapesPerBar, VisualController.inst.fieldsPerEdge);
         this.GetComponentInChildren<MeshRenderer>().material.SetVector("Tiling", visualTiling);
     }
@@ -30,6 +32,6 @@ public class Move : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.position -= new Vector3(0, 0, ObjectSpawner.inst.moveSpeed * deltaTime);
+        this.transform.position -= new Vector3(0, 0, ObjectSpawner.inst.moveSpeed * DeltaTime);
     }
 }

@@ -262,7 +262,7 @@ public static class MeshCreation
             Material material_high = MeshRef.inst.highlightSurfaces_mat;
    
 
-            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, true, 1f, fieldLayer, fieldRenderQueue);
+            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, false, 1f, fieldLayer, fieldRenderQueue);
             MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, false, 2f);
 
             fields[ID].fieldSurface = fieldSurface;

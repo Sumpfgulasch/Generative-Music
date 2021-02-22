@@ -123,34 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!83 &107965708
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &111902381
 GameObject:
   m_ObjectHideFlags: 0
@@ -879,7 +851,6 @@ GameObject:
   - component: {fileID: 802206879}
   - component: {fileID: 802206880}
   - component: {fileID: 802206884}
-  - component: {fileID: 802206881}
   m_Layer: 0
   m_Name: Visualisations
   m_TagString: Untagged
@@ -915,21 +886,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d5eb7297ab023748964688fb6c690b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fieldsPerEdge: 12
+  fieldsPerEdge: 5
   tunnelVertices: 3
   colorCount: 4
   showCursor: 1
-  showMilkSurface: 1
-  linesPerBar: 4
+  showMilkSurface: 0
+  shapesPerBar: 4
   mouseColliderSize_play: 1
   fieldsSaturation: 0.8
   fieldsValue: 0.9
+  fieldFoldOutTime: 0.5
+  fieldFoldOutCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: -0.0024414062
+      inSlope: -0.004528313
+      outSlope: 2.3119786
+      tangentMode: 1
+      weightedMode: 2
+      inWeight: 0
+      outWeight: 0.16978431
+    - serializedVersion: 3
+      time: 0.7331501
+      value: 1.0213546
+      inSlope: 0.528987
+      outSlope: 0.48429957
+      tangentMode: 1
+      weightedMode: 3
+      inWeight: 0.55578655
+      outWeight: 0.29790273
+    - serializedVersion: 3
+      time: 0.9958191
+      value: 1
+      inSlope: -0.0052489527
+      outSlope: -0.0052489527
+      tangentMode: 0
+      weightedMode: 1
+      inWeight: 0.36786848
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   showPlayerLinerend: 0
   fieldThickness: 0.002
   fieldsBeforeSurface: 0.002
   lineRendHue_CornerStep: 0
-  lineRendHue_NoCornerStep: 0.083
-  lineRendHue_Corner2NoCornerDistance: 0.1
+  lineRendHue_NoCornerStep: 0.043
+  lineRendHue_Corner2NoCornerDistance: 0
   lineRendCornerIntensity: 5.6
   lineRendNoCornerIntensity: 2.2
   minFieldSurfaceHeight: 0.1
@@ -1078,18 +1083,6 @@ MonoBehaviour:
   playerFieldFocusThickness: 0.02
   playerSecFieldThickness: 0.018
   playerFieldBeforeSurface: 0.001
---- !u!114 &802206881
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 802206878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a5a4e0f986fb5b44a9c88f382fc6232, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &802206884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7020,6 +7013,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_queues: b90b0000
+--- !u!83 &1215961001
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &1217124481
 GameObject:
   m_ObjectHideFlags: 0
@@ -7163,8 +7184,8 @@ MonoBehaviour:
   bt_scaleDamp: 0.1
   bt_selectionPressTime: 0.23
   bt_selectionFrequency: 0.13
-  bt_play_selectionPressTime: 0.6
-  bt_play_selectionFrequency: 0.5
+  bt_play_selectionPressTime: 0.4
+  bt_play_selectionFrequency: 0.13
   outerVertices_mesh:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
@@ -7390,34 +7411,6 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!83 &1266687741
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &1471312895
 GameObject:
   m_ObjectHideFlags: 0
@@ -7885,7 +7878,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 2224735792368419155, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 1266687741}
+  m_audioClip: {fileID: 1879204136}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -8037,6 +8030,34 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!83 &1879204136
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &1990999422
 GameObject:
   m_ObjectHideFlags: 0
@@ -8192,7 +8213,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5925276600095122450, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 107965708}
+  m_audioClip: {fileID: 1215961001}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
