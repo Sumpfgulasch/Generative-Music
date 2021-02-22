@@ -327,11 +327,11 @@ public static class MeshUpdate
             if (i == cornerColors.Length - 1)
                 break;
 
-            curColor.hue = (curColor.hue + vars.lineRendHue_CornerStep) % 1;
+            curColor.hue = (curColor.hue + vars.fieldsHue_CornerStep) % 1;
             
         }
         // 2. Distance
-        curColor.hue = (curColor.hue + vars.lineRendHue_Corner2NoCornerDistance) % 1;
+        curColor.hue = (curColor.hue + vars.fieldsHue_Corner2NoCornerDistance) % 1;
 
         // 3. NoCorner colors
         List<ColorHSV> noCornerColors = new List<ColorHSV>();
@@ -351,12 +351,12 @@ public static class MeshUpdate
             noCornerColors.Add(
                     new ColorHSV(curColor.hue, curColor.saturation, curColor.value)
                     );
-            curColor.hue = (curColor.hue + vars.lineRendHue_NoCornerStep) % 1;
+            curColor.hue = (curColor.hue + vars.fieldsHue_NoCornerStep) % 1;
 
             //Debug.Log("noCornercolors; i: " + i);
             if ((i + 1) % vars.colorCount == 0)
             {
-                float startHue = curColor.hue - vars.colorCount * vars.lineRendHue_NoCornerStep; // fick dich zeile
+                float startHue = curColor.hue - vars.colorCount * vars.fieldsHue_NoCornerStep; // fick dich zeile
                 curColor.hue = ExtensionMethods.Modulo(startHue, 1);
                 Debug.Log("noCornerColors; i: " + i + ", startHue: " + startHue + ", newHue: " + curColor.hue);
             }

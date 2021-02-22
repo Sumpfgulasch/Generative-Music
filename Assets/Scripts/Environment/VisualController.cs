@@ -21,6 +21,9 @@ public class VisualController : MonoBehaviour
     [Header("fields lineRend & surface")]
     [Range(0, 1f)] public float fieldsSaturation = 0.8f;
     [Range(0, 1f)] public float fieldsValue = 0.9f;
+    [Range(0, 1f)] public float fieldsHue_CornerStep = 0;
+    [Range(0, 1f)] public float fieldsHue_NoCornerStep = 0.043f;
+    [Range(0, 1f)] public float fieldsHue_Corner2NoCornerDistance = 0;
     [Range(0, 1f)] public float fieldFoldOutTime = 0.3f;
     public AnimationCurve fieldFoldOutCurve;
 
@@ -30,9 +33,7 @@ public class VisualController : MonoBehaviour
     public float fieldThickness = 0.01f;
     public float fieldsBeforeSurface = 0.01f;
     [Space]
-    [Range(0, 1f)] public float lineRendHue_CornerStep = 0;
-    [Range(0, 1f)] public float lineRendHue_NoCornerStep = 0.083f;
-    [Range(0, 1f)] public float lineRendHue_Corner2NoCornerDistance = 0.1f;
+
     [Range(0, 20f)] public float lineRendCornerIntensity = 5.6f;
     [Range(0, 20f)] public float lineRendNoCornerIntensity = 2.2f;
 
