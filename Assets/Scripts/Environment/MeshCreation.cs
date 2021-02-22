@@ -247,19 +247,22 @@ public static class MeshCreation
 
 
     /// <summary>
-    /// Create highlightSurface and fieldSurface for each field. Assign to given fields. Disabled MeshRenderers (!).
+    /// Create highlightSurface and fieldSurface for each field. Assign to given fields. Partially disabled MeshRenderers (!).
     /// </summary>
     public static void CreateFieldsSurfaces(MusicField[] fields)
     {
         for (int i=0; i<fields.Length; i++)
         {
             int ID = fields[i].ID;
-            Transform parent_high = MeshRef.inst.highlightSurfaces_parent;
-            Material material_high = MeshRef.inst.highlightSurfaces_mat;
             Transform parent_field = MeshRef.inst.fieldSurfaces_parent;
             Material material_field = MeshRef.inst.fieldSurfaces_mat;
+            int fieldLayer = LayerMask.NameToLayer(MeshRef.inst.fieldSurfaces_layer);
+            int fieldRenderQueue = MeshRef.inst.fieldSurfaces_renderQueue;
+            Transform parent_high = MeshRef.inst.highlightSurfaces_parent;
+            Material material_high = MeshRef.inst.highlightSurfaces_mat;
+   
 
-            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, true, 1f);
+            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, true, 1f, fieldLayer, fieldRenderQueue);
             MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, false, 2f);
 
             fields[ID].fieldSurface = fieldSurface;
@@ -273,15 +276,16 @@ public static class MeshCreation
     /// Create a lane surface (gameObj, MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID. Disable MeshRenderer (!).
     /// </summary>
     /// <param name="index">[0, fields.Length]</param>
-    private static MeshRenderer CreateLaneSurface(MusicField[] relevantFields, int index, string name, Transform parent, Material material, bool enable = false, float length = 1f)
+    private static MeshRenderer CreateLaneSurface(MusicField[] fields, int index, string name, Transform parent, Material material, bool enable = false, float length = 1f, int layer = 0, int renderQueue = -1)
     {
         // 0. Container & components
         GameObject laneSurface = CreateContainer(name + index, parent);
         var meshRenderer = laneSurface.AddComponent<MeshRenderer>();
         var meshFilter = laneSurface.AddComponent<MeshFilter>();
 
-        // 1. Positions
-        var fieldPositions = relevantFields[index].positions;
+        // 1. MESH CREATION
+        // 1.1. Vertices
+        var fieldPositions = fields[index].positions;
         var vertices = fieldPositions.ToList();
         for (int j = 0; j < fieldPositions.Length; j++)
         {
@@ -290,11 +294,11 @@ public static class MeshCreation
             vertices.Add(pos);
         }
 
-        // 2. Triangles & normals
+        // 1.2. Triangles & normals
         int[] triangles;
         Vector3[] normals;
 
-        if (relevantFields[index].isCorner)
+        if (fields[index].isCorner)
         {
             // Corner?
             triangles = new int[]
@@ -329,7 +333,7 @@ public static class MeshCreation
             //};
         }
 
-        // Assign
+        // 1.3. Assign
         Mesh mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles;
@@ -337,9 +341,12 @@ public static class MeshCreation
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
 
+        // 2. Rendering & material
+        laneSurface.layer = layer;
         meshRenderer.material = material;
-
         meshRenderer.enabled = enable;
+        if (renderQueue != -1)
+            meshRenderer.material.renderQueue = renderQueue;
 
         return meshRenderer;
     }

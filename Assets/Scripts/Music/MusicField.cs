@@ -135,7 +135,7 @@ public class MusicField
 
         // Calc colors
         Color fieldSurfaceColor = color;
-        color.a = VisualController.inst.fieldSurfaceAlpha;
+        fieldSurfaceColor.a = VisualController.inst.fieldSurfaceAlpha;
         
         // Assign!
         this.lineRend.material.SetColor("_BaseColor", color);

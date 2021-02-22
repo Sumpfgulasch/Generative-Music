@@ -26,6 +26,8 @@ public class MeshRef : MonoBehaviour
     [Space]
     public Transform highlightSurfaces_parent;
     public Material highlightSurfaces_mat;
+    public string fieldSurfaces_layer = "2nd cam";
+    public int fieldSurfaces_renderQueue = 3001;
     public Transform fieldSurfaces_parent;
     public Material fieldSurfaces_mat;
     [Header("Diverse")]

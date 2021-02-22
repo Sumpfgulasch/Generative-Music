@@ -55,9 +55,15 @@ public class VisualController : MonoBehaviour
     [Header("Other")]
     public GUIStyle curChordTextStyle;
     public GUIStyle lastChordTextStyle;
+    public LayerMask testMask;
+    
 
+
+    // Private variables
     private Vector3 playerMid;
 
+
+    // Properties
     private Player Player { get { return Player.inst; } }
 
     
