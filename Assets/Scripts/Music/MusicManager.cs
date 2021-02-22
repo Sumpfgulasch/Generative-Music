@@ -20,7 +20,6 @@ public class MusicManager : MonoBehaviour
     [Range(0, 1f)]
     public float velocity = 0.1f;
 
-
     [HideInInspector] public Chord curChord;
     [HideInInspector] public Chord lastChord;
 
@@ -122,7 +121,7 @@ public class MusicManager : MonoBehaviour
             {
                 case MusicField.Type.Chord:
                     PlayChord(curChord, curInstrument, velocity);
-                    print("Chord: " + curChord.notes.NoteNames());
+                    //print("Chord: " + curChord.notes.NoteNames());
                     break;
 
                 case MusicField.Type.Modulation:

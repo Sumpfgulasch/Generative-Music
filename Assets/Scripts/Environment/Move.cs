@@ -13,10 +13,18 @@ public class Move : MonoBehaviour
         get { return Time.deltaTime * FPS; }
     }
 
-    // Start is called before the first frame update
+
+    private void Awake()
+    {
+        
+    }
+
+
     void Start()
     {
         FPS = Screen.currentResolution.refreshRate;
+        var visualTiling = new Vector2(VisualController.inst.shapesPerBar, VisualController.inst.fieldsPerEdge);
+        this.GetComponentInChildren<MeshRenderer>().material.SetVector("Tiling", visualTiling);
     }
 
     // Update is called once per frame

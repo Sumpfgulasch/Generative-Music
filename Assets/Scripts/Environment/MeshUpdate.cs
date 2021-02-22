@@ -335,25 +335,43 @@ public static class MeshUpdate
 
         // 3. NoCorner colors
         List<ColorHSV> noCornerColors = new List<ColorHSV>();
-        for (int i=0; i< vars.colorCount - 1; i++)
+        //for (int i=0; i< vars.colorCount - 1; i++)
+        //{
+        //    for (int j = 0; j < vars.tunnelVertices; j++) // hack; damit length == 9 (12-3)
+        //    {
+        //        noCornerColors.Add(
+        //            new ColorHSV(curColor.hue, curColor.saturation, curColor.value)
+        //            );
+        //    }
+        //    curColor.hue = (curColor.hue + vars.lineRendHue_NoCornerStep) % 1;
+        //}
+
+        for (int i=0; i<TunnelData.FieldsCount - vars.tunnelVertices; i++)
         {
-            for (int j = 0; j < vars.tunnelVertices; j++) // hack; damit length == 9 (12-3)
-            {
-                noCornerColors.Add(
+            noCornerColors.Add(
                     new ColorHSV(curColor.hue, curColor.saturation, curColor.value)
                     );
-            }
             curColor.hue = (curColor.hue + vars.lineRendHue_NoCornerStep) % 1;
+
+            //Debug.Log("noCornercolors; i: " + i);
+            if ((i + 1) % vars.colorCount == 0)
+            {
+                float startHue = curColor.hue - vars.colorCount * vars.lineRendHue_NoCornerStep; // fick dich zeile
+                curColor.hue = ExtensionMethods.Modulo(startHue, 1);
+                Debug.Log("noCornerColors; i: " + i + ", startHue: " + startHue + ", newHue: " + curColor.hue);
+            }
         }
 
         // 4. Assign
         Color[] colors = new Color[TunnelData.FieldsCount];
+        //Debug.Log("fieldscount: " + TunnelData.FieldsCount);
         int cornerCounter = 0;
         for (int i=0; i<colors.Length; i++)
         {
             if (MusicField.IsCorner(i))
             {
                 ColorHSV color = cornerColors[cornerCounter];
+                //Debug.Log("calc corner color; color: " + color + ", i: " + i + ", cornerCounter: " + cornerCounter + ", cornerColors.length: " + cornerColors.Length);
                 colors[i] = Color.HSVToRGB(color.hue, color.saturation, color.value);
                 cornerCounter++;
             }
@@ -361,6 +379,7 @@ public static class MeshUpdate
             {
                 int randNoCornerIndex = UnityEngine.Random.Range(0, noCornerColors.Count);
                 ColorHSV color = noCornerColors[randNoCornerIndex];
+                //Debug.Log("calc no-corner color; color: " + color + ", i: " + i + ", randNocornerIndex: " + randNoCornerIndex + ", noCornerColors.length: " + noCornerColors.Count);
                 colors[i] = Color.HSVToRGB(color.hue, color.saturation, color.value);
                 noCornerColors.Remove(color);
             }

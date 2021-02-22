@@ -80,8 +80,9 @@ Material:
     - _WireframeVal: 0.005
     - _ZWrite: 1
     m_Colors:
-    - Color_F15F84FB: {r: 0.9221513, g: 0.01931207, b: 0.6324703, a: 1}
-    - Vector2_C75933F2: {r: 4, g: 5, b: 0, a: 0}
+    - Color_F15F84FB: {r: 0.458, g: 0.30915, b: 0.41251802, a: 1}
+    - Tiling: {r: 5, g: 5, b: 0, a: 0}
+    - Vector2_C75933F2: {r: 4, g: 6, b: 0, a: 0}
     - _BackColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

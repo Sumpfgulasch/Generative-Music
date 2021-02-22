@@ -133,6 +133,14 @@ public static class ExtensionMethods
         return ((value % modulo) + modulo) % modulo;
     }
 
+    /// <summary>
+    /// Works for positive and negative values.
+    /// </summary>
+    public static float Modulo(this float value, float modulo)
+    {
+        return ((value % modulo) + modulo) % modulo;
+    }
+
     public static List<int> IntToList(int number, bool startFromZero = false)
     {
         List<int> newList = new List<int>();

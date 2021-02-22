@@ -11,23 +11,35 @@ public class VisualController : MonoBehaviour
     [Header("General settings")]
     public int fieldsPerEdge = 6;
     public int tunnelVertices = 3;
+    public int colorCount = 4;
     public bool showCursor = true;
     public bool showMilkSurface = false;
+    public int shapesPerBar = 4;
     [Range(0.1f, 1)]
     public float mouseColliderSize_play = 1;
+
+    [Header("fields lineRend & surface")]
+    [Range(0, 1f)] public float fieldsSaturation = 0.8f;
+    [Range(0, 1f)] public float fieldsValue = 0.9f;
+
     [Header("Fields line renderer")]
     public bool showPlayerLinerend = false;
     [Range(0.001f, 0.05f)]
     public float fieldThickness = 0.01f;
-    [Range(0.001f, 0.05f)]
-    public float playerFieldPlayThickness = 0.03f;
-    [Range(0.001f, 0.05f)]
-    public float playerFieldFocusThickness = 0.02f;
-    [Range(0.001f, 0.05f)]
-    public float playerSecFieldThickness = 0.01f;
-    public float playerFieldBeforeSurface = 0.002f;
     public float fieldsBeforeSurface = 0.01f;
-    [Header("Fields surfaces")]
+    [Space]
+    [Range(0, 1f)] public float lineRendHue_CornerStep = 0;
+    [Range(0, 1f)] public float lineRendHue_NoCornerStep = 0.083f;
+    [Range(0, 1f)] public float lineRendHue_Corner2NoCornerDistance = 0.1f;
+    [Range(0, 20f)] public float lineRendCornerIntensity = 5.6f;
+    [Range(0, 20f)] public float lineRendNoCornerIntensity = 2.2f;
+
+    [Header("Field surfaces")]
+    [Range(0, 0.5f)] public float minFieldSurfaceHeight = 0.1f;
+    [Range(0, 2.0f)] public float maxFieldSurfaceHeight = 0.4f;
+    [Range(0.1f, 1)] public float fieldSurfaceAlpha = 0.945f;
+
+    [Header("Highlight surfaces")]
     [Range(0f, 1f)]
     public float ms_focus_inside_fieldSurfaceOpacity = 0;
     [Range(0f, 1f)]
@@ -36,27 +48,18 @@ public class VisualController : MonoBehaviour
     public float ms_play_inside_fieldSurfaceOpacity = 1;
     [Range(0f, 1f)]
     public float ms_play_outside_fieldSurfaceOpacity = 1;
-    [Range(0, 0.5f)] public float minFieldSurfaceHeight = 0.1f;
-    [Range(0, 2.0f)] public float maxFieldSurfaceHeight = 0.4f;
-    [Range(0.1f, 1)] public float fieldSurfaceAlpha = 0.2f;
-
-    [Header("Colors")]
-    public int colorCount = 4;
-    [Space]
-    [Range(0, 1f)] public float lineRendHue_CornerStep = 1 / 40f;
-    [Range(0, 1f)] public float lineRendHue_NoCornerStep = 1/12f;
-    [Range(0, 1f)] public float lineRendHue_Corner2NoCornerDistance = 0;
-    [Range(0, 1f)] public float fieldsSaturation = 0.8f;
-    [Range(0, 1f)] public float fieldsValue = 0.8f;
-    [Range(0, 20f)] public float surfaceIntensity = 5f;
-    [Range(0, 20f)] public float lineRendCornerIntensity = 5f;
-    [Range(0, 20f)] public float lineRendNoCornerIntensity = 3.2f;
-
+    [Range(0, 20f)] public float highlightSurface_emisiveIntensity = 5f;
+    
     [Header("Other")]
     public GUIStyle curChordTextStyle;
     public GUIStyle lastChordTextStyle;
-    public LayerMask testMask;
-    
+
+    [Header("Unused")]
+    [Range(0.001f, 0.05f)] public float playerFieldPlayThickness = 0.03f;
+    [Range(0.001f, 0.05f)] public float playerFieldFocusThickness = 0.02f;
+    [Range(0.001f, 0.05f)] public float playerSecFieldThickness = 0.01f;
+    public float playerFieldBeforeSurface = 0.002f;
+
 
 
     // Private variables

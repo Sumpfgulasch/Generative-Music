@@ -131,7 +131,7 @@ public class MusicField
             lineRendIntensity = VisualController.inst.lineRendCornerIntensity;
         else
             lineRendIntensity = VisualController.inst.lineRendNoCornerIntensity;
-        float surfaceIntensity = VisualController.inst.surfaceIntensity;
+        float surfaceIntensity = VisualController.inst.highlightSurface_emisiveIntensity;
 
         // Calc colors
         Color fieldSurfaceColor = color;
