@@ -259,8 +259,8 @@ public static class MeshCreation
             Transform parent_field = MeshRef.inst.fieldSurfaces_parent;
             Material material_field = MeshRef.inst.fieldSurfaces_mat;
 
-            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field);
-            MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, 2f);
+            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, true, 1f);
+            MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, false, 2f);
 
             fields[ID].fieldSurface = fieldSurface;
             fields[ID].highlightSurface = highlightSurface;
@@ -273,7 +273,7 @@ public static class MeshCreation
     /// Create a lane surface (gameObj, MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID. Disable MeshRenderer (!).
     /// </summary>
     /// <param name="index">[0, fields.Length]</param>
-    private static MeshRenderer CreateLaneSurface(MusicField[] relevantFields, int index, string name, Transform parent, Material material, float length = 1f)
+    private static MeshRenderer CreateLaneSurface(MusicField[] relevantFields, int index, string name, Transform parent, Material material, bool enable = false, float length = 1f)
     {
         // 0. Container & components
         GameObject laneSurface = CreateContainer(name + index, parent);
@@ -338,9 +338,8 @@ public static class MeshCreation
         meshFilter.mesh = mesh;
 
         meshRenderer.material = material;
-        //meshRenderer.material.color = relevantFields[index].lineRend.material.color;
 
-        meshRenderer.enabled = false;
+        meshRenderer.enabled = enable;
 
         return meshRenderer;
     }

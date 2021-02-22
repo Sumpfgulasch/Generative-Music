@@ -26,6 +26,7 @@ public class MusicField
     public MeshRenderer fieldSurface;
     public MeshRenderer highlightSurface;
     public float SurfaceOpacity { get; protected set; }
+    public float height;
 
     // Private variables
     public Color color;
@@ -86,14 +87,14 @@ public class MusicField
     }
 
 
-    /// <summary>
-    /// Store color and change material color of line renderer.
-    /// </summary>
-    public void SetColor(Color color)
-    {
-        this.color = color;
-        this.lineRend.material.color = color;
-    }
+    ///// <summary>
+    ///// Store color and change material color of line renderer.
+    ///// </summary>
+    //public void SetColor(Color color)
+    //{
+    //    this.color = color;
+    //    this.lineRend.material.color = color;
+    //}
 
     /// <summary>
     /// Set the z-positions of the line renderer.
@@ -109,16 +110,22 @@ public class MusicField
     }
 
     /// <summary>
-    /// Set data (chord, fieldType, ...) and set material colors (baseColor and emissiveColor for lineRend, highlightSurface and fieldSurface).
+    /// Set data (chord, fieldType, ...).
     /// </summary>
-    public void SetContent(Type fieldType, Chord chord, Color color, bool selectable, bool isBuildingUp)
+    public void SetData(Type fieldType, Chord chord, bool selectable, bool isBuildingUp)
     {
         this.type = fieldType;
         this.chord = chord;
-        //this.color = color;
         this.isSelectable = selectable;
         this.isSpawning = isBuildingUp;
+    }
 
+    /// <summary>
+    /// Calc different colors from the given color. Set material colors (baseColor and emissiveColor, for 1. lineRend, 2. highlightSurface and 3. fieldSurface).
+    /// </summary>
+    public void SetColor(Color color)
+    {
+        // Calc intensities
         float lineRendIntensity;
         if (isCorner)
             lineRendIntensity = VisualController.inst.lineRendCornerIntensity;
@@ -126,9 +133,14 @@ public class MusicField
             lineRendIntensity = VisualController.inst.lineRendNoCornerIntensity;
         float surfaceIntensity = VisualController.inst.surfaceIntensity;
 
-
+        // Calc colors
+        Color fieldSurfaceColor = color;
+        color.a = VisualController.inst.fieldSurfaceAlpha;
+        
+        // Assign!
         this.lineRend.material.SetColor("_BaseColor", color);
         this.lineRend.material.SetColor("_EmissionColor", color * lineRendIntensity);
+        this.fieldSurface.material.SetColor("_BaseColor", fieldSurfaceColor); // no emissive color
         this.highlightSurface.material.SetColor("_BaseColor", color);
         this.highlightSurface.material.SetColor("_EmissionColor", color * surfaceIntensity);
     }

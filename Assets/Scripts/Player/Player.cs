@@ -336,12 +336,11 @@ public class Player : MonoBehaviour
             {
                 var mouseDirection = ConvertMouseToDirection(pointerPos);
                 
-
                 // 2. Get & set data (ID, positions, ...)
                 var ID = PlayerData.GetIDfromRaycast(mouseDirection);
                 var data = PlayerData.SetDataByID(ID);
                 var fieldChanged = PlayerData.FieldHasChanged();
-
+                
                 if (fieldChanged)
                 {
                     GameEvents.inst.FieldChange(data);
@@ -403,12 +402,11 @@ public class Player : MonoBehaviour
         lastMouseSide = curMouseSide;
 
         // calc
-        var mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
-        mousePos.z = midPoint.z - 1;
-        var ray = new Ray(mousePos, Vector3.forward);
+        var posToConvert = new Vector3(input.x, input.y, Camera.main.nearClipPlane);
+        var ray = Camera.main.ScreenPointToRay(posToConvert);
         var hit = Physics2D.GetRayIntersection(ray,3);
 
-        // ray
+        // set
         if (hit && hit.collider.tag.Equals("MouseCollider"))
         {
             curMouseSide = Side.inner;

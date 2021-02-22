@@ -279,7 +279,7 @@ public static class MeshUpdate
         int lowestNote = MusicUtil.LowestFieldNote(fields);
         int highestNote = MusicUtil.HighestFieldNote(fields);
 
-        // 2. set scale of gameObj
+        // 2. set scale of fieldSurface & z-pos of lineRend
         for (int i=0; i<fields.Length; i++)
         {
             int[] curChordNotes = fields[i].chord.notes;
@@ -289,6 +289,8 @@ public static class MeshUpdate
 
             fields[i].SetZPos(Player.inst.transform.position.z - targetScale);
             fields[i].fieldSurface.transform.localScale = new Vector3(1, 1, targetScale);
+
+            fields[i].height = targetScale;
         }
     }
 
