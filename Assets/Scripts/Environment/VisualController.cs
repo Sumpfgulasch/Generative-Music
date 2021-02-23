@@ -17,6 +17,7 @@ public class VisualController : MonoBehaviour
     public int shapesPerBar = 4;
     [Range(0.1f, 1)]
     public float mouseColliderSize_play = 1;
+    public Vector2 cameraOffset;
 
     [Header("fields lineRend & surface")]
     [Range(0, 1f)] public float fieldsSaturation = 0.8f;

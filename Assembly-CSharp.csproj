@@ -63,7 +63,7 @@
     <Compile Include="Assets\Scripts\Music\MusicGenerationLogic.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\RepetitiveSpawner.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerControls.cs" />
-    <Compile Include="Assets\Scripts\Camera\PanCamera.cs" />
+    <Compile Include="Assets\Scripts\Camera\CameraOps.cs" />
     <Compile Include="Assets\Scripts\Music\MusicUtil.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\MaterialOnOff.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Note.cs" />

@@ -44,6 +44,7 @@ public class GameplayManager : MonoBehaviour
         GameEvents.inst.onSecondBeat += OnSecondBeat;
         GameEvents.inst.onFieldStart += VisualController.inst.OnPlayStart;
         GameEvents.inst.onFieldLeave += VisualController.inst.OnPlayEnd;
+        GameEvents.inst.onScreenResize += CameraOps.PanCamera;
 
         yield return null;
     }

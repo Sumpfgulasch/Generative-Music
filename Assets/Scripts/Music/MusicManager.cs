@@ -13,6 +13,7 @@ public class MusicManager : MonoBehaviour
     [Header("Contraints")]
     [Tooltip("Number of chord degrees that make up the edgeParts in the beginning.")]
     public int[] intervals = new int[] { 1, 3, 5 };
+    public int chordDegrees = 3;
     public int toneRange_startNote = 41;
     public int toneRange = 24;
     public float shortNotes_minPlayTime = 0.3f;

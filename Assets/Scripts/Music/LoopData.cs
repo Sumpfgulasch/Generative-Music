@@ -112,7 +112,7 @@ public static class LoopData
 
         // 3. chord types
         // count
-        chordTypeCount = 3;
+        chordTypeCount = MusicManager.inst.chordDegrees;
         // degrees
         int[] degrees = MusicGenerationLogic.RandomChordDegrees(curKey, chordTypeCount);
         // intervals
@@ -145,7 +145,6 @@ public static class LoopData
         TunnelData.fields = MusicFieldSet.SetDataToFields(TunnelData.fields, fieldTypes, chords, selectables, spawnings);
 
         // 6. field heights
-        Debug.Log("tunnelData.fields: " + TunnelData.fields);
         MeshUpdate.AdjustFieldHeights(TunnelData.fields);
 
         // 7. colors

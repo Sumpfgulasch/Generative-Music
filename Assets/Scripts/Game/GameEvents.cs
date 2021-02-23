@@ -19,6 +19,8 @@ public class GameEvents : MonoBehaviour
     public Action onMouseInside;
     public Action onMouseOutside;
 
+    public Action onScreenResize;
+
    
 
     void Start()
