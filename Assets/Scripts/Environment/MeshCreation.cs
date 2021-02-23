@@ -315,13 +315,15 @@ public static class MeshCreation
                 5, 2, 1
             };
 
-            //normals = new Vector3[]                                                           // unused so far
-            //{
-            //    Vector3.Cross(vertices[0] - vertices[1], vertices[4] - vertices[1]),
-            //    Vector3.Cross(vertices[0] - vertices[1], vertices[4] - vertices[1]),
-            //    Vector3.Cross(vertices[1] - vertices[2], vertices[5] - vertices[2]),
-            //    Vector3.Cross(vertices[1] - vertices[2], vertices[5] - vertices[2])
-            //};
+            normals = new Vector3[]                                                           // unused so far
+            {
+                Vector3.Cross(vertices[1] - vertices[0], vertices[3] - vertices[0]).normalized,
+                (((vertices[0] - vertices[1]) + (vertices[2] - vertices[1])) / 2f).normalized,
+                Vector3.Cross(vertices[5] - vertices[2], vertices[1] - vertices[2]).normalized,
+                Vector3.Cross(vertices[1] - vertices[0], vertices[3] - vertices[0]).normalized,        // twice
+                (((vertices[0] - vertices[1]) + (vertices[2] - vertices[1])) / 2f).normalized,
+                Vector3.Cross(vertices[5] - vertices[2], vertices[1] - vertices[2]).normalized
+            };
         }
         else
         {
@@ -332,18 +334,20 @@ public static class MeshCreation
                 3, 1, 0
             };
 
-            //normals = new Vector3[]
-            //{
-            //    Vector3.Cross(vertices[0] - vertices[1], vertices[3] - vertices[1]),
-            //    Vector3.Cross(vertices[0] - vertices[1], vertices[3] - vertices[1])
-            //};
+            normals = new Vector3[]
+            {
+                Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]),
+                Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]),
+                Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]),
+                Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0])
+            };
         }
 
         // 1.3. Assign
         Mesh mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles;
-        //mesh.normals = normals;
+        mesh.normals = normals;
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
 
