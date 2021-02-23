@@ -50,7 +50,7 @@ public static class MeshCreation
         InitPlayer();
 
         // Inner player
-        CreatePlayerMesh(ref MeshRef.inst.innerPlayerMesh_mf);
+        CreatePlayerMesh(ref MeshRef.inst.innerPlayerMesh_mf, VisualController.inst.playerAlpha);
 
         // Milk surface
         CreateTriangleMesh(ref MeshRef.inst.innerSurface_mf, TunnelData.vertices);
@@ -59,7 +59,7 @@ public static class MeshCreation
         MeshRef.inst.milkSurface_parent.gameObject.SetActive(VisualController.inst.showMilkSurface);
 
         // Outer player
-        CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf);
+        CreatePlayerMesh(ref MeshRef.inst.outerPlayerMesh_mf, VisualController.inst.playerAlpha);
         CreateTriangleMesh(ref MeshRef.inst.outerPlayerMask_mf, TunnelData.vertices);
     }
 
@@ -138,7 +138,7 @@ public static class MeshCreation
 
 
 
-    public static void CreatePlayerMesh(ref MeshFilter mf)
+    public static void CreatePlayerMesh(ref MeshFilter mf, float alpha)
     {
         // Declarations
         List<Vector3> vertices = new List<Vector3>();
@@ -175,6 +175,12 @@ public static class MeshCreation
         newMesh.MarkDynamic();                      // for better performance
         mf.mesh = newMesh;
         // no UVs
+
+        // Set Alpha
+        Material mat = mf.GetComponent<MeshRenderer>().material;
+        Color color = mat.color;
+        color.a = alpha;
+        mat.SetColor("_BaseColor", color);
     }
 
 

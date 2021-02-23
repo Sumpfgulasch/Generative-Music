@@ -121,10 +121,19 @@ public class MusicField
     }
 
     /// <summary>
-    /// Calc different colors from the given color. Set material colors (baseColor and emissiveColor, for 1. lineRend, 2. highlightSurface and 3. fieldSurface).
+    /// Calc different colors from the given color. Set material colors (baseColor and emissiveColor, for (1) lineRend, (2) highlightSurface and (3) fieldSurface).
     /// </summary>
     public void SetColor(Color color)
     {
+        // Calc colors
+        Color fieldSurfaceColor = color;
+        fieldSurfaceColor.a = VisualController.inst.fieldSurfaceAlpha; // fieldSurface, alpha
+
+        float h, s, v;
+        Color.RGBToHSV(color, out h, out s, out v);
+        s = VisualController.inst.highlightSurface_emissiveSaturation; // highlightSurface, saturation
+        Color highlightSurfaceColor = Color.HSVToRGB(h, s, v);
+
         // Calc intensities
         float lineRendIntensity;
         if (isCorner)
@@ -133,16 +142,12 @@ public class MusicField
             lineRendIntensity = VisualController.inst.lineRendNoCornerIntensity;
         float surfaceIntensity = VisualController.inst.highlightSurface_emisiveIntensity;
 
-        // Calc colors
-        Color fieldSurfaceColor = color;
-        fieldSurfaceColor.a = VisualController.inst.fieldSurfaceAlpha;
-        
         // Assign!
         this.lineRend.material.SetColor("_BaseColor", color);
         this.lineRend.material.SetColor("_EmissionColor", color * lineRendIntensity);
         this.fieldSurface.material.SetColor("_BaseColor", fieldSurfaceColor); // no emissive color
-        this.highlightSurface.material.SetColor("_BaseColor", color);
-        this.highlightSurface.material.SetColor("_EmissionColor", color * surfaceIntensity);
+        this.highlightSurface.material.SetColor("_BaseColor", highlightSurfaceColor);
+        this.highlightSurface.material.SetColor("_EmissionColor", highlightSurfaceColor * surfaceIntensity);
     }
 
     public static bool IsCorner(int ID)

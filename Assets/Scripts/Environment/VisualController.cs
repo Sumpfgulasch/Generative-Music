@@ -19,6 +19,9 @@ public class VisualController : MonoBehaviour
     public float mouseColliderSize_play = 1;
     public Vector2 cameraOffset;
 
+    [Header("Player")]
+    public float playerAlpha = 0.5f;
+
     [Header("fields lineRend & surface")]
     [Range(0, 1f)] public float fieldsSaturation = 0.8f;
     [Range(0, 1f)] public float fieldsValue = 0.9f;
@@ -44,15 +47,12 @@ public class VisualController : MonoBehaviour
     [Range(0.1f, 1)] public float fieldSurfaceAlpha = 0.945f;
 
     [Header("Highlight surfaces")]
-    [Range(0f, 1f)]
-    public float ms_focus_inside_fieldSurfaceOpacity = 0;
-    [Range(0f, 1f)]
-    public float ms_focus_outside_fieldSurfaceOpacity = 0.058f;
-    [Range(0f, 1f)]
-    public float ms_play_inside_fieldSurfaceOpacity = 1;
-    [Range(0f, 1f)]
-    public float ms_play_outside_fieldSurfaceOpacity = 1;
+    [Range(0f, 1f)] public float ms_focus_inside_fieldSurfaceOpacity = 0;
+    [Range(0f, 1f)] public float ms_focus_outside_fieldSurfaceOpacity = 0.058f;
+    [Range(0f, 1f)] public float ms_play_inside_fieldSurfaceOpacity = 1;
+    [Range(0f, 1f)] public float ms_play_outside_fieldSurfaceOpacity = 1;
     [Range(0, 20f)] public float highlightSurface_emisiveIntensity = 5f;
+    [Range(0, 1f)] public float highlightSurface_emissiveSaturation = 0.9f;
     
     [Header("Other")]
     public GUIStyle curChordTextStyle;
