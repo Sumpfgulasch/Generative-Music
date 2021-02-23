@@ -20,7 +20,7 @@ public class VisualController : MonoBehaviour
     public Vector2 cameraOffset;
 
     [Header("Player")]
-    public float playerAlpha = 0.5f;
+    [Range(0, 1f)] public float playerAlpha = 0.5f;
 
     [Header("fields lineRend & surface")]
     [Range(0, 1f)] public float fieldsSaturation = 0.8f;

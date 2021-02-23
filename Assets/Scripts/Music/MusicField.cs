@@ -145,7 +145,8 @@ public class MusicField
         // Assign!
         this.lineRend.material.SetColor("_BaseColor", color);
         this.lineRend.material.SetColor("_EmissionColor", color * lineRendIntensity);
-        this.fieldSurface.material.SetColor("_BaseColor", fieldSurfaceColor); // no emissive color
+        this.fieldSurface.material.SetColor("_BaseColor", fieldSurfaceColor); // no emissive color // "_colorA"
+        //this.fieldSurface.material.SetColor("_colorB", fieldSurfaceColor * 0.3f);
         this.highlightSurface.material.SetColor("_BaseColor", highlightSurfaceColor);
         this.highlightSurface.material.SetColor("_EmissionColor", highlightSurfaceColor * surfaceIntensity);
     }
