@@ -295,34 +295,6 @@ Transform:
   m_Father: {fileID: 169566239}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!83 &344363714
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &368025938
 GameObject:
   m_ObjectHideFlags: 0
@@ -1115,8 +1087,8 @@ MonoBehaviour:
   lineRendNoCornerIntensity: 6.4
   minFieldSurfaceHeight: 0.1
   maxFieldSurfaceHeight: 0.4
-  fieldSurfaceAlpha: 0.945
-  ms_focus_inside_fieldSurfaceOpacity: 0
+  fieldSurfaceAlpha: 0.5
+  ms_focus_inside_fieldSurfaceOpacity: 0.02
   ms_focus_outside_fieldSurfaceOpacity: 0.04
   ms_play_inside_fieldSurfaceOpacity: 1
   ms_play_outside_fieldSurfaceOpacity: 1
@@ -7622,34 +7594,6 @@ MonoBehaviour:
   - {fileID: 1683182927}
   beatSequencer: {fileID: 700626522}
   clock: {fileID: 441292771}
---- !u!83 &1524979361
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &1557100708
 GameObject:
   m_ObjectHideFlags: 0
@@ -8065,7 +8009,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 2224735792368419155, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 1524979361}
+  m_audioClip: {fileID: 1946479636}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -8247,6 +8191,34 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!83 &1946479636
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &1990999422
 GameObject:
   m_ObjectHideFlags: 0
@@ -8279,6 +8251,34 @@ Transform:
   m_Father: {fileID: 1240982958}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!83 &1992297279
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &2146842604
 GameObject:
   m_ObjectHideFlags: 0
@@ -8354,7 +8354,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5925276600095122450, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 344363714}
+  m_audioClip: {fileID: 1992297279}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

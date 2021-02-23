@@ -61,6 +61,19 @@ public class GameplayManager : MonoBehaviour
     {
         // Player shrink animation
         StartCoroutine(Player.inst.DampedScale(Player.inst.scaleMin, 0.0f));
+
+
+        // HIER WEITER
+
+
+        //print("arp value before: " + MusicManager.inst.curInstrument.GetParameterValue(AudioHelm.Param.kArpOn));
+        MusicManager.inst.curInstrument.SetParameterValue(AudioHelm.Param.kArpOn, 1);
+        //print("arp value after: " + MusicManager.inst.curInstrument.GetParameterValue(AudioHelm.Param.kArpOn));
+        print("arp sync: " + MusicManager.inst.curInstrument.GetParameterValue(AudioHelm.Param.kArpSync));
+        MusicManager.inst.curInstrument.SetParameterValue(AudioHelm.Param.kArpSync, 0);
+        MusicManager.inst.curInstrument.SetParameterValue(AudioHelm.Param.kArpFrequency, 2);
+        print("arp freq: " + MusicManager.inst.curInstrument.GetParameterValue(AudioHelm.Param.kArpFrequency));
+
     }
 
     // start on second beat spawning stuff because first beat is not synced yet

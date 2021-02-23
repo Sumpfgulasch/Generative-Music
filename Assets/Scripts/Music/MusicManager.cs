@@ -28,7 +28,7 @@ public class MusicManager : MonoBehaviour
 
     private float minPitch, maxPitch;
     private float curPitch = 0;
-    private AudioHelm.HelmController curInstrument;
+    [HideInInspector] public AudioHelm.HelmController curInstrument;
     
 
     // Properties
@@ -59,6 +59,9 @@ public class MusicManager : MonoBehaviour
         curChord = Chords.c4Major;          // stupid inits
         lastChord = curChord;
         curInstrument = Instrument.inner;
+
+        
+        //curInstrument.SetParameterValue(AudioHelm.Param.arp, 8);
 
         //controllers[0].SetPitchWheel(0);
 
