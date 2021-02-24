@@ -126,10 +126,12 @@ public class MusicField
     public void SetColor(Color color)
     {
         // Calc colors
-        Color fieldSurfaceColor = color;
-        fieldSurfaceColor.a = VisualController.inst.fieldSurfaceAlpha; // fieldSurface, alpha
-
         float h, s, v;
+        Color.RGBToHSV(color, out h, out s, out v);
+        v = VisualController.inst.fieldSurfaceValue;
+        Color fieldSurfaceColor = Color.HSVToRGB(h,s,v);
+        fieldSurfaceColor.a = VisualController.inst.fieldSurfaceAlpha; // fieldSurface, alpha
+        
         Color.RGBToHSV(color, out h, out s, out v);
         s = VisualController.inst.highlightSurface_emissiveSaturation; // highlightSurface, saturation
         Color highlightSurfaceColor = Color.HSVToRGB(h, s, v);

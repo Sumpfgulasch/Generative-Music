@@ -1044,7 +1044,7 @@ MonoBehaviour:
   fieldsSaturation: 0.8
   fieldsValue: 0.9
   fieldsHue_CornerStep: 0
-  fieldsHue_NoCornerStep: 0.043
+  fieldsHue_NoCornerStep: 0.092
   fieldsHue_Corner2NoCornerDistance: 0
   fieldFoldOutTime: 0.5
   fieldFoldOutCurve:
@@ -1087,7 +1087,8 @@ MonoBehaviour:
   lineRendNoCornerIntensity: 6.4
   minFieldSurfaceHeight: 0.1
   maxFieldSurfaceHeight: 0.4
-  fieldSurfaceAlpha: 0.5
+  fieldSurfaceAlpha: 0.9
+  fieldSurfaceValue: 0.6
   ms_focus_inside_fieldSurfaceOpacity: 0.02
   ms_focus_outside_fieldSurfaceOpacity: 0.04
   ms_play_inside_fieldSurfaceOpacity: 1
@@ -1666,6 +1667,34 @@ Transform:
   m_Father: {fileID: 812451689}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!83 &880021782
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &910715572
 GameObject:
   m_ObjectHideFlags: 0
@@ -7077,6 +7106,35 @@ MonoBehaviour:
   shortNotes_minPlayTime: 0
   maxEdgePitchIntervalRange: 14
   velocity: 0.1
+  curInstrument: {fileID: 0}
+--- !u!83 &1033348503
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &1129972156
 GameObject:
   m_ObjectHideFlags: 0
@@ -7793,6 +7851,22 @@ PrefabInstance:
       value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[5].end_
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[6].end_
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[7].end_
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[8].end_
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
       propertyPath: allNotes.Array.data[71].notes.Array.data[0].end_
       value: 1
       objectReference: {fileID: 0}
@@ -7814,6 +7888,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
       propertyPath: allNotes.Array.data[60].notes.Array.data[4].note_
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[5].note_
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[6].note_
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[7].note_
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[8].note_
       value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
@@ -7861,6 +7951,38 @@ PrefabInstance:
       value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[5].parent
+      value: 
+      objectReference: {fileID: 700626522}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[5].start_
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[6].parent
+      value: 
+      objectReference: {fileID: 700626522}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[6].start_
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[7].parent
+      value: 
+      objectReference: {fileID: 700626522}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[7].start_
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[8].parent
+      value: 
+      objectReference: {fileID: 700626522}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[8].start_
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
       propertyPath: allNotes.Array.data[71].notes.Array.data[0].parent
       value: 
       objectReference: {fileID: 700626522}
@@ -7882,6 +8004,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
       propertyPath: allNotes.Array.data[60].notes.Array.data[4].velocity_
+      value: 0.1272731
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[5].velocity_
+      value: 0.1272731
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[6].velocity_
+      value: 0.1272731
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[7].velocity_
+      value: 0.1272731
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
+      propertyPath: allNotes.Array.data[60].notes.Array.data[8].velocity_
       value: 0.1272731
       objectReference: {fileID: 0}
     - target: {fileID: 114000013577395104, guid: 9b6b4b76c69c2b5419c3fff9088c30eb, type: 3}
@@ -8009,7 +8147,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 2224735792368419155, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 1946479636}
+  m_audioClip: {fileID: 880021782}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -8191,34 +8329,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!83 &1946479636
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &1990999422
 GameObject:
   m_ObjectHideFlags: 0
@@ -8251,34 +8361,6 @@ Transform:
   m_Father: {fileID: 1240982958}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!83 &1992297279
-AudioClip:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: helm
-  m_LoadType: 0
-  m_Channels: 1
-  m_Frequency: 48000
-  m_BitsPerSample: 32
-  m_Length: 0
-  m_IsTrackerFormat: 0
-  m_Ambisonic: 0
-  m_SubsoundIndex: 0
-  m_PreloadAudioData: 1
-  m_LoadInBackground: 0
-  m_Legacy3D: 0
-  m_Resource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_CompressionFormat: 0
-  m_EditorResource:
-    m_Source: 
-    m_Offset: 0
-    m_Size: 0
-  m_EditorCompressionFormat: 0
 --- !u!1 &2146842604
 GameObject:
   m_ObjectHideFlags: 0
@@ -8354,7 +8436,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5925276600095122450, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 1992297279}
+  m_audioClip: {fileID: 1033348503}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

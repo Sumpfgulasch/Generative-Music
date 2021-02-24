@@ -44,7 +44,8 @@ public class VisualController : MonoBehaviour
     [Header("Field surfaces")]
     [Range(0, 0.5f)] public float minFieldSurfaceHeight = 0.1f;
     [Range(0, 2.0f)] public float maxFieldSurfaceHeight = 0.4f;
-    [Range(0.1f, 1)] public float fieldSurfaceAlpha = 0.945f;
+    [Range(0.1f, 1)] public float fieldSurfaceAlpha = 1;
+    [Range(0.1f, 1)] public float fieldSurfaceValue = 0.5f;
 
     [Header("Highlight surfaces")]
     [Range(0f, 1f)] public float ms_focus_inside_fieldSurfaceOpacity = 0;
