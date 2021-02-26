@@ -23,12 +23,16 @@ public class MusicManager : MonoBehaviour
 
     [HideInInspector] public Chord curChord;
     [HideInInspector] public Chord lastChord;
+    [HideInInspector] public int curBeat;
+    [HideInInspector] public int curLoop = -1;
 
     // Private variables
 
     private float minPitch, maxPitch;
     private float curPitch = 0;
     [HideInInspector] public AudioHelm.HelmController curInstrument;
+    private int curWaitStartBeat;
+    private int curBeatsToWait;
     
 
     // Properties
@@ -65,12 +69,7 @@ public class MusicManager : MonoBehaviour
 
         //controllers[0].SetPitchWheel(0);
 
-        // EVENT SUBSCRIPTION
-        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnFirstBeats);
-        MusicRef.inst.beatSequencer.beatEvent.AddListener(OnBeat);
-        GameEvents.inst.onFieldStart += OnFieldStart;
-        GameEvents.inst.onFieldChange += OnFieldChange;
-        GameEvents.inst.onFieldLeave += OnFieldLeave;
+        
     }
     
 
@@ -158,7 +157,7 @@ public class MusicManager : MonoBehaviour
 
 
     // Fields
-    private void OnFieldStart(Player.Side side)
+    public void OnFieldStart(Player.Side side)
     {
         if (side == Player.Side.inner)
             curInstrument = Instrument.inner;
@@ -190,7 +189,7 @@ public class MusicManager : MonoBehaviour
         #endregion
     }
 
-    private void OnFieldChange(PlayerField data)
+    public void OnFieldChange(PlayerField data)
     {
         if (Player.actionState == Player.ActionState.Play)
         {
@@ -199,7 +198,7 @@ public class MusicManager : MonoBehaviour
         }
     }
 
-    private void OnFieldLeave()
+    public void OnFieldLeave()
     {
         StopChord(curChord, curInstrument);
     }
@@ -238,29 +237,45 @@ public class MusicManager : MonoBehaviour
 
     // Beats
 
-    private void OnFirstBeats(int beat)
+    public void OnVeryFirstBeats(int beat)
     {
         if (beat == 0)
         {
-            GameEvents.inst.onFirstBeat?.Invoke();
-            print("on first beat");
+            GameEvents.inst.onVeryFirstBeat?.Invoke();
+            print("on first quarter");
         }
-        else if (beat / LoopData.beatsPerBar == 1)
+        else if (beat == 4)
         {
-            GameEvents.inst.onSecondBeat?.Invoke();
-            MusicRef.inst.beatSequencer.beatEvent.RemoveListener(this.OnFirstBeats);
-            print("on second beat");
+            GameEvents.inst.onVerySecondBeat?.Invoke();
+            print("on second quarter");
+
+            MusicRef.inst.beatSequencer.beatEvent.RemoveListener(this.OnVeryFirstBeats);
         }
     }
 
-    private void OnBeat(int beat)
+    public void OnBeat(int beat)
     {
-        if (beat % LoopData.beatsPerBar == 0)
+        if (beat == 0)
         {
-            GameEvents.inst.onBeat?.Invoke(beat / LoopData.beatsPerBar);
+            curLoop++;
+            GameEvents.inst.onFirstBeat?.Invoke();
         }
-    }
 
+        if (beat % 4 == 0)
+        {
+            //print("curBeat: " + curBeat);
+            GameEvents.inst.onQuarter?.Invoke();
+        }
+        
+        curBeat = curLoop * LoopData.beatsPerBar + beat;
+
+        
+
+        GameEvents.inst.onBeat?.Invoke(beat);
+
+        
+        
+    }
 
 
 
@@ -344,6 +359,34 @@ public class MusicManager : MonoBehaviour
             }
         }
     }
+
+    public void QuantizeSequence() // AudioHelm.Sequencer sequencer
+    {
+
+    }
+
+    public IEnumerator WaitBeats(float beatsToWait)
+    {
+        float targetBeat = curBeat + beatsToWait;
+        print("COROUTINE; curBeat: " + curBeat + ", targetBeat: " + targetBeat);
+        while (curBeat < targetBeat)
+        {
+            //print("curBeat: " + curBeat + ", targetBeat: " + targetBeat);
+            yield return null;
+        }
+        print("FINISHED WAIT (targetBeat: " + targetBeat);
+    }
+
+    //public void WaitBeats(int beats)
+    //{
+
+    //    GameEvents.inst.onBeat += OnWaitBeats;
+    //}
+
+    //public void OnWaitBeats(int beats)
+    //{
+
+    //}
 
 
     

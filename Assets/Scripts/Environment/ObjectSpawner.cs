@@ -87,7 +87,7 @@ public class ObjectSpawner : MonoBehaviour
         int FPS = Screen.currentResolution.refreshRate;
         moveSpeed = (tunnelLength / LoopData.timePerBar) / FPS;
 
-        distancePerBeat = tunnelLength / LoopData.beatsPerBar;
+        distancePerBeat = tunnelLength / LoopData.quartersPerBar;
 
         playerZpos = Player.inst.transform.position.z;
 

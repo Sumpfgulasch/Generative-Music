@@ -13,13 +13,17 @@ public class GameEvents : MonoBehaviour
     public Action<PlayerField> onFieldChange;
     public Action onFieldLeave;
 
-    public Action onFirstBeat;
-    public Action onSecondBeat;
+    public Action onVeryFirstBeat;
+    public Action onVerySecondBeat;
     public Action<int> onBeat;
+    public Action onQuarter;
+    public Action onFirstBeat;
     public Action onMouseInside;
     public Action onMouseOutside;
 
     public Action onScreenResize;
+
+    public delegate void VoidType();
 
    
 
@@ -58,8 +62,33 @@ public class GameEvents : MonoBehaviour
         onMouseInside?.Invoke();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="action">Event.</param>
+    /// <param name="beatsToWait">In Sixteenth.</param>
+    /// <returns></returns>
+    public IEnumerator OnQuarter_subscribeDelayed(Action function, int beatsToWait)
+    {
+        beatsToWait -= 1; // sonst kriegt er den ersten call nicht
 
+        float targetBeat = MusicManager.inst.curBeat + beatsToWait;
+        while (MusicManager.inst.curBeat < targetBeat)
+        {
+            yield return null;
+        }
+        onQuarter += function;
+    }
 
+    //public void Test(Action action, Action actionSubscribing)
+    //{
+    //    action += actionSubscribing;
+    //}
+
+    //public void TestTest()
+    //{
+    //    Test(onQuarter, MusicManager.inst.QuantizeSequence);
+    //}
 
 
 

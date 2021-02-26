@@ -29,7 +29,8 @@ public static class LoopData
     // time & distance values
     public static float timePerBar;
     public static float timePerBeat;
-    public static int beatsPerBar;
+    public static int beatsPerBar; // in sixteenth
+    public static int quartersPerBar;
 
     // Properties
     private static Player Player { get { return Player.inst; } }
@@ -274,9 +275,10 @@ public static class LoopData
     {
         // Info: 4 16tel sind 1 Beat
         // Wichtig: length muss immer vielfaches sein von 4; z.B. length=16 == 4/4-Takt, length=20 == 5/4-Takt
-        beatsPerBar = MusicRef.inst.beatSequencer.length / 4;
-        timePerBar = (beatsPerBar / MusicRef.inst.clock.bpm) *60;
-        timePerBeat = timePerBar / beatsPerBar;
+        quartersPerBar = MusicRef.inst.beatSequencer.length / 4;
+        beatsPerBar = MusicRef.inst.beatSequencer.length;
+        timePerBar = (quartersPerBar / MusicRef.inst.clock.bpm) *60;
+        timePerBeat = timePerBar / quartersPerBar;
     }
 
 }

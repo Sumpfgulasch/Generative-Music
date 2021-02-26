@@ -38,6 +38,7 @@ public static class MeshCreation
         CreatePlayer();
 
         InitMouseCollider();
+        MeshUpdate.UpdateBeatTriangle();
     }
 
 

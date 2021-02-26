@@ -54,6 +54,12 @@ public class VisualController : MonoBehaviour
     [Range(0f, 1f)] public float ms_play_outside_fieldSurfaceOpacity = 1;
     [Range(0, 20f)] public float highlightSurface_emisiveIntensity = 5f;
     [Range(0, 1f)] public float highlightSurface_emissiveSaturation = 0.9f;
+
+    [Header("Beat triangle")]
+    public float highlightBeatTime = 0.2f;
+    public Color highlightBeatColor = Color.white;
+    public float highlightBeatIntensity = 5f;
+    public AnimationCurve highlightBeatCurve;
     
     [Header("Other")]
     public GUIStyle curChordTextStyle;
@@ -84,10 +90,7 @@ public class VisualController : MonoBehaviour
 
         playerMid = Player.transform.position;
 
-        // Event subscription
-        GameEvents.inst.onFieldChange += OnFieldChange;
-        GameEvents.inst.onMouseInside += OnMouseInside;
-        GameEvents.inst.onMouseOutside += OnMouseOutside;
+        
     }
 
 
@@ -98,7 +101,7 @@ public class VisualController : MonoBehaviour
     /// <summary>
     /// Change player visibility
     /// </summary>
-    private void OnFieldChange(PlayerField data)
+    public void OnFieldChange(PlayerField data)
     {
         if (data.IsNotSpawning && data.IsSelectable)
         {
@@ -124,6 +127,11 @@ public class VisualController : MonoBehaviour
             secField.SetVisible(false);
     }
 
+    public void OnBeat(int beat)
+    {
+        MeshUpdateMono.inst.ShowBeat();
+    }
+
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -134,7 +142,7 @@ public class VisualController : MonoBehaviour
     /// <summary>
     /// Change the played outer field.
     /// </summary>
-    private void OnMouseInside()
+    public void OnMouseInside()
     {
         if (Player.inst.actionState == Player.ActionState.Play)
         {
@@ -146,7 +154,7 @@ public class VisualController : MonoBehaviour
         }
     }
 
-    private void OnMouseOutside()
+    public void OnMouseOutside()
     {
         if (Player.inst.actionState == Player.ActionState.Play)
         {
@@ -157,6 +165,8 @@ public class VisualController : MonoBehaviour
             Player.inst.curField.SetOpacity(ms_focus_outside_fieldSurfaceOpacity);
         }
     }
+
+
 
 
     private void OnGUI()

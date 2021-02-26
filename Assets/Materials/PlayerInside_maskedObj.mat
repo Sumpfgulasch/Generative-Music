@@ -22,8 +22,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: PlayerInside_maskedObj
   m_Shader: {fileID: 4800000, guid: 55648cb8b462f9d4191cb8bc485f4dad, type: 3}
-  m_ShaderKeywords: _EMISSION
-  m_LightmapFlags: 2
+  m_ShaderKeywords: _RECEIVE_SHADOWS_OFF
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 3000
@@ -105,11 +105,11 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0.352
     - _GlossyReflections: 0
-    - _Metallic: 1
+    - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
-    - _ReceiveShadows: 1
+    - _ReceiveShadows: 0
     - _Smoothness: 0.278
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -118,8 +118,8 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 1, g: 0.8352941, b: 0.11764706, a: 1}
+    - _BaseColor: {r: 0.106000006, g: 0.04122222, b: 0.08833335, a: 1}
     - _Color: {r: 0.9056604, g: 0.10822348, b: 0.10822348, a: 1}
-    - _EmissionColor: {r: 0.7490196, g: 0.49019608, b: 0, a: 1}
+    - _EmissionColor: {r: 0.034, g: 0.013600002, b: 0.020400004, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []

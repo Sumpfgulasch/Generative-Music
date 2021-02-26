@@ -7,13 +7,13 @@ public class GameplayManager : MonoBehaviour
     public static GameplayManager inst;
 
     [Header("Spawning")]
-    public int timeToSpawnTunnel_inBeats = 8;
-    public float tunnelSpawnDistance_InBeats = 2;
+    public int timeToSpawnTunnel_inQuarters = 0;
+    public float tunnelSpawnDistance_inQuarters = 4;
     public int maxTunnelsAtOnce = 2;
     [Space]
-    public float timeToSpawnFields_inBeats = 3;
-    public float fieldsSpawnDistance_inBeats = 3f;
-    public float fieldsSpawnDuration_inBeats = 1f;
+    public float timeToSpawnFields_inQuarters = 0;
+    public float fieldsSpawnDistance_inQuarters = 2f;
+    public float fieldsSpawnDuration_inQuarters = 1f;
 
     private void OnEnable()
     {
@@ -40,11 +40,23 @@ public class GameplayManager : MonoBehaviour
         #endregion
 
         // EVENTS
-        GameEvents.inst.onFirstBeat += OnFirstBeat;
-        GameEvents.inst.onSecondBeat += OnSecondBeat;
+        MusicRef.inst.beatSequencer.beatEvent.AddListener(MusicManager.inst.OnBeat);
+        MusicRef.inst.beatSequencer.beatEvent.AddListener(MusicManager.inst.OnVeryFirstBeats);
+        GameEvents.inst.onVeryFirstBeat += OnVeryFirstBeat;
+        GameEvents.inst.onVerySecondBeat += OnVerySecondBeat;
         GameEvents.inst.onFieldStart += VisualController.inst.OnPlayStart;
         GameEvents.inst.onFieldLeave += VisualController.inst.OnPlayEnd;
+        GameEvents.inst.onFieldChange += VisualController.inst.OnFieldChange;
+        GameEvents.inst.onMouseInside += VisualController.inst.OnMouseInside;
+        GameEvents.inst.onMouseOutside += VisualController.inst.OnMouseOutside;
         GameEvents.inst.onScreenResize += CameraOps.PanCamera;
+        
+        // Music-related
+        GameEvents.inst.onFieldStart += MusicManager.inst.OnFieldStart;
+        GameEvents.inst.onFieldChange += MusicManager.inst.OnFieldChange;
+        GameEvents.inst.onFieldLeave += MusicManager.inst.OnFieldLeave;
+
+        GameEvents.inst.onScreenResize?.Invoke(); // Hack
 
         yield return null;
     }
@@ -57,7 +69,7 @@ public class GameplayManager : MonoBehaviour
 
 
 
-    private void OnFirstBeat()
+    private void OnVeryFirstBeat()
     {
         // Player shrink animation
         StartCoroutine(Player.inst.DampedScale(Player.inst.scaleMin, 0.0f));
@@ -77,13 +89,22 @@ public class GameplayManager : MonoBehaviour
     }
 
     // start on second beat spawning stuff because first beat is not synced yet
-    private void OnSecondBeat()
+    private void OnVerySecondBeat()
     {
         // Spawn Tunnels
-        StartCoroutine(ObjectSpawner.inst.InstantiateFirstTunnels(timeToSpawnTunnel_inBeats, tunnelSpawnDistance_InBeats));     // initial
+        StartCoroutine(ObjectSpawner.inst.InstantiateFirstTunnels(timeToSpawnTunnel_inQuarters, tunnelSpawnDistance_inQuarters));     // initial
         // Regular event subscription in ObjectSpawner-coroutine (!!)
 
         // Spawn fields
-        StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, timeToSpawnFields_inBeats, fieldsSpawnDistance_inBeats, fieldsSpawnDuration_inBeats));
+        StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, timeToSpawnFields_inQuarters, fieldsSpawnDistance_inQuarters, fieldsSpawnDuration_inQuarters));
+
+
+        // show beat event
+        int beatsToWait = (timeToSpawnTunnel_inQuarters + (int) tunnelSpawnDistance_inQuarters) * 4 -4;
+
+        print("beats to wait (in beats): " + beatsToWait);
+        StartCoroutine(GameEvents.inst.OnQuarter_subscribeDelayed(MeshUpdateMono.inst.ShowBeat, beatsToWait));
+
+        //GameEvents.inst.onQuarter += MeshUpdateMono.inst.ShowBeat;
     }
 }

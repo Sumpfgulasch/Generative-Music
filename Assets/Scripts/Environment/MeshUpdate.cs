@@ -239,10 +239,26 @@ public static class MeshUpdate
             curField.lineRend.positionCount = curField.positions.Length;
             curField.lineRend.SetPositions(curField.positions);
         }
-
-        
-
     }
+
+
+    /// <summary>
+    /// Update positions of beat triangle.
+    /// </summary>
+    public static void UpdateBeatTriangle()
+    {
+        var positions_list = TunnelData.vertices.ToList();
+        positions_list.Add(positions_list[0]);
+        var positions = PreventLineRendFromBending(positions_list.ToArray());
+
+        MeshRef.inst.tunnelEdges_lr.positionCount = positions.Length;
+        MeshRef.inst.tunnelEdges_lr.SetPositions(positions);
+    }
+    
+
+    
+
+
 
 
     /// <summary>
