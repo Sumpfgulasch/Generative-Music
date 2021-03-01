@@ -32,6 +32,7 @@ public class MeshRef : MonoBehaviour
     public Material fieldSurfaces_mat;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;
+    public Transform mouseTrail;
 
 
     // Start is called before the first frame update

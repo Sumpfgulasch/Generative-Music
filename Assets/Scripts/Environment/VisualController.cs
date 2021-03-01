@@ -135,7 +135,12 @@ public class VisualController : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext context)
     {
-
+        if (context.performed)
+        {
+            //var mousePos = Player.inst.mousePos;
+            //MusicRef.inst.beatSequencer.getsi
+            MeshRef.inst.mouseTrail.position = Player.inst.mousePos;
+        }
     }
 
 

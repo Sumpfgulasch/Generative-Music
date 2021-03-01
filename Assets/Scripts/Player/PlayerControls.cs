@@ -65,6 +65,22 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Rhythm1"",
+                    ""type"": ""Button"",
+                    ""id"": ""08dca369-6fe9-4add-83b5-045b04a86371"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Rhythm2"",
+                    ""type"": ""Button"",
+                    ""id"": ""3e41ce5b-89f8-41f7-9f0e-0f18277177a7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -318,6 +334,28 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""70810a5a-3dbc-4ab8-9a5f-231b9a57124a"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Rhythm1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b2bac1f7-dcb4-431f-8ecc-6b047b355157"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rhythm2"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -901,6 +939,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Gameplay_SelectNext = m_Gameplay.FindAction("SelectNext", throwIfNotFound: true);
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
         m_Gameplay_Reset = m_Gameplay.FindAction("Reset", throwIfNotFound: true);
+        m_Gameplay_Rhythm1 = m_Gameplay.FindAction("Rhythm1", throwIfNotFound: true);
+        m_Gameplay_Rhythm2 = m_Gameplay.FindAction("Rhythm2", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -968,6 +1008,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_SelectNext;
     private readonly InputAction m_Gameplay_Move;
     private readonly InputAction m_Gameplay_Reset;
+    private readonly InputAction m_Gameplay_Rhythm1;
+    private readonly InputAction m_Gameplay_Rhythm2;
     public struct GameplayActions
     {
         private @PlayerControls m_Wrapper;
@@ -978,6 +1020,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @SelectNext => m_Wrapper.m_Gameplay_SelectNext;
         public InputAction @Move => m_Wrapper.m_Gameplay_Move;
         public InputAction @Reset => m_Wrapper.m_Gameplay_Reset;
+        public InputAction @Rhythm1 => m_Wrapper.m_Gameplay_Rhythm1;
+        public InputAction @Rhythm2 => m_Wrapper.m_Gameplay_Rhythm2;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1005,6 +1049,12 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Reset.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnReset;
                 @Reset.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnReset;
                 @Reset.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnReset;
+                @Rhythm1.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRhythm1;
+                @Rhythm1.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRhythm1;
+                @Rhythm1.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRhythm1;
+                @Rhythm2.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRhythm2;
+                @Rhythm2.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRhythm2;
+                @Rhythm2.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRhythm2;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -1027,6 +1077,12 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Reset.started += instance.OnReset;
                 @Reset.performed += instance.OnReset;
                 @Reset.canceled += instance.OnReset;
+                @Rhythm1.started += instance.OnRhythm1;
+                @Rhythm1.performed += instance.OnRhythm1;
+                @Rhythm1.canceled += instance.OnRhythm1;
+                @Rhythm2.started += instance.OnRhythm2;
+                @Rhythm2.performed += instance.OnRhythm2;
+                @Rhythm2.canceled += instance.OnRhythm2;
             }
         }
     }
@@ -1189,6 +1245,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnSelectNext(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnReset(InputAction.CallbackContext context);
+        void OnRhythm1(InputAction.CallbackContext context);
+        void OnRhythm2(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

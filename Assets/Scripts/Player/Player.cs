@@ -249,9 +249,11 @@ public class Player : MonoBehaviour
 
 
 
+
     // ---------------------------------- Events ----------------------------------
 
         
+
 
     public void OnPlayInside(InputAction.CallbackContext context)
     {
@@ -358,10 +360,32 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void OnRhythm1(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            MusicRef.inst.beatSequencer.length = 16;
+            print("rhythm: 4/4");
+        }
+    }
+
+    public void OnRhythm2(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            MusicRef.inst.beatSequencer.length = 12;
+            
+            print("rhythm: 3/4");
+        }
+    }
+
+
 
 
 
     // ------------------------------ Rotation methods ------------------------------
+
+
 
 
 
@@ -386,8 +410,10 @@ public class Player : MonoBehaviour
     private Vector3 ConvertMouseToDirection(Vector2 input)
     {
         var posToConvert = new Vector3(input.x, input.y, Camera.main.nearClipPlane);
-        Vector3 pointerPos = Camera.main.ScreenToWorldPoint(posToConvert);
-        Vector3 pointerDirection = pointerPos - midPoint;
+        mousePos = Camera.main.ScreenToWorldPoint(posToConvert);
+        //mousePos.z = 0;
+        Vector3 pointerDirection = mousePos - midPoint;
+        //print("pointerDir: " + pointerDirection);
 
         return pointerDirection;
     }
@@ -433,8 +459,8 @@ public class Player : MonoBehaviour
     /// </summary>
     private bool MouseHasMinimumDistance(Vector2 input)
     {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
-        float distance = (mousePos - midPoint).magnitude;
+        Vector3 mousePos_dist = Camera.main.ScreenToWorldPoint(new Vector3(input.x, input.y, midPoint.z));
+        float distance = (mousePos_dist - midPoint).magnitude;
 
         if (distance >= minMouseToMidDistance)
             return true;
