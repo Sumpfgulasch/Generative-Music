@@ -35,14 +35,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Play"",
-                    ""type"": ""Button"",
-                    ""id"": ""246b1f2e-90fa-4fd9-98dc-b7197d5acdbd"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""SelectNext"",
                     ""type"": ""Button"",
                     ""id"": ""5365614d-c245-4056-92ff-00becdd27083"",
@@ -55,6 +47,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""type"": ""Value"",
                     ""id"": ""66ef7965-e90c-4953-a915-cafd51458ee1"",
                     ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Record"",
+                    ""type"": ""Button"",
+                    ""id"": ""246b1f2e-90fa-4fd9-98dc-b7197d5acdbd"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 },
@@ -208,7 +208,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""15f002c6-4852-478d-8384-18ae895194b1"",
-                    ""path"": ""<Keyboard>/r"",
+                    ""path"": ""<Keyboard>/q"",
                     ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
@@ -306,17 +306,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""c3cfbd79-458c-4dac-a1f9-f2ec7454bccc"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Play"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""04cd9d96-384e-4c8b-b50f-39b376b8ce3c"",
                     ""path"": ""<Mouse>/position"",
                     ""interactions"": """",
@@ -356,6 +345,39 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Rhythm2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c3cfbd79-458c-4dac-a1f9-f2ec7454bccc"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Record"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""04adf455-85fb-460b-83c4-ca3c57a8b404"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Record"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7a063a8d-750e-423c-9b6e-96bc3e1d991a"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Record"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -935,9 +957,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_PlayInside = m_Gameplay.FindAction("PlayInside", throwIfNotFound: true);
         m_Gameplay_PlayOutside = m_Gameplay.FindAction("PlayOutside", throwIfNotFound: true);
-        m_Gameplay_Play = m_Gameplay.FindAction("Play", throwIfNotFound: true);
         m_Gameplay_SelectNext = m_Gameplay.FindAction("SelectNext", throwIfNotFound: true);
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
+        m_Gameplay_Record = m_Gameplay.FindAction("Record", throwIfNotFound: true);
         m_Gameplay_Reset = m_Gameplay.FindAction("Reset", throwIfNotFound: true);
         m_Gameplay_Rhythm1 = m_Gameplay.FindAction("Rhythm1", throwIfNotFound: true);
         m_Gameplay_Rhythm2 = m_Gameplay.FindAction("Rhythm2", throwIfNotFound: true);
@@ -1004,9 +1026,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private IGameplayActions m_GameplayActionsCallbackInterface;
     private readonly InputAction m_Gameplay_PlayInside;
     private readonly InputAction m_Gameplay_PlayOutside;
-    private readonly InputAction m_Gameplay_Play;
     private readonly InputAction m_Gameplay_SelectNext;
     private readonly InputAction m_Gameplay_Move;
+    private readonly InputAction m_Gameplay_Record;
     private readonly InputAction m_Gameplay_Reset;
     private readonly InputAction m_Gameplay_Rhythm1;
     private readonly InputAction m_Gameplay_Rhythm2;
@@ -1016,9 +1038,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public GameplayActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @PlayInside => m_Wrapper.m_Gameplay_PlayInside;
         public InputAction @PlayOutside => m_Wrapper.m_Gameplay_PlayOutside;
-        public InputAction @Play => m_Wrapper.m_Gameplay_Play;
         public InputAction @SelectNext => m_Wrapper.m_Gameplay_SelectNext;
         public InputAction @Move => m_Wrapper.m_Gameplay_Move;
+        public InputAction @Record => m_Wrapper.m_Gameplay_Record;
         public InputAction @Reset => m_Wrapper.m_Gameplay_Reset;
         public InputAction @Rhythm1 => m_Wrapper.m_Gameplay_Rhythm1;
         public InputAction @Rhythm2 => m_Wrapper.m_Gameplay_Rhythm2;
@@ -1037,15 +1059,15 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @PlayOutside.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlayOutside;
                 @PlayOutside.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlayOutside;
                 @PlayOutside.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlayOutside;
-                @Play.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlay;
-                @Play.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlay;
-                @Play.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlay;
                 @SelectNext.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelectNext;
                 @SelectNext.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelectNext;
                 @SelectNext.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelectNext;
                 @Move.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMove;
                 @Move.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMove;
                 @Move.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMove;
+                @Record.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRecord;
+                @Record.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRecord;
+                @Record.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRecord;
                 @Reset.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnReset;
                 @Reset.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnReset;
                 @Reset.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnReset;
@@ -1065,15 +1087,15 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @PlayOutside.started += instance.OnPlayOutside;
                 @PlayOutside.performed += instance.OnPlayOutside;
                 @PlayOutside.canceled += instance.OnPlayOutside;
-                @Play.started += instance.OnPlay;
-                @Play.performed += instance.OnPlay;
-                @Play.canceled += instance.OnPlay;
                 @SelectNext.started += instance.OnSelectNext;
                 @SelectNext.performed += instance.OnSelectNext;
                 @SelectNext.canceled += instance.OnSelectNext;
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
+                @Record.started += instance.OnRecord;
+                @Record.performed += instance.OnRecord;
+                @Record.canceled += instance.OnRecord;
                 @Reset.started += instance.OnReset;
                 @Reset.performed += instance.OnReset;
                 @Reset.canceled += instance.OnReset;
@@ -1241,9 +1263,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     {
         void OnPlayInside(InputAction.CallbackContext context);
         void OnPlayOutside(InputAction.CallbackContext context);
-        void OnPlay(InputAction.CallbackContext context);
         void OnSelectNext(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
+        void OnRecord(InputAction.CallbackContext context);
         void OnReset(InputAction.CallbackContext context);
         void OnRhythm1(InputAction.CallbackContext context);
         void OnRhythm2(InputAction.CallbackContext context);

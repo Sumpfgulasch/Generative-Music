@@ -22,14 +22,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Play",
-                    "type": "Button",
-                    "id": "246b1f2e-90fa-4fd9-98dc-b7197d5acdbd",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "SelectNext",
                     "type": "Button",
                     "id": "5365614d-c245-4056-92ff-00becdd27083",
@@ -42,6 +34,14 @@
                     "type": "Value",
                     "id": "66ef7965-e90c-4953-a915-cafd51458ee1",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Record",
+                    "type": "Button",
+                    "id": "246b1f2e-90fa-4fd9-98dc-b7197d5acdbd",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 },
@@ -195,7 +195,7 @@
                 {
                     "name": "",
                     "id": "15f002c6-4852-478d-8384-18ae895194b1",
-                    "path": "<Keyboard>/r",
+                    "path": "<Keyboard>/q",
                     "interactions": "Press",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -293,17 +293,6 @@
                 },
                 {
                     "name": "",
-                    "id": "c3cfbd79-458c-4dac-a1f9-f2ec7454bccc",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Play",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "04cd9d96-384e-4c8b-b50f-39b376b8ce3c",
                     "path": "<Mouse>/position",
                     "interactions": "",
@@ -343,6 +332,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "Rhythm2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c3cfbd79-458c-4dac-a1f9-f2ec7454bccc",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Record",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "04adf455-85fb-460b-83c4-ca3c57a8b404",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Record",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7a063a8d-750e-423c-9b6e-96bc3e1d991a",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Record",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

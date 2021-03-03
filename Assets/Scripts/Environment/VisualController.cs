@@ -60,6 +60,11 @@ public class VisualController : MonoBehaviour
     public Color highlightBeatColor = Color.white;
     public float highlightBeatIntensity = 5f;
     public AnimationCurve highlightBeatCurve;
+
+    [Header("Recording")]
+    public Color recordColor;
+    public Color preRecordColor;
+    public float frameWidth;
     
     [Header("Other")]
     public GUIStyle curChordTextStyle;

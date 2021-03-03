@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\Environment\VisualController.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\TriggerVisibleNotes.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetHelmParameter.cs" />
+    <Compile Include="Assets\Scripts\Environment\MeshUpdateMono.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteRow.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Native.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshCreation.cs" />
@@ -126,7 +127,7 @@
     <Compile Include="Assets\Scripts\Util\ExtensionMethods.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshRef.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
-    <Compile Include="Assets\Scripts\Environment\MeshUpdateMono.cs" />
+    <Compile Include="Assets\Scripts\Music\Recorder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Materials\Shaders\Mask.shader" />

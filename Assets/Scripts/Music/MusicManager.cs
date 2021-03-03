@@ -167,22 +167,6 @@ public class MusicManager : MonoBehaviour
 
         PlayField();
 
-        // HACK
-        //if (side == Player.Side.inner)
-        //{
-        //    lastSide = curSide;
-        //    curInstrument = Instrument.inner;
-        //    curSide = side;
-        //}
-        //else
-        //{
-        //    lastSide = curSide;
-        //    curInstrument = Instrument.outer;
-        //    curSide = side;
-        //}
-        //if (curSide != lastSide)
-        //    PlayField();
-
         #region pitch
         // calc pitch
         SetFirstPitchRange(ref minPitch, ref maxPitch);
@@ -206,6 +190,29 @@ public class MusicManager : MonoBehaviour
 
 
     // Input
+
+    public void OnRecord(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (!Recorder.inst.isRecording)
+            {
+                if (Recorder.inst.Has1stRecord)
+                {
+                    Recorder.inst.StartRecord();
+                }
+                else
+                {
+                    Recorder.inst.StartRecordDelayed(LoopData.quartersPerBar);
+                }
+            }
+            else
+            {
+                Recorder.inst.StopRecord();
+            }
+            
+        }
+    }
 
     public void OnReset(InputAction.CallbackContext context)
     {
@@ -263,7 +270,6 @@ public class MusicManager : MonoBehaviour
 
         if (beat % 4 == 0)
         {
-            //print("curBeat: " + curBeat);
             GameEvents.inst.onQuarter?.Invoke();
         }
         
