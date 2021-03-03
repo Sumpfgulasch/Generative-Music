@@ -8,7 +8,7 @@ public class Recorder : MonoBehaviour
     public static Recorder inst;
 
     public bool isRecording = false;
-    public bool preRecording = false;
+    public bool isPreRecording = false;
     public int beatCounter;
     public Canvas canvas;
 
@@ -16,7 +16,6 @@ public class Recorder : MonoBehaviour
 
 
     // Properties
-    //private VisualController Visuals { get { return VisualController.inst; } }
     public bool Has1stRecord
     {
         get
@@ -31,6 +30,8 @@ public class Recorder : MonoBehaviour
             return false;
         }
     }
+
+
 
 
     void Start()
@@ -116,6 +117,7 @@ public class Recorder : MonoBehaviour
         {
             StartRecord();
             GameEvents.inst.onQuarter -= OnStartRecordDelayed;
+            isPreRecording = false;
         }
 
         beatCounter++;
@@ -134,7 +136,7 @@ public class Recorder : MonoBehaviour
     {
         // Variables
         beatCounter = -delayInBeats;
-        preRecording = true;
+        isPreRecording = true;
 
         // Canvas
         EnableVisuals(true);

@@ -77,6 +77,7 @@ public class GameplayManager : MonoBehaviour
 
         // HIER WEITER
 
+        // Tests to control audiohelm parameters
 
         ////print("arp value before: " + MusicManager.inst.curInstrument.GetParameterValue(AudioHelm.Param.kArpOn));
         //MusicManager.inst.curInstrument.SetParameterValue(AudioHelm.Param.kArpOn, 1);
@@ -97,14 +98,10 @@ public class GameplayManager : MonoBehaviour
 
         // Spawn fields
         StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, timeToSpawnFields_inQuarters, fieldsSpawnDistance_inQuarters, fieldsSpawnDuration_inQuarters));
-
-
+        
         // show beat event
         int beatsToWait = (timeToSpawnTunnel_inQuarters + (int) tunnelSpawnDistance_inQuarters) * 4 -4;
-
-        print("beats to wait (in beats): " + beatsToWait);
+        
         StartCoroutine(GameEvents.inst.OnQuarter_subscribeDelayed(MeshUpdateMono.inst.ShowBeat, beatsToWait));
-
-        //GameEvents.inst.onQuarter += MeshUpdateMono.inst.ShowBeat;
     }
 }
