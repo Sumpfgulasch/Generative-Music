@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using AudioHelm;
+using UnityEngine.Audio;
 
 public class Recorder : MonoBehaviour
 {
@@ -37,6 +38,8 @@ public class Recorder : MonoBehaviour
     void Start()
     {
         inst = this;
+
+        
     }
 
 

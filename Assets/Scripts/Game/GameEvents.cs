@@ -90,7 +90,10 @@ public class GameEvents : MonoBehaviour
     //    Test(onQuarter, MusicManager.inst.QuantizeSequence);
     //}
 
-
+    public void PrintSth()
+    {
+        print("print sth");
+    }
 
 
 }

@@ -9,10 +9,10 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{094C5E05-DC00-1772-CE67-73F6A687ECF3}</ProjectGuid>
+    <ProjectGuid>{485D53EE-CCB5-AB1D-CC98-4CC1E5718623}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Unity.InputSystem.VirtualMouseInput</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -60,106 +60,10 @@
     <UnityVersion>2020.2.5f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Additional stuff\SetRenderQueue.cs" />
-    <Compile Include="Assets\Scripts\Player\Player.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\Keyzone.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\Utils.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\Sampler.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetSleepThreshold.cs" />
-    <Compile Include="Assets\Scripts\Environment\TunnelData.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\NoteHandler.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\DestroyAfterTime.cs" />
-    <Compile Include="Assets\Scripts\Camera\CameraOps.cs" />
-    <Compile Include="Assets\Scripts\Environment\VisualController.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\TriggerVisibleNotes.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetHelmParameter.cs" />
-    <Compile Include="Assets\Scripts\Environment\MeshUpdateMono.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\NoteRow.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\Native.cs" />
-    <Compile Include="Assets\Scripts\Environment\MeshCreation.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SyncAudioAndSequencers.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\MaterialOnOff.cs" />
-    <Compile Include="Assets\Scripts\Environment\MeshUpdate.cs" />
-    <Compile Include="Assets\Scripts\Game\GameManager.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\CameraMan.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\BounceAudio2d.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\AudioHelmClock.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\MaterialPulse.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\SampleSequencer.cs" />
-    <Compile Include="Assets\Scripts\Music\Weights.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\Oscillate.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\HelmPatch.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SequenceGenerator.cs" />
-    <Compile Include="Assets\Scripts\Environment\Move.cs" />
-    <Compile Include="Assets\Scripts\Music\MusicGenerationLogic.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\HelmAudioInit.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\HelmSequencer.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetAnimationParameter.cs" />
-    <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\GroundKeyboard.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\EnableAfterTime.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\GroundKey.cs" />
-    <Compile Include="Assets\Scripts\Music\Recorder.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlTorque.cs" />
-    <Compile Include="Assets\Scripts\Game\GameplayManager.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\NoteBlaster.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\PlatformCreator.cs" />
-    <Compile Include="Assets\Scripts\CopyPlayerPosition.cs" />
-    <Compile Include="Assets\Scripts\Music\MusicField.cs" />
-    <Compile Include="Assets\Scripts\Player\PlayerControls.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlJump.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\HelmAudioReceive.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\PulseImageOnNote.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\HelmPatchFormat.cs" />
-    <Compile Include="Assets\Scripts\Environment\ObjectSpawner.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\Sequencer.cs" />
-    <Compile Include="Assets\Scripts\Music\LoopData.cs" />
-    <Compile Include="Assets\Scripts\Environment\ColorHelper.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\RepetitiveSpawner.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\HelmParameter.cs" />
-    <Compile Include="Assets\Scripts\Game\GameEvents.cs" />
-    <Compile Include="Assets\Scripts\Music\MusicRef.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\MidiFile.cs" />
-    <Compile Include="Assets\Scripts\Music\MusicFieldSet.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\Note.cs" />
-    <Compile Include="Assets\Scripts\Music\MusicUtil.cs" />
-    <Compile Include="Assets\Scripts\Music\MusicManager.cs" />
-    <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ToggleParameter.cs" />
-    <Compile Include="Assets\Scripts\Util\ExtensionMethods.cs" />
-    <Compile Include="Assets\Scripts\Environment\MeshRef.cs" />
-    <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
+    <Compile Include="Assets\Samples\Input System\1.0.2\Gamepad Mouse Cursor\VirtualMouseInput.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
-    <None Include="Assets\Materials\Shaders\Mask.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
-    <None Include="Assets\Materials\Shaders\MaskedObj.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
-    <None Include="Assets\AudioHelm\Plugins\UWP\x86_64\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\x86\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\UWP\ARM\AudioPluginHelm.dll" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
-    <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
-    <None Include="Assets\AudioHelm\Plugins\UWP\x86\AudioPluginHelm.dll" />
-    <None Include="Assets\AudioHelm\Plugins\x86_64\AudioPluginHelm.dll" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
-    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
-    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
-    <None Include="Assets\Materials\Shaders\InverseMaskedObj.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
-    <None Include="Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
-    <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
+    <None Include="Assets\Samples\Input System\1.0.2\Gamepad Mouse Cursor\Unity.InputSystem.VirtualMouseInput.asmdef" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -382,8 +286,26 @@
     <Reference Include="UnityEditor.UnityConnectModule">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.Graphs">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.OSXStandalone.Extensions">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\PlaybackEngines\MacStandaloneSupport\UnityEditor.OSXStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.iOS.Extensions">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\15.0\Editor\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
+    </Reference>
     <Reference Include="Sanford.Multimedia.Midi">
       <HintPath>Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>Library\PackageCache\com.unity.render-pipelines.core@10.3.1\Editor\ShaderGenerator\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
@@ -736,71 +658,14 @@
     <Reference Include="System.Xml.Serialization">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\NetStandard\compat\2.0.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.ShaderGraph.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.ShaderGraph.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VSCode.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Shaders">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Searcher.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Searcher.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.InputSystem">
-      <HintPath>Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rider.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics">
-      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup></ItemGroup>

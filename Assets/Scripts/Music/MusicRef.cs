@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class MusicRef : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class MusicRef : MonoBehaviour
     public List<AudioHelm.HelmController> helmControllers;
     public AudioHelm.SampleSequencer beatSequencer;
     public AudioHelm.AudioHelmClock clock;
+    public AudioMixer mixer;
 
 
     void Start()
@@ -17,9 +19,9 @@ public class MusicRef : MonoBehaviour
         inst = this;
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
-        
+       
     }
 }
