@@ -13,7 +13,7 @@ public class Recorder : MonoBehaviour
     public int beatCounter;
     public Canvas canvas;
 
-    public List<Sequencer> layers;
+    
 
 
     // Properties
@@ -21,9 +21,9 @@ public class Recorder : MonoBehaviour
     {
         get
         {
-            foreach (Sequencer layer in layers)
+            foreach (Sequencer sequencer in MusicRef.inst.sequencers)
             {
-                var notes = layer.GetAllNotes();
+                var notes = sequencer.GetAllNotes();
                 print("sequencer notes.count: " + notes.Count);
                 if (notes.Count != 0)
                     return true;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.IO;
 
 public class Player : MonoBehaviour
 {
@@ -364,8 +365,20 @@ public class Player : MonoBehaviour
     {
         if (context.performed)
         {
-            MusicRef.inst.beatSequencer.length = 16;
-            print("rhythm: 4/4");
+            //MusicRef.inst.beatSequencer.length = 16;
+            //print("rhythm: 4/4");
+            
+            
+            //var pathAbs = Application.dataPath + "/AudioHelm/Presets/Arp/CM Kleer Arp.helm";
+
+            //if (System.IO.File.Exists(pathAbs))
+            //    print("file path ABS exists");
+
+            // PATCH LADEN
+            //var patch = new AudioHelm.HelmPatch();
+            //patch.LoadPatchData(pathAbs);
+            MusicManager.inst.curInstrument.LoadPatch(MusicRef.inst.helmPatch1);
+
         }
     }
 
@@ -373,9 +386,11 @@ public class Player : MonoBehaviour
     {
         if (context.performed)
         {
-            MusicRef.inst.beatSequencer.length = 12;
+            //MusicRef.inst.beatSequencer.length = 12;
             
-            print("rhythm: 3/4");
+            //print("rhythm: 3/4");
+
+            MusicManager.inst.curInstrument.LoadPatch(MusicRef.inst.helmPatch2);
         }
     }
 
