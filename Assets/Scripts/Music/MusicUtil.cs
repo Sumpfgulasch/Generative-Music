@@ -493,7 +493,7 @@ public static class MusicUtil
     // Helper methods
 
 
-    private static Chord DeepCopy(this Chord chord)
+    public static Chord DeepCopy(this Chord chord)
     {
         int[] notes = new int[chord.notes.Length];
         for (int i = 0; i < notes.Length; i++)

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using System.Linq;
+using AudioHelm;
 
 public class MusicManager : MonoBehaviour
 {
@@ -30,7 +31,8 @@ public class MusicManager : MonoBehaviour
 
     private float minPitch, maxPitch;
     private float curPitch = 0;
-    [HideInInspector] public AudioHelm.HelmController curInstrument;
+    [HideInInspector] public HelmController curInstrument;
+    [HideInInspector] public Sequencer curSequencer;
     private int curWaitStartBeat;
     private int curBeatsToWait;
     
@@ -63,7 +65,7 @@ public class MusicManager : MonoBehaviour
         curChord = Chords.c4Major;          // stupid inits
         lastChord = curChord;
         curInstrument = Instrument.inner;
-
+        curSequencer = MusicRef.inst.sequencers[0];
         
         //curInstrument.SetParameterValue(AudioHelm.Param.arp, 8);
 
@@ -111,20 +113,20 @@ public class MusicManager : MonoBehaviour
 
     private void PlayField()
     {
+        // 1. Get field type
         lastChord = curChord;
         curChord = GetChord();
 
         int ID = Player.curField.ID;
         var fieldType = Player.curFieldSet[ID].type;
-
-        // nur wenn sich feld nicht aufbaut
+        
         if (!Player.inst.curFieldSet[ID].isSpawning)
         {
+            // nur wenn sich feld nicht aufbaut
             switch (fieldType)
             {
                 case MusicField.Type.Chord:
                     PlayChord(curChord, curInstrument, velocity);
-                    //print("Chord: " + curChord.notes.NoteNames());
                     break;
 
                 case MusicField.Type.Modulation:
@@ -135,14 +137,42 @@ public class MusicManager : MonoBehaviour
                     break;
             }
         }
+
+        // 0. Event
+        GameEvents.inst.onPlayField?.Invoke();
     }
 
-    
-    
+    private void StopField()
+    {
+        // 1. Get field type
+        int ID = Player.curField.ID;
+        var fieldType = Player.curFieldSet[ID].type;            // TO DO: ID und fieldType sind glaube ich das aktuell anvisierte feld und nicht das letzte (noch spielende) feld
+        
+        switch (fieldType)
+        {
+            case MusicField.Type.Chord:
+                StopChord(curChord, curInstrument);
+                break;
 
+            case MusicField.Type.Modulation:
+                break;
+
+            case MusicField.Type.Pitch:
+                break;
+        }
+
+        // 0. Event
+        GameEvents.inst.onStopField?.Invoke();
+
+    }
+
+
+
+    /// <summary>
+    /// Get chord from currently touched field
+    /// </summary>
     private Chord GetChord()
     {
-        // = Get chord from currently touched edgePart
         int playerID = Player.curField.ID;
         Chord chord = Player.curFieldSet[playerID].chord;
 
@@ -177,14 +207,14 @@ public class MusicManager : MonoBehaviour
     {
         if (Player.actionState == Player.ActionState.Play)
         {
-            StopChord(curChord, curInstrument);
+            StopField();
             PlayField();
         }
     }
 
     public void OnFieldLeave()
     {
-        StopChord(curChord, curInstrument);
+        StopField();
     }
 
 
@@ -265,7 +295,7 @@ public class MusicManager : MonoBehaviour
         if (beat == 0)
         {
             curLoop++;
-            GameEvents.inst.onFirstBeat?.Invoke();
+            GameEvents.inst.onWhole?.Invoke();
         }
 
         if (beat % 4 == 0)
@@ -277,7 +307,7 @@ public class MusicManager : MonoBehaviour
 
         
 
-        GameEvents.inst.onBeat?.Invoke(beat);
+        GameEvents.inst.onSixteenth?.Invoke(beat);
 
         
         

@@ -106,7 +106,7 @@ public class ObjectSpawner : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         // 2. EVENT SUBSCRIPTION
-        GameEvents.inst.onBeat += OnBeat;
+        GameEvents.inst.onSixteenth += OnBeat;
 
         // 3. Spawn
         for (int i = 0; i < GameplayManager.inst.maxTunnelsAtOnce; i++)

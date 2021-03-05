@@ -13,7 +13,8 @@ public class Recorder : MonoBehaviour
     public int beatCounter;
     public Canvas canvas;
 
-    
+    //private float velocity;
+    private Recording recording = new Recording();
 
 
     // Properties
@@ -24,7 +25,6 @@ public class Recorder : MonoBehaviour
             foreach (Sequencer sequencer in MusicRef.inst.sequencers)
             {
                 var notes = sequencer.GetAllNotes();
-                print("sequencer notes.count: " + notes.Count);
                 if (notes.Count != 0)
                     return true;
             }
@@ -38,7 +38,7 @@ public class Recorder : MonoBehaviour
     void Start()
     {
         inst = this;
-
+        
         
     }
 
@@ -70,8 +70,15 @@ public class Recorder : MonoBehaviour
 
         EnableVisuals(true);
 
+        // 3. Record
+        // 3.1. subscribe
+        GameEvents.inst.onPlayField += SaveToSequencer_start;
+        GameEvents.inst.onStopField += SaveToSequencer_end;
+
+
         Debug.Log("RECORD");
     }
+
 
 
     /// <summary>
@@ -93,6 +100,10 @@ public class Recorder : MonoBehaviour
         isRecording = false;
 
         EnableVisuals(false);
+
+        // 3.1. UNsubscribe
+        GameEvents.inst.onPlayField -= SaveToSequencer_start;
+        GameEvents.inst.onStopField -= SaveToSequencer_end;
 
         Debug.Log("stop record");
     }
@@ -131,6 +142,31 @@ public class Recorder : MonoBehaviour
     // ------------------------------ Private functions ------------------------------
 
 
+    // Recording
+
+    private void SaveToSequencer_start()
+    {
+        recording.start = (float)MusicManager.inst.curSequencer.GetSequencerPosition();
+        recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
+    }
+
+
+    private void SaveToSequencer_end()
+    {
+        Sequencer sequencer = MusicManager.inst.curSequencer;
+
+        recording.end = (float)sequencer.GetSequencerPosition();
+        float velocity = MusicManager.inst.velocity;
+
+        foreach (int note in recording.notes)
+        {
+            sequencer.AddNote(note, recording.start, recording.end, velocity);
+        }
+    }
+
+
+
+
 
     /// <summary>
     /// Set variables and update canvas.
@@ -154,7 +190,6 @@ public class Recorder : MonoBehaviour
 
 
     // Visuals
-
 
     /// <summary>
     /// Set text.
@@ -189,6 +224,18 @@ public class Recorder : MonoBehaviour
     {
 
         yield return null;
+
+    }
+
+
+    public class Recording
+    {
+        public float start;
+        public float end;
+        public int[] notes;
     }
 
 }
+
+
+

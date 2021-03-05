@@ -9,21 +9,23 @@ public class GameEvents : MonoBehaviour
     public static GameEvents inst;
 
     public Action onTunnelEnter;
+    // Input
     public Action <Player.Side> onFieldStart;
     public Action<PlayerField> onFieldChange;
     public Action onFieldLeave;
-
+    // Play fields
+    public Action onPlayField;
+    public Action onStopField;
+    // Beats
     public Action onVeryFirstBeat;
     public Action onVerySecondBeat;
-    public Action<int> onBeat;
+    public Action<int> onSixteenth;
     public Action onQuarter;
-    public Action onFirstBeat;
+    public Action onWhole;
     public Action onMouseInside;
     public Action onMouseOutside;
 
     public Action onScreenResize;
-
-    public delegate void VoidType();
 
    
 
