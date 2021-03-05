@@ -12,9 +12,9 @@ public class IngameUI : MonoBehaviour
     }
 
 
-    public void ClearSequencer(int layer)
-    {
-        MusicRef.inst.sequencers[layer].Clear();
-    }
+    //public void ClearSequencer(int layer)
+    //{
+    //    MusicRef.inst.sequencers[layer].Clear();
+    //}
     
 }

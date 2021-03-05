@@ -36,6 +36,7 @@ public class MeshRef : MonoBehaviour
     public TextMeshProUGUI recordText;
     public Image recordImage;
     public Image recordBar;
+    public Image recordBarFill;
     public TextMeshProUGUI preRecordCounter;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;

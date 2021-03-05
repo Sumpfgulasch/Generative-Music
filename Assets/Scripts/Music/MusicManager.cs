@@ -26,6 +26,7 @@ public class MusicManager : MonoBehaviour
     [HideInInspector] public Chord lastChord;
     [HideInInspector] public int curBeat;
     [HideInInspector] public int curLoop = -1;
+    [HideInInspector] public int curRecLoops = 2;
 
     // Private variables
 
