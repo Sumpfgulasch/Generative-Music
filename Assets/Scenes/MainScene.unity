@@ -1063,6 +1063,34 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!83 &287988885
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &320635865
 GameObject:
   m_ObjectHideFlags: 0
@@ -1608,7 +1636,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 479942288475478307, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 537536661}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -2468,6 +2496,34 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!83 &537536661
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!83 &560558979
 AudioClip:
   m_ObjectHideFlags: 0
@@ -2751,87 +2807,87 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f3b6e6a951d4582bfd784c7c9b4810, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patchObject: {fileID: 102900000, guid: 78cdbba8f40298b4289a616787ee9a9d, type: 3}
+  patchObject: {fileID: 102900000, guid: e13d2d48f8b639440b9ec7d075636790, type: 3}
   patchData:
-    license: Patch (c) by Mikolis.  This patch is licensed under a Creative Commons
-      Attribution 4.0 International License.  You should have received a copy of
-      the license along with this work.  If not, see <http://creativecommons.org/licenses/by/4.0/>.
+    license: Patch (c) by SF.  This patch is licensed under a Creative Commons Attribution
+      4.0 International License.  You should have received a copy of the license
+      along with this work.  If not, see <http://creativecommons.org/licenses/by/4.0/>.
     synth_version: 0.9.0
-    patch_name: CM Tremolo
+    patch_name: SF Arp 1
     folder_name: Arp
-    author: Mikolis
+    author: SF
     settings:
-      amp_attack: 0.1
-      amp_decay: 1.5
-      amp_release: 0.3
-      amp_sustain: 1
+      amp_attack: 0
+      amp_decay: 1.1333563
+      amp_release: 0.6216465
+      amp_sustain: 0
       arp_frequency: 2
-      arp_gate: 0.092
+      arp_gate: 0
       arp_octaves: 1
       arp_on: 1
       arp_pattern: 0
       arp_sync: 1
       arp_tempo: 9
-      beats_per_minute: 2.3333333
-      cross_modulation: 0.148
-      cutoff: 80
-      delay_dry_wet: 0.0035067634
-      delay_feedback: 0.27199996
+      beats_per_minute: 2
+      cross_modulation: 0
+      cutoff: 69.46142
+      delay_dry_wet: 0.5
+      delay_feedback: 0.39999998
       delay_frequency: 2.0000002
-      delay_on: 1
-      delay_sync: 2
-      delay_tempo: 8
-      distortion_drive: 12
+      delay_on: 0
+      delay_sync: 1
+      delay_tempo: 7
+      distortion_drive: 6.4295025
       distortion_mix: 1
       distortion_on: 1
       distortion_type: 0
-      fil_attack: 0.1
-      fil_decay: 1.5
-      fil_env_depth: 0
-      fil_release: 1.5
-      fil_sustain: 0.5
+      fil_attack: 0
+      fil_decay: 0.53475934
+      fil_env_depth: 5.765518
+      fil_release: 0.5723429
+      fil_sustain: 0.5339504
       filter_blend: 0
-      filter_drive: -12
+      filter_drive: 0
       filter_on: 1
       filter_saturation: 0
-      filter_shelf: 2
-      filter_style: 2
+      filter_shelf: 0
+      filter_style: 0
       filter_type: 0
       formant_on: 0
-      formant_x: 0.5
-      formant_y: 0.5
-      keytrack: 0
+      formant_x: 0.47142857
+      formant_y: 0.5225225
+      keytrack: 1
       legato: 0
-      mod_attack: 0.1
-      mod_decay: 1.5
-      mod_release: 1.5
-      mod_sustain: 0.5
-      mono_lfo_1_amplitude: 1
-      mono_lfo_1_frequency: 1.0000002
+      mod_attack: 0
+      mod_decay: 0
+      mod_release: 0
+      mod_sustain: 0
+      mono_lfo_1_amplitude: 0.85915494
+      mono_lfo_1_frequency: 1.9879999
       mono_lfo_1_retrigger: 0
-      mono_lfo_1_sync: 1
+      mono_lfo_1_sync: 0
       mono_lfo_1_tempo: 6
-      mono_lfo_1_waveform: 0
-      mono_lfo_2_amplitude: 0.18309855
+      mono_lfo_1_waveform: 1
+      mono_lfo_2_amplitude: 1
       mono_lfo_2_frequency: 1.0000002
       mono_lfo_2_retrigger: 0
-      mono_lfo_2_sync: 1
-      mono_lfo_2_tempo: 9
-      mono_lfo_2_waveform: 3
+      mono_lfo_2_sync: 3
+      mono_lfo_2_tempo: 8
+      mono_lfo_2_waveform: 2
       noise_volume: 0
       num_steps: 8
-      osc_1_transpose: 24
+      osc_1_transpose: 0
       osc_1_tune: 0
-      osc_1_unison_detune: 4
-      osc_1_unison_voices: 5
-      osc_1_volume: 0.6389431
-      osc_1_waveform: 3
-      osc_2_transpose: 12
-      osc_2_tune: 0
-      osc_2_unison_detune: 24.8
-      osc_2_unison_voices: 13
-      osc_2_volume: 0.34186935
-      osc_2_waveform: 0
+      osc_1_unison_detune: 0
+      osc_1_unison_voices: 1
+      osc_1_volume: 0.031380065
+      osc_1_waveform: 2
+      osc_2_transpose: 0
+      osc_2_tune: 0.032000065
+      osc_2_unison_detune: 6.058597
+      osc_2_unison_voices: 3
+      osc_2_volume: 0.5997912
+      osc_2_waveform: 3
       osc_feedback_amount: 0
       osc_feedback_transpose: 0
       osc_feedback_tune: 0
@@ -2840,25 +2896,25 @@ MonoBehaviour:
       poly_lfo_amplitude: 1
       poly_lfo_frequency: 1.0000002
       poly_lfo_sync: 1
-      poly_lfo_tempo: 7
+      poly_lfo_tempo: 6
       poly_lfo_waveform: 0
-      polyphony: 1
+      polyphony: 4
       portamento: -9
       portamento_type: 0
-      resonance: 0.6126761
-      reverb_damping: 0.148
-      reverb_dry_wet: 0.15517242
-      reverb_feedback: 0.9464
+      resonance: 0.4207456
+      reverb_damping: 0.5
+      reverb_dry_wet: 0.5
+      reverb_feedback: 0.9
       reverb_on: 1
       step_frequency: 1.9999999
-      step_seq_00: 0
-      step_seq_01: 0
-      step_seq_02: 0
-      step_seq_03: 0
-      step_seq_04: 0
-      step_seq_05: 0
-      step_seq_06: 0
-      step_seq_07: 0
+      step_seq_00: 0.44578314
+      step_seq_01: -0.7108433
+      step_seq_02: 0.12198794
+      step_seq_03: 0.68674695
+      step_seq_04: -0.4698795
+      step_seq_05: 0.42168677
+      step_seq_06: 0.8313253
+      step_seq_07: -0.32530117
       step_seq_08: 0
       step_seq_09: 0
       step_seq_10: 0
@@ -2885,37 +2941,25 @@ MonoBehaviour:
       step_seq_31: 0
       step_sequencer_retrigger: 0
       step_sequencer_sync: 1
-      step_sequencer_tempo: 7
+      step_sequencer_tempo: 8
       step_smoothing: 0
-      stutter_frequency: 3.0000002
+      stutter_frequency: 1.8400002
       stutter_on: 0
-      stutter_resample_frequency: 1.0000002
+      stutter_resample_frequency: -7
       stutter_resample_sync: 1
       stutter_resample_tempo: 6
-      stutter_softness: 0
+      stutter_softness: 0.568
       stutter_sync: 1
       stutter_tempo: 8
       sub_octave: 0
       sub_shuffle: 0
-      sub_volume: 0.07983463
-      sub_waveform: 2
+      sub_volume: 0
+      sub_waveform: 1
       unison_1_harmonize: 0
       unison_2_harmonize: 0
-      velocity_track: 0
-      volume: 0.8297099
-      modulations:
-      - source: mono_lfo_1
-        destination: osc_2_volume
-        amount: -0.14712733
-      - source: mono_lfo_2
-        destination: resonance
-        amount: -1
-      - source: mono_lfo_1
-        destination: sub_volume
-        amount: 0.05441053
-      - source: mono_lfo_1
-        destination: cross_modulation
-        amount: 0.132
+      velocity_track: 0.13600004
+      volume: 0.9689591
+      modulations: []
 --- !u!1 &595420377
 GameObject:
   m_ObjectHideFlags: 0
@@ -3283,6 +3327,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 634033084}
   m_CullTransparentMesh: 1
+--- !u!83 &657081412
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
+--- !u!83 &676178583
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &678918252
 GameObject:
   m_ObjectHideFlags: 0
@@ -3500,7 +3600,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5925276600095122450, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 676178583}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -3586,6 +3686,34 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!83 &688384122
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &694629069
 GameObject:
   m_ObjectHideFlags: 0
@@ -6981,7 +7109,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -5070382467755015608, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 1449073256}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -8086,6 +8214,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1421362407}
   m_CullTransparentMesh: 1
+--- !u!83 &1449073256
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &1457492036
 GameObject:
   m_ObjectHideFlags: 0
@@ -8885,7 +9041,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -1534950421783430297, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 1744613846}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -9308,7 +9464,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 2224735792368419155, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 657081412}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -9907,7 +10063,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 2224735792368419155, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 688384122}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -10470,6 +10626,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1733508372}
   m_CullTransparentMesh: 1
+--- !u!83 &1744613846
+AudioClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: helm
+  m_LoadType: 0
+  m_Channels: 1
+  m_Frequency: 48000
+  m_BitsPerSample: 32
+  m_Length: 0
+  m_IsTrackerFormat: 0
+  m_Ambisonic: 0
+  m_SubsoundIndex: 0
+  m_PreloadAudioData: 1
+  m_LoadInBackground: 0
+  m_Legacy3D: 0
+  m_Resource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_CompressionFormat: 0
+  m_EditorResource:
+    m_Source: 
+    m_Offset: 0
+    m_Size: 0
+  m_EditorCompressionFormat: 0
 --- !u!1 &1744810423
 GameObject:
   m_ObjectHideFlags: 0
@@ -16282,7 +16466,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5925276600095122450, guid: 7abb0e90112c979488517a578870de2e, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 287988885}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

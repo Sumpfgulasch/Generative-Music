@@ -75,6 +75,11 @@ public class Recorder : MonoBehaviour
         GameEvents.inst.onPlayField += SaveToSequencer_start;
         GameEvents.inst.onStopField += SaveToSequencer_end;
 
+        if (Player.inst.actionState == Player.ActionState.Play)
+        {
+            recording.start = (float) MusicManager.inst.curSequencer.GetSequencerPosition();
+            recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
+        }
 
         Debug.Log("RECORD");
     }
@@ -98,6 +103,12 @@ public class Recorder : MonoBehaviour
     public void StopRecord()
     {
         isRecording = false;
+
+        if (isPreRecording)
+        {
+            isPreRecording = false;
+            GameEvents.inst.onQuarter -= OnStartRecordDelayed;
+        }
 
         EnableVisuals(false);
 
@@ -174,8 +185,9 @@ public class Recorder : MonoBehaviour
     private void InitPreRecord(int delayInBeats)
     {
         // Variables
-        beatCounter = -delayInBeats;
         isPreRecording = true;
+        beatCounter = -delayInBeats;
+        //isRecording = true;
 
         // Canvas
         EnableVisuals(true);

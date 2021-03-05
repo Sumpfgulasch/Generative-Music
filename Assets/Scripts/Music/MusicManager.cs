@@ -225,7 +225,7 @@ public class MusicManager : MonoBehaviour
     {
         if (context.performed)
         {
-            if (!Recorder.inst.isRecording)
+            if (!Recorder.inst.isRecording && !Recorder.inst.isPreRecording)
             {
                 if (Recorder.inst.Has1stRecord)
                 {
