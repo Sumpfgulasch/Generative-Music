@@ -81,8 +81,9 @@ public class Recorder : MonoBehaviour
         
         // 3. Record
         // 3.1. subscribe
-        GameEvents.inst.onPlayField += SaveToSequencer_start;
-        GameEvents.inst.onStopField += SaveToSequencer_end;
+        GameEvents.inst.onPlayField += SaveRecordingData;
+        GameEvents.inst.onStopField += SaveToSequencer;
+        GameEvents.inst.onStopField += InstantiateRecordedChord;
         // 3.2. Chord already playing?
         if (Player.inst.actionState == Player.ActionState.Play)
         {
@@ -134,25 +135,32 @@ public class Recorder : MonoBehaviour
         // If there's a chord being played
         if (recording.end == -1)
         {
-            SaveToSequencer_end();
+            SaveToSequencer();
+        }
+
+        // Disable record bar?
+        if (!Has1stRecord)
+        {
+            DisableRecordBar();
         }
 
         // 3.1. UNsubscribe
-        GameEvents.inst.onPlayField -= SaveToSequencer_start;
-        GameEvents.inst.onStopField -= SaveToSequencer_end;
+        GameEvents.inst.onPlayField -= SaveRecordingData;
+        GameEvents.inst.onStopField -= SaveToSequencer;
+        GameEvents.inst.onStopField -= InstantiateRecordedChord;
     }
 
 
 
-
+    /// <summary>
+    /// Clear all notes from a given sequencer. Disable recordBar maybe.
+    /// </summary>
     public void ClearSequencer(int layer)
     {
         MusicRef.inst.sequencers[layer].Clear();
         if (!Has1stRecord)
         {
-            StopCoroutine(recordBar);
-            MeshRef.inst.recordBar.enabled = false;
-            MeshRef.inst.recordBarFill.enabled = false;
+            DisableRecordBar();
         }
     }
 
@@ -192,9 +200,9 @@ public class Recorder : MonoBehaviour
     /// <summary>
     /// Save start time and notes of the currently played chord.
     /// </summary>
-    private void SaveToSequencer_start()
+    private void SaveRecordingData()
     {
-        recording.start = (float) MusicManager.inst.curSequencer.GetSequencerPosition();
+        recording.start = (float)CurSequencer.GetSequencerPosition();
         recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         recording.end = -1;
     }
@@ -203,16 +211,14 @@ public class Recorder : MonoBehaviour
     /// <summary>
     /// Save end-time of the currently played chord and store it in the sequencer.
     /// </summary>
-    private void SaveToSequencer_end()
+    private void SaveToSequencer()
     {
-        Sequencer sequencer = MusicManager.inst.curSequencer;
-
-        recording.end = (float)sequencer.GetSequencerPosition();
+        recording.end = (float) CurSequencer.GetSequencerPosition();
         float velocity = MusicManager.inst.velocity;
 
         foreach (int note in recording.notes)
         {
-            sequencer.AddNote(note, recording.start, recording.end, velocity);
+            CurSequencer.AddNote(note, recording.start, recording.end, velocity);
         }
     }
     
@@ -243,21 +249,46 @@ public class Recorder : MonoBehaviour
         // Reset1sBeats()                   // TO DO maybe
     }
 
+    /// <summary>
+    /// Get the percentage of the current position of a given sequencer, with start and end point defined by recording-variable (!).
+    /// </summary>
+    private float SequencerPositionPercentage(Sequencer sequencer, float sequencerPosition)
+    {
+        //float curSequencerPos = (float)sequencer.GetSequencerPosition();
+        if (sequencerPosition < recording.sequencerStart)
+            sequencerPosition += sequencer.length;
+
+        return (sequencerPosition - recording.sequencerStart) / sequencer.length; // 0-1
+    }
 
 
     // Visuals
+
+    private void InstantiateRecordedChord()
+    {
+        float curSeqencerPos = (float) CurSequencer.GetSequencerPosition();
+        float percentageToNextCycle = 1 - SequencerPositionPercentage(CurSequencer, curSeqencerPos);
+        float distanceToNextCycle = percentageToNextCycle * LoopData.distancePerRecLoop;
+        Vector3 nextCycleStartPos = Player.inst.transform.position + Vector3.forward * distanceToNextCycle;
+
+        float startPos = recording.end;
+    }
+
+    private void DisableRecordBar()
+    {
+        StopCoroutine(recordBar);
+        MeshRef.inst.recordBar.enabled = false;
+        MeshRef.inst.recordBarFill.enabled = false;
+    }
 
     private IEnumerator RecordingBar()
     {
         while (true)
         {
-            float curSequencerPos = (float)CurSequencer.GetSequencerPosition();
-            if (curSequencerPos < recording.sequencerStart)
-                curSequencerPos += CurSequencer.length;
+            float curSequencerPos = (float) CurSequencer.GetSequencerPosition();
+            float percentage = SequencerPositionPercentage(CurSequencer, curSequencerPos);
 
-            float fillPercentage = (curSequencerPos - recording.sequencerStart) / CurSequencer.length;
-
-            MeshRef.inst.recordBarFill.fillAmount = fillPercentage;
+            MeshRef.inst.recordBarFill.fillAmount = percentage;
 
             yield return null;
         }

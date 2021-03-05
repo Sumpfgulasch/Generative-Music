@@ -31,6 +31,8 @@ public static class LoopData
     public static float timePerBeat;
     public static int beatsPerBar; // in sixteenth
     public static int quartersPerBar;
+    public static float distancePerSixteenth;
+    public static float distancePerRecLoop;
 
     // Properties
     private static Player Player { get { return Player.inst; } }
@@ -279,6 +281,9 @@ public static class LoopData
         beatsPerBar = MusicRef.inst.beatSequencer.length;
         timePerBar = (quartersPerBar / MusicRef.inst.clock.bpm) *60;
         timePerBeat = timePerBar / quartersPerBar;
+        //Debug.Log("MusicManager.inst: " + MusicManager.inst);     // MusicManager.inst does not exist yet
+        //distancePerSixteenth = ObjectSpawner.inst.tunnelLength / MusicManager.inst.curSequencer.length;
+        //distancePerRecLoop = distancePerSixteenth * MusicManager.inst.curSequencer.length;
     }
 
 }

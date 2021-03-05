@@ -15,8 +15,8 @@ public class ObjectSpawner : MonoBehaviour
     // private
     private List<GameObject> movingObjects;
     private float playerZpos;
-    private float tunnelLength;
-    private float distancePerBeat;
+    [HideInInspector] public float tunnelLength;
+    [HideInInspector] public float distancePerQuarter;
     private float FPS;
 
     // Properties
@@ -87,7 +87,7 @@ public class ObjectSpawner : MonoBehaviour
         int FPS = Screen.currentResolution.refreshRate;
         moveSpeed = (tunnelLength / LoopData.timePerBar) / FPS;
 
-        distancePerBeat = tunnelLength / LoopData.quartersPerBar;
+        distancePerQuarter = tunnelLength / LoopData.quartersPerBar;
 
         playerZpos = Player.inst.transform.position.z;
 
@@ -113,7 +113,7 @@ public class ObjectSpawner : MonoBehaviour
         {
             GameObject newObj = availableObjects[Random.Range(0, availableObjects.Count)];
 
-            float zSpawn = playerZpos + distancePerBeat * spawnDistanceInBeats;
+            float zSpawn = playerZpos + distancePerQuarter * spawnDistanceInBeats;
 
             newObj = Instantiate(newObj, new Vector3(0, 0, zSpawn + i * tunnelLength), Quaternion.identity);
             movingObjects.Add(newObj);
@@ -217,7 +217,7 @@ public class ObjectSpawner : MonoBehaviour
         float duration = spawnDistanceInBeats * LoopData.timePerBeat;
 
         float timer = 0;
-        float zPos = playerZpos + distancePerBeat * spawnDistanceInBeats;
+        float zPos = playerZpos + distancePerQuarter * spawnDistanceInBeats;
 
         // 1. Move lineRend to front
         while (timer < duration)
