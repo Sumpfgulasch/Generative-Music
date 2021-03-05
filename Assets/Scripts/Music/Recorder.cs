@@ -10,7 +10,7 @@ public class Recorder : MonoBehaviour
 
     public bool isRecording = false;
     public bool isPreRecording = false;
-    public int beatCounter;
+    public int preRecCounter;
     public Canvas canvas;
 
     //private float velocity;
@@ -38,7 +38,10 @@ public class Recorder : MonoBehaviour
     void Start()
     {
         inst = this;
-        
+        MeshRef.inst.recordText.enabled = false;
+        MeshRef.inst.recordBar.enabled = false;
+        MeshRef.inst.recordImage.enabled = false;
+        MeshRef.inst.preRecordCounter.enabled = false;
         
     }
 
@@ -58,18 +61,17 @@ public class Recorder : MonoBehaviour
         isRecording = true;
         
         // 2. Visuals
-        var text = "";
-        var color = VisualController.inst.recordColor;
-        SetText(text, color);
-
-        SetRecordingBar(color);
-        StartCoroutine(RecordingBar());
-
-        var frameWidth = VisualController.inst.frameWidth;
-        SetFrame(color, frameWidth);
-
-        EnableVisuals(true);
-
+        var recordColor = VisualController.inst.recordColor;
+        MeshRef.inst.recordText.enabled = true;
+        MeshRef.inst.recordText.color = recordColor;
+        MeshRef.inst.recordImage.enabled = true;
+        MeshRef.inst.recordImage.color = recordColor;
+        MeshRef.inst.recordBar.enabled = true;
+        MeshRef.inst.recordBar.color = recordColor;
+        if (!Has1stRecord)
+            StartCoroutine(RecordingBar());
+        MeshRef.inst.preRecordCounter.enabled = false;
+        
         // 3. Record
         // 3.1. subscribe
         GameEvents.inst.onPlayField += SaveToSequencer_start;
@@ -80,8 +82,6 @@ public class Recorder : MonoBehaviour
             recording.start = (float) MusicManager.inst.curSequencer.GetSequencerPosition();
             recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         }
-
-        Debug.Log("RECORD");
     }
 
 
@@ -102,6 +102,14 @@ public class Recorder : MonoBehaviour
 
     public void StopRecord()
     {
+        // Visuals
+        MeshRef.inst.recordText.enabled = false;
+        MeshRef.inst.recordImage.enabled = false;
+        var color = VisualController.inst.preRecordColor;
+        MeshRef.inst.recordBar.color = color;
+        MeshRef.inst.preRecordCounter.enabled = false;
+
+        // Variables
         isRecording = false;
 
         if (isPreRecording)
@@ -115,8 +123,6 @@ public class Recorder : MonoBehaviour
         // 3.1. UNsubscribe
         GameEvents.inst.onPlayField -= SaveToSequencer_start;
         GameEvents.inst.onStopField -= SaveToSequencer_end;
-
-        Debug.Log("stop record");
     }
 
 
@@ -131,21 +137,18 @@ public class Recorder : MonoBehaviour
     private void OnStartRecordDelayed()
     {
         // 1. Count down and show on canvas
-        var text = Mathf.Abs(beatCounter).ToString();
-        var color = VisualController.inst.preRecordColor;
-        SetText(text, color);
-
-        Debug.Log("pre rec: " + text);
+        var text = Mathf.Abs(preRecCounter).ToString();
+        MeshRef.inst.preRecordCounter.text = text;
         
         // 2. Start record and unsubscribe
-        if (beatCounter == 0)
+        if (preRecCounter == 0)
         {
             StartRecord();
             GameEvents.inst.onQuarter -= OnStartRecordDelayed;
             isPreRecording = false;
         }
 
-        beatCounter++;
+        preRecCounter--;
     }
 
 
@@ -186,16 +189,22 @@ public class Recorder : MonoBehaviour
     {
         // Variables
         isPreRecording = true;
-        beatCounter = -delayInBeats;
-        //isRecording = true;
+        preRecCounter = delayInBeats;
 
         // Canvas
-        EnableVisuals(true);
-        var text = "";
         var color = VisualController.inst.preRecordColor;
-        SetText(text, color);
-        
+        MeshRef.inst.recordText.enabled = true;
+        MeshRef.inst.recordText.color = color;
+        MeshRef.inst.recordImage.enabled = true;
+        MeshRef.inst.recordImage.color = color;
+        MeshRef.inst.recordBar.enabled = true;
+        MeshRef.inst.recordBar.color = color;
 
+        MeshRef.inst.preRecordCounter.enabled = true;
+        //var text = preRecCounter.ToString();
+        MeshRef.inst.preRecordCounter.text = "";
+
+      
         // Reset1sBeats()                   // TO DO maybe
     }
 

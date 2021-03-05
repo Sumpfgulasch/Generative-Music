@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class MeshRef : MonoBehaviour
 {
@@ -30,6 +32,11 @@ public class MeshRef : MonoBehaviour
     public int fieldSurfaces_renderQueue = 3001;
     public Transform fieldSurfaces_parent;
     public Material fieldSurfaces_mat;
+    [Header("UI")]
+    public TextMeshProUGUI recordText;
+    public Image recordImage;
+    public Image recordBar;
+    public TextMeshProUGUI preRecordCounter;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;
     public Transform mouseTrail;
