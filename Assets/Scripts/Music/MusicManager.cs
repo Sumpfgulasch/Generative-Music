@@ -139,7 +139,7 @@ public class MusicManager : MonoBehaviour
             }
         }
 
-        // 0. Event
+        // 2. Event
         GameEvents.inst.onPlayField?.Invoke();
     }
 
@@ -162,7 +162,7 @@ public class MusicManager : MonoBehaviour
                 break;
         }
 
-        // 0. Event
+        // 2. Event
         GameEvents.inst.onStopField?.Invoke();
 
     }
