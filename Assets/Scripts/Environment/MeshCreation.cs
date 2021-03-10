@@ -269,8 +269,8 @@ public static class MeshCreation
             Material material_high = MeshRef.inst.highlightSurfaces_mat;
    
 
-            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, false, 1f, fieldLayer, fieldRenderQueue);
-            MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, false, 2f);
+            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, false, -1f, fieldLayer, fieldRenderQueue);
+            MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, false, -2f);
 
             fields[ID].fieldSurface = fieldSurface;
             fields[ID].highlightSurface = highlightSurface;
@@ -283,7 +283,7 @@ public static class MeshCreation
     /// Create a lane surface (gameObj, MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID. Disable MeshRenderer (!).
     /// </summary>
     /// <param name="index">[0, fields.Length]</param>
-    private static MeshRenderer CreateLaneSurface(MusicField[] fields, int index, string name, Transform parent, Material material, bool enable = false, float length = 1f, int layer = 0, int renderQueue = -1)
+    private static MeshRenderer CreateLaneSurface(MusicField[] fields, int index, string name, Transform parent, Material material, bool enable = false, float length = -1f, int layer = 0, int renderQueue = -1)
     {
         // 0. Container & components
         GameObject laneSurface = CreateContainer(name + index, parent);
@@ -297,7 +297,7 @@ public static class MeshCreation
         for (int j = 0; j < fieldPositions.Length; j++)
         {
             var pos = fieldPositions[j];
-            pos.z -= length;
+            pos.z += length;
             vertices.Add(pos);
         }
 
@@ -307,48 +307,80 @@ public static class MeshCreation
 
         if (fields[index].isCorner)
         {
-            // Corner?
-            triangles = new int[]
+            // Corner
+            if (length < 0)
             {
-                0, 3, 4,
-                4, 1, 0,
-                1, 4, 5,
-                5, 2, 1
-            };
+                // Shape ragt nach vorne
+                triangles = new int[]
+                {
+                    0, 3, 4,
+                    4, 1, 0,
+                    1, 4, 5,
+                    5, 2, 1
+                };
+            }
+            else
+            {
+                // Shape ragt nach hinten
+                triangles = new int[]
+                {
+                    0, 4, 3,
+                    4, 0, 1,
+                    1, 5, 4,
+                    5, 1, 2
+                };
+            }
 
-            normals = new Vector3[]                                                           // unused so far
-            {
-                Vector3.Cross(vertices[1] - vertices[0], vertices[3] - vertices[0]).normalized,
-                (((vertices[0] - vertices[1]) + (vertices[2] - vertices[1])) / 2f).normalized,
-                Vector3.Cross(vertices[5] - vertices[2], vertices[1] - vertices[2]).normalized,
-                Vector3.Cross(vertices[1] - vertices[0], vertices[3] - vertices[0]).normalized,        // twice
-                (((vertices[0] - vertices[1]) + (vertices[2] - vertices[1])) / 2f).normalized,
-                Vector3.Cross(vertices[5] - vertices[2], vertices[1] - vertices[2]).normalized
-            };
+            #region normals
+            //normals = new Vector3[]                                                                     // not used
+            //{
+            //    Vector3.Cross(vertices[1] - vertices[0], vertices[3] - vertices[0]).normalized,
+            //    Vector3.Cross(vertices[5] - vertices[2], vertices[1] - vertices[2]).normalized,
+            //    (((vertices[0] - vertices[1]) + (vertices[2] - vertices[1])) / 2f).normalized,
+            //    Vector3.Cross(vertices[1] - vertices[0], vertices[3] - vertices[0]).normalized,         // twice
+            //    Vector3.Cross(vertices[5] - vertices[2], vertices[1] - vertices[2]).normalized,
+            //    (((vertices[0] - vertices[1]) + (vertices[2] - vertices[1])) / 2f).normalized
+            //};
+            #endregion
         }
         else
         {
-            // Regular?
-            triangles = new int[]
+            // Regular
+            if (length < 0)
             {
-                0, 2, 3,
-                3, 1, 0
-            };
+                // Shape ragt nach vorne
+                triangles = new int[]
+                {
+                    0, 2, 3,
+                    3, 1, 0
+                };
+            }
+            else
+            {
+                // Shape ragt nach hinten
+                triangles = new int[]
+                {
+                    0, 3, 2,
+                    3, 0, 1
+                };
+            }
 
-            normals = new Vector3[]
-            {
-                Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]),
-                Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]),
-                Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]),
-                Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0])
-            };
+            #region normals
+            //normals = new Vector3[]                                                                 // not used
+            //{
+            //    Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]),
+            //    Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]),
+            //    Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0]),                // twice
+            //    Vector3.Cross(vertices[1] - vertices[0], vertices[2] - vertices[0])
+            //};
+            #endregion
         }
 
         // 1.3. Assign
         Mesh mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles;
-        mesh.normals = normals;
+        //mesh.normals = normals;
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
 
@@ -358,6 +390,7 @@ public static class MeshCreation
         meshRenderer.enabled = enable;
         if (renderQueue != -1)
             meshRenderer.material.renderQueue = renderQueue;
+        
 
         return meshRenderer;
     }

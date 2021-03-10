@@ -15,10 +15,7 @@ public class GameplayManager : MonoBehaviour
     public float fieldsSpawnDistance_inQuarters = 2f;
     public float fieldsSpawnDuration_inQuarters = 1f;
 
-    private void OnEnable()
-    {
-        
-    }
+    
 
     IEnumerator Start()
     {
@@ -93,11 +90,11 @@ public class GameplayManager : MonoBehaviour
     private void OnVerySecondBeat()
     {
         // Spawn Tunnels
-        StartCoroutine(ObjectSpawner.inst.InstantiateFirstTunnels(timeToSpawnTunnel_inQuarters, tunnelSpawnDistance_inQuarters));     // initial
+        StartCoroutine(ObjectManager.inst.SpawnFirstTunnels(maxTunnelsAtOnce, timeToSpawnTunnel_inQuarters, tunnelSpawnDistance_inQuarters));     // initial
         // Regular event subscription in ObjectSpawner-coroutine (!!)
 
         // Spawn fields
-        StartCoroutine(ObjectSpawner.inst.SpawnMusicFields(TunnelData.fields, timeToSpawnFields_inQuarters, fieldsSpawnDistance_inQuarters, fieldsSpawnDuration_inQuarters));
+        StartCoroutine(ObjectManager.inst.SpawnMusicFields(TunnelData.fields, timeToSpawnFields_inQuarters, fieldsSpawnDistance_inQuarters, fieldsSpawnDuration_inQuarters));
         
         // show beat event
         int beatsToWait = (timeToSpawnTunnel_inQuarters + (int) tunnelSpawnDistance_inQuarters) * 4 -4;

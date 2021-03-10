@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Move : MonoBehaviour
+public class MoveTunnel : MonoBehaviour
 {
-    public GameObject start;
-    public GameObject end;
-    float FPS;
+    public Transform startPos;
+    public Transform endPos;
+    
+    private float FPS;
 
     private float DeltaTime
     {
@@ -32,6 +33,6 @@ public class Move : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.position -= new Vector3(0, 0, ObjectSpawner.inst.moveSpeed * DeltaTime);
+        this.transform.position -= new Vector3(0, 0, ObjectManager.inst.moveSpeed * DeltaTime);
     }
 }

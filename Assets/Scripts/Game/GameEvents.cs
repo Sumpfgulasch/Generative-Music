@@ -21,7 +21,7 @@ public class GameEvents : MonoBehaviour
     public Action onVerySecondBeat;
     public Action<int> onSixteenth;
     public Action onQuarter;
-    public Action onWhole;
+    public Action onFirstBeat;
     public Action onMouseInside;
     public Action onMouseOutside;
 

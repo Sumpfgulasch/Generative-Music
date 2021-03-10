@@ -296,7 +296,7 @@ public class MusicManager : MonoBehaviour
         if (beat == 0)
         {
             curLoop++;
-            GameEvents.inst.onWhole?.Invoke();
+            GameEvents.inst.onFirstBeat?.Invoke();
         }
 
         if (beat % 4 == 0)

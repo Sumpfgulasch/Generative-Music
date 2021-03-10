@@ -32,11 +32,13 @@ public class MeshRef : MonoBehaviour
     public int fieldSurfaces_renderQueue = 3001;
     public Transform fieldSurfaces_parent;
     public Material fieldSurfaces_mat;
-    [Header("UI")]
+    [Header("Record")]
     public TextMeshProUGUI recordText;
     public Image recordImage;
     public Image recordBar;
     public Image recordBarFill;
+    public Transform recordObj_transform;
+    public GameObject recordObject;
     public TextMeshProUGUI preRecordCounter;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;
