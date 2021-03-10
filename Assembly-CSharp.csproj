@@ -63,10 +63,12 @@
     <Compile Include="Assets\AudioHelm\Scripts\Sampler.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetSleepThreshold.cs" />
     <Compile Include="Assets\Scripts\Environment\TunnelData.cs" />
+    <Compile Include="Assets\Scripts\Environment\RecordObject.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteHandler.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\DestroyAfterTime.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraOps.cs" />
     <Compile Include="Assets\Scripts\Environment\VisualController.cs" />
+    <Compile Include="Assets\Scripts\Environment\ObjectManager.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\TriggerVisibleNotes.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetHelmParameter.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshUpdateMono.cs" />
@@ -125,8 +127,7 @@
     <Compile Include="Assets\Scripts\Util\ExtensionMethods.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshRef.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
-    <Compile Include="Assets\Scripts\Environment\ObjectManager.cs" />
-    <Compile Include="Assets\Scripts\Environment\RecordObject.cs" />
+    <Compile Include="Assets\Scripts\Recording\RecordVisuals.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

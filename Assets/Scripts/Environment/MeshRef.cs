@@ -37,8 +37,9 @@ public class MeshRef : MonoBehaviour
     public Image recordImage;
     public Image recordBar;
     public Image recordBarFill;
-    public Transform recordObj_transform;
     public GameObject recordObject;
+    public Transform recordObj_parent;
+    public Material recordObj_mat;
     public TextMeshProUGUI preRecordCounter;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;

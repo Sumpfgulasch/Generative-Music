@@ -63,9 +63,7 @@ public class VisualController : MonoBehaviour
 
     [Header("Recording")]
     public Color recordColor;
-    public Color recordColor2;
-    public Color preRecordColor;
-    public float frameWidth;
+    public Color nonRecordColor;
     
     [Header("Other")]
     public GUIStyle curChordTextStyle;

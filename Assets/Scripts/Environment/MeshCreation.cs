@@ -283,7 +283,7 @@ public static class MeshCreation
     /// Create a lane surface (gameObj, MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID. Disable MeshRenderer (!).
     /// </summary>
     /// <param name="index">[0, fields.Length]</param>
-    private static MeshRenderer CreateLaneSurface(MusicField[] fields, int index, string name, Transform parent, Material material, bool enable = false, float length = -1f, int layer = 0, int renderQueue = -1)
+    public static MeshRenderer CreateLaneSurface(MusicField[] fields, int index, string name, Transform parent, Material material, bool visible = false, float length = -1f, int layer = 0, int renderQueue = -1)
     {
         // 0. Container & components
         GameObject laneSurface = CreateContainer(name + index, parent);
@@ -387,7 +387,7 @@ public static class MeshCreation
         // 2. Rendering & material
         laneSurface.layer = layer;
         meshRenderer.material = material;
-        meshRenderer.enabled = enable;
+        meshRenderer.enabled = visible;
         if (renderQueue != -1)
             meshRenderer.material.renderQueue = renderQueue;
         

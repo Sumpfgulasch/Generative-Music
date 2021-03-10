@@ -275,15 +275,13 @@ public static class LoopData
     /// </summary>
     public static void GetBeatData()
     {
-        // Info: 4 16tel sind 1 Beat
-        // Wichtig: length muss immer vielfaches sein von 4; z.B. length=16 == 4/4-Takt, length=20 == 5/4-Takt
         quartersPerBar = MusicRef.inst.beatSequencer.length / 4;
         beatsPerBar = MusicRef.inst.beatSequencer.length;
         timePerBar = (quartersPerBar / MusicRef.inst.clock.bpm) *60;
         timePerBeat = timePerBar / quartersPerBar;
-        //Debug.Log("MusicManager.inst: " + MusicManager.inst);     // MusicManager.inst does not exist yet
-        //distancePerSixteenth = ObjectSpawner.inst.tunnelLength / MusicManager.inst.curSequencer.length;
-        //distancePerRecLoop = distancePerSixteenth * MusicManager.inst.curSequencer.length;
+        Debug.Log("MusicManager.inst: " + MusicManager.inst);     // MusicManager.inst does not exist yet
+        distancePerSixteenth = ObjectManager.inst.tunnelLength / MusicManager.inst.curSequencer.length;
+        distancePerRecLoop = distancePerSixteenth * MusicManager.inst.curSequencer.length * MusicManager.inst.recLoops;         // HACK
     }
 
 }

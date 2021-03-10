@@ -143,6 +143,10 @@ public class ObjectManager : MonoBehaviour
     /// </summary>
     private void ManageRecordedChords()
     {
+        var removeList = new List<RecordObject>();
+        var addList = new List<RecordObject>();
+        var chordRecData = Recorder.inst.chordRecordData;
+
         foreach(RecordObject obj in Recorder.inst.recordObjects)
         {
             // Don't do if recording
@@ -151,22 +155,31 @@ public class ObjectManager : MonoBehaviour
                 // Destroy?
                 if (obj.EndZPos < -2f)
                 {
-                    Recorder.inst.recordObjects.Remove(obj);
-                    Destroy(this.gameObject);
-                    print("Destroy chord obj");
+                    removeList.Add(obj);
                 }
 
                 // Instantiate?
                 if (obj.StartZPos <= 0 && !obj.hasRespawned)
                 {
                     obj.hasRespawned = true;
-                    var newObj = Instantiate(MeshRef.inst.recordObject);
-                    var newObjScript = newObj.GetComponent<RecordObject>();
-                    Recorder.inst.recordObjects.Add(newObjScript);
+                    var newObj = RecordVisuals.inst.DouplicateRecordObject(obj);
 
-                    print("INIT chord obj");
+                    addList.Add(newObj);
                 }
             }
+        }
+
+        // remove
+        foreach(RecordObject obj in removeList)
+        {
+            Recorder.inst.recordObjects.Remove(obj);
+            Destroy(obj.gameObject);
+        }
+
+        // add
+        foreach(RecordObject obj in addList)
+        {
+            Recorder.inst.recordObjects.Add(obj);
         }
 
 
