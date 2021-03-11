@@ -279,7 +279,6 @@ public static class LoopData
         beatsPerBar = MusicRef.inst.beatSequencer.length;
         timePerBar = (quartersPerBar / MusicRef.inst.clock.bpm) *60;
         timePerBeat = timePerBar / quartersPerBar;
-        Debug.Log("MusicManager.inst: " + MusicManager.inst);     // MusicManager.inst does not exist yet
         distancePerSixteenth = ObjectManager.inst.tunnelLength / MusicManager.inst.curSequencer.length;
         distancePerRecLoop = distancePerSixteenth * MusicManager.inst.curSequencer.length * MusicManager.inst.recLoops;         // HACK
     }

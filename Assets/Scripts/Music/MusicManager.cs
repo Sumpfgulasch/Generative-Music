@@ -32,7 +32,7 @@ public class MusicManager : MonoBehaviour
 
     private float minPitch, maxPitch;
     private float curPitch = 0;
-    [HideInInspector] public HelmController curInstrument;
+    [HideInInspector] public HelmController controller;
     [HideInInspector] public Sequencer curSequencer;
     private int curWaitStartBeat;
     private int curBeatsToWait;
@@ -65,7 +65,7 @@ public class MusicManager : MonoBehaviour
         inst = this;
         curChord = Chords.c4Major;          // stupid inits
         lastChord = curChord;
-        curInstrument = Instrument.inner;
+        controller = Instrument.inner;
         curSequencer = MusicRef.inst.sequencers[0];
         
         //curInstrument.SetParameterValue(AudioHelm.Param.arp, 8);
@@ -127,7 +127,7 @@ public class MusicManager : MonoBehaviour
             switch (fieldType)
             {
                 case MusicField.Type.Chord:
-                    PlayChord(curChord, curInstrument, velocity);
+                    PlayChord(curChord, controller, velocity);
                     break;
 
                 case MusicField.Type.Modulation:
@@ -152,7 +152,7 @@ public class MusicManager : MonoBehaviour
         switch (fieldType)
         {
             case MusicField.Type.Chord:
-                StopChord(curChord, curInstrument);
+                StopChord(curChord, controller);
                 break;
 
             case MusicField.Type.Modulation:
@@ -191,9 +191,9 @@ public class MusicManager : MonoBehaviour
     public void OnFieldStart(Player.Side side)
     {
         if (side == Player.Side.inner)
-            curInstrument = Instrument.inner;
+            controller = Instrument.inner;
         else
-            curInstrument = Instrument.outer;
+            controller = Instrument.outer;
 
 
         PlayField();
@@ -268,6 +268,23 @@ public class MusicManager : MonoBehaviour
         if (context.performed)
         {
             //curInstrument = Instrument.outer;
+        }
+    }
+
+
+    public void OnController1(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            curSequencer = MusicRef.inst.sequencers[0];
+        }
+    }
+
+    public void OnController2(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            curSequencer = MusicRef.inst.sequencers[1];
         }
     }
 

@@ -377,7 +377,7 @@ public class Player : MonoBehaviour
             // PATCH LADEN
             //var patch = new AudioHelm.HelmPatch();
             //patch.LoadPatchData(pathAbs);
-            MusicManager.inst.curInstrument.LoadPatch(MusicRef.inst.helmPatch1);
+            MusicManager.inst.controller.LoadPatch(MusicRef.inst.helmPatch1);
 
         }
     }
@@ -390,7 +390,7 @@ public class Player : MonoBehaviour
             
             //print("rhythm: 3/4");
 
-            MusicManager.inst.curInstrument.LoadPatch(MusicRef.inst.helmPatch2);
+            MusicManager.inst.controller.LoadPatch(MusicRef.inst.helmPatch2);
         }
     }
 

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using AudioHelm;
 using UnityEngine.Audio;
+using System.Linq;
+using UnityEngine.InputSystem;
 
 public class Recorder : MonoBehaviour
 {
@@ -14,10 +16,10 @@ public class Recorder : MonoBehaviour
     [HideInInspector] public int preRecCounter;
     //[HideInInspector] 
     public List<RecordObject> recordObjects;
-    
+    public float noteAdd = 0.1f;
 
     // Private
-    public RecordData chordRecordData = new RecordData();
+    public RecordData recording = new RecordData();
     private Coroutine recordBar;
 
 
@@ -93,15 +95,15 @@ public class Recorder : MonoBehaviour
         // 3.2. Chord already playing?
         if (Player.inst.actionState == Player.ActionState.Play)
         {
-            chordRecordData.start = (float) CurSequencer.GetSequencerPosition();
-            chordRecordData.notes = MusicManager.inst.curChord.DeepCopy().notes;
+            recording.start = (float) CurSequencer.GetSequencerPosition();
+            recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         }
 
         // 3.3. Set sequencer loop start?
         if (!Has1stRecord)
         {
-            chordRecordData.sequencerLoopStart = (float)CurSequencer.GetSequencerPosition();
-            chordRecordData.sequencerLoopEnd_extended = chordRecordData.sequencerLoopStart + CurSequencer.length;
+            recording.sequencerLoopStart = (float)CurSequencer.GetSequencerPosition();
+            recording.sequencerLoopEnd_extended = recording.sequencerLoopStart + CurSequencer.length;
         }
     }
 
@@ -142,7 +144,7 @@ public class Recorder : MonoBehaviour
         isPreRecording = false;
 
         // If there's a chord being played
-        if (chordRecordData.end == -1)
+        if (recording.end == -1)
         {
             WriteToSequencer();
         }
@@ -168,10 +170,15 @@ public class Recorder : MonoBehaviour
     public void ClearSequencer(int layer)
     {
         MusicRef.inst.sequencers[layer].Clear();
+
         if (!Has1stRecord)
         {
             DisableRecordBar();
         }
+
+        RecordVisuals.inst.DestroyRecordObjects();
+
+        MusicManager.inst.controller.AllNotesOff();
     }
 
 
@@ -201,6 +208,15 @@ public class Recorder : MonoBehaviour
     }
 
 
+    public void OnDebug(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            
+        }
+    }
+
+
 
     // ------------------------------ Private functions ------------------------------
 
@@ -212,10 +228,10 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void SaveRecordStartData()
     {
-        chordRecordData.start = (float)CurSequencer.GetSequencerPosition();
-        chordRecordData.notes = MusicManager.inst.curChord.DeepCopy().notes;
-        chordRecordData.end = -1;
-        chordRecordData.fieldID = Player.inst.curField.ID;
+        recording.start = (float)CurSequencer.GetSequencerPosition();
+        recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
+        recording.end = -1;
+        recording.fieldID = Player.inst.curField.ID;
     }
 
 
@@ -224,15 +240,100 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void WriteToSequencer()
     {
-        chordRecordData.end = (float) CurSequencer.GetSequencerPosition();
+        float curPos = (float)CurSequencer.GetSequencerPosition();
+
+        recording.end = curPos;
         float velocity = MusicManager.inst.velocity;
 
-        foreach (int note in chordRecordData.notes)
+
+        // 1. Get currently played notes
+        var curNotes = AudioHelmHelper.GetAllNotesInRange(CurSequencer, curPos);
+
+        // 2. Get double notes
+        var doubleNotes = AudioHelmHelper.DoubleNotes(recording.notes, curNotes);
+
+        // 3. Calc additional notes, to prevent breaking notes
+        var addNotes = new List<NoteContainer>();
+        foreach (Note doubleNote in doubleNotes)
         {
-            CurSequencer.AddNote(note, chordRecordData.start, chordRecordData.end, velocity);
+            // #1: Sequencer note within sequencer bounds, would disrupt and lose remaining note
+            if (curPos > doubleNote.start && curPos < doubleNote.end)
+            {
+                int note = doubleNote.note;
+                float start = curPos + noteAdd;
+                float end = doubleNote.end;
+
+                // 1.1. Shorten existing note
+                print("case 1; before notify");
+                //CurSequencer.NotifyNoteEndChanged(doubleNote, end);
+                doubleNote.end = recording.start;
+
+                MusicManager.inst.controller.NoteOn(note, velocity, end - start);
+                
+                
+
+                // 1.2. Add new note
+                #region pos percentage
+                //float doubleNoteEndPercentage = SequencerPositionPercentage(CurSequencer, end, recording);
+                //float curPosPercentage = SequencerPositionPercentage(CurSequencer, curPos, recording);
+                #endregion
+                CurSequencer.AddNote(note, start, end, velocity);
+            }
+            // #2 Sequencer note extends over the sequencer bounds, would disrupt and stop playing the remaining note
+
+            // TO DO: klappt nicht (aber #3 und #1 klappen)
+            else if (doubleNote.start > doubleNote.end)
+            {
+                float oldEnd = doubleNote.end;
+
+                // 2.1. Shorten existing sequencer note
+                doubleNote.end = recording.start;
+                //CurSequencer.NotifyNoteEndChanged(doubleNote, oldEnd);
+
+                // 2.2. Add note for remaining sequencer note?
+                float oldEndPercentage = SequencerPositionPercentage(CurSequencer, oldEnd, recording);
+                float curPosPercentage = SequencerPositionPercentage(CurSequencer, curPos, recording);
+                if (oldEndPercentage > curPosPercentage)
+                {
+                    int note = doubleNote.note;
+                    float start = curPos + 0.01f;
+                    float end = oldEnd;
+
+                    var temp = new NoteContainer(note, start, end, velocity);
+                    addNotes.Add(temp);
+                    //print("fall #2: (1) doubleNote-begin: " + doubleNote.start + ", end: " + doubleNote.end + ", (3) addedNote, start: "  + start + ", end: " + end);
+                }
+            }
+        }
+
+        // #3 Get bridges notes that are NOT being played
+        var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
+
+
+
+
+        // 4. Write CURRENTLY RECORDED notes
+        foreach (int note in recording.notes)
+        {
+            //if (counter<=2)
+                CurSequencer.AddNote(note, recording.start, recording.end, velocity);
+            //print("write; (2); start: " + recording.start + ", end: " + recording.end);
+        }
+
+        // 5. Add bridge notes again
+        foreach (Note note in unplayedBridgeNotes)  // #3
+        {
+            CurSequencer.AddNote(note.note, note.start, note.end, velocity);
+            //print("fall 3: add bridge notes again");
+        }
+        foreach(NoteContainer note in addNotes) // #2
+        {
+            CurSequencer.AddNote(note.note, note.start, note.end, velocity);
         }
     }
 
+
+    
 
     
 
@@ -276,10 +377,10 @@ public class Recorder : MonoBehaviour
         return percentage;  // 0-1
     }
 
-    public Vector3 NextLoopPosition()
+    public Vector3 NextLoopPosition(RecordObject recordObject)
     {
 
-        var playerPos = Player.inst.transform.position;
+        //var playerPos = Player.inst.transform.position;
         //float curSeqencerPos = (float)CurSequencer.GetSequencerPosition();
         //var curSequencerPosPercentage = SequencerPositionPercentage(CurSequencer, curSeqencerPos, chordRecordData);
         //var chordStartPos = chordRecordData.start;
@@ -288,7 +389,7 @@ public class Recorder : MonoBehaviour
         //var position = playerPos + (1 - curSequencerPosPercentage) * LoopData.distancePerRecLoop * Vector3.forward + 
         //    chordStartPosPercentage * LoopData.distancePerRecLoop * Vector3.forward;
 
-        var position = playerPos + LoopData.distancePerRecLoop * Vector3.forward;
+        var position = recordObject.transform.position + LoopData.distancePerRecLoop * Vector3.forward;
 
 
         return position;
@@ -300,10 +401,9 @@ public class Recorder : MonoBehaviour
     /// <summary>
     /// Instantiate 2 lane surfaces (current chord, looped chord) and keep scaling it by a coroutine upwards from zero until stopped. Writes into chordRecord (!).
     /// </summary>
-    /// <param name="chordRecord"></param>
     private void StartSpawnChordObject()
     {
-        RecordVisuals.inst.CreateRecordObject(chordRecordData, recordObjects);
+        RecordVisuals.inst.CreateRecordObject(recording, recordObjects);
     }
 
     /// <summary>
@@ -311,7 +411,7 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void StopSpawnChordObject()
     {
-        RecordVisuals.inst.StopCreateChordObject(chordRecordData);
+        RecordVisuals.inst.StopCreateChordObject(recording);
     }
 
     
@@ -321,6 +421,9 @@ public class Recorder : MonoBehaviour
         StopCoroutine(recordBar);
         MeshRef.inst.recordBar.enabled = false;
         MeshRef.inst.recordBarFill.enabled = false;
+
+        var x = new Note();
+        
     }
 
     private IEnumerator RecordingBar()
@@ -328,7 +431,7 @@ public class Recorder : MonoBehaviour
         while (true)
         {
             float curSequencerPos = (float) CurSequencer.GetSequencerPosition();
-            float percentage = SequencerPositionPercentage(CurSequencer, curSequencerPos, chordRecordData);
+            float percentage = SequencerPositionPercentage(CurSequencer, curSequencerPos, recording);
 
             MeshRef.inst.recordBarFill.fillAmount = percentage;
 

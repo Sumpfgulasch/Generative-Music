@@ -66,7 +66,7 @@ public class RecordVisuals : MonoBehaviour
         var index = recordObj.data.fieldID;
         var parent = MeshRef.inst.recordObj_parent;
         var material = MeshRef.inst.recordObj_mat;
-        var pos = Recorder.inst.NextLoopPosition();
+        var pos = Recorder.inst.NextLoopPosition(recordObj);
 
         // 1. Instantiate
         var newObj = InstantiateRecObj(fields, index, "ChordObject", pos, parent, material, true, 1f, 8);
@@ -94,6 +94,18 @@ public class RecordVisuals : MonoBehaviour
 
         chordRecordData.obj.isRecording = false;
         chordRecordData.loopObj.isRecording = false;
+    }
+
+
+    public void DestroyRecordObjects()
+    {
+        var recordObjects = Recorder.inst.recordObjects;
+
+        for (int i=0; i < recordObjects.Count; i++)
+        {
+            Destroy(recordObjects[i].gameObject);
+        }
+        Recorder.inst.recordObjects = new List<RecordObject>();
     }
 
 

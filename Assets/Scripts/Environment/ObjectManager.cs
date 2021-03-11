@@ -145,7 +145,7 @@ public class ObjectManager : MonoBehaviour
     {
         var removeList = new List<RecordObject>();
         var addList = new List<RecordObject>();
-        var chordRecData = Recorder.inst.chordRecordData;
+        var chordRecData = Recorder.inst.recording;
 
         foreach(RecordObject obj in Recorder.inst.recordObjects)
         {
