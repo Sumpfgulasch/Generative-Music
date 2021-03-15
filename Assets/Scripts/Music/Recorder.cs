@@ -397,6 +397,7 @@ public class Recorder : MonoBehaviour
     private void StartSpawnChordObject()
     {
         RecordVisuals.inst.CreateRecordObject(recording, recordObjects);
+
         UIOps.inst.EnableActiveTrackRecordImage(true);
     }
 
