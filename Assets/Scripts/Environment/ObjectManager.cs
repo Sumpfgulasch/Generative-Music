@@ -149,7 +149,7 @@ public class ObjectManager : MonoBehaviour
 
         foreach(RecordObject obj in Recorder.inst.recordObjects)
         {
-            // Don't do if recording
+            // Don't do if recording (cause otherwise it would be ... complicated)
             if (!obj.isRecording)
             {
                 // Destroy?
@@ -173,7 +173,7 @@ public class ObjectManager : MonoBehaviour
         foreach(RecordObject obj in removeList)
         {
             Recorder.inst.recordObjects.Remove(obj);
-            Destroy(obj.gameObject);
+            Destroy(obj.obj);
         }
 
         // add

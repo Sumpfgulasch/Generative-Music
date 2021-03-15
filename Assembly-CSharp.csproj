@@ -132,6 +132,7 @@
     <Compile Include="Assets\Scripts\Environment\MeshRef.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\UI\UIOps.cs" />
+    <Compile Include="Assets\Scripts\Environment\Move.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

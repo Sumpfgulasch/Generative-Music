@@ -15,11 +15,12 @@ public class Recorder : MonoBehaviour
     [HideInInspector] public bool isPreRecording = false;
     [HideInInspector] public int preRecCounter;
     //[HideInInspector] 
-    public List<RecordObject> recordObjects;
+    [SerializeField]
+    public List<RecordObject> recordObjects = new List<RecordObject>();
     public float noteAdd = 0.1f;
 
     // Private
-    public RecordData recording = new RecordData();
+    public Recording recording = new Recording();
     private Coroutine recordBar;
 
 
@@ -102,8 +103,8 @@ public class Recorder : MonoBehaviour
         // 3.3. Set sequencer loop start?
         if (!Has1stRecord)
         {
-            recording.sequencerLoopStart = (float)CurSequencer.GetSequencerPosition();
-            recording.sequencerLoopEnd_extended = recording.sequencerLoopStart + CurSequencer.length;
+            recording.loopStart = (float)CurSequencer.GetSequencerPosition();
+            recording.loopEnd_extended = recording.loopStart + CurSequencer.length;
         }
     }
 
@@ -278,7 +279,6 @@ public class Recorder : MonoBehaviour
             }
             // #2 Sequencer note extends over the sequencer bounds, would disrupt and stop playing the remaining note
 
-            // TO DO: klappt nicht (aber #3 und #1 klappen)
             else if (doubleNote.start > doubleNote.end)
             {
                 float oldEnd = doubleNote.end;
@@ -287,8 +287,8 @@ public class Recorder : MonoBehaviour
                 doubleNote.end = recording.start;
 
                 // 2.2. Add note for remaining sequencer note?
-                float oldEndPercentage = SequencerPositionPercentage(CurSequencer, oldEnd, recording);
-                float curPosPercentage = SequencerPositionPercentage(CurSequencer, curPos, recording);
+                float oldEndPercentage = SequencerPositionPercentage(CurSequencer, oldEnd, recording.loopStart);
+                float curPosPercentage = SequencerPositionPercentage(CurSequencer, curPos, recording.loopStart);
                 if (oldEndPercentage > curPosPercentage)
                 {
                     int note = doubleNote.note;
@@ -360,12 +360,12 @@ public class Recorder : MonoBehaviour
     /// <summary>
     /// Get the percentage of the current position of a given sequencer, with start and end point defined by recording-variable (!).
     /// </summary>
-    private float SequencerPositionPercentage(Sequencer sequencer, float sequencerPos, RecordData chordRecordData)
+    private float SequencerPositionPercentage(Sequencer sequencer, float sequencerPos, float sequencerLoopStart)
     {
-        if (sequencerPos < chordRecordData.sequencerLoopStart)
+        if (sequencerPos < sequencerLoopStart)
             sequencerPos += sequencer.length;
 
-        float percentage = (sequencerPos - chordRecordData.sequencerLoopStart) / sequencer.length;
+        float percentage = (sequencerPos - sequencerLoopStart) / sequencer.length;
 
         return percentage;  // 0-1
     }
@@ -373,16 +373,18 @@ public class Recorder : MonoBehaviour
     public Vector3 NextLoopPosition(RecordObject recordObject)
     {
 
-        //var playerPos = Player.inst.transform.position;
-        //float curSeqencerPos = (float)CurSequencer.GetSequencerPosition();
-        //var curSequencerPosPercentage = SequencerPositionPercentage(CurSequencer, curSeqencerPos, chordRecordData);
-        //var chordStartPos = chordRecordData.start;
-        //var chordStartPosPercentage = SequencerPositionPercentage(CurSequencer, chordStartPos, chordRecordData);
+        var playerPos = Player.inst.transform.position;
+        float curSeqencerPos = (float)CurSequencer.GetSequencerPosition();
 
-        //var position = playerPos + (1 - curSequencerPosPercentage) * LoopData.distancePerRecLoop * Vector3.forward + 
-        //    chordStartPosPercentage * LoopData.distancePerRecLoop * Vector3.forward;
+        var curSequencerPosPercentage = SequencerPositionPercentage(CurSequencer, curSeqencerPos, recording.loopStart);
+        var chordStartPos = recording.start;
+        var chordStartPosPercentage = SequencerPositionPercentage(CurSequencer, chordStartPos, recording.loopStart);
 
-        var position = recordObject.transform.position + LoopData.distancePerRecLoop * Vector3.forward;
+        var position = playerPos + 
+            (1 - curSequencerPosPercentage) * LoopData.distancePerRecLoop * Vector3.forward +
+            chordStartPosPercentage * LoopData.distancePerRecLoop * Vector3.forward;
+
+        //var position = recordObject.transform.position + LoopData.distancePerRecLoop * Vector3.forward;
 
 
         return position;
@@ -426,7 +428,7 @@ public class Recorder : MonoBehaviour
         while (true)
         {
             float curSequencerPos = (float) CurSequencer.GetSequencerPosition();
-            float percentage = SequencerPositionPercentage(CurSequencer, curSequencerPos, recording);
+            float percentage = SequencerPositionPercentage(CurSequencer, curSequencerPos, recording.loopStart);
 
             MeshRef.inst.recordBarFill.fillAmount = percentage;
 
@@ -444,7 +446,7 @@ public class Recorder : MonoBehaviour
 /// <summary>
 /// Class for momentarily storing data of ONE chord and the current record time loop. All data refers to a sequencer.
 /// </summary>
-public class RecordData
+public class Recording
 {
     public int fieldID;
     public Sequencer sequencer;
@@ -460,11 +462,11 @@ public class RecordData
     /// <summary>
     /// Position in the sequencer, measured in sixteenth.
     /// </summary>
-    public float sequencerLoopStart;
+    public float loopStart;
     /// <summary>
     /// Extended position in the sequencer (doesn't actually exist), measured in sixteenth. 
     /// </summary>
-    public float sequencerLoopEnd_extended;
+    public float loopEnd_extended;
     public Coroutine scaleRoutine;
     public RecordObject obj;
     public RecordObject loopObj;

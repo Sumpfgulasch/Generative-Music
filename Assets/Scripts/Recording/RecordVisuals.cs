@@ -26,61 +26,60 @@ public class RecordVisuals : MonoBehaviour
 
 
     /// <summary>
-    ///     /// Instantiate 2 lane surfaces (current chord, looped chord) and keep scaling it by a coroutine upwards from zero until stopped. Writes into chordRecord (!).
+    /// Instantiate 2 lane surfaces (current chord, looped chord) and keep scaling it by a coroutine upwards from zero until stopped. Writes into recording (!).
     /// </summary>
-    /// <param name="chordRecData">Recording data.</param>
+    /// <param name="recording">Recording data.</param>
     /// <param name="recordObjects">List to add the new chord objects.</param>
-    public void CreateRecordObject(RecordData chordRecData, List<RecordObject> recordObjects)
+    public void CreateRecordObject(Recording recording, List<RecordObject> recordObjects)
     {
         // 0. Refs
         var fields = Player.inst.curFieldSet;
-        var index = chordRecData.fieldID;
+        var ID = recording.fieldID;
         var parent = MeshRef.inst.recordObj_parent;
         var material = MeshRef.inst.recordObj_mat;
         var pos1 = Player.inst.transform.position;
         var pos2 = pos1 + LoopData.distancePerRecLoop * Vector3.forward;
+        var layer = 8;
 
         // 1. Instantiate
-        var recordObject1 = InstantiateRecObj(fields, index, "ChordObject", pos1, parent, material, true, 1f, 8);
-        var recordObject2 = InstantiateRecObj(fields, index, "ChordObject", pos2, parent, material, true, 1f, 8);
+        var mesh1 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
+        var mesh2 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
 
-        // 2. Set data
+        var recordObject1 = new RecordObject(mesh1, pos1, ID, recording.notes, recording.sequencer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
+        var recordObject2 = new RecordObject(mesh2, pos2, ID, recording.notes, recording.sequencer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
+
+        // 2. Add to list
         recordObjects.Add(recordObject1);
         recordObjects.Add(recordObject2);
-        chordRecData.obj = recordObject1;
-        chordRecData.loopObj = recordObject2;
 
-        recordObject1.data = new RecordData();
-        recordObject2.data = new RecordData();
-        recordObject1.data.fieldID = index; // HACK
-        recordObject2.data.fieldID = index; // HACK
-
-        // 3. Start scaling
-        chordRecData.scaleRoutine = StartCoroutine(ScaleChordObject(recordObject1.transform, recordObject2.transform));
+        // 3. Edit recording / Start scaling
+        recording.obj = recordObject1;              // Noch nötig???
+        recording.loopObj = recordObject2;          // Noch nötig???
+        recording.scaleRoutine = StartCoroutine(ScaleChordObject(recordObject1.obj.transform, recordObject2.obj.transform));
     }
 
     public RecordObject DouplicateRecordObject(RecordObject recordObj)
     {
         // 0. Refs
         var fields = Player.inst.curFieldSet;
-        var index = recordObj.data.fieldID;
+        var ID = recordObj.fieldID;
         var parent = MeshRef.inst.recordObj_parent;
         var material = MeshRef.inst.recordObj_mat;
-        var pos = Recorder.inst.NextLoopPosition(recordObj);
+        var pos = Recorder.inst.NextLoopPosition(recordObj);            // to rework!!!
+        var layer = 8;
 
-        // 1. Instantiate
-        var newObj = InstantiateRecObj(fields, index, "ChordObject", pos, parent, material, true, 1f, 8);
-        // 1.5. Scale!
-        newObj.transform.localScale = recordObj.transform.localScale;
+        // 1. Instantiate & scale!
+        var newObj = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
+        newObj.transform.localScale = recordObj.obj.transform.localScale;
+
+        var recordObject = new RecordObject(newObj, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
 
         // 2. Set data
-        //recordObjects.Add(recordObject1);
-        //chordRecData.loopObj = recordObject;
-        newObj.data = new RecordData();
-        newObj.data.fieldID = index;
-        newObj.isRecording = false;
+        recordObj.isRecording = false;
 
-        return newObj;
+        // !!! Add to recordObjects-list when invoked (in ObjectManager) !!!
+
+        return recordObj;
     }
 
 
@@ -88,12 +87,15 @@ public class RecordVisuals : MonoBehaviour
     /// <summary>
     /// Stops scaling and sets variables of instantiated recordObjects.
     /// </summary>
-    public void StopCreateChordObject(RecordData chordRecordData)
+    public void StopCreateChordObject(Recording recording)
     {
-        StopCoroutine(chordRecordData.scaleRoutine);
+        StopCoroutine(recording.scaleRoutine);
 
-        chordRecordData.obj.isRecording = false;
-        chordRecordData.loopObj.isRecording = false;
+        recording.obj.isRecording = false;
+        recording.loopObj.isRecording = false;
+
+        Debug.Log("stop create 1", gameObject);
+        Debug.Log("stop create 2", gameObject);
     }
 
 
@@ -103,7 +105,7 @@ public class RecordVisuals : MonoBehaviour
 
         for (int i=0; i < recordObjects.Count; i++)
         {
-            Destroy(recordObjects[i].gameObject);
+            Destroy(recordObjects[i].obj);
         }
         Recorder.inst.recordObjects = new List<RecordObject>();
     }
@@ -116,14 +118,14 @@ public class RecordVisuals : MonoBehaviour
 
 
 
-    private RecordObject InstantiateRecObj(MusicField[] fields, int index, string name, Vector3 position, Transform parent, Material material, bool visible = true, float length = 1f, int layer = 1)
-    {
-        var laneSurface1 = MeshCreation.CreateLaneSurface(fields, index, name, parent, material, visible, length, layer);
-        var recordObject = laneSurface1.gameObject.AddComponent<RecordObject>();
-        recordObject.transform.position = position;
+    //private RecordObject InstantiateRecObj(MusicField[] fields, int index, string name, Vector3 position, Transform parent, Material material, bool visible = true, float length = 1f, int layer = 1)
+    //{
+    //    var laneSurface1 = MeshCreation.CreateLaneSurface(fields, index, name, parent, material, visible, length, layer);
+    //    var recordObject = laneSurface1.gameObject.AddComponent<RecordObject>();
+    //    recordObject.transform.position = position;
 
-        return recordObject;
-    }
+    //    return recordObject;
+    //}
 
 
     /// <summary>
