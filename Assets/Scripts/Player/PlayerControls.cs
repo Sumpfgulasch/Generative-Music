@@ -19,7 +19,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
             ""id"": ""29068d5a-6aac-4f70-8848-930d669184f8"",
             ""actions"": [
                 {
-                    ""name"": ""PlayInside"",
+                    ""name"": ""Play"",
                     ""type"": ""Button"",
                     ""id"": ""9588a1b1-801a-4d3f-8fe4-fb1101545abf"",
                     ""expectedControlType"": ""Button"",
@@ -27,15 +27,23 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""PlayOutside"",
+                    ""name"": ""Delete"",
                     ""type"": ""Button"",
-                    ""id"": ""d75e87d4-f94a-4872-93e9-a5ccf2b93f33"",
+                    ""id"": ""5a926b13-1b55-4c25-98ba-ec15a5ce94a8"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""SelectNext"",
+                    ""name"": ""NextLayer"",
+                    ""type"": ""Value"",
+                    ""id"": ""597b79f5-31be-4163-ac5c-3d90aa994f9a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""NextField"",
                     ""type"": ""Button"",
                     ""id"": ""5365614d-c245-4056-92ff-00becdd27083"",
                     ""expectedControlType"": ""Button"",
@@ -107,7 +115,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -118,7 +126,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -129,7 +137,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -140,7 +148,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -151,7 +159,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -162,7 +170,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -173,7 +181,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -184,7 +192,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -195,7 +203,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -206,7 +214,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -217,7 +225,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SelectNext"",
+                    ""action"": ""NextField"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -250,7 +258,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""PlayInside"",
+                    ""action"": ""Play"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -261,7 +269,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""PlayInside"",
+                    ""action"": ""Play"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -272,7 +280,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""PlayInside"",
+                    ""action"": ""Play"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -283,40 +291,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""PlayInside"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""85f1db7a-9aff-4f7f-864a-9c234dfe735f"",
-                    ""path"": ""<Mouse>/rightButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""PlayOutside"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""357728a1-bb44-4c08-a9db-7148d79a806b"",
-                    ""path"": ""<Keyboard>/downArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""PlayOutside"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""4b57eb6b-5a35-4a3f-bed5-51f06ac85acc"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""PlayOutside"",
+                    ""action"": ""Play"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -418,6 +393,116 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2749aeba-43dd-4c1c-9927-66124940e46f"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Delete"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""369f48ab-379d-4cd7-9ada-c8c99279827a"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Delete"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0f4090a4-4f4a-4eb8-9c3c-cc657d66e5e8"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Delete"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""62f54a13-a7a7-48f9-b377-7508daad13f9"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Delete"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f1391f10-a4b6-41da-b4a7-157e7b1d9672"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": ""InvertVector2(invertX=false)"",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""NextLayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""25fed2c8-cb34-4754-a074-08407ed1d6e7"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NextLayer"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""461128fd-f832-4e23-9fb9-094b299b3920"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""NextLayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""eca9db11-be65-44fb-84a8-32e9fd88769a"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""NextLayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""1a31251a-e9e2-4454-b5f7-6bd549af66c5"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""NextLayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""4cd86bba-bb07-473a-b061-72c7a1b32fde"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""NextLayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -993,9 +1078,10 @@ public class @PlayerControls : IInputActionCollection, IDisposable
 }");
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
-        m_Gameplay_PlayInside = m_Gameplay.FindAction("PlayInside", throwIfNotFound: true);
-        m_Gameplay_PlayOutside = m_Gameplay.FindAction("PlayOutside", throwIfNotFound: true);
-        m_Gameplay_SelectNext = m_Gameplay.FindAction("SelectNext", throwIfNotFound: true);
+        m_Gameplay_Play = m_Gameplay.FindAction("Play", throwIfNotFound: true);
+        m_Gameplay_Delete = m_Gameplay.FindAction("Delete", throwIfNotFound: true);
+        m_Gameplay_NextLayer = m_Gameplay.FindAction("NextLayer", throwIfNotFound: true);
+        m_Gameplay_NextField = m_Gameplay.FindAction("NextField", throwIfNotFound: true);
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
         m_Gameplay_Record = m_Gameplay.FindAction("Record", throwIfNotFound: true);
         m_Gameplay_Reset = m_Gameplay.FindAction("Reset", throwIfNotFound: true);
@@ -1064,9 +1150,10 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     // Gameplay
     private readonly InputActionMap m_Gameplay;
     private IGameplayActions m_GameplayActionsCallbackInterface;
-    private readonly InputAction m_Gameplay_PlayInside;
-    private readonly InputAction m_Gameplay_PlayOutside;
-    private readonly InputAction m_Gameplay_SelectNext;
+    private readonly InputAction m_Gameplay_Play;
+    private readonly InputAction m_Gameplay_Delete;
+    private readonly InputAction m_Gameplay_NextLayer;
+    private readonly InputAction m_Gameplay_NextField;
     private readonly InputAction m_Gameplay_Move;
     private readonly InputAction m_Gameplay_Record;
     private readonly InputAction m_Gameplay_Reset;
@@ -1078,9 +1165,10 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     {
         private @PlayerControls m_Wrapper;
         public GameplayActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @PlayInside => m_Wrapper.m_Gameplay_PlayInside;
-        public InputAction @PlayOutside => m_Wrapper.m_Gameplay_PlayOutside;
-        public InputAction @SelectNext => m_Wrapper.m_Gameplay_SelectNext;
+        public InputAction @Play => m_Wrapper.m_Gameplay_Play;
+        public InputAction @Delete => m_Wrapper.m_Gameplay_Delete;
+        public InputAction @NextLayer => m_Wrapper.m_Gameplay_NextLayer;
+        public InputAction @NextField => m_Wrapper.m_Gameplay_NextField;
         public InputAction @Move => m_Wrapper.m_Gameplay_Move;
         public InputAction @Record => m_Wrapper.m_Gameplay_Record;
         public InputAction @Reset => m_Wrapper.m_Gameplay_Reset;
@@ -1097,15 +1185,18 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         {
             if (m_Wrapper.m_GameplayActionsCallbackInterface != null)
             {
-                @PlayInside.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlayInside;
-                @PlayInside.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlayInside;
-                @PlayInside.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlayInside;
-                @PlayOutside.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlayOutside;
-                @PlayOutside.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlayOutside;
-                @PlayOutside.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlayOutside;
-                @SelectNext.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelectNext;
-                @SelectNext.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelectNext;
-                @SelectNext.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelectNext;
+                @Play.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlay;
+                @Play.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlay;
+                @Play.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPlay;
+                @Delete.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnDelete;
+                @Delete.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnDelete;
+                @Delete.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnDelete;
+                @NextLayer.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnNextLayer;
+                @NextLayer.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnNextLayer;
+                @NextLayer.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnNextLayer;
+                @NextField.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnNextField;
+                @NextField.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnNextField;
+                @NextField.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnNextField;
                 @Move.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMove;
                 @Move.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMove;
                 @Move.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMove;
@@ -1131,15 +1222,18 @@ public class @PlayerControls : IInputActionCollection, IDisposable
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @PlayInside.started += instance.OnPlayInside;
-                @PlayInside.performed += instance.OnPlayInside;
-                @PlayInside.canceled += instance.OnPlayInside;
-                @PlayOutside.started += instance.OnPlayOutside;
-                @PlayOutside.performed += instance.OnPlayOutside;
-                @PlayOutside.canceled += instance.OnPlayOutside;
-                @SelectNext.started += instance.OnSelectNext;
-                @SelectNext.performed += instance.OnSelectNext;
-                @SelectNext.canceled += instance.OnSelectNext;
+                @Play.started += instance.OnPlay;
+                @Play.performed += instance.OnPlay;
+                @Play.canceled += instance.OnPlay;
+                @Delete.started += instance.OnDelete;
+                @Delete.performed += instance.OnDelete;
+                @Delete.canceled += instance.OnDelete;
+                @NextLayer.started += instance.OnNextLayer;
+                @NextLayer.performed += instance.OnNextLayer;
+                @NextLayer.canceled += instance.OnNextLayer;
+                @NextField.started += instance.OnNextField;
+                @NextField.performed += instance.OnNextField;
+                @NextField.canceled += instance.OnNextField;
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
@@ -1317,9 +1411,10 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     }
     public interface IGameplayActions
     {
-        void OnPlayInside(InputAction.CallbackContext context);
-        void OnPlayOutside(InputAction.CallbackContext context);
-        void OnSelectNext(InputAction.CallbackContext context);
+        void OnPlay(InputAction.CallbackContext context);
+        void OnDelete(InputAction.CallbackContext context);
+        void OnNextLayer(InputAction.CallbackContext context);
+        void OnNextField(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnRecord(InputAction.CallbackContext context);
         void OnReset(InputAction.CallbackContext context);

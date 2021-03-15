@@ -17,6 +17,7 @@ public class MusicManager : MonoBehaviour
     public int chordDegrees = 3;
     public int toneRange_startNote = 41;
     public int toneRange = 24;
+    public int maxLayers = 2;
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;
     [Range(0, 1f)]
@@ -74,9 +75,32 @@ public class MusicManager : MonoBehaviour
 
         
     }
-    
 
-    
+
+
+
+    // ------------------------------ Public functions ------------------------------
+
+
+
+
+    /// <summary>
+    /// Change controller-channel and sequencer-reference.
+    /// </summary>
+    /// <param name="layer"></param>
+    public void ChangeLayer(int layer)
+    {
+        curSequencer = MusicRef.inst.sequencers[layer];
+        controller.channel = layer;
+    }
+
+
+
+
+    // ------------------------------ Private functions ------------------------------
+
+
+
 
     private void ManageChordPlaying()
     {
@@ -183,7 +207,7 @@ public class MusicManager : MonoBehaviour
 
 
 
-    // ------------------------------ Events ------------------------------
+    // ------------------------------------ Events ------------------------------------
 
 
 
@@ -255,7 +279,7 @@ public class MusicManager : MonoBehaviour
         }
     }
 
-    public void OnPlayInside(InputAction.CallbackContext context)
+    public void OnPlay(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
@@ -263,13 +287,13 @@ public class MusicManager : MonoBehaviour
         }
     }
 
-    public void OnPlayOutside(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            //curInstrument = Instrument.outer;
-        }
-    }
+    //public void OnPlayOutside(InputAction.CallbackContext context)
+    //{
+    //    if (context.performed)
+    //    {
+    //        //curInstrument = Instrument.outer;
+    //    }
+    //}
 
 
     public void OnController1(InputAction.CallbackContext context)
@@ -323,12 +347,22 @@ public class MusicManager : MonoBehaviour
         
         curBeat = curLoop * LoopData.beatsPerBar + beat;
 
-        
-
         GameEvents.inst.onSixteenth?.Invoke(beat);
+    }
 
-        
-        
+    public void OnNextLayer(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            int value = (int) context.ReadValue<Vector2>().normalized.y;
+
+            // Increase layer
+            int nextLayer = ExtensionMethods.Modulo(controller.channel + value, maxLayers);
+            ChangeLayer(nextLayer);
+
+            // Visual
+            UIOps.inst.HighlightLayerButton(nextLayer);
+        }
     }
 
 
@@ -374,8 +408,8 @@ public class MusicManager : MonoBehaviour
 
     public static class Instrument
     {
-        public static AudioHelm.HelmController inner;
-        public static AudioHelm.HelmController outer;
+        public static HelmController inner;
+        public static HelmController outer;
 
         static Instrument()
         {
@@ -386,7 +420,7 @@ public class MusicManager : MonoBehaviour
 
 
 
-    public void PlayChord(Chord chord, AudioHelm.HelmController instrument, float velocity)
+    public void PlayChord(Chord chord, HelmController instrument, float velocity)
     {
         for (int i = 0; i < chord.notes.Length; i++)
         {
@@ -395,7 +429,7 @@ public class MusicManager : MonoBehaviour
         }
     }
 
-    public void StopChord(Chord chord, AudioHelm.HelmController instrument)
+    public void StopChord(Chord chord, HelmController instrument)
     {
         // Mindest-Spielzeit für Noten
         float timeToPlay = shortNotes_minPlayTime - instrument.pressedNotesDurations[chord.notes[0]].duration;

@@ -6,7 +6,7 @@
             "id": "29068d5a-6aac-4f70-8848-930d669184f8",
             "actions": [
                 {
-                    "name": "PlayInside",
+                    "name": "Play",
                     "type": "Button",
                     "id": "9588a1b1-801a-4d3f-8fe4-fb1101545abf",
                     "expectedControlType": "Button",
@@ -14,15 +14,23 @@
                     "interactions": ""
                 },
                 {
-                    "name": "PlayOutside",
+                    "name": "Delete",
                     "type": "Button",
-                    "id": "d75e87d4-f94a-4872-93e9-a5ccf2b93f33",
+                    "id": "5a926b13-1b55-4c25-98ba-ec15a5ce94a8",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 },
                 {
-                    "name": "SelectNext",
+                    "name": "NextLayer",
+                    "type": "Value",
+                    "id": "597b79f5-31be-4163-ac5c-3d90aa994f9a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "NextField",
                     "type": "Button",
                     "id": "5365614d-c245-4056-92ff-00becdd27083",
                     "expectedControlType": "Button",
@@ -94,7 +102,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -105,7 +113,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -116,7 +124,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -127,7 +135,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -138,7 +146,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -149,7 +157,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -160,7 +168,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -171,7 +179,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -182,7 +190,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -193,7 +201,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -204,7 +212,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "SelectNext",
+                    "action": "NextField",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -237,7 +245,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "PlayInside",
+                    "action": "Play",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -248,7 +256,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "PlayInside",
+                    "action": "Play",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -259,7 +267,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "PlayInside",
+                    "action": "Play",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -270,40 +278,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "PlayInside",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "85f1db7a-9aff-4f7f-864a-9c234dfe735f",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "PlayOutside",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "357728a1-bb44-4c08-a9db-7148d79a806b",
-                    "path": "<Keyboard>/downArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "PlayOutside",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "4b57eb6b-5a35-4a3f-bed5-51f06ac85acc",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "PlayOutside",
+                    "action": "Play",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -405,6 +380,116 @@
                     "action": "Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2749aeba-43dd-4c1c-9927-66124940e46f",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Delete",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "369f48ab-379d-4cd7-9ada-c8c99279827a",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Delete",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0f4090a4-4f4a-4eb8-9c3c-cc657d66e5e8",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Delete",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "62f54a13-a7a7-48f9-b377-7508daad13f9",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Delete",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f1391f10-a4b6-41da-b4a7-157e7b1d9672",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "InvertVector2(invertX=false)",
+                    "groups": "Keyboard&Mouse",
+                    "action": "NextLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "25fed2c8-cb34-4754-a074-08407ed1d6e7",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NextLayer",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "461128fd-f832-4e23-9fb9-094b299b3920",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "NextLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "up",
+                    "id": "eca9db11-be65-44fb-84a8-32e9fd88769a",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "NextLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "up",
+                    "id": "1a31251a-e9e2-4454-b5f7-6bd549af66c5",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "NextLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "up",
+                    "id": "4cd86bba-bb07-473a-b061-72c7a1b32fde",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "NextLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },

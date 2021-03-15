@@ -177,6 +177,7 @@ public class Recorder : MonoBehaviour
         }
 
         RecordVisuals.inst.DestroyRecordObjects();
+        UIOps.inst.EnableActiveTrackRecordImage(false);
 
         MusicManager.inst.controller.AllNotesOff();
     }
@@ -396,6 +397,7 @@ public class Recorder : MonoBehaviour
     private void StartSpawnChordObject()
     {
         RecordVisuals.inst.CreateRecordObject(recording, recordObjects);
+        UIOps.inst.EnableActiveTrackRecordImage(true);
     }
 
     /// <summary>

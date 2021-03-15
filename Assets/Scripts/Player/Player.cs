@@ -259,13 +259,14 @@ public class Player : MonoBehaviour
         
 
 
-    public void OnPlayInside(InputAction.CallbackContext context)
+    public void OnPlay(InputAction.CallbackContext context)
     {
         // 1. Game start checks
         if (positionState != PositionState.NoTunnel)
         {
             if (curField.IsNotSpawning)
             {
+                // press
                 if (context.performed)
                 {
                     // 2. UI?
@@ -275,6 +276,7 @@ public class Player : MonoBehaviour
                         PlayMovement(Side.inner);
                     }
                 }
+                // release
                 else if (context.canceled)
                 {
                     StopPlayMovement(Side.inner);
@@ -283,20 +285,20 @@ public class Player : MonoBehaviour
         }
     }
     
-    public void OnPlayOutside(InputAction.CallbackContext context)
-    {
-        if (positionState != PositionState.NoTunnel)
-        {
-            if (context.performed)
-            {
-                PlayMovement(Side.outer);
-            }
-            else if (context.canceled)
-            {
-                StopPlayMovement(Side.outer);
-            }
-        }
-    }
+    //public void OnPlayOutside(InputAction.CallbackContext context)
+    //{
+    //    if (positionState != PositionState.NoTunnel)
+    //    {
+    //        if (context.performed)
+    //        {
+    //            PlayMovement(Side.outer);
+    //        }
+    //        else if (context.canceled)
+    //        {
+    //            StopPlayMovement(Side.outer);
+    //        }
+    //    }
+    //}
 
     
     

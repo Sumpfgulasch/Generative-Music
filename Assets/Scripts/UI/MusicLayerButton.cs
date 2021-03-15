@@ -8,15 +8,12 @@ using TMPro;
 
 public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    [Header("Added")]
     public int layer;
     //public Image targetImage;
-    public Image emptyImage;
-    public Image recordImage;
+    public Image unfilled;
+    public Image filled;
     public Image glow;
-
-    public Color normalColor;
-    public Color highlightedColor;
-    public Color pressedColor;
 
 
     
@@ -27,10 +24,7 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
 
 
 
-    public void EnableImage(Image image, bool value)
-    {
-        image.enabled = value;
-    }
+    
 
 
 
@@ -80,12 +74,11 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
     {
         base.OnPointerDown(eventData);
 
-        //emptyImage.color = pressedColor;
-        //recordImage.color = pressedColor;
+        // 1. Glow-image
+        EnableGlow();
 
-        UIManager.inst.activeTrack.enabled = false;
-        EnableImage(glow, true);
-        UIManager.inst.activeTrack = glow;
+        // 2. MusicManager
+        MusicManager.inst.ChangeLayer(layer);
     }
 
 
@@ -97,18 +90,39 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
     //    recordImage.color = normalColor;
     //}
 
-    public override void OnPointerEnter(PointerEventData eventData)
+    //public override void OnPointerEnter(PointerEventData eventData)
+    //{
+    //    //Debug.Log("pointer enter", gameObject);
+    //    emptyImage.color = highlightedColor;
+    //    recordImage.color = highlightedColor;
+    //}
+
+    //public override void OnPointerExit(PointerEventData eventData)
+    //{
+    //    //Debug.Log("pointer exit", gameObject);
+
+    //    emptyImage.color = normalColor;
+    //    recordImage.color = normalColor;
+    //}
+
+    
+
+    /// <summary>
+    /// Disable old and enable new glow-image.
+    /// </summary>
+    private void EnableGlow()
     {
-        //Debug.Log("pointer enter", gameObject);
-        emptyImage.color = highlightedColor;
-        recordImage.color = highlightedColor;
+        // 1. Disable old & enable new graphics
+        UIManager.inst.activeLayerButton.glow.enabled = false;
+        glow.enabled = true;
+
+        // 2. Set active-variable
+        UIManager.inst.activeLayerButton = this;
     }
 
-    public override void OnPointerExit(PointerEventData eventData)
-    {
-        //Debug.Log("pointer exit", gameObject);
 
-        emptyImage.color = normalColor;
-        recordImage.color = normalColor;
+    private void EnableImage(Image image, bool value)
+    {
+        image.enabled = value;
     }
 }

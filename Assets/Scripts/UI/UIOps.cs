@@ -50,11 +50,34 @@ public class UIOps : MonoBehaviour
         {
             if (hit.gameObject.layer == LayerMask.NameToLayer("UI"))
             {
-                Debug.Log("pointer hits UI", gameObject);
                 return true;
             }
         }
-        Debug.Log("pointer does NOT hit UI", gameObject);
         return false;
+    }
+
+    /// <summary>
+    /// Change the image of the active track: enable the filled or unfilled image.
+    /// </summary>
+    /// <param name="layer">[0-4].</param>
+    /// <param name="value">true == filled (contains recording), false == unfilled (no recording).</param>
+    public void EnableActiveTrackRecordImage(bool value)
+    {
+        var activeButton = UIManager.inst.activeLayerButton;
+        activeButton.filled.enabled = value;
+        if (value == true)
+            activeButton.targetGraphic = UIManager.inst.activeLayerButton.filled;
+        else
+            activeButton.targetGraphic = UIManager.inst.activeLayerButton.unfilled;
+    }
+
+    public void HighlightLayerButton(int layer)
+    {
+        // 1. Disable old & enable new graphics
+        UIManager.inst.activeLayerButton.glow.enabled = false;
+        UIManager.inst.layerButtons[layer].glow.enabled = true;
+
+        // 2. Set active-variable
+        UIManager.inst.activeLayerButton = UIManager.inst.layerButtons[layer];
     }
 }

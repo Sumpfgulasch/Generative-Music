@@ -7,7 +7,8 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager inst;
 
-    public Image activeTrack;
+    public List<MusicLayerButton> layerButtons;
+    public MusicLayerButton activeLayerButton;
 
     void Start()
     {
