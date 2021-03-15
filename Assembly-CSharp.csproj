@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Additional stuff\SetRenderQueue.cs" />
+    <Compile Include="Assets\test.cs" />
     <Compile Include="Assets\Scripts\Player\Player.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Keyzone.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Utils.cs" />
@@ -80,7 +81,7 @@
     <Compile Include="Assets\Scripts\Recording\RecordVisuals.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshUpdate.cs" />
     <Compile Include="Assets\Scripts\Game\GameManager.cs" />
-    <Compile Include="Assets\Scripts\UI\UIOperations.cs" />
+    <Compile Include="Assets\Scripts\UI\MusicLayerButton.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\CameraMan.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\BounceAudio2d.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\AudioHelmClock.cs" />
@@ -93,12 +94,14 @@
     <Compile Include="Assets\Scripts\Environment\MoveTunnel.cs" />
     <Compile Include="Assets\Scripts\Music\MusicGenerationLogic.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmAudioInit.cs" />
+    <Compile Include="Assets\Scripts\Music\AudioHelmHelper.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmSequencer.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetAnimationParameter.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\GroundKeyboard.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\EnableAfterTime.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\GroundKey.cs" />
+    <Compile Include="Assets\Scripts\UI\UIManager.cs" />
     <Compile Include="Assets\Scripts\Music\Recorder.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlTorque.cs" />
     <Compile Include="Assets\Scripts\Game\GameplayManager.cs" />
@@ -119,16 +122,16 @@
     <Compile Include="Assets\Scripts\Game\GameEvents.cs" />
     <Compile Include="Assets\Scripts\Music\MusicRef.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\MidiFile.cs" />
+    <Compile Include="Assets\Scripts\UI\MusicLayerButtonEditor.cs" />
     <Compile Include="Assets\Scripts\Music\MusicFieldSet.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Note.cs" />
     <Compile Include="Assets\Scripts\Music\MusicUtil.cs" />
     <Compile Include="Assets\Scripts\Music\MusicManager.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ToggleParameter.cs" />
-    <Compile Include="Assets\Scripts\IngameUI.cs" />
     <Compile Include="Assets\Scripts\Util\ExtensionMethods.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshRef.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
-    <Compile Include="Assets\Scripts\Music\AudioHelmHelper.cs" />
+    <Compile Include="Assets\Scripts\UI\UIOps.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

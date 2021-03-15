@@ -21,9 +21,15 @@ public class GameplayManager : MonoBehaviour
     {
         inst = this;
 
+        foreach (GameObject obj in MeshRef.inst.menuObjects)
+            obj.SetActive(false);
+
+        var cursorOffset = new Vector2(MeshRef.inst.mouse.width / 2, MeshRef.inst.mouse.height / 2);
+        Cursor.SetCursor(MeshRef.inst.mouse, cursorOffset, CursorMode.Auto);
+
         // Wait (cause raycasts wouldnt hit any collider)
         yield return new WaitForFixedUpdate(); yield return new WaitForEndOfFrame();
-        
+
         // 1. Create all meshes
         MeshCreation.CreateAll();
         

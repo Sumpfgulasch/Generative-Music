@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.IO;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -79,6 +81,7 @@ public class Player : MonoBehaviour
     public enum Side { inner, outer};
     private Side curPlaySide = Side.inner;
     private Side curMouseSide, lastMouseSide;
+    private bool menuVisible = true;
 
 
 
@@ -258,13 +261,19 @@ public class Player : MonoBehaviour
 
     public void OnPlayInside(InputAction.CallbackContext context)
     {
+        // 1. Game start checks
         if (positionState != PositionState.NoTunnel)
         {
-            if (curField.IsNotSpawning)                           // TO DO: genauer überlegen
+            if (curField.IsNotSpawning)
             {
                 if (context.performed)
                 {
-                    PlayMovement(Side.inner);
+                    // 2. UI?
+                    var pointerPos = Pointer.current.position.ReadValue();
+                    if (!UIOps.inst.PointerHitsUI(pointerPos))
+                    {
+                        PlayMovement(Side.inner);
+                    }
                 }
                 else if (context.canceled)
                 {
@@ -395,6 +404,19 @@ public class Player : MonoBehaviour
     }
 
 
+    public void OnToggleMenu(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            foreach(GameObject obj in MeshRef.inst.menuObjects)
+            {
+                obj.SetActive(menuVisible);
+            }
+            menuVisible = !menuVisible;
+        }
+    }
+
+
 
 
 
@@ -482,6 +504,8 @@ public class Player : MonoBehaviour
         else
             return false;
     }
+
+    
     
 
     /// <summary>

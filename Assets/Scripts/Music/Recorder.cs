@@ -264,14 +264,10 @@ public class Recorder : MonoBehaviour
                 float end = doubleNote.end;
 
                 // 1.1. Shorten existing note
-                print("case 1; before notify");
-                //CurSequencer.NotifyNoteEndChanged(doubleNote, end);
                 doubleNote.end = recording.start;
 
                 MusicManager.inst.controller.NoteOn(note, velocity, end - start);
                 
-                
-
                 // 1.2. Add new note
                 #region pos percentage
                 //float doubleNoteEndPercentage = SequencerPositionPercentage(CurSequencer, end, recording);
@@ -288,7 +284,6 @@ public class Recorder : MonoBehaviour
 
                 // 2.1. Shorten existing sequencer note
                 doubleNote.end = recording.start;
-                //CurSequencer.NotifyNoteEndChanged(doubleNote, oldEnd);
 
                 // 2.2. Add note for remaining sequencer note?
                 float oldEndPercentage = SequencerPositionPercentage(CurSequencer, oldEnd, recording);
@@ -301,7 +296,6 @@ public class Recorder : MonoBehaviour
 
                     var temp = new NoteContainer(note, start, end, velocity);
                     addNotes.Add(temp);
-                    //print("fall #2: (1) doubleNote-begin: " + doubleNote.start + ", end: " + doubleNote.end + ", (3) addedNote, start: "  + start + ", end: " + end);
                 }
             }
         }
@@ -317,14 +311,12 @@ public class Recorder : MonoBehaviour
         {
             //if (counter<=2)
                 CurSequencer.AddNote(note, recording.start, recording.end, velocity);
-            //print("write; (2); start: " + recording.start + ", end: " + recording.end);
         }
 
         // 5. Add bridge notes again
         foreach (Note note in unplayedBridgeNotes)  // #3
         {
             CurSequencer.AddNote(note.note, note.start, note.end, velocity);
-            //print("fall 3: add bridge notes again");
         }
         foreach(NoteContainer note in addNotes) // #2
         {

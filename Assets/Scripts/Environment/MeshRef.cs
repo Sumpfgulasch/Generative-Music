@@ -41,15 +41,19 @@ public class MeshRef : MonoBehaviour
     public Transform recordObj_parent;
     public Material recordObj_mat;
     public TextMeshProUGUI preRecordCounter;
+    [Header("Menu")]
+    public List<GameObject> menuObjects;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;
     public Transform mouseTrail;
+    public Texture2D mouse;
 
 
     // Start is called before the first frame update
     void Start()
     {
         inst = this;
+        //
     }
 
     // Update is called once per frame
