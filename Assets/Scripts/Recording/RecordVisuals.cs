@@ -30,7 +30,7 @@ public class RecordVisuals : MonoBehaviour
     /// </summary>
     /// <param name="recording">Recording data.</param>
     /// <param name="recordObjects">List to add the new chord objects.</param>
-    public void CreateRecordObjectTwice(Recording recording, List<RecordObject> recordObjects)
+    public void CreateRecordObjectTwice(Recording recording, List<RecordObject>[] recordObjects, int trackLayer)
     {
         // 0. Refs
         var fields = Player.inst.curFieldSet;
@@ -45,14 +45,14 @@ public class RecordVisuals : MonoBehaviour
         var mesh1 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
         var mesh2 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
 
-        var recordObject1 = new RecordObject(mesh1, pos1, ID, recording.notes, recording.sequencer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
-        var recordObject2 = new RecordObject(mesh2, pos2, ID, recording.notes, recording.sequencer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
+        var recordObject1 = new RecordObject(mesh1, pos1, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
+        var recordObject2 = new RecordObject(mesh2, pos2, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
 
         recordObject1.hasRespawned = true;
 
         // 2. Add to list
-        recordObjects.Add(recordObject1);
-        recordObjects.Add(recordObject2);
+        recordObjects[trackLayer].Add(recordObject1);
+        recordObjects[trackLayer].Add(recordObject2);
 
         // 3. Edit recording / Start scaling
         recording.obj = recordObject1;              // Noch nötig???
@@ -74,7 +74,7 @@ public class RecordVisuals : MonoBehaviour
         var newObj = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
         newObj.transform.localScale = recordObj.obj.transform.localScale;
 
-        var douplicateObj = new RecordObject(newObj, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
+        var douplicateObj = new RecordObject(newObj, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.layer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
 
         // 2. Set data
         douplicateObj.isRecording = false;
@@ -98,15 +98,19 @@ public class RecordVisuals : MonoBehaviour
     }
 
 
-    public void DestroyRecordObjects()
+    /// <summary>
+    /// Destroy all recordObjects in one layer.
+    /// </summary>
+    /// <param name="layer"></param>
+    public void DestroyRecordObjects(int layer)
     {
-        var recordObjects = Recorder.inst.recordObjects;
+        var recordObjects = Recorder.inst.recordObjects[layer];
 
         for (int i=0; i < recordObjects.Count; i++)
         {
             Destroy(recordObjects[i].obj);
         }
-        Recorder.inst.recordObjects = new List<RecordObject>();
+        Recorder.inst.recordObjects[layer] = new List<RecordObject>();
     }
 
 

@@ -23,7 +23,7 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
     private void Start()
     {
         base.Start();
-        filledTransform = transform;
+        filledTransform = transform; // eig nur von filled-image
     }
 
 
@@ -61,8 +61,20 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
         float t = 0;
         while (t < duration)
         {
-            float lerp = Mathf.Lerp(1, targetValue, t / duration);
-            filledTransform.localScale = Vector3.one * lerp;
+            // scale
+            float lerp = t / duration;
+            float scaleLerp = Mathf.Lerp(1, targetValue, lerp);
+            filledTransform.localScale = Vector3.one * scaleLerp;
+
+            // color
+            var recordObjects = Recorder.inst.recordObjects[layer];
+            var targetColor = recordObjects[0].meshRenderer.material.color;
+            targetColor.a = 0;
+            foreach(RecordObject recordObject in recordObjects)
+            {
+                var colorLerp = UIManager.inst.deleteLerp.Evaluate(lerp);
+                recordObject.meshRenderer.material.color = Color.Lerp(targetColor, recordObject.startColor, colorLerp);
+            }
 
             t += Time.deltaTime;
             yield return null;
@@ -99,7 +111,6 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
         // 3. Delete?
         if (MusicManager.inst.curSequencer.GetAllNotes().Count != 0)
         {
-            print("all notes: " + MusicManager.inst.curSequencer.allNotes.Length);
             float wait = UIManager.inst.musicLayerButton_waitBeforDelete;
             float duration = UIManager.inst.musicLayerButton_duration;
 
@@ -116,6 +127,10 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
             StopCoroutine(deleteRoutine);
             filledTransform.localScale = Vector3.one;
             isDeleting = false;
+            foreach(RecordObject recordObject in Recorder.inst.recordObjects[layer])
+            {
+                recordObject.meshRenderer.material.color = recordObject.startColor;
+            }
         }
     }
 

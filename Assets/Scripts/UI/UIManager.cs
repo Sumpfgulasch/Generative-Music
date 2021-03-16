@@ -12,6 +12,8 @@ public class UIManager : MonoBehaviour
     public float musicLayerButton_waitBeforDelete = 0.2f;
     public float musicLayerButton_duration = 1f;
 
+    public AnimationCurve deleteLerp;
+
     void Start()
     {
         inst = this;

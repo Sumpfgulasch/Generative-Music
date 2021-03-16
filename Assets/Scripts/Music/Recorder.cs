@@ -15,7 +15,7 @@ public class Recorder : MonoBehaviour
     [HideInInspector] public bool isRecording = false;
     [HideInInspector] public bool isPreRecording = false;
     [HideInInspector] public int preRecCounter;
-    public List<RecordObject> recordObjects = new List<RecordObject>();
+    public List<RecordObject>[] recordObjects;
     public float noteAdd = 0.1f;
 
     // Private
@@ -54,6 +54,10 @@ public class Recorder : MonoBehaviour
         MeshRef.inst.recordBarFill.enabled = false;
 
         sequencers = MusicRef.inst.sequencers;
+        recordObjects = new List<RecordObject>[MusicManager.inst.maxLayers];
+        for (int i=0; i<recordObjects.Length; i++)
+            recordObjects[i] = new List<RecordObject>();
+        print("recordObjects[0]: " + recordObjects[0]);
     }
 
 
@@ -180,7 +184,7 @@ public class Recorder : MonoBehaviour
             DisableRecordBar();
         }
 
-        RecordVisuals.inst.DestroyRecordObjects();
+        RecordVisuals.inst.DestroyRecordObjects(layer);
         UIOps.inst.EnableRecordedTrackImage(false);
 
         MusicManager.inst.controller.AllNotesOff();
@@ -403,7 +407,8 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void StartSpawnChordObject()
     {
-        RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects);
+        int layer = UIManager.inst.activeLayerButton.layer;         // Unschön; sollte Variable haben
+        RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects, layer);
 
         UIOps.inst.EnableRecordedTrackImage(true);
     }

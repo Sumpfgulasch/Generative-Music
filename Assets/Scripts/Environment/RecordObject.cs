@@ -14,10 +14,14 @@ public class RecordObject
     public int[] notes;
     public GameObject obj;
     public Sequencer sequencer;
+    public int layer;
     public float start;
     public float end;
     public float loopStart;
     public float loopEnd_extended;
+
+    public MeshRenderer meshRenderer;
+    public Color startColor;
 
 
     //[HideInInspector] 
@@ -40,7 +44,7 @@ public class RecordObject
 
     // Constructor
 
-    public RecordObject(GameObject obj, Vector3 position, int fieldID, int[] notes, Sequencer sequencer, float start, float end, float loopStart, float loopEnd_extended)
+    public RecordObject(GameObject obj, Vector3 position, int fieldID, int[] notes, Sequencer sequencer, int layer, float start, float end, float loopStart, float loopEnd_extended)
     {
         // set
         this.obj = obj;
@@ -48,10 +52,17 @@ public class RecordObject
         this.fieldID = fieldID;
         this.notes = notes;
         this.sequencer = sequencer;
+        this.layer = layer;
         this.start = start;
         this.end = end;
         this.loopStart = loopStart;
         this.loopEnd_extended = loopEnd_extended;
+
+        meshRenderer = obj.GetComponent<MeshRenderer>();
+        if (meshRenderer == null)
+            Debug.LogError("mesh rend sollte nich null sein");
+        meshRenderer.material.color = VisualController.inst.colorPalette[layer];
+        startColor = meshRenderer.material.color;
 
         // add
         this.obj.AddComponent<Move>();
