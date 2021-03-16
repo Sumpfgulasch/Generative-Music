@@ -11,11 +11,10 @@ public class Recorder : MonoBehaviour
     // Public
     public static Recorder inst;
 
+    [HideInInspector] public List<Sequencer> sequencers;
     [HideInInspector] public bool isRecording = false;
     [HideInInspector] public bool isPreRecording = false;
     [HideInInspector] public int preRecCounter;
-    //[HideInInspector] 
-    [SerializeField]
     public List<RecordObject> recordObjects = new List<RecordObject>();
     public float noteAdd = 0.1f;
 
@@ -29,7 +28,7 @@ public class Recorder : MonoBehaviour
     {
         get
         {
-            foreach (Sequencer sequencer in MusicRef.inst.sequencers)
+            foreach (Sequencer sequencer in sequencers)
             {
                 var notes = sequencer.GetAllNotes();
                 if (notes.Count != 0)
@@ -38,6 +37,7 @@ public class Recorder : MonoBehaviour
             return false;
         }
     }
+    
     private Sequencer CurSequencer { get { return MusicManager.inst.curSequencer; } }
 
 
@@ -52,7 +52,8 @@ public class Recorder : MonoBehaviour
         MeshRef.inst.recordImage.enabled = false;
         MeshRef.inst.preRecordCounter.enabled = false;
         MeshRef.inst.recordBarFill.enabled = false;
-        
+
+        sequencers = MusicRef.inst.sequencers;
     }
 
 
@@ -168,17 +169,19 @@ public class Recorder : MonoBehaviour
     /// <summary>
     /// Clear all notes from a given sequencer. Disable recordBar maybe.
     /// </summary>
-    public void ClearSequencer(int layer)
+    public void ClearLayer(int layer)
     {
-        MusicRef.inst.sequencers[layer].Clear();
+        // 1. Clear sequencer
+        sequencers[layer].Clear();
 
+        // 2. UI & objects
         if (!Has1stRecord)
         {
             DisableRecordBar();
         }
 
         RecordVisuals.inst.DestroyRecordObjects();
-        UIOps.inst.EnableActiveTrackRecordImage(false);
+        UIOps.inst.EnableRecordedTrackImage(false);
 
         MusicManager.inst.controller.AllNotesOff();
     }
@@ -400,9 +403,9 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void StartSpawnChordObject()
     {
-        RecordVisuals.inst.CreateRecordObject(recording, recordObjects);
+        RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects);
 
-        UIOps.inst.EnableActiveTrackRecordImage(true);
+        UIOps.inst.EnableRecordedTrackImage(true);
     }
 
     /// <summary>

@@ -90,7 +90,7 @@ public class MusicManager : MonoBehaviour
     /// <param name="layer"></param>
     public void ChangeLayer(int layer)
     {
-        curSequencer = MusicRef.inst.sequencers[layer];
+        curSequencer = Recorder.inst.sequencers[layer];
         controller.channel = layer;
     }
 
@@ -300,7 +300,7 @@ public class MusicManager : MonoBehaviour
     {
         if (context.performed)
         {
-            curSequencer = MusicRef.inst.sequencers[0];
+            curSequencer = Recorder.inst.sequencers[0];
         }
     }
 
@@ -308,7 +308,7 @@ public class MusicManager : MonoBehaviour
     {
         if (context.performed)
         {
-            curSequencer = MusicRef.inst.sequencers[1];
+            curSequencer = Recorder.inst.sequencers[1];
         }
     }
 

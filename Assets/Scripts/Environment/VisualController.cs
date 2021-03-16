@@ -18,6 +18,7 @@ public class VisualController : MonoBehaviour
     [Range(0.1f, 1)]
     public float mouseColliderSize_play = 1;
     public Vector2 cameraOffset;
+    public Color[] colorPalette;
 
     [Header("Player")]
     [Range(0, 1f)] public float playerAlpha = 0.5f;

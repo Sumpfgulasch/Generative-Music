@@ -30,7 +30,7 @@ public class RecordVisuals : MonoBehaviour
     /// </summary>
     /// <param name="recording">Recording data.</param>
     /// <param name="recordObjects">List to add the new chord objects.</param>
-    public void CreateRecordObject(Recording recording, List<RecordObject> recordObjects)
+    public void CreateRecordObjectTwice(Recording recording, List<RecordObject> recordObjects)
     {
         // 0. Refs
         var fields = Player.inst.curFieldSet;

@@ -9,6 +9,8 @@ public class UIManager : MonoBehaviour
 
     public List<MusicLayerButton> layerButtons;
     public MusicLayerButton activeLayerButton;
+    public float musicLayerButton_waitBeforDelete = 0.2f;
+    public float musicLayerButton_duration = 1f;
 
     void Start()
     {

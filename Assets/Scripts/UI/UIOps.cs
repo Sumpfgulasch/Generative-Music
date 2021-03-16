@@ -61,7 +61,7 @@ public class UIOps : MonoBehaviour
     /// </summary>
     /// <param name="layer">[0-4].</param>
     /// <param name="value">true == filled (contains recording), false == unfilled (no recording).</param>
-    public void EnableActiveTrackRecordImage(bool value)
+    public void EnableRecordedTrackImage(bool value)
     {
         var activeButton = UIManager.inst.activeLayerButton;
         activeButton.filled.enabled = value;
