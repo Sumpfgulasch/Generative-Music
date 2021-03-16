@@ -29,7 +29,7 @@ public class RecordObject
     
 
     // Properties
-    public float StartZPos { get { Debug.Log("obj.z: " + obj.transform.position.z); return obj.transform.position.z; } }
+    public float StartZPos { get { return obj.transform.position.z; } }
     public float EndZPos { get { return StartZPos + obj.transform.localScale.z; } }
     private float DeltaTime { get { return Time.deltaTime * FPS; } }
 

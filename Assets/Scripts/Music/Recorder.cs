@@ -234,6 +234,7 @@ public class Recorder : MonoBehaviour
         recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         recording.end = -1;
         recording.fieldID = Player.inst.curField.ID;
+        recording.sequencer = CurSequencer;
     }
 
 
@@ -374,17 +375,18 @@ public class Recorder : MonoBehaviour
     {
 
         var playerPos = Player.inst.transform.position;
-        float curSeqencerPos = (float)CurSequencer.GetSequencerPosition();
+        float curSeqencerPos = (float)recordObject.sequencer.GetSequencerPosition();
 
-        var curSequencerPosPercentage = SequencerPositionPercentage(CurSequencer, curSeqencerPos, recording.loopStart);
-        var chordStartPos = recording.start;
-        var chordStartPosPercentage = SequencerPositionPercentage(CurSequencer, chordStartPos, recording.loopStart);
+        var curSequencerPosPercentage = SequencerPositionPercentage(recordObject.sequencer, curSeqencerPos, recordObject.loopStart);
+        var chordStartPos = recordObject.start;
+        var chordStartPosPercentage = SequencerPositionPercentage(recordObject.sequencer, chordStartPos, recordObject.loopStart);
 
         var position = playerPos + 
             (1 - curSequencerPosPercentage) * LoopData.distancePerRecLoop * Vector3.forward +
             chordStartPosPercentage * LoopData.distancePerRecLoop * Vector3.forward;
 
-        //var position = recordObject.transform.position + LoopData.distancePerRecLoop * Vector3.forward;
+
+        //var position = recordObject.transform.position + LoopData.distancePerRecLoop * Vector3.forward; // theoretisch korrekt, mit der Zeit aber asynchron
 
 
         return position;

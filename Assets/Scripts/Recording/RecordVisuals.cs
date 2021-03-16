@@ -48,6 +48,8 @@ public class RecordVisuals : MonoBehaviour
         var recordObject1 = new RecordObject(mesh1, pos1, ID, recording.notes, recording.sequencer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
         var recordObject2 = new RecordObject(mesh2, pos2, ID, recording.notes, recording.sequencer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
 
+        recordObject1.hasRespawned = true;
+
         // 2. Add to list
         recordObjects.Add(recordObject1);
         recordObjects.Add(recordObject2);
@@ -65,21 +67,21 @@ public class RecordVisuals : MonoBehaviour
         var ID = recordObj.fieldID;
         var parent = MeshRef.inst.recordObj_parent;
         var material = MeshRef.inst.recordObj_mat;
-        var pos = Recorder.inst.NextLoopPosition(recordObj);            // to rework!!!
+        var pos = Recorder.inst.NextLoopPosition(recordObj);
         var layer = 8;
 
         // 1. Instantiate & scale!
         var newObj = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
         newObj.transform.localScale = recordObj.obj.transform.localScale;
 
-        var recordObject = new RecordObject(newObj, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
+        var douplicateObj = new RecordObject(newObj, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
 
         // 2. Set data
-        recordObj.isRecording = false;
+        douplicateObj.isRecording = false;
 
         // !!! Add to recordObjects-list when invoked (in ObjectManager) !!!
 
-        return recordObj;
+        return douplicateObj;
     }
 
 
@@ -93,9 +95,6 @@ public class RecordVisuals : MonoBehaviour
 
         recording.obj.isRecording = false;
         recording.loopObj.isRecording = false;
-
-        Debug.Log("stop create 1", gameObject);
-        Debug.Log("stop create 2", gameObject);
     }
 
 
@@ -117,15 +116,6 @@ public class RecordVisuals : MonoBehaviour
 
 
 
-
-    //private RecordObject InstantiateRecObj(MusicField[] fields, int index, string name, Vector3 position, Transform parent, Material material, bool visible = true, float length = 1f, int layer = 1)
-    //{
-    //    var laneSurface1 = MeshCreation.CreateLaneSurface(fields, index, name, parent, material, visible, length, layer);
-    //    var recordObject = laneSurface1.gameObject.AddComponent<RecordObject>();
-    //    recordObject.transform.position = position;
-
-    //    return recordObject;
-    //}
 
 
     /// <summary>
