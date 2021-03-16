@@ -9,7 +9,7 @@ public class MusicRef : MonoBehaviour
     public static MusicRef inst;
 
     [Header("References")]
-    public List<HelmController> helmControllers;
+    public HelmController helmController;
     public List<Sequencer> sequencers;
     public SampleSequencer beatSequencer;
     public AudioHelmClock clock;

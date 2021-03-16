@@ -304,6 +304,7 @@ public static class MeshCreation
         // 1.2. Triangles & normals
         int[] triangles;
         Vector3[] normals;
+        Vector2[] uvs;
 
         if (fields[index].isCorner)
         {
@@ -331,6 +332,16 @@ public static class MeshCreation
                 };
             }
 
+            uvs = new Vector2[]
+            {
+                new Vector2(0,0),
+                new Vector2(0.5f,0),
+                new Vector2(1,0),
+                new Vector2(0,1),
+                new Vector2(0.5f,1),
+                new Vector2(1,1)
+            };
+
             #region normals
             //normals = new Vector3[]                                                                     // not used
             //{
@@ -354,6 +365,7 @@ public static class MeshCreation
                     0, 2, 3,
                     3, 1, 0
                 };
+                
             }
             else
             {
@@ -364,6 +376,13 @@ public static class MeshCreation
                     3, 0, 1
                 };
             }
+            uvs = new Vector2[]
+                {
+                    new Vector2(0,0),
+                    new Vector2(1,0),
+                    new Vector2(0,1),
+                    new Vector2(1,1)
+                };
 
             #region normals
             //normals = new Vector3[]                                                                 // not used
@@ -380,6 +399,7 @@ public static class MeshCreation
         Mesh mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles;
+        mesh.uv = uvs;
         //mesh.normals = normals;
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;

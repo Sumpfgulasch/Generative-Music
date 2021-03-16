@@ -66,7 +66,7 @@ public class MusicManager : MonoBehaviour
         inst = this;
         curChord = Chords.c4Major;          // stupid inits
         lastChord = curChord;
-        controller = Instrument.inner;
+        controller = MusicRef.inst.helmController;
         curSequencer = MusicRef.inst.sequencers[0];
         
         //curInstrument.SetParameterValue(AudioHelm.Param.arp, 8);
@@ -214,10 +214,10 @@ public class MusicManager : MonoBehaviour
     // Fields
     public void OnFieldStart(Player.Side side)
     {
-        if (side == Player.Side.inner)
-            controller = Instrument.inner;
-        else
-            controller = Instrument.outer;
+        //if (side == Player.Side.inner)
+        //    controller = Instrument.inner;
+        //else
+        //    controller = Instrument.outer;
 
 
         PlayField();
@@ -271,8 +271,8 @@ public class MusicManager : MonoBehaviour
 
     public void OnReset(InputAction.CallbackContext context)
     {
-        Instrument.inner.AllNotesOff();
-        Instrument.outer.AllNotesOff();
+        controller.AllNotesOff();
+
         if (context.performed)
         {
             LoopData.Init();
@@ -406,17 +406,17 @@ public class MusicManager : MonoBehaviour
 
 
 
-    public static class Instrument
-    {
-        public static HelmController inner;
-        public static HelmController outer;
+    //public static class Instrument
+    //{
+    //    public static HelmController inner;
+    //    public static HelmController outer;
 
-        static Instrument()
-        {
-            inner = MusicRef.inst.helmControllers[0];
-            outer = MusicRef.inst.helmControllers[1];
-        }
-    }
+    //    static Instrument()
+    //    {
+    //        inner = MusicRef.inst.helmControllers[0];
+    //        outer = MusicRef.inst.helmControllers[1];
+    //    }
+    //}
 
 
 
