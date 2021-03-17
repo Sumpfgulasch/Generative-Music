@@ -39,7 +39,17 @@ public class Recorder : MonoBehaviour
     }
     
     private Sequencer CurSequencer { get { return MusicManager.inst.curSequencer; } }
-
+    public int CurLayer { get                                               // scheiﬂe aber mir egal
+        { 
+            for (int i=0; i<sequencers.Count; i++)
+            {
+                if (CurSequencer == sequencers[i])
+                    return i;
+            }
+            Debug.LogError("curLayer not found");
+            return 0; 
+        } 
+    }
 
 
 
@@ -57,7 +67,6 @@ public class Recorder : MonoBehaviour
         recordObjects = new List<RecordObject>[MusicManager.inst.maxLayers];
         for (int i=0; i<recordObjects.Length; i++)
             recordObjects[i] = new List<RecordObject>();
-        print("recordObjects[0]: " + recordObjects[0]);
     }
 
 
@@ -184,10 +193,31 @@ public class Recorder : MonoBehaviour
             DisableRecordBar();
         }
 
-        RecordVisuals.inst.DestroyRecordObjects(layer);
+        RecordVisuals.inst.DestroyAllRecordObjects(layer);
         UIOps.inst.EnableRecordedTrackImage(false);
 
         MusicManager.inst.controller.AllNotesOff();
+    }
+
+
+    public void RemoveRecord(RecordObject recordObj)
+    {
+        // 1. clear notes
+        foreach (int note in recordObj.notes)
+        {
+            recordObj.sequencer.RemoveNotesInRange(note, recordObj.start, recordObj.end);
+            recordObj.sequencer.NoteOff(note);
+        }
+
+        // 2. gameObject & list
+        RecordVisuals.inst.DestroyRecordObject(recordObj);
+
+        // 3. UI
+        if (CurSequencer.GetAllNotes().Count == 0)
+        {
+            UIOps.inst.EnableRecordedTrackImage(false);
+        }
+        
     }
 
 

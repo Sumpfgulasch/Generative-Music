@@ -56,6 +56,9 @@ public class VisualController : MonoBehaviour
     [Range(0, 20f)] public float highlightSurface_emisiveIntensity = 5f;
     [Range(0, 1f)] public float highlightSurface_emissiveSaturation = 0.9f;
 
+    [Header("Record objects")]
+    public float recordObjectsAlpha;
+
     [Header("Beat triangle")]
     public float highlightBeatTime = 0.2f;
     public Color highlightBeatColor = Color.white;
@@ -95,7 +98,11 @@ public class VisualController : MonoBehaviour
 
         playerMid = Player.transform.position;
 
-        
+        colorPalette = new Color[5];
+        for (int i=0; i<colorPalette.Length; i++)
+        {
+            colorPalette[i] = MeshRef.inst.layerButtons[i].colors.normalColor;
+        }
     }
 
 

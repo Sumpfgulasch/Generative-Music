@@ -39,10 +39,11 @@ public class MeshRef : MonoBehaviour
     public Image recordBarFill;
     public GameObject recordObject;
     public Transform recordObj_parent;
-    public Material recordObj_mat;
+    public Material[] recordObjs_mat;
     public TextMeshProUGUI preRecordCounter;
-    [Header("Menu")]
+    [Header("UI")]
     public List<GameObject> menuObjects;
+    public List<MusicLayerButton> layerButtons;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;
     public Transform mouseTrail;

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ObjectManager : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class ObjectManager : MonoBehaviour
     [HideInInspector] public float tunnelLength;
     [HideInInspector] public float distancePerQuarter;
     private float FPS;
+    private Coroutine deleteRoutine;
 
     // Properties
     private float DeltaTime { get { return Time.deltaTime * FPS; }
@@ -123,6 +125,47 @@ public class ObjectManager : MonoBehaviour
     {
         SpawnTunnel();
         DeleteFarObjects();
+    }
+
+
+    public void OnDelete(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            deleteRoutine = StartCoroutine(DeleteObjects());
+        }
+        else if (context.canceled)
+        {
+            StopCoroutine(deleteRoutine);
+        }
+            
+    }
+
+    private IEnumerator DeleteObjects()
+    {
+        while (true)
+        {
+            int layer = Recorder.inst.CurLayer;
+            var removeList = new List<RecordObject>();
+
+            // 1. get all objects behind 0
+            foreach (RecordObject obj in Recorder.inst.recordObjects[layer])
+            {
+                if (Player.inst.curField.ID == obj.fieldID)
+                {
+                    if (obj.obj.transform.position.z <= Player.inst.transform.position.z + 0.1f)
+                    {
+                        removeList.Add(obj);
+                    }
+                }
+            }
+
+            foreach (RecordObject obj in removeList)
+            {
+                Recorder.inst.RemoveRecord(obj);
+            }
+            yield return null;
+        }
     }
 
 

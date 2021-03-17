@@ -7,7 +7,7 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager inst;
 
-    public List<MusicLayerButton> layerButtons;
+    [HideInInspector] public List<MusicLayerButton> layerButtons;
     public MusicLayerButton activeLayerButton;
     public float musicLayerButton_waitBeforDelete = 0.2f;
     public float musicLayerButton_duration = 1f;
@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         inst = this;
+
+        layerButtons = MeshRef.inst.layerButtons;
     }
 
     

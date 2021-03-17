@@ -36,17 +36,18 @@ public class RecordVisuals : MonoBehaviour
         var fields = Player.inst.curFieldSet;
         var ID = recording.fieldID;
         var parent = MeshRef.inst.recordObj_parent;
-        var material = MeshRef.inst.recordObj_mat;
+        var material = MeshRef.inst.recordObjs_mat[trackLayer];
         var pos1 = Player.inst.transform.position;
         var pos2 = pos1 + LoopData.distancePerRecLoop * Vector3.forward;
         var layer = 8;
 
         // 1. Instantiate
-        var mesh1 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
-        var mesh2 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
+        var obj1 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
+        var obj2 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
 
-        var recordObject1 = new RecordObject(mesh1, pos1, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
-        var recordObject2 = new RecordObject(mesh2, pos2, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
+        
+        var recordObject2 = new RecordObject(obj2, null, pos2, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
+        var recordObject1 = new RecordObject(obj1, recordObject2, pos1, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
 
         recordObject1.hasRespawned = true;
 
@@ -57,7 +58,7 @@ public class RecordVisuals : MonoBehaviour
         // 3. Edit recording / Start scaling
         recording.obj = recordObject1;              // Noch nötig???
         recording.loopObj = recordObject2;          // Noch nötig???
-        recording.scaleRoutine = StartCoroutine(ScaleChordObject(recordObject1.obj.transform, recordObject2.obj.transform));
+        recording.scaleRoutine = StartCoroutine(ScaleChordObject(recordObject1, recordObject2));
     }
 
     public RecordObject DouplicateRecordObject(RecordObject recordObj)
@@ -66,7 +67,7 @@ public class RecordVisuals : MonoBehaviour
         var fields = Player.inst.curFieldSet;
         var ID = recordObj.fieldID;
         var parent = MeshRef.inst.recordObj_parent;
-        var material = MeshRef.inst.recordObj_mat;
+        var material = MeshRef.inst.recordObjs_mat[recordObj.layer];
         var pos = Recorder.inst.NextLoopPosition(recordObj);
         var layer = 8;
 
@@ -74,10 +75,11 @@ public class RecordVisuals : MonoBehaviour
         var newObj = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
         newObj.transform.localScale = recordObj.obj.transform.localScale;
 
-        var douplicateObj = new RecordObject(newObj, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.layer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
+        var douplicateObj = new RecordObject(newObj, null, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.layer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
 
         // 2. Set data
-        douplicateObj.isRecording = false;
+        recordObj.douplicate = douplicateObj;   // obj that was douplicated
+        douplicateObj.isRecording = false;      // douplicate obj
 
         // !!! Add to recordObjects-list when invoked (in ObjectManager) !!!
 
@@ -95,6 +97,9 @@ public class RecordVisuals : MonoBehaviour
 
         recording.obj.isRecording = false;
         recording.loopObj.isRecording = false;
+
+        recording.obj.end = recording.end;
+        recording.loopObj.end = recording.end;
     }
 
 
@@ -102,7 +107,7 @@ public class RecordVisuals : MonoBehaviour
     /// Destroy all recordObjects in one layer.
     /// </summary>
     /// <param name="layer"></param>
-    public void DestroyRecordObjects(int layer)
+    public void DestroyAllRecordObjects(int layer)
     {
         var recordObjects = Recorder.inst.recordObjects[layer];
 
@@ -111,6 +116,22 @@ public class RecordVisuals : MonoBehaviour
             Destroy(recordObjects[i].obj);
         }
         Recorder.inst.recordObjects[layer] = new List<RecordObject>();
+    }
+
+    /// <summary>
+    /// Destroy a single recordObject (and its douplicate).
+    /// </summary>
+    /// <param name="obj"></param>
+    public void DestroyRecordObject(RecordObject obj)
+    {
+        Destroy(obj.obj);
+        Recorder.inst.recordObjects[obj.layer].Remove(obj);
+
+        if (obj.douplicate != null)
+        {
+            Destroy(obj.douplicate.obj);
+            Recorder.inst.recordObjects[obj.layer].Remove(obj.douplicate);
+        }
     }
 
 
@@ -128,14 +149,14 @@ public class RecordVisuals : MonoBehaviour
     /// <param name="obj1">Currently played chord-object.</param>
     /// <param name="obj2">Loop-chord-object.</param>
     /// <returns></returns>
-    private IEnumerator ScaleChordObject(Transform obj1, Transform obj2)
+    private IEnumerator ScaleChordObject(RecordObject obj1, RecordObject obj2)
     {
         var playerPos = Player.inst.transform.position.z;
         while (true)
         {
-            var scale = playerPos - obj1.position.z;
-            obj1.localScale = new Vector3(1, 1, scale);
-            obj2.localScale = new Vector3(1, 1, scale);
+            var scale = playerPos - obj1.obj.transform.position.z;
+            obj1.obj.transform.localScale = new Vector3(1, 1, scale);
+            obj2.obj.transform.localScale = new Vector3(1, 1, scale);
 
             yield return null;
         }
