@@ -9,6 +9,7 @@ public class GameEvents : MonoBehaviour
     public static GameEvents inst;
 
     public Action onTunnelEnter;
+    public Action onScreenResize;
     // Input
     public Action <Player.Side> onFieldStart;
     public Action<PlayerField> onFieldChange;
@@ -24,8 +25,10 @@ public class GameEvents : MonoBehaviour
     public Action onFirstBeat;
     public Action onMouseInside;
     public Action onMouseOutside;
-
-    public Action onScreenResize;
+    // Record
+    public Action<RecordObject> onRecObjFieldEnter;
+    public Action<RecordObject> onRecObjFieldExit;
+    public Action<RecordObject> onRecObjScreenExit;
 
    
 

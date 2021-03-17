@@ -6,9 +6,11 @@ public class Move : MonoBehaviour
 {
 
     private float FPS;
+
+    // Properties
     private float DeltaTime { get { return Time.deltaTime * FPS; } }
-
-
+    public float StartZPos { get { return transform.position.z; } }
+    public float EndZPos { get { return StartZPos + transform.localScale.z; } }
 
 
     void Start()
@@ -21,6 +23,16 @@ public class Move : MonoBehaviour
 
 
     void Update()
+    {
+        MoveForward();
+
+
+    }
+
+
+
+
+    private void MoveForward()
     {
         this.transform.position -= new Vector3(0, 0, ObjectManager.inst.moveSpeed * DeltaTime);
     }

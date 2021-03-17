@@ -53,6 +53,12 @@ public class MusicField
         this.isEdgeMid = isEdgeMid;
     }
 
+    // Update
+    //private void Update()
+    //{
+        
+    //}
+
 
 
 

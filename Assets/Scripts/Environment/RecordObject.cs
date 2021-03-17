@@ -7,7 +7,6 @@ using AudioHelm;
 /// Contains ONE chord always.
 /// </summary>
 /// 
-[SerializeField]
 public class RecordObject
 {
     public int fieldID;
@@ -70,7 +69,9 @@ public class RecordObject
 
         // add
         this.obj.AddComponent<Move>();
+        this.obj.AddComponent<FireRecObjFieldEvents>();
 
+        // stuff
         FPS = Screen.currentResolution.refreshRate;
     }
 
