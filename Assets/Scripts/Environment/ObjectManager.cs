@@ -35,6 +35,9 @@ public class ObjectManager : MonoBehaviour
         FPS = Screen.currentResolution.refreshRate;
 
         GetData();
+
+        GameEvents.inst.onRecObjFieldEnter += OnRecObjFieldEnter;
+        GameEvents.inst.onRecObjScreenExit += OnRecObjScreenExit;
     }
 
 
@@ -42,7 +45,7 @@ public class ObjectManager : MonoBehaviour
 
     private void Update()
     {
-        ManageRecordedChords();
+        //ManageRecordedChords();
     }
 
 
@@ -168,6 +171,26 @@ public class ObjectManager : MonoBehaviour
         }
     }
 
+    private void OnRecObjFieldEnter(RecordObject recordObject)
+    {
+        // Instantiate
+        var newObj = RecordVisuals.inst.DouplicateRecordObject(recordObject);
+        Recorder.inst.recordObjects[newObj.layer].Add(newObj);
+
+    }
+
+    private void OnRecObjFieldExit(RecordObject recordObject)
+    {
+        // recordObject.activeRecObjs++
+    }
+
+    private void OnRecObjScreenExit(RecordObject recordObject)
+    {
+        // Destroy
+        Recorder.inst.recordObjects[recordObject.layer].Remove(recordObject);
+        Destroy(recordObject.obj);
+    }
+
 
 
     // ------------------------- Private functions -------------------------
@@ -184,53 +207,53 @@ public class ObjectManager : MonoBehaviour
     /// <summary>
     /// Instantiate and delete objects, for each recorded chord.
     /// </summary>
-    private void ManageRecordedChords()
-    {
-        int layers = MusicManager.inst.maxLayers;
-        var removeList = new List<RecordObject>();
-        var addList = new List<RecordObject>();
-        var chordRecData = Recorder.inst.recording;
+    //private void ManageRecordedChords()
+    //{
+    //    int layers = MusicManager.inst.maxLayers;
+    //    var removeList = new List<RecordObject>();
+    //    var addList = new List<RecordObject>();
+    //    var chordRecData = Recorder.inst.recording;
 
-        for (int i=0; i<Recorder.inst.recordObjects.Length; i++)
-        {
-            foreach (RecordObject obj in Recorder.inst.recordObjects[i])
-            {
-                // Don't do if recording (cause otherwise it would be ... complicated)
-                if (!obj.isRecording)
-                {
-                    // Destroy?
-                    if (obj.EndZPos < -2f)
-                    {
-                        removeList.Add(obj);
-                    }
+    //    for (int i=0; i<Recorder.inst.recordObjects.Length; i++)
+    //    {
+    //        foreach (RecordObject obj in Recorder.inst.recordObjects[i])
+    //        {
+    //            // Don't do if recording (cause otherwise it would be ... complicated)
+    //            if (!obj.isRecording)
+    //            {
+    //                // Destroy?
+    //                if (obj.EndZPos < -2f)
+    //                {
+    //                    removeList.Add(obj);
+    //                }
 
-                    // Instantiate?
-                    if (obj.StartZPos <= 0 && !obj.hasRespawned)
-                    {
-                        obj.hasRespawned = true;
-                        var newObj = RecordVisuals.inst.DouplicateRecordObject(obj);
+    //                // Instantiate?
+    //                if (obj.StartZPos <= 0 && !obj.hasRespawned)
+    //                {
+    //                    obj.hasRespawned = true;
+    //                    var newObj = RecordVisuals.inst.DouplicateRecordObject(obj);
 
-                        addList.Add(newObj);
-                    }
-                }
-            }
-        }
+    //                    addList.Add(newObj);
+    //                }
+    //            }
+    //        }
+    //    }
 
 
-        // remove
-        foreach (RecordObject obj in removeList)
-        {
-            Recorder.inst.recordObjects[obj.layer].Remove(obj);
-            Destroy(obj.obj);
-        }
+    //    // remove
+    //    foreach (RecordObject obj in removeList)
+    //    {
+    //        Recorder.inst.recordObjects[obj.layer].Remove(obj);
+    //        Destroy(obj.obj);
+    //    }
 
-        // add
-        foreach (RecordObject obj in addList)
-        {
-            Recorder.inst.recordObjects[obj.layer].Add(obj);
-        }
+    //    // add
+    //    foreach (RecordObject obj in addList)
+    //    {
+    //        Recorder.inst.recordObjects[obj.layer].Add(obj);
+    //    }
 
-    }
+    //}
 
 
 
