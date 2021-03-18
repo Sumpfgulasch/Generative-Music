@@ -19,6 +19,7 @@ public class RecordObject : MonoBehaviour
     public float end;
     public float loopStart;
     public float loopEnd_extended;
+    public bool isPlaying;
 
     public MeshRenderer meshRenderer;
     public Color startColor;
@@ -89,12 +90,13 @@ public class RecordObject : MonoBehaviour
     private void InvokeFieldEvents()
     {
         // Enter
-        if (StartZPos <= Player.inst.transform.position.z + 0.05f)
+        if (StartZPos <= Player.inst.transform.position.z + 0.0f)
         {
             if (!hasEnteredField)
             {
                 GameEvents.inst.onRecObjFieldEnter?.Invoke(this);
                 hasEnteredField = true;
+                isPlaying = true;
             }
         }
 
@@ -105,6 +107,7 @@ public class RecordObject : MonoBehaviour
             {
                 GameEvents.inst.onRecObjFieldExit?.Invoke(this);
                 hasLeftField = true;
+                isPlaying = false;
             }
         }
 

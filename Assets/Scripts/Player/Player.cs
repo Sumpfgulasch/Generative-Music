@@ -266,20 +266,22 @@ public class Player : MonoBehaviour
         {
             if (curField.IsNotSpawning)
             {
-                // press
-                if (context.performed)
+                // 2. UI?
+                var pointerPos = Pointer.current.position.ReadValue();
+                if (!UIOps.inst.PointerHitsUI(pointerPos))
                 {
-                    // 2. UI?
-                    var pointerPos = Pointer.current.position.ReadValue();
-                    if (!UIOps.inst.PointerHitsUI(pointerPos))
+                    // press
+                    if (context.performed)
                     {
-                        PlayMovement(Side.inner);
+                        {
+                            PlayMovement(Side.inner);
+                        }
                     }
-                }
-                // release
-                else if (context.canceled)
-                {
-                    StopPlayMovement(Side.inner);
+                    // release
+                    else if (context.canceled)
+                    {
+                        StopPlayMovement(Side.inner);
+                    }
                 }
             }
         }

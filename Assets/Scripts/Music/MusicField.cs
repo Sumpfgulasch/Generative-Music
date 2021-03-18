@@ -42,17 +42,16 @@ public class MusicField
             if (activeRecords == 0)
             {
                 GameEvents.inst.onStopFieldByRecord?.Invoke(this);
-                Debug.Log("onStopField_byRecord");
             }
             else if (lastActiveRecords == 0 && activeRecords > 0)
             {
                 GameEvents.inst.onPlayFieldByRecord?.Invoke(this);
-                Debug.Log("onPLAYField_byRecord");
             }
             if (activeRecords < 0)
             {
                 Debug.LogError("active records wrong value");
             }
+            
         }
     }
 

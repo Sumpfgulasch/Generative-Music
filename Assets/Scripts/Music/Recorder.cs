@@ -192,11 +192,15 @@ public class Recorder : MonoBehaviour
         {
             DisableRecordBar();
         }
-
+        // clear highlighted fieldSurface und highlightSurface
+        foreach (RecordObject recordObj in recordObjects[layer])
+        {
+            if (recordObj.isPlaying)
+            {
+                Player.inst.curFieldSet[recordObj.fieldID].ActiveRecords--;
+            }
+        }
         RecordVisuals.inst.DestroyAllRecordObjects(layer);
-
-        foreach (MusicField field in Player.inst.curFieldSet)
-            field.ActiveRecords = 0;
 
         UIOps.inst.EnableRecordedTrackImage(false);
 
@@ -223,7 +227,8 @@ public class Recorder : MonoBehaviour
         }
 
         // 4. field.activeChords
-        Player.inst.curFieldSet[recordObj.fieldID].ActiveRecords--;
+        if (recordObj.isPlaying)
+            Player.inst.curFieldSet[recordObj.fieldID].ActiveRecords--;
         
     }
 

@@ -253,23 +253,28 @@ public class MusicManager : MonoBehaviour
     {
         if (context.performed)
         {
-            if (!Recorder.inst.isRecording && !Recorder.inst.isPreRecording)
+            // no UI
+            var pointerPos = Pointer.current.position.ReadValue();
+            if (!UIOps.inst.PointerHitsUI(pointerPos))
             {
-                if (Recorder.inst.Has1stRecord)
+                if (!Recorder.inst.isRecording && !Recorder.inst.isPreRecording)
                 {
-                    Recorder.inst.StartRecord();
+                    if (Recorder.inst.Has1stRecord)
+                    {
+                        Recorder.inst.StartRecord();
+                    }
+                    else
+                    {
+                        if (firstRecordDelay)
+                            Recorder.inst.StartRecordDelayed(LoopData.quartersPerBar);
+                        else
+                            Recorder.inst.StartRecord();
+                    }
                 }
                 else
                 {
-                    if (firstRecordDelay)
-                        Recorder.inst.StartRecordDelayed(LoopData.quartersPerBar);
-                    else
-                        Recorder.inst.StartRecord();
+                    Recorder.inst.StopRecord();
                 }
-            }
-            else
-            {
-                Recorder.inst.StopRecord();
             }
             
         }
