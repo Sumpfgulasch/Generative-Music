@@ -25,9 +25,9 @@ public class RecordObject : MonoBehaviour
 
 
     //[HideInInspector] 
-    public bool isRecording = true;
+    //public bool isRecording = true;
 
-    //private bool hasRespawned = false;
+    public bool hasRespawned = false;
     private bool hasEnteredField = false;
     private bool hasLeftField = false;
     private bool hasLeftScreen = false;
@@ -95,7 +95,6 @@ public class RecordObject : MonoBehaviour
             {
                 GameEvents.inst.onRecObjFieldEnter?.Invoke(this);
                 hasEnteredField = true;
-                print("enter field invoke");
             }
         }
 
@@ -106,18 +105,16 @@ public class RecordObject : MonoBehaviour
             {
                 GameEvents.inst.onRecObjFieldExit?.Invoke(this);
                 hasLeftField = true;
-                print("exit field invoke");
             }
         }
 
         // Exit screen
         if (EndZPos <= -2f)
         {
-            if (!hasLeftField)
+            if (!hasLeftScreen)
             {
-                GameEvents.inst.onRecObjFieldExit?.Invoke(this);
-                hasLeftField = true;
-                print("exit SCREEN invoke");
+                GameEvents.inst.onRecObjScreenExit?.Invoke(this);
+                hasLeftScreen = true;
             }
         }
     }

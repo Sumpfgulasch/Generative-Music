@@ -174,8 +174,12 @@ public class ObjectManager : MonoBehaviour
     private void OnRecObjFieldEnter(RecordObject recordObject)
     {
         // Instantiate
-        var newObj = RecordVisuals.inst.DouplicateRecordObject(recordObject);
-        Recorder.inst.recordObjects[newObj.layer].Add(newObj);
+        if (!recordObject.hasRespawned)
+        {
+            var newObj = RecordVisuals.inst.DouplicateRecordObject(recordObject);
+            Recorder.inst.recordObjects[newObj.layer].Add(newObj);
+            recordObject.hasRespawned = true;
+        }
 
     }
 

@@ -20,6 +20,8 @@ public class UIOps : MonoBehaviour
 
         graphicRaycaster = GetComponent<GraphicRaycaster>();
         eventSystem = GetComponent<EventSystem>();
+
+        HighlightLayerButton(0);
         
     }
 

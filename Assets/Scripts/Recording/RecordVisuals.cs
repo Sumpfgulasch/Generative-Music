@@ -47,18 +47,16 @@ public class RecordVisuals : MonoBehaviour
 
         var recordObject2 = RecordObject.Create(obj2, null, pos2, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
         var recordObject1 = RecordObject.Create(obj1, recordObject2, pos1, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
-        //var recordObject2 = new RecordObject(obj2, null, pos2, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
-        //var recordObject1 = new RecordObject(obj1, recordObject2, pos1, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
 
-        //recordObject1.hasRespawned = true;
+        recordObject1.hasRespawned = true;
 
         // 2. Add to list
         recordObjects[trackLayer].Add(recordObject1);
         recordObjects[trackLayer].Add(recordObject2);
 
         // 3. Edit recording / Start scaling
-        recording.obj = recordObject1;              // Noch nötig???
-        recording.loopObj = recordObject2;          // Noch nötig???
+        recording.obj = recordObject1;              // Noch nötig??? ja!
+        recording.loopObj = recordObject2;          // Noch nötig??? ja!
         recording.scaleRoutine = StartCoroutine(ScaleChordObject(recordObject1, recordObject2));
     }
 
@@ -77,11 +75,11 @@ public class RecordVisuals : MonoBehaviour
         newObj.transform.localScale = recordObj.obj.transform.localScale;
 
         var douplicateObj = RecordObject.Create(newObj, null, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.layer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
-        //var douplicateObj = new RecordObject(newObj, null, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.layer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
+        
+        
 
         // 2. Set data
         recordObj.douplicate = douplicateObj;   // obj that was douplicated
-        douplicateObj.isRecording = false;      // douplicate obj
 
         // !!! Add to recordObjects-list when invoked (in ObjectManager) !!!
 
@@ -96,9 +94,6 @@ public class RecordVisuals : MonoBehaviour
     public void StopCreateChordObject(Recording recording)
     {
         StopCoroutine(recording.scaleRoutine);
-
-        recording.obj.isRecording = false;
-        recording.loopObj.isRecording = false;
 
         recording.obj.end = recording.end;
         recording.loopObj.end = recording.end;

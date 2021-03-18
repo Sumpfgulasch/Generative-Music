@@ -23,6 +23,9 @@ public class MusicManager : MonoBehaviour
     [Range(0, 1f)]
     public float velocity = 0.1f;
 
+    [Header("Record")]
+    public bool firstRecordDelay;
+
     [HideInInspector] public Chord curChord;
     [HideInInspector] public Chord lastChord;
     [HideInInspector] public int curBeat;
@@ -258,7 +261,10 @@ public class MusicManager : MonoBehaviour
                 }
                 else
                 {
-                    Recorder.inst.StartRecordDelayed(LoopData.quartersPerBar);
+                    if (firstRecordDelay)
+                        Recorder.inst.StartRecordDelayed(LoopData.quartersPerBar);
+                    else
+                        Recorder.inst.StartRecord();
                 }
             }
             else
