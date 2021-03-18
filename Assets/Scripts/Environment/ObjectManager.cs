@@ -37,6 +37,7 @@ public class ObjectManager : MonoBehaviour
         GetData();
 
         GameEvents.inst.onRecObjFieldEnter += OnRecObjFieldEnter;
+        GameEvents.inst.onRecObjFieldExit += OnRecObjFieldExit;
         GameEvents.inst.onRecObjScreenExit += OnRecObjScreenExit;
     }
 
@@ -156,7 +157,7 @@ public class ObjectManager : MonoBehaviour
             {
                 if (Player.inst.curField.ID == obj.fieldID)
                 {
-                    if (obj.obj.transform.position.z <= Player.inst.transform.position.z + 0.1f)
+                    if (obj.obj.transform.position.z <= Player.inst.transform.position.z + 0.0f)
                     {
                         removeList.Add(obj);
                     }
@@ -181,11 +182,15 @@ public class ObjectManager : MonoBehaviour
             recordObject.hasRespawned = true;
         }
 
+        // Active records
+        Player.inst.curFieldSet[recordObject.fieldID].ActiveRecords++;
+
     }
 
     private void OnRecObjFieldExit(RecordObject recordObject)
     {
-        // recordObject.activeRecObjs++
+        // Active records
+        Player.inst.curFieldSet[recordObject.fieldID].ActiveRecords--;
     }
 
     private void OnRecObjScreenExit(RecordObject recordObject)

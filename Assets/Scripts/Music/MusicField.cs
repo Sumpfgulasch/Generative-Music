@@ -28,6 +28,34 @@ public class MusicField
     public float SurfaceOpacity { get; protected set; }
     public float height;
 
+    private int lastActiveRecords;
+    private int activeRecords;
+    public int ActiveRecords
+    {
+        get { return activeRecords; }
+        set
+        {
+            lastActiveRecords = activeRecords;
+
+            //activeRecords = Mathf.Clamp(value, 0, 100);
+            activeRecords = value;
+            if (activeRecords == 0)
+            {
+                GameEvents.inst.onStopFieldByRecord?.Invoke(this);
+                Debug.Log("onStopField_byRecord");
+            }
+            else if (lastActiveRecords == 0 && activeRecords > 0)
+            {
+                GameEvents.inst.onPlayFieldByRecord?.Invoke(this);
+                Debug.Log("onPLAYField_byRecord");
+            }
+            if (activeRecords < 0)
+            {
+                Debug.LogError("active records wrong value");
+            }
+        }
+    }
+
     // Private variables
     public Color color;
 
@@ -157,6 +185,15 @@ public class MusicField
         //this.fieldSurface.material.SetColor("_colorB", fieldSurfaceColor * 0.3f);
         this.highlightSurface.material.SetColor("_BaseColor", highlightSurfaceColor);
         this.highlightSurface.material.SetColor("_EmissionColor", highlightSurfaceColor * surfaceIntensity);
+    }
+
+
+    public void SetHighlightOpacity(float opacity)
+    {
+        SurfaceOpacity = opacity;
+        var color = highlightSurface.material.color;
+        color.a = opacity;
+        highlightSurface.material.color = color;
     }
 
     public static bool IsCorner(int ID)

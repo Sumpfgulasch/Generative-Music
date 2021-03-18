@@ -194,6 +194,10 @@ public class Recorder : MonoBehaviour
         }
 
         RecordVisuals.inst.DestroyAllRecordObjects(layer);
+
+        foreach (MusicField field in Player.inst.curFieldSet)
+            field.ActiveRecords = 0;
+
         UIOps.inst.EnableRecordedTrackImage(false);
 
         MusicManager.inst.controller.AllNotesOff();
@@ -217,6 +221,9 @@ public class Recorder : MonoBehaviour
         {
             UIOps.inst.EnableRecordedTrackImage(false);
         }
+
+        // 4. field.activeChords
+        Player.inst.curFieldSet[recordObj.fieldID].ActiveRecords--;
         
     }
 

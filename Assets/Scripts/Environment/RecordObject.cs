@@ -150,7 +150,7 @@ public class RecordObject : MonoBehaviour
         if (thisObj.meshRenderer == null)
             Debug.LogError("mesh rend sollte nich null sein");
         var color = VisualController.inst.colorPalette[layer];
-        color.a = VisualController.inst.recordObjectsAlpha;
+        color.a = VisualController.inst.recordObjectsOpacity;
         thisObj.meshRenderer.material.color = color;
         thisObj.startColor = thisObj.meshRenderer.material.color;
 

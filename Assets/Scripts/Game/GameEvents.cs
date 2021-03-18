@@ -29,8 +29,10 @@ public class GameEvents : MonoBehaviour
     public Action<RecordObject> onRecObjFieldEnter;
     public Action<RecordObject> onRecObjFieldExit;
     public Action<RecordObject> onRecObjScreenExit;
+    public Action<MusicField> onPlayFieldByRecord;
+    public Action<MusicField> onStopFieldByRecord;
 
-   
+
 
     void Start()
     {

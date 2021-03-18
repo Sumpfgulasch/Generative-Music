@@ -57,7 +57,7 @@ public class VisualController : MonoBehaviour
     [Range(0, 1f)] public float highlightSurface_emissiveSaturation = 0.9f;
 
     [Header("Record objects")]
-    public float recordObjectsAlpha;
+    public float recordObjectsOpacity = 1;
 
     [Header("Beat triangle")]
     public float highlightBeatTime = 0.2f;
@@ -103,11 +103,31 @@ public class VisualController : MonoBehaviour
         {
             colorPalette[i] = MeshRef.inst.layerButtons[i].colors.normalColor;
         }
+
+        // Events
+        GameEvents.inst.onPlayFieldByRecord += OnPlayField_byRecord;
+        GameEvents.inst.onStopFieldByRecord += OnStopField_byRecord;
     }
 
 
 
     // ----------------------------- Events ----------------------------
+
+
+    private void OnPlayField_byRecord(MusicField field)
+    {
+        field.fieldSurface.material.SetFloat("Fill", 1f);
+        field.highlightSurface.enabled = true;
+        field.SetHighlightOpacity(1f);
+
+    }
+
+    private void OnStopField_byRecord(MusicField field)
+    {
+        field.fieldSurface.material.SetFloat("Fill", 0);
+        field.highlightSurface.enabled = false;
+        field.SetHighlightOpacity(ms_focus_inside_fieldSurfaceOpacity);
+    }
 
 
     /// <summary>
