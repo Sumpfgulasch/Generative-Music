@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{094C5E05-DC00-1772-CE67-73F6A687ECF3}</ProjectGuid>
+    <ProjectGuid>{873614EE-742A-51B8-17AB-43CD63BED3CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -64,7 +64,7 @@
     <Compile Include="Assets\AudioHelm\Scripts\Sampler.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetSleepThreshold.cs" />
     <Compile Include="Assets\Scripts\Environment\TunnelData.cs" />
-    <Compile Include="Assets\Scripts\Environment\RecordObject.cs" />
+    <Compile Include="Assets\Scripts\Recording\RecordObject.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteHandler.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\DestroyAfterTime.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraOps.cs" />
@@ -103,7 +103,7 @@
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\EnableAfterTime.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\GroundKey.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
-    <Compile Include="Assets\Scripts\Music\Recorder.cs" />
+    <Compile Include="Assets\Scripts\Recording\Recorder.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlTorque.cs" />
     <Compile Include="Assets\Scripts\Game\GameplayManager.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\NoteBlaster.cs" />
@@ -390,12 +390,6 @@
     </Reference>
     <Reference Include="Sanford.Multimedia.Midi">
       <HintPath>Assets\AudioHelm\Plugins\Sanford.Multimedia.Midi.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Common">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Common.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.2.5f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>

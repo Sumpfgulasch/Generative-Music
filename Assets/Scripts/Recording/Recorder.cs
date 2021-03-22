@@ -279,6 +279,7 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void SaveRecordStartData()
     {
+        // TO DO: quantization: recording.start und recording.end verschoben
         recording.start = (float)CurSequencer.GetSequencerPosition();
         recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         recording.end = -1;
@@ -420,15 +421,23 @@ public class Recorder : MonoBehaviour
         return percentage;  // 0-1
     }
 
-    public Vector3 NextLoopPosition(RecordObject recordObject)
+/// <summary>
+/// Return the Vector3 position of a to-be-douplicated recordObject (with the given sequencer data).
+/// </summary>
+/// <param name="recordObject"></param>
+/// <param name="sequencer">The relevant sequencer.</param>
+/// <param name="recordObj_startPos">The start position of the midi note in the sequencer.</param>
+/// <param name="recordObj_loopStart">The loop start position in the sequencer</param>
+/// <returns></returns>
+    public Vector3 NextLoopPosition(Sequencer sequencer, float recordObj_startPos, float recordObj_loopStart)
     {
 
         var playerPos = Player.inst.transform.position;
-        float curSeqencerPos = (float)recordObject.sequencer.GetSequencerPosition();
+        float curSeqencerPos = (float)sequencer.GetSequencerPosition();
 
-        var curSequencerPosPercentage = SequencerPositionPercentage(recordObject.sequencer, curSeqencerPos, recordObject.loopStart);
-        var chordStartPos = recordObject.start;
-        var chordStartPosPercentage = SequencerPositionPercentage(recordObject.sequencer, chordStartPos, recordObject.loopStart);
+        var curSequencerPosPercentage = SequencerPositionPercentage(sequencer, curSeqencerPos, recordObj_loopStart);
+        var chordStartPos = recordObj_startPos;
+        var chordStartPosPercentage = SequencerPositionPercentage(sequencer, chordStartPos, recordObj_loopStart);
 
         var position = playerPos + 
             (1 - curSequencerPosPercentage) * LoopData.distancePerRecLoop * Vector3.forward +

@@ -25,6 +25,10 @@ public class MusicManager : MonoBehaviour
 
     [Header("Record")]
     public bool firstRecordDelay;
+    public bool quantize = true;
+    public int quantization = 16;       // 16tel, 8tel oder 4tel
+
+    [HideInInspector] public List<int> quantizeSteps;
 
     [HideInInspector] public Chord curChord;
     [HideInInspector] public Chord lastChord;
@@ -71,7 +75,15 @@ public class MusicManager : MonoBehaviour
         lastChord = curChord;
         controller = MusicRef.inst.helmController;
         curSequencer = MusicRef.inst.sequencers[0];
-        
+
+        // Quantization
+        int takeBeat = 16 / quantization;
+        for (int i=0; i<curSequencer.length; i++)
+        {
+            if (i % takeBeat == 0)
+                quantizeSteps.Add(i);
+        }
+
         //curInstrument.SetParameterValue(AudioHelm.Param.arp, 8);
 
         //controllers[0].SetPitchWheel(0);

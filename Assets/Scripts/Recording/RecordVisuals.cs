@@ -26,7 +26,7 @@ public class RecordVisuals : MonoBehaviour
 
 
     /// <summary>
-    /// Instantiate 2 lane surfaces (current chord, looped chord) and keep scaling it by a coroutine upwards from zero until stopped. Writes into recording (!).
+    /// Instantiate 2 lane surfaces (current chord, looped chord) from recording-data and keep scaling it by a coroutine upwards from zero until stopped. Writes into recording (!).
     /// </summary>
     /// <param name="recording">Recording data.</param>
     /// <param name="recordObjects">List to add the new chord objects.</param>
@@ -38,7 +38,8 @@ public class RecordVisuals : MonoBehaviour
         var parent = MeshRef.inst.recordObj_parent;
         var material = MeshRef.inst.recordObjs_mat[trackLayer];
         var pos1 = Player.inst.transform.position;
-        var pos2 = pos1 + LoopData.distancePerRecLoop * Vector3.forward;
+        //var pos2 = pos1 + LoopData.distancePerRecLoop * Vector3.forward;
+        var pos2 = Recorder.inst.NextLoopPosition(recording.sequencer, recording.start, recording.loopStart);
         var layer = 8;
 
         // 1. Instantiate
@@ -67,7 +68,7 @@ public class RecordVisuals : MonoBehaviour
         var ID = recordObj.fieldID;
         var parent = MeshRef.inst.recordObj_parent;
         var material = MeshRef.inst.recordObjs_mat[recordObj.layer];
-        var pos = Recorder.inst.NextLoopPosition(recordObj);
+        var pos = Recorder.inst.NextLoopPosition(recordObj.sequencer, recordObj.start, recordObj.loopStart);
         var layer = 8;
 
         // 1. Instantiate & scale!
