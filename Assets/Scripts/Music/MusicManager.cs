@@ -29,6 +29,7 @@ public class MusicManager : MonoBehaviour
     public int quantization = 16;       // 16tel, 8tel oder 4tel
 
     [HideInInspector] public List<int> quantizeSteps;
+    [HideInInspector] public int quantizeStep;
 
     [HideInInspector] public Chord curChord;
     [HideInInspector] public Chord lastChord;
@@ -81,8 +82,11 @@ public class MusicManager : MonoBehaviour
         for (int i=0; i<curSequencer.length; i++)
         {
             if (i % takeBeat == 0)
+            {
                 quantizeSteps.Add(i);
+            }
         }
+        quantizeStep = quantizeSteps[1];
 
         //curInstrument.SetParameterValue(AudioHelm.Param.arp, 8);
 

@@ -56,8 +56,8 @@ public class RecordVisuals : MonoBehaviour
         recordObjects[trackLayer].Add(recordObject2);
 
         // 3. Edit recording / Start scaling
-        recording.obj = recordObject1;              // Noch nötig??? ja!
-        recording.loopObj = recordObject2;          // Noch nötig??? ja!
+        recording.obj = recordObject1;              // Nur für scaling-coroutine
+        recording.loopObj = recordObject2;          // Nur für scaling-coroutine
         recording.scaleRoutine = StartCoroutine(ScaleChordObject(recordObject1, recordObject2));
     }
 
@@ -98,6 +98,9 @@ public class RecordVisuals : MonoBehaviour
 
         recording.obj.end = recording.end;
         recording.loopObj.end = recording.end;
+
+        //recording.obj.UpdateScale();
+        recording.loopObj.UpdateScale();
     }
 
 

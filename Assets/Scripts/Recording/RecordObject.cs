@@ -20,6 +20,7 @@ public class RecordObject : MonoBehaviour
     public float loopStart;
     public float loopEnd_extended;
     public bool isPlaying;
+    
 
     public MeshRenderer meshRenderer;
     public Color startColor;
@@ -38,6 +39,23 @@ public class RecordObject : MonoBehaviour
     public float StartZPos { get { return obj.transform.position.z; } }
     public float EndZPos { get { return StartZPos + obj.transform.localScale.z; } }
     private float DeltaTime { get { return Time.deltaTime * FPS; } }
+
+    private float length;
+    /// <summary>
+    /// Get the length of one record / chord, between 0 and 1 (1 == sequencer.length).
+    /// </summary>
+    public float Length
+    {
+        get
+        {
+            float end = this.end;
+            if (end < start)
+            {
+                end += sequencer.length;
+            }
+            return (end - start) / sequencer.length; // 0-1
+        }
+    }
 
     private float FPS;
 
@@ -167,9 +185,14 @@ public class RecordObject : MonoBehaviour
     }
 
 
-    public void Set()
+   
+    /// <summary>
+    /// Set the scale, appropriate to start- and end-position in the sequencer.
+    /// </summary>
+    public void UpdateScale()
     {
-        
+        float scale = LoopData.distancePerRecLoop * Length;
+        obj.transform.localScale = new Vector3(1, 1, scale);
     }
 
 

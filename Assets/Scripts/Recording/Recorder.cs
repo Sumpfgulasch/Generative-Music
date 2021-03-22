@@ -221,7 +221,7 @@ public class Recorder : MonoBehaviour
         RecordVisuals.inst.DestroyRecordObject(recordObj);
 
         // 3. UI
-        if (CurSequencer.GetAllNotes().Count == 0)
+        if (recordObj.sequencer.GetAllNotes().Count == 0)
         {
             UIOps.inst.EnableRecordedTrackImage(false);
         }
@@ -279,23 +279,57 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void SaveRecordStartData()
     {
-        // TO DO: quantization: recording.start und recording.end verschoben
-        recording.start = (float)CurSequencer.GetSequencerPosition();
-        recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
+        float sequencerPos = (float)CurSequencer.GetSequencerPosition();
+
+        // Quantization?
+        if (MusicManager.inst.quantize)
+        {
+            float quantize = Quantize(sequencerPos);
+            recording.start = quantize;
+
+            if (quantize == 0 && sequencerPos > CurSequencer.length/2)
+                quantize = CurSequencer.length;
+            recording.quantizeOffset = quantize - sequencerPos;
+            //if (quantize == 0)
+            //    recording.quantizeOffset = ExtensionMethods.Modulo(quantize - sequencerPos, CurSequencer.length);
+            print("START; sequencerPos: " + sequencerPos + ", quantize: " + quantize + ", offset: " + recording.quantizeOffset);
+        }
+        else
+        {
+            recording.start = sequencerPos;
+            recording.quantizeOffset = 0;
+        }
+
         recording.end = -1;
+        recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         recording.fieldID = Player.inst.curField.ID;
         recording.sequencer = CurSequencer;
     }
 
+    
+
 
     /// <summary>
-    /// Save end-time of the currently played chord and store it in the sequencer.
+    /// Write into recording (end-time of the currently played chord), recalculate notes to prevent weird stuff and set notes to sequencer.
     /// </summary>
     private void WriteToSequencer()
     {
         float curPos = (float)CurSequencer.GetSequencerPosition();
 
-        recording.end = curPos;
+        //recording.end = curPos + recording.quantizeOffset;
+        if (MusicManager.inst.quantize)
+        {
+            curPos = Quantize(curPos);
+            recording.end = curPos;
+            if (recording.end == recording.start)
+            {
+                recording.end = (recording.end + MusicManager.inst.quantizeStep) % CurSequencer.length;
+                Debug.Log("START == END");
+            }
+        }
+        else
+            recording.end = curPos;
+
         float velocity = MusicManager.inst.velocity;
 
 
@@ -309,7 +343,7 @@ public class Recorder : MonoBehaviour
         var addNotes = new List<NoteContainer>();
         foreach (Note doubleNote in doubleNotes)
         {
-            // #1: Sequencer note within sequencer bounds, would disrupt and lose remaining note
+            // #1: Sequencer note.start < note.end, curNote plays within sequencer.chord; would disrupt and delete remaining note
             if (curPos > doubleNote.start && curPos < doubleNote.end)
             {
                 int note = doubleNote.note;
@@ -319,7 +353,8 @@ public class Recorder : MonoBehaviour
                 // 1.1. Shorten existing note
                 doubleNote.end = recording.start;
 
-                MusicManager.inst.controller.NoteOn(note, velocity, end - start);
+                if (!MusicManager.inst.quantize)
+                    MusicManager.inst.controller.NoteOn(note, velocity, end - start);
                 
                 // 1.2. Add new note
                 #region pos percentage
@@ -421,6 +456,8 @@ public class Recorder : MonoBehaviour
         return percentage;  // 0-1
     }
 
+    
+
 /// <summary>
 /// Return the Vector3 position of a to-be-douplicated recordObject (with the given sequencer data).
 /// </summary>
@@ -449,6 +486,34 @@ public class Recorder : MonoBehaviour
 
         return position;
     }
+
+
+    /// <summary>
+    /// Quantize a sequencer position. Sequencer and precision is defined by MusicManager.inst.quantization / quantizeSteps.
+    /// </summary>
+    /// <param name="sequencerPos"></param>
+    /// <returns></returns>
+    private int Quantize(float sequencerPos)
+    {
+        int closestStep = 100;
+        float closestStepDistance = 100f;
+        foreach (int step in MusicManager.inst.quantizeSteps)
+        {
+            float curStepDistance = Mathf.Abs(step - sequencerPos);
+
+            if (curStepDistance < closestStepDistance)
+            {
+                closestStep = step;
+                closestStepDistance = Mathf.Abs(closestStep - sequencerPos);
+            }
+
+            //print("step: " + step + ", sequencerPos: " + sequencerPos + ", curStepDistance: " + curStepDistance + ", closestStep: " + closestStep);
+        }
+
+        return closestStep;
+    }
+
+
 
 
     // Visuals
@@ -531,6 +596,7 @@ public class Recording
     public Coroutine scaleRoutine;
     public RecordObject obj;
     public RecordObject loopObj;
+    public float quantizeOffset;
 }
 
 

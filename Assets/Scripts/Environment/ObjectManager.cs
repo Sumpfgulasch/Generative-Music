@@ -153,16 +153,20 @@ public class ObjectManager : MonoBehaviour
             var removeList = new List<RecordObject>();
 
             // 1. get all objects behind 0
-            foreach (RecordObject obj in Recorder.inst.recordObjects[layer])
+            foreach(List<RecordObject> objects in Recorder.inst.recordObjects)
             {
-                if (Player.inst.curField.ID == obj.fieldID)
+                foreach (RecordObject obj in objects) // in Recorder.inst.recordObjects[layer]
                 {
-                    if (obj.obj.transform.position.z <= Player.inst.transform.position.z + 0.0f)
+                    if (Player.inst.curField.ID == obj.fieldID)
                     {
-                        removeList.Add(obj);
+                        if (obj.obj.transform.position.z <= Player.inst.transform.position.z + 0.0f)
+                        {
+                            removeList.Add(obj);
+                        }
                     }
                 }
             }
+            
 
             foreach (RecordObject obj in removeList)
             {
