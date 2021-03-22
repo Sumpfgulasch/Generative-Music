@@ -44,13 +44,13 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
 
 
 
-    private void ScaleImage(float waitBeforeStart, float duration, float targetValue)
+    private void ScaleAndDelete(float waitBeforeStart, float duration, float targetValue)
     {
-        deleteRoutine = StartCoroutine(Scale(waitBeforeStart, duration, targetValue));
+        deleteRoutine = StartCoroutine(ScaleAndClear(waitBeforeStart, duration, targetValue));
     }
 
 
-    private IEnumerator Scale(float waitBeforeStart, float duration, float targetValue)
+    private IEnumerator ScaleAndClear(float waitBeforeStart, float duration, float targetValue)
     {
         isDeleting = true;
 
@@ -114,7 +114,7 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
             float wait = UIManager.inst.musicLayerButton_waitBeforDelete;
             float duration = UIManager.inst.musicLayerButton_duration;
 
-            ScaleImage(wait, duration, 0);
+            ScaleAndDelete(wait, duration, 0);
         }
     }
 

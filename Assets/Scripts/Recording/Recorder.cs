@@ -184,6 +184,8 @@ public class Recorder : MonoBehaviour
     /// </summary>
     public void ClearLayer(int layer)
     {
+        recording = new Recording();
+
         // 1. Clear sequencer
         sequencers[layer].Clear();
 
@@ -307,16 +309,25 @@ public class Recorder : MonoBehaviour
     }
 
     
-
+    private void WriteToSequencer()
+    {
+        StartCoroutine(WriteToSequencer_delayed(1f));
+    }
 
     /// <summary>
     /// Write into recording (end-time of the currently played chord), recalculate notes to prevent weird stuff and set notes to sequencer.
     /// </summary>
-    private void WriteToSequencer()
+    private IEnumerator WriteToSequencer_delayed(float delay)
     {
         float curPos = (float)CurSequencer.GetSequencerPosition();
+        float velocity = MusicManager.inst.velocity;
+        var curNotes = AudioHelmHelper.GetAllNotesInRange(CurSequencer, curPos);
+        var doubleNotes = AudioHelmHelper.DoubleNotes(recording.notes, curNotes);
 
-        //recording.end = curPos + recording.quantizeOffset;
+        // 1. Write to recording
+        recording.end = curPos;
+
+        // 2. Quantize?
         if (MusicManager.inst.quantize)
         {
             curPos = Quantize(curPos);
@@ -327,20 +338,10 @@ public class Recorder : MonoBehaviour
                 Debug.Log("START == END");
             }
         }
-        else
-            recording.end = curPos;
-
-        float velocity = MusicManager.inst.velocity;
-
-
-        // 1. Get currently played notes
-        var curNotes = AudioHelmHelper.GetAllNotesInRange(CurSequencer, curPos);
-
-        // 2. Get double notes
-        var doubleNotes = AudioHelmHelper.DoubleNotes(recording.notes, curNotes);
 
         // 3. Calc additional notes, to prevent breaking notes
-        var addNotes = new List<NoteContainer>();
+        var usualNotes = new List<NoteContainer>();
+        var bridgeNotes = new List<NoteContainer>();
         foreach (Note doubleNote in doubleNotes)
         {
             // #1: Sequencer note.start < note.end, curNote plays within sequencer.chord; would disrupt and delete remaining note
@@ -353,18 +354,20 @@ public class Recorder : MonoBehaviour
                 // 1.1. Shorten existing note
                 doubleNote.end = recording.start;
 
-                if (!MusicManager.inst.quantize)
+                //if (!MusicManager.inst.quantize)
                     MusicManager.inst.controller.NoteOn(note, velocity, end - start);
+                print("#1: add note for the end, that would be deleted; note: " + note);
                 
                 // 1.2. Add new note
                 #region pos percentage
                 //float doubleNoteEndPercentage = SequencerPositionPercentage(CurSequencer, end, recording);
                 //float curPosPercentage = SequencerPositionPercentage(CurSequencer, curPos, recording);
                 #endregion
-                CurSequencer.AddNote(note, start, end, velocity);
+                //CurSequencer.AddNote(note, start, end, velocity);
+                usualNotes.Add(new NoteContainer(note, start, end, velocity));
             }
-            // #2 Sequencer note extends over the sequencer bounds, would disrupt and stop playing the remaining note
 
+            // #2 Sequencer note extends over the sequencer bounds, would disrupt and stop playing the remaining note
             else if (doubleNote.start > doubleNote.end)
             {
                 float oldEnd = doubleNote.end;
@@ -382,7 +385,7 @@ public class Recorder : MonoBehaviour
                     float end = oldEnd;
 
                     var temp = new NoteContainer(note, start, end, velocity);
-                    addNotes.Add(temp);
+                    bridgeNotes.Add(temp); // dont add now because it would be overwritten by usual notes; has to be added at last
                 }
             }
         }
@@ -390,25 +393,39 @@ public class Recorder : MonoBehaviour
         // #3 Get bridges notes that are NOT being played
         var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
 
+        
+        var recordCopy = recording.DeepCopy(); // DeepCopy, because otherwise wrong data at later point
 
+        yield return new WaitForSeconds(delay);
+
+
+        // 5. Add usual notes (#1)          // to do maybe: before 4.?
+        foreach (NoteContainer note in usualNotes)
+        {
+            //if (CurSequencer.note)
+            CurSequencer.AddNote(note.note, note.start, note.end, velocity);
+        }
 
 
         // 4. Write CURRENTLY RECORDED notes
-        foreach (int note in recording.notes)
+        foreach (int note in recordCopy.notes)
         {
-            //if (counter<=2)
-                CurSequencer.AddNote(note, recording.start, recording.end, velocity);
+            CurSequencer.AddNote(note, recordCopy.start, recordCopy.end, velocity);
         }
+
+        
 
         // 5. Add bridge notes again
         foreach (Note note in unplayedBridgeNotes)  // #3
         {
             CurSequencer.AddNote(note.note, note.start, note.end, velocity);
         }
-        foreach(NoteContainer note in addNotes) // #2
+        foreach(NoteContainer note in bridgeNotes) // #2
         {
             CurSequencer.AddNote(note.note, note.start, note.end, velocity);
         }
+
+        yield return null;
     }
 
 
@@ -597,6 +614,27 @@ public class Recording
     public RecordObject obj;
     public RecordObject loopObj;
     public float quantizeOffset;
+
+
+    public Recording()
+    {
+
+    }
+    public Recording(float start, float end, int[]notes)
+    {
+        this.start = start;
+        this.end = end;
+        this.notes = notes;
+    }
+
+    public Recording DeepCopy()
+    {
+        int[] newNotes = new int[this.notes.Length];
+        for (int i = 0; i < notes.Length; i++)
+            newNotes[i] = notes[i];
+
+        return new Recording(start, end, newNotes);
+    }
 }
 
 

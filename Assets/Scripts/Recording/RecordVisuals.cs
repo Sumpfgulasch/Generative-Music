@@ -77,12 +77,10 @@ public class RecordVisuals : MonoBehaviour
 
         var douplicateObj = RecordObject.Create(newObj, null, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.layer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
         
-        
-
         // 2. Set data
         recordObj.douplicate = douplicateObj;   // obj that was douplicated
 
-        // !!! Add to recordObjects-list when invoked (in ObjectManager) !!!
+        // !!! in ObjectManager: Add to recordObjects-list when invoked !!!
 
         return douplicateObj;
     }
