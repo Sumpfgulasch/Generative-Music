@@ -73,6 +73,30 @@ public static class AudioHelmHelper // : MonoBehaviour
         return notes;
     }
 
+    public static bool IsUnplayedBridgeNote(this Note note, float curPos)
+    {
+        if (note.start > note.end)
+        {
+            if (curPos < note.start && curPos > note.end)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool IsUnplayedBridgeNote(this NoteContainer note, float curPos)
+    {
+        if (note.start > note.end)
+        {
+            if (curPos < note.start && curPos > note.end)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /// <summary>
     /// Return the sequencer notes that have the some notes as the current recorded chord.
     /// </summary>

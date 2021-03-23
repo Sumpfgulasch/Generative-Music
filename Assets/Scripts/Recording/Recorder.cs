@@ -405,49 +405,66 @@ public class Recorder : MonoBehaviour
 
 
 
-        
+        // WAIT
         if (recordCopy.endQuantizeOffset > 0)
         {
             float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
             print("quantize delay start; delay (s): " + delay);
             yield return new WaitForSeconds(delay);
         }
-        print("add notes");
+
+
 
         // #3 Get bridges notes that are NOT being played
-        curPos = (float)CurSequencer.GetSequencerPosition();
+        curPos = (float) recordCopy.sequencer.GetSequencerPosition();
         var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
-        foreach (Note note in unplayedBridgeNotes)
-        {
-            print("unplayedBridgeNote: " + note.note + ", start: " + note.start + ", end: " + note.end);
-        }
+        //foreach (Note note in unplayedBridgeNotes)
+        //{
+        //    print("unplayedBridgeNote: " + note.note + ", start: " + note.start + ", end: " + note.end);
+        //}
 
 
         // 5. Add usual notes (#1)
         foreach (NoteContainer note in usualNotes)
         {
-            //if (CurSequencer.note)
-            CurSequencer.AddNote(note.note, note.start, note.end, velocity);
+            recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
         }
 
 
         // 4. Write CURRENTLY RECORDED notes
-        foreach (int note in recordCopy.notes)
+        foreach (int noteNote in recordCopy.notes)
         {
-            CurSequencer.AddNote(note, recordCopy.start, recordCopy.end, velocity);
+            //var test = new NoteContainer(note, recording.start, recording.end, velocity);
+            var note = new Note(); note.note = noteNote; note.start = recordCopy.start; note.end = recordCopy.end;
+            if (note.IsUnplayedBridgeNote(curPos))
+            {
+                unplayedBridgeNotes.Add(note);
+            }
+            else
+            {
+                recordCopy.sequencer.AddNote(noteNote, recordCopy.start, recordCopy.end, velocity);
+            }
         }
 
         
 
         // 5. Add bridge notes again
         
-        foreach (NoteContainer note in remainingNotes) // #2: remaining note of case #2
+        foreach (NoteContainer note in remainingNotes) // #2: remaining notes of case #2
         {
-            CurSequencer.AddNote(note.note, note.start, note.end, velocity);
+            if (note.IsUnplayedBridgeNote(curPos))
+            {
+                var helmNote = new Note(); helmNote.note = note.note; helmNote.start = note.start; helmNote.end = note.end;
+                unplayedBridgeNotes.Add(helmNote);
+            }
+            else
+            {
+                recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
+            }
         }
         foreach (Note note in unplayedBridgeNotes)  // #3: unplayed bridge notes
         {
-            CurSequencer.AddNote(note.note, note.start, note.end, velocity);
+            recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
         }
 
         yield return null;
@@ -649,8 +666,9 @@ public class Recording
     {
 
     }
-    public Recording(float start, float end, int[]notes, float startQuantizeOffset, float endQuantizeOffset)
+    public Recording(Sequencer sequencer, float start, float end, int[]notes, float startQuantizeOffset, float endQuantizeOffset)
     {
+        this.sequencer = sequencer;
         this.start = start;
         this.end = end;
         this.notes = notes;
@@ -665,11 +683,11 @@ public class Recording
     public Recording DeepCopy()
     {
         
-        int[] newNotes = new int[this.notes.Length];
+        int[] newNotes = new int[notes.Length];
         for (int i = 0; i < notes.Length; i++)
             newNotes[i] = notes[i];
 
-        return new Recording(start, end, newNotes, startQuantizeOffset, endQuantizeOffset);
+        return new Recording(sequencer, start, end, newNotes, startQuantizeOffset, endQuantizeOffset);
     }
 }
 
