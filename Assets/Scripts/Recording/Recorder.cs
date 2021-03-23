@@ -291,15 +291,14 @@ public class Recorder : MonoBehaviour
 
             if (quantize == 0 && sequencerPos > CurSequencer.length/2)
                 quantize = CurSequencer.length;
-            recording.quantizeOffset = quantize - sequencerPos;
-            //if (quantize == 0)
-            //    recording.quantizeOffset = ExtensionMethods.Modulo(quantize - sequencerPos, CurSequencer.length);
-            print("START; sequencerPos: " + sequencerPos + ", quantize: " + quantize + ", offset: " + recording.quantizeOffset);
+
+            recording.startQuantizeOffset = quantize - sequencerPos;
+            print("START quantize; sequencerPos: " + sequencerPos + ", quantize: " + quantize + ", offset: " + recording.startQuantizeOffset);
         }
         else
         {
             recording.start = sequencerPos;
-            recording.quantizeOffset = 0;
+            recording.startQuantizeOffset = 0;
         }
 
         recording.end = -1;
@@ -311,13 +310,13 @@ public class Recorder : MonoBehaviour
     
     private void WriteToSequencer()
     {
-        StartCoroutine(WriteToSequencer_delayed(1f));
+        StartCoroutine(WriteToSequencer_delayed());
     }
 
     /// <summary>
     /// Write into recording (end-time of the currently played chord), recalculate notes to prevent weird stuff and set notes to sequencer.
     /// </summary>
-    private IEnumerator WriteToSequencer_delayed(float delay)
+    private IEnumerator WriteToSequencer_delayed()
     {
         float curPos = (float)CurSequencer.GetSequencerPosition();
         float velocity = MusicManager.inst.velocity;
@@ -330,25 +329,33 @@ public class Recorder : MonoBehaviour
         // 2. Quantize?
         if (MusicManager.inst.quantize)
         {
-            curPos = Quantize(curPos);
-            recording.end = curPos;
+            float quantize = Quantize(curPos);
+            recording.endQuantizeOffset = quantize - curPos;
+
+            print("END quantize; sequencerPos: " + curPos + ", quantize: " + quantize + ", offset: " + recording.endQuantizeOffset);
+
+            //curPos = 
+            recording.end = Quantize(curPos);
+
+            // Special case: very short notes
             if (recording.end == recording.start)
             {
                 recording.end = (recording.end + MusicManager.inst.quantizeStep) % CurSequencer.length;
                 Debug.Log("START == END");
             }
+            
         }
 
         // 3. Calc additional notes, to prevent breaking notes
         var usualNotes = new List<NoteContainer>();
-        var bridgeNotes = new List<NoteContainer>();
+        var remainingNotes = new List<NoteContainer>();
         foreach (Note doubleNote in doubleNotes)
         {
-            // #1: Sequencer note.start < note.end, curNote plays within sequencer.chord; would disrupt and delete remaining note
-            if (curPos > doubleNote.start && curPos < doubleNote.end)
+            // #1: Existing note within bounds (Sequencer note.start < note.end), curNote plays within sequencer.chord (curNote > start); would disrupt and delete remaining note
+            if (recording.end > doubleNote.start && recording.end < doubleNote.end)
             {
                 int note = doubleNote.note;
-                float start = curPos + noteAdd;
+                float start = recording.end + noteAdd;
                 float end = doubleNote.end;
 
                 // 1.1. Shorten existing note
@@ -367,39 +374,56 @@ public class Recorder : MonoBehaviour
                 usualNotes.Add(new NoteContainer(note, start, end, velocity));
             }
 
-            // #2 Sequencer note extends over the sequencer bounds, would disrupt and stop playing the remaining note
+            // #2 Existing note extends over the sequencer bounds, would disrupt and stop playing the remaining note
             else if (doubleNote.start > doubleNote.end)
             {
                 float oldEnd = doubleNote.end;
 
                 // 2.1. Shorten existing sequencer note
                 doubleNote.end = recording.start;
+                if (doubleNote.end == 0)
+                    doubleNote.end = recording.sequencer.length - 0.01f;
 
                 // 2.2. Add note for remaining sequencer note?
                 float oldEndPercentage = SequencerPositionPercentage(CurSequencer, oldEnd, recording.loopStart);
-                float curPosPercentage = SequencerPositionPercentage(CurSequencer, curPos, recording.loopStart);
+                float curPosPercentage = SequencerPositionPercentage(CurSequencer, recording.end, recording.loopStart);
                 if (oldEndPercentage > curPosPercentage)
                 {
                     int note = doubleNote.note;
-                    float start = curPos + 0.01f;
+                    float start = recording.end;// + 0.01f;
                     float end = oldEnd;
 
                     var temp = new NoteContainer(note, start, end, velocity);
-                    bridgeNotes.Add(temp); // dont add now because it would be overwritten by usual notes; has to be added at last
+                    remainingNotes.Add(temp); // dont add now because it would be overwritten by usual notes; has to be added at last
                 }
+                print("case #2: Existing note extends over bounds");
             }
         }
-
-        // #3 Get bridges notes that are NOT being played
-        var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
 
         
         var recordCopy = recording.DeepCopy(); // DeepCopy, because otherwise wrong data at later point
 
-        yield return new WaitForSeconds(delay);
 
 
-        // 5. Add usual notes (#1)          // to do maybe: before 4.?
+        
+        if (recordCopy.endQuantizeOffset > 0)
+        {
+            float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
+            print("quantize delay start; delay (s): " + delay);
+            yield return new WaitForSeconds(delay);
+        }
+        print("add notes");
+
+        // #3 Get bridges notes that are NOT being played
+        curPos = (float)CurSequencer.GetSequencerPosition();
+        var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
+        foreach (Note note in unplayedBridgeNotes)
+        {
+            print("unplayedBridgeNote: " + note.note + ", start: " + note.start + ", end: " + note.end);
+        }
+
+
+        // 5. Add usual notes (#1)
         foreach (NoteContainer note in usualNotes)
         {
             //if (CurSequencer.note)
@@ -416,11 +440,12 @@ public class Recorder : MonoBehaviour
         
 
         // 5. Add bridge notes again
-        foreach (Note note in unplayedBridgeNotes)  // #3
+        
+        foreach (NoteContainer note in remainingNotes) // #2: remaining note of case #2
         {
             CurSequencer.AddNote(note.note, note.start, note.end, velocity);
         }
-        foreach(NoteContainer note in bridgeNotes) // #2
+        foreach (Note note in unplayedBridgeNotes)  // #3: unplayed bridge notes
         {
             CurSequencer.AddNote(note.note, note.start, note.end, velocity);
         }
@@ -613,27 +638,38 @@ public class Recording
     public Coroutine scaleRoutine;
     public RecordObject obj;
     public RecordObject loopObj;
-    public float quantizeOffset;
+    /// <summary>
+    /// In sixteenth.
+    /// </summary>
+    public float startQuantizeOffset;
+    public float endQuantizeOffset;
 
 
     public Recording()
     {
 
     }
-    public Recording(float start, float end, int[]notes)
+    public Recording(float start, float end, int[]notes, float startQuantizeOffset, float endQuantizeOffset)
     {
         this.start = start;
         this.end = end;
         this.notes = notes;
+        this.startQuantizeOffset = startQuantizeOffset;
+        this.endQuantizeOffset = endQuantizeOffset;
     }
 
+    /// <summary>
+    /// INCOMPLETE !!!
+    /// </summary>
+    /// <returns></returns>
     public Recording DeepCopy()
     {
+        
         int[] newNotes = new int[this.notes.Length];
         for (int i = 0; i < notes.Length; i++)
             newNotes[i] = notes[i];
 
-        return new Recording(start, end, newNotes);
+        return new Recording(start, end, newNotes, startQuantizeOffset, endQuantizeOffset);
     }
 }
 

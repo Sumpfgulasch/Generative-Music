@@ -28,7 +28,8 @@ public static class LoopData
 
     // time & distance values
     public static float timePerBar;
-    public static float timePerBeat;
+    public static float timePerQuarter;
+    public static float timePerSixteenth;
     public static int beatsPerBar; // in sixteenth
     public static int quartersPerBar;
     public static float distancePerSixteenth;
@@ -278,7 +279,8 @@ public static class LoopData
         quartersPerBar = MusicRef.inst.beatSequencer.length / 4;
         beatsPerBar = MusicRef.inst.beatSequencer.length;
         timePerBar = (quartersPerBar / MusicRef.inst.clock.bpm) *60;
-        timePerBeat = timePerBar / quartersPerBar;
+        timePerQuarter = timePerBar / quartersPerBar;
+        timePerSixteenth = MusicManager.inst.curSequencer.GetSixteenthTime();
         distancePerSixteenth = ObjectManager.inst.tunnelLength / MusicManager.inst.curSequencer.length;
         distancePerRecLoop = distancePerSixteenth * MusicManager.inst.curSequencer.length * MusicManager.inst.recLoops;         // HACK
     }

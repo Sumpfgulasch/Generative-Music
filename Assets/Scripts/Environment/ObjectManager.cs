@@ -65,7 +65,7 @@ public class ObjectManager : MonoBehaviour
     public IEnumerator SpawnFirstTunnels(int tunnels, float timeToSpawnInBeats, float spawnDistanceInBeats)
     {
         // 1. wait
-        float waitTime = timeToSpawnInBeats * LoopData.timePerBeat;
+        float waitTime = timeToSpawnInBeats * LoopData.timePerQuarter;
         yield return new WaitForSeconds(waitTime);
 
         // 2. EVENT SUBSCRIPTION
@@ -96,11 +96,11 @@ public class ObjectManager : MonoBehaviour
     public IEnumerator SpawnMusicFields(MusicField[] fields, float timeToSpawnInBeats, float spawnDistanceInBeats, float durationInBeats)
     {
         // 1. wait
-        float waitTime = timeToSpawnInBeats * LoopData.timePerBeat;
+        float waitTime = timeToSpawnInBeats * LoopData.timePerQuarter;
         yield return new WaitForSeconds(waitTime);
 
         // 2. instantiate all, wait between
-        float duration = durationInBeats * LoopData.timePerBeat;
+        float duration = durationInBeats * LoopData.timePerQuarter;
         float timeToWait = duration / (fields.Length - 1);
 
         for (int i = 0; i < fields.Length; i++)
@@ -110,7 +110,7 @@ public class ObjectManager : MonoBehaviour
             // milk surface
             if (i == fields.Length - 1)
             {
-                var time = spawnDistanceInBeats * LoopData.timePerBeat;
+                var time = spawnDistanceInBeats * LoopData.timePerQuarter;
                 var obj = MeshRef.inst.innerSurface_mf.gameObject;
 
                 StartCoroutine(SetObjectVisible(obj, true, time));
@@ -331,7 +331,7 @@ public class ObjectManager : MonoBehaviour
         // 0. Start
         field.lineRend.enabled = true;
         
-        float duration = spawnDistanceInBeats * LoopData.timePerBeat;
+        float duration = spawnDistanceInBeats * LoopData.timePerQuarter;
 
         float timer = 0;
         float zPos = playerZpos + distancePerQuarter * spawnDistanceInBeats;
