@@ -121,6 +121,17 @@ public static class AudioHelmHelper // : MonoBehaviour
     }
 
 
+    public static float NoteLength(Sequencer sequencer, float start, float end)
+    {
+        if (end < start)
+        {
+            end += sequencer.length;
+        }
+        
+        return (end - start); // in sixteenth
+    }
+
+
 
 
 

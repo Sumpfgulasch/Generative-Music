@@ -87,18 +87,5 @@ public class UIOps : MonoBehaviour
     public void SetPrecisionText(MusicManager.Precision value)
     {
         MeshRef.inst.quantizePrecision.text = value.ToString();
-
-        //if (value == MusicManager.Precision.fine)
-        //{
-        //    text.text = value.ToString();
-        //}
-        //else if (value == MusicManager.Precision.middle)
-        //{
-
-        //}
-        //else if (value == MusicManager.Precision.rough)
-        //{
-
-        //}
     }
 }

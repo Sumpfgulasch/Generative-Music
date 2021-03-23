@@ -73,11 +73,9 @@ public class MusicManager : MonoBehaviour
             //int takeBeat = 16 / quantization;
             quantizeStep = 16 / value;
             float length = curSequencer.length / quantizeStep;
-            print("quantizeStep: " + quantizeStep + ", length: " + length + ", value: " + value);
             for (int i = 0; i < length; i++)
             {
                 quantizeSteps.Add(i * quantizeStep);
-                print("step: " + i * quantizeStep);
             }
             quantizeStep = quantizeSteps[1];
         }
@@ -107,8 +105,8 @@ public class MusicManager : MonoBehaviour
         controller = MusicRef.inst.helmController;
         curSequencer = MusicRef.inst.sequencers[0];
 
-        print("quantizationChoices[(int)curPrecision]: " + quantizationChoices[(int)curPrecision]);
         Quantization = quantizationChoices[(int)curPrecision];
+        //UIOps.inst.SetPrecisionText(curPrecision);
 
         //curInstrument.SetParameterValue(AudioHelm.Param.arp, 8);
 
@@ -419,7 +417,6 @@ public class MusicManager : MonoBehaviour
         if ((int) curPrecision == quantizationChoices.Length)
             curPrecision = 0;
 
-        print("precision:  " + curPrecision);
         Quantization = quantizationChoices[(int)curPrecision];
 
         UIOps.inst.SetPrecisionText(curPrecision);

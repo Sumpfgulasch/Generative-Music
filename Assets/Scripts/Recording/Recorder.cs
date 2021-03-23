@@ -324,26 +324,43 @@ public class Recorder : MonoBehaviour
         var doubleNotes = AudioHelmHelper.DoubleNotes(recording.notes, curNotes);
 
         // 1. Write to recording
-        recording.end = curPos;
+        
 
         // 2. Quantize?
         if (MusicManager.inst.quantize)
         {
-            float quantize = Quantize(curPos);
-            recording.endQuantizeOffset = quantize - curPos;
-
-            print("END quantize; sequencerPos: " + curPos + ", quantize: " + quantize + ", offset: " + recording.endQuantizeOffset);
-
-            //curPos = 
-            recording.end = Quantize(curPos);
-
-            // Special case: very short notes
-            if (recording.end == recording.start)
+            // Legato: quantize recording.end, too
+            if (Player.inst.actionState == Player.ActionState.Play)
             {
-                recording.end = (recording.end + MusicManager.inst.quantizeStep) % CurSequencer.length;
-                Debug.Log("START == END");
+                print("PLAYING");
+                float quantize = Quantize(curPos);
+                recording.endQuantizeOffset = quantize - curPos;
+                recording.end = Quantize(curPos);
+
+                // Special case: very short notes
+                if (recording.end == recording.start)
+                {
+                    recording.end = (recording.end + MusicManager.inst.quantizeStep) % CurSequencer.length;
+                    Debug.Log("START == END");
+                }
+
+                print("END quantize; curPos: " + curPos + ", quantize: " + quantize + ", offset: " + recording.endQuantizeOffset);
             }
-            
+
+            // Staccato: Dont quantize recording.end
+            else
+            {
+                print("NOT PLAYING");
+                // get the time the chord was pressed
+                float length = AudioHelmHelper.NoteLength(recording.sequencer, recording.start, curPos) - recording.startQuantizeOffset;
+                recording.end = ExtensionMethods.Modulo(curPos + recording.startQuantizeOffset, recording.sequencer.length);
+                recording.endQuantizeOffset = recording.startQuantizeOffset;
+                print("END quantize; curPos: " + curPos + ", length: " + length + ", final pos: " + recording.end + ", offset: " + recording.endQuantizeOffset);
+            }
+        }
+        else
+        {
+            recording.end = curPos;
         }
 
         // 3. Calc additional notes, to prevent breaking notes
@@ -362,8 +379,8 @@ public class Recorder : MonoBehaviour
                 doubleNote.end = recording.start;
 
                 //if (!MusicManager.inst.quantize)
-                    MusicManager.inst.controller.NoteOn(note, velocity, end - start);
-                print("#1: add note for the end, that would be deleted; note: " + note);
+                MusicManager.inst.controller.NoteOn(note, velocity, end - start);
+                //print("#1: add note for the end, that would be deleted; note: " + note);
                 
                 // 1.2. Add new note
                 #region pos percentage
@@ -385,17 +402,18 @@ public class Recorder : MonoBehaviour
                     doubleNote.end = recording.sequencer.length - 0.01f;
 
                 // 2.2. Add note for remaining sequencer note?
-                float oldEndPercentage = SequencerPositionPercentage(CurSequencer, oldEnd, recording.loopStart);
-                float curPosPercentage = SequencerPositionPercentage(CurSequencer, recording.end, recording.loopStart);
-                if (oldEndPercentage > curPosPercentage)
-                {
+                float oldEndPercentage = SequencerPositionPercentage(recording.sequencer, oldEnd, recording.loopStart);
+                float curPosPercentage = SequencerPositionPercentage(recording.sequencer, recording.end, recording.loopStart);
+                //if (oldEndPercentage > curPosPercentage)
+                //{
                     int note = doubleNote.note;
                     float start = recording.end;// + 0.01f;
                     float end = oldEnd;
 
                     var temp = new NoteContainer(note, start, end, velocity);
                     remainingNotes.Add(temp); // dont add now because it would be overwritten by usual notes; has to be added at last
-                }
+                //}
+                MusicManager.inst.controller.NoteOn(note, velocity, end - start);
                 print("case #2: Existing note extends over bounds");
             }
         }
@@ -418,10 +436,6 @@ public class Recorder : MonoBehaviour
         // #3 Get bridges notes that are NOT being played
         curPos = (float) recordCopy.sequencer.GetSequencerPosition();
         var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
-        //foreach (Note note in unplayedBridgeNotes)
-        //{
-        //    print("unplayedBridgeNote: " + note.note + ", start: " + note.start + ", end: " + note.end);
-        //}
 
 
         // 5. Add usual notes (#1)
@@ -456,10 +470,12 @@ public class Recorder : MonoBehaviour
             {
                 var helmNote = new Note {note = note.note, start = note.start, end = note.end }; 
                 unplayedBridgeNotes.Add(helmNote);
+                print("remaining, unplayedBridge note: " + note.note + ", start: " + note.start + ", end: " + note.end + " (will get added at last)");
             }
             else
             {
                 recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
+                print("remaining, other (?) note: " + note.note + ", start: " + note.start + ", end: " + note.end + " (gets added now)");
             }
         }
         foreach (Note note in unplayedBridgeNotes)  // #3: unplayed bridge notes
@@ -658,6 +674,22 @@ public class Recording
     /// </summary>
     public float startQuantizeOffset;
     public float endQuantizeOffset;
+
+    /// <summary>
+    /// Get the length of one record / chord, in sixteenth.
+    /// </summary>
+    public float Length
+    {
+        get
+        {
+            float end = this.end;
+            if (end < start)
+            {
+                end += sequencer.length;
+            }
+            return (end - start); // in sixteenth
+        }
+    }
 
 
     public Recording()
