@@ -26,10 +26,14 @@ public class MusicManager : MonoBehaviour
     [Header("Record")]
     public bool firstRecordDelay;
     public bool quantize = true;
-    public int quantization = 16;       // 16tel, 8tel oder 4tel
+    public int[] quantizationChoices = new int[] { 16, 8, 4 };
+    public enum Precision { fine, middle, rough};
+    public Precision curPrecision = Precision.fine;
 
-    [HideInInspector] public List<int> quantizeSteps;
-    [HideInInspector] public int quantizeStep;
+    private int precisionValue = 1;
+
+    [HideInInspector] public List<float> quantizeSteps;
+    [HideInInspector] public float quantizeStep;
 
     [HideInInspector] public Chord curChord;
     [HideInInspector] public Chord lastChord;
@@ -52,6 +56,32 @@ public class MusicManager : MonoBehaviour
     VisualController VisualController { get { return VisualController.inst; } }
 
     Player.Side curSide, lastSide;
+
+    // Quantization
+    private float quantization;
+    public float Quantization
+    {
+        get
+        {
+            return quantization;
+        }
+        set
+        {
+            quantization = value;
+
+            quantizeSteps = new List<float>();
+            //int takeBeat = 16 / quantization;
+            quantizeStep = 16 / value;
+            float length = curSequencer.length / quantizeStep;
+            print("quantizeStep: " + quantizeStep + ", length: " + length + ", value: " + value);
+            for (int i = 0; i < length; i++)
+            {
+                quantizeSteps.Add(i * quantizeStep);
+                print("step: " + i * quantizeStep);
+            }
+            quantizeStep = quantizeSteps[1];
+        }
+    }
 
 
 
@@ -77,22 +107,14 @@ public class MusicManager : MonoBehaviour
         controller = MusicRef.inst.helmController;
         curSequencer = MusicRef.inst.sequencers[0];
 
-        // Quantization
-        int takeBeat = 16 / quantization;
-        for (int i=0; i<curSequencer.length; i++)
-        {
-            if (i % takeBeat == 0)
-            {
-                quantizeSteps.Add(i);
-            }
-        }
-        quantizeStep = quantizeSteps[1];
+        print("quantizationChoices[(int)curPrecision]: " + quantizationChoices[(int)curPrecision]);
+        Quantization = quantizationChoices[(int)curPrecision];
 
         //curInstrument.SetParameterValue(AudioHelm.Param.arp, 8);
 
         //controllers[0].SetPitchWheel(0);
 
-        
+
     }
 
 
@@ -314,14 +336,6 @@ public class MusicManager : MonoBehaviour
         }
     }
 
-    //public void OnPlayOutside(InputAction.CallbackContext context)
-    //{
-    //    if (context.performed)
-    //    {
-    //        //curInstrument = Instrument.outer;
-    //    }
-    //}
-
 
     public void OnController1(InputAction.CallbackContext context)
     {
@@ -390,6 +404,25 @@ public class MusicManager : MonoBehaviour
             // Visual
             UIOps.inst.HighlightLayerButton(nextLayer);
         }
+    }
+
+
+    // Divers
+    public void EnableQuantize(bool value)
+    {
+        quantize = value;
+    }
+
+    public void IncreasePrecision()
+    {
+        curPrecision += 1;
+        if ((int) curPrecision == quantizationChoices.Length)
+            curPrecision = 0;
+
+        print("precision:  " + curPrecision);
+        Quantization = quantizationChoices[(int)curPrecision];
+
+        UIOps.inst.SetPrecisionText(curPrecision);
     }
 
 

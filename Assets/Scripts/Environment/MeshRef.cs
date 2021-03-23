@@ -44,6 +44,7 @@ public class MeshRef : MonoBehaviour
     [Header("UI")]
     public List<GameObject> menuObjects;
     public List<MusicLayerButton> layerButtons;
+    public TextMeshProUGUI quantizePrecision;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;
     public Transform mouseTrail;

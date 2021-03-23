@@ -14,7 +14,7 @@ public class RecordObject : MonoBehaviour
     public GameObject obj;
     public RecordObject douplicate;
     public Sequencer sequencer;
-    public int layer;
+    public int trackLayer;
     public float start;
     public float end;
     public float loopStart;
@@ -149,7 +149,7 @@ public class RecordObject : MonoBehaviour
     /// <summary>
     /// Add a RecordObject-component to the first parameter. Set remaining variables.
     /// </summary>
-    public static RecordObject Create(GameObject obj, RecordObject douplicate, Vector3 position, int fieldID, int[] notes, Sequencer sequencer, int layer, float start, float end, float loopStart, float loopEnd_extended)
+    public static RecordObject Create(GameObject obj, RecordObject douplicate, Vector3 position, int fieldID, int[] notes, Sequencer sequencer, int trackLayer, float start, float end, float loopStart, float loopEnd_extended)
     {
         var thisObj = obj.AddComponent<RecordObject>();
 
@@ -160,7 +160,7 @@ public class RecordObject : MonoBehaviour
         thisObj.fieldID = fieldID;
         thisObj.notes = notes;
         thisObj.sequencer = sequencer;
-        thisObj.layer = layer;
+        thisObj.trackLayer = trackLayer;
         thisObj.start = start;
         thisObj.end = end;
         thisObj.loopStart = loopStart;
@@ -170,7 +170,7 @@ public class RecordObject : MonoBehaviour
         thisObj.meshRenderer = obj.GetComponent<MeshRenderer>();
         if (thisObj.meshRenderer == null)
             Debug.LogError("mesh rend sollte nich null sein");
-        var color = VisualController.inst.colorPalette[layer];
+        var color = VisualController.inst.colorPalette[trackLayer];
         color.a = VisualController.inst.recordObjectsOpacity;
         thisObj.meshRenderer.material.color = color;
         thisObj.startColor = thisObj.meshRenderer.material.color;

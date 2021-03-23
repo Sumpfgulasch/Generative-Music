@@ -182,7 +182,7 @@ public class ObjectManager : MonoBehaviour
         if (!recordObject.hasRespawned)
         {
             var newObj = RecordVisuals.inst.DouplicateRecordObject(recordObject);
-            Recorder.inst.recordObjects[newObj.layer].Add(newObj);
+            Recorder.inst.recordObjects[newObj.trackLayer].Add(newObj);
             recordObject.hasRespawned = true;
         }
 
@@ -200,7 +200,7 @@ public class ObjectManager : MonoBehaviour
     private void OnRecObjScreenExit(RecordObject recordObject)
     {
         // Destroy
-        Recorder.inst.recordObjects[recordObject.layer].Remove(recordObject);
+        Recorder.inst.recordObjects[recordObject.trackLayer].Remove(recordObject);
         Destroy(recordObject.obj);
     }
 
@@ -215,58 +215,6 @@ public class ObjectManager : MonoBehaviour
         newObj = Instantiate(newObj, new Vector3(0, 0, playerZpos + (GameplayManager.inst.maxTunnelsAtOnce - 1) * tunnelLength), Quaternion.identity);
         movingObjects.Add(newObj);
     }
-
-
-    /// <summary>
-    /// Instantiate and delete objects, for each recorded chord.
-    /// </summary>
-    //private void ManageRecordedChords()
-    //{
-    //    int layers = MusicManager.inst.maxLayers;
-    //    var removeList = new List<RecordObject>();
-    //    var addList = new List<RecordObject>();
-    //    var chordRecData = Recorder.inst.recording;
-
-    //    for (int i=0; i<Recorder.inst.recordObjects.Length; i++)
-    //    {
-    //        foreach (RecordObject obj in Recorder.inst.recordObjects[i])
-    //        {
-    //            // Don't do if recording (cause otherwise it would be ... complicated)
-    //            if (!obj.isRecording)
-    //            {
-    //                // Destroy?
-    //                if (obj.EndZPos < -2f)
-    //                {
-    //                    removeList.Add(obj);
-    //                }
-
-    //                // Instantiate?
-    //                if (obj.StartZPos <= 0 && !obj.hasRespawned)
-    //                {
-    //                    obj.hasRespawned = true;
-    //                    var newObj = RecordVisuals.inst.DouplicateRecordObject(obj);
-
-    //                    addList.Add(newObj);
-    //                }
-    //            }
-    //        }
-    //    }
-
-
-    //    // remove
-    //    foreach (RecordObject obj in removeList)
-    //    {
-    //        Recorder.inst.recordObjects[obj.layer].Remove(obj);
-    //        Destroy(obj.obj);
-    //    }
-
-    //    // add
-    //    foreach (RecordObject obj in addList)
-    //    {
-    //        Recorder.inst.recordObjects[obj.layer].Add(obj);
-    //    }
-
-    //}
 
 
 

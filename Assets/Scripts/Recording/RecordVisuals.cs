@@ -67,7 +67,7 @@ public class RecordVisuals : MonoBehaviour
         var fields = Player.inst.curFieldSet;
         var ID = recordObj.fieldID;
         var parent = MeshRef.inst.recordObj_parent;
-        var material = MeshRef.inst.recordObjs_mat[recordObj.layer];
+        var material = MeshRef.inst.recordObjs_mat[recordObj.trackLayer];
         var pos = Recorder.inst.NextLoopPosition(recordObj.sequencer, recordObj.start, recordObj.loopStart);
         var layer = 8;
 
@@ -75,7 +75,7 @@ public class RecordVisuals : MonoBehaviour
         var newObj = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
         newObj.transform.localScale = recordObj.obj.transform.localScale;
 
-        var douplicateObj = RecordObject.Create(newObj, null, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.layer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
+        var douplicateObj = RecordObject.Create(newObj, null, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.trackLayer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);
         
         // 2. Set data
         recordObj.douplicate = douplicateObj;   // obj that was douplicated
@@ -124,12 +124,12 @@ public class RecordVisuals : MonoBehaviour
     public void DestroyRecordObject(RecordObject obj)
     {
         Destroy(obj.obj);
-        Recorder.inst.recordObjects[obj.layer].Remove(obj);
+        Recorder.inst.recordObjects[obj.trackLayer].Remove(obj);
 
         if (obj.douplicate != null)
         {
             Destroy(obj.douplicate.obj);
-            Recorder.inst.recordObjects[obj.layer].Remove(obj.douplicate);
+            Recorder.inst.recordObjects[obj.trackLayer].Remove(obj.douplicate);
         }
     }
 

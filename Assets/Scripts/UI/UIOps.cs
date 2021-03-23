@@ -63,9 +63,9 @@ public class UIOps : MonoBehaviour
     /// </summary>
     /// <param name="layer">[0-4].</param>
     /// <param name="value">true == filled (contains recording), false == unfilled (no recording).</param>
-    public void EnableRecordedTrackImage(bool value)
+    public void EnableRecordedTrackImage(int layer, bool value)
     {
-        var activeButton = UIManager.inst.activeLayerButton;
+        var activeButton = UIManager.inst.layerButtons[layer];
         activeButton.filled.enabled = value;
         if (value == true)
             activeButton.targetGraphic = UIManager.inst.activeLayerButton.filled;
@@ -81,5 +81,24 @@ public class UIOps : MonoBehaviour
 
         // 2. Set active-variable
         UIManager.inst.activeLayerButton = UIManager.inst.layerButtons[layer];
+    }
+
+
+    public void SetPrecisionText(MusicManager.Precision value)
+    {
+        MeshRef.inst.quantizePrecision.text = value.ToString();
+
+        //if (value == MusicManager.Precision.fine)
+        //{
+        //    text.text = value.ToString();
+        //}
+        //else if (value == MusicManager.Precision.middle)
+        //{
+
+        //}
+        //else if (value == MusicManager.Precision.rough)
+        //{
+
+        //}
     }
 }

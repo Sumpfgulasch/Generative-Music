@@ -204,7 +204,7 @@ public class Recorder : MonoBehaviour
         }
         RecordVisuals.inst.DestroyAllRecordObjects(layer);
 
-        UIOps.inst.EnableRecordedTrackImage(false);
+        UIOps.inst.EnableRecordedTrackImage(layer, false);
 
         MusicManager.inst.controller.AllNotesOff();
     }
@@ -225,7 +225,7 @@ public class Recorder : MonoBehaviour
         // 3. UI
         if (recordObj.sequencer.GetAllNotes().Count == 0)
         {
-            UIOps.inst.EnableRecordedTrackImage(false);
+            UIOps.inst.EnableRecordedTrackImage(recordObj.trackLayer, false);
         }
 
         // 4. field.activeChords
@@ -454,7 +454,7 @@ public class Recorder : MonoBehaviour
         {
             if (note.IsUnplayedBridgeNote(curPos))
             {
-                var helmNote = new Note(); helmNote.note = note.note; helmNote.start = note.start; helmNote.end = note.end;
+                var helmNote = new Note {note = note.note, start = note.start, end = note.end }; 
                 unplayedBridgeNotes.Add(helmNote);
             }
             else
@@ -552,11 +552,11 @@ public class Recorder : MonoBehaviour
     /// </summary>
     /// <param name="sequencerPos"></param>
     /// <returns></returns>
-    private int Quantize(float sequencerPos)
+    private float Quantize(float sequencerPos)
     {
-        int closestStep = 100;
+        float closestStep = 100f;
         float closestStepDistance = 100f;
-        foreach (int step in MusicManager.inst.quantizeSteps)
+        foreach (float step in MusicManager.inst.quantizeSteps)
         {
             float curStepDistance = Mathf.Abs(step - sequencerPos);
 
@@ -565,8 +565,6 @@ public class Recorder : MonoBehaviour
                 closestStep = step;
                 closestStepDistance = Mathf.Abs(closestStep - sequencerPos);
             }
-
-            //print("step: " + step + ", sequencerPos: " + sequencerPos + ", curStepDistance: " + curStepDistance + ", closestStep: " + closestStep);
         }
 
         return closestStep;
@@ -585,7 +583,7 @@ public class Recorder : MonoBehaviour
         int layer = UIManager.inst.activeLayerButton.layer;         // Unschön; sollte Variable haben
         RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects, layer);
 
-        UIOps.inst.EnableRecordedTrackImage(true);
+        UIOps.inst.EnableRecordedTrackImage(layer, true);
     }
 
     /// <summary>
