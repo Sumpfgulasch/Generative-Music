@@ -265,7 +265,7 @@ public class Player : MonoBehaviour
             {
                 // 2. UI?
                 var pointerPos = Pointer.current.position.ReadValue();
-                if (!UIOps.inst.PointerHitsUI(pointerPos) || !Mouse.current.leftButton.isPressed)   // hack
+                if (!UIOps.inst.PointerHitsUI(pointerPos) || (!Mouse.current.leftButton.wasPressedThisFrame && !Mouse.current.leftButton.wasReleasedThisFrame))   // hack
                 {
                     // press
                     if (context.performed)

@@ -15,8 +15,8 @@ public class GameEvents : MonoBehaviour
     public Action<PlayerField> onChangeField;       // field ID change (regardless of if the field is playing)
     public Action onPlayCanceled;                   // playAction.canceled
     // Music field
-    public Action onPlayField;                      // each time a (changed) field starts to play
-    public Action onStopField;                      // each time a (changed) field stops to play
+    public Action onPlayField;                      // each time a (changed) field starts to PLAY
+    public Action onStopField;                      // each time a (changed) field stops to PLAY
     // Beats
     public Action onVeryFirstBeat;
     public Action onVerySecondBeat;

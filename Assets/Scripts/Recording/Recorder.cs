@@ -23,7 +23,7 @@ public class Recorder : MonoBehaviour
 
     // Private
 
-    private Coroutine recordBar;
+    private Coroutine recordBar, checkRecordLength;
 
 
     // Properties
@@ -44,13 +44,15 @@ public class Recorder : MonoBehaviour
     private Sequencer CurSequencer { get { return MusicManager.inst.curSequencer; } }
     public int CurLayer { get                                               // scheiße aber mir egal
         { 
-            for (int i=0; i<sequencers.Count; i++)
-            {
-                if (CurSequencer == sequencers[i])
-                    return i;
-            }
-            Debug.LogError("curLayer not found");
-            return 0; 
+            //for (int i=0; i<sequencers.Count; i++)
+            //{
+            //    if (CurSequencer == sequencers[i])
+            //        return i;
+            //}
+            //Debug.LogError("curLayer not found");
+            //return 0;
+
+            return UIManager.inst.activeLayerButton.layer;
         } 
     }
 
@@ -113,9 +115,6 @@ public class Recorder : MonoBehaviour
         // 3.2. Chord already playing?
         if (Player.inst.actionState == Player.ActionState.Play)
         {
-            //recording.start = (float) CurSequencer.GetSequencerPosition();
-            //recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
-
             SaveRecordStartData();
             StartSpawnChordObject();
         }
@@ -123,15 +122,14 @@ public class Recorder : MonoBehaviour
         // 3.3. Set sequencer loop start?
         if (!Has1stRecord)
         {
-            //recording.loopStart = (float)CurSequencer.GetSequencerPosition();
-            //recording.loopEnd_extended = recording.loopStart + CurSequencer.length;
-
             loopStart = recording.start;
             loopEnd_extended = loopStart + CurSequencer.length;
         }
+
+        checkRecordLength = StartCoroutine(CheckRecordLength());
     }
 
-
+    
 
     /// <summary>
     /// Start record after counting one bar. Show canvas. Beats in quarters.
@@ -168,9 +166,10 @@ public class Recorder : MonoBehaviour
         isPreRecording = false;
 
         // If there's a chord being played
-        if (recording.end == -1)
+        if (recording.isRunning)
         {
             WriteToSequencer();
+            StopSpawnChordObject();
         }
 
         // Disable record bar?
@@ -184,6 +183,9 @@ public class Recorder : MonoBehaviour
         GameEvents.inst.onPlayField -= StartSpawnChordObject;   // Visual
         GameEvents.inst.onStopField -= WriteToSequencer;
         GameEvents.inst.onStopField -= StopSpawnChordObject;    // Visual
+
+        // check record length
+        StopCoroutine(checkRecordLength);
     }
 
 
@@ -193,7 +195,7 @@ public class Recorder : MonoBehaviour
     /// </summary>
     public void ClearLayer(int layer)
     {
-        recording = new Recording();
+        //recording = new Recording();
 
         // 1. Clear sequencer
         sequencers[layer].Clear();
@@ -290,6 +292,8 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void SaveRecordStartData()
     {
+        //recording = new Recording();
+
         float sequencerPos = (float)CurSequencer.GetSequencerPosition();
 
         // 1. Start & quantize offset
@@ -311,16 +315,21 @@ public class Recorder : MonoBehaviour
         }
 
         // 2. End, notes, ID, sequencer
-        recording.end = -1;                             // unschöner hack für ...?
+        recording.end = -1;                             // hack;
         recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         recording.fieldID = Player.inst.curField.ID;
         recording.sequencer = CurSequencer;
+        recording.isRunning = true;
     }
 
     
     private void WriteToSequencer()
     {
-        StartCoroutine(WriteToSequencer_delayed());
+        //print("Write to sequencer");
+        if (recording.isRunning)
+        {
+            StartCoroutine(WriteToSequencer_delayed());
+        }
     }
 
     /// <summary>
@@ -485,9 +494,26 @@ public class Recorder : MonoBehaviour
     }
 
 
-    
 
-    
+
+    private IEnumerator CheckRecordLength()
+    {
+        while (true)
+        {
+            if (recording.isRunning)
+            {
+                if (recording.obj.transform.localScale.z >= LoopData.distancePerRecLoop) // || recording.loopObj.transform.position.z <= Player.inst.transform.position.z + ObjectManager.inst.moveSpeed
+                {
+                    print("loop obj kommt wieder");
+                    WriteToSequencer();
+                    StopSpawnChordObject();
+                }
+            }
+            yield return null;
+        }
+    }
+
+
 
     /// <summary>
     /// Set variables and update canvas.
@@ -594,10 +620,11 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void StartSpawnChordObject()
     {
-        int layer = UIManager.inst.activeLayerButton.layer;         // Unschön; sollte Variable haben
-        RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects, layer);
+        //int layer = UIManager.inst.activeLayerButton.layer;         // Unschön; sollte Variable haben
 
-        UIOps.inst.EnableRecordedTrackImage(layer, true);
+        RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects, CurLayer);
+
+        UIOps.inst.EnableRecordedTrackImage(CurLayer, true);
     }
 
     /// <summary>
@@ -605,7 +632,11 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void StopSpawnChordObject()
     {
-        RecordVisuals.inst.StopCreateChordObject(recording);
+        if (recording.isRunning)
+        {
+            RecordVisuals.inst.StopCreateChordObject(recording);
+            recording.isRunning = false;
+        }
     }
 
     
@@ -672,6 +703,8 @@ public class Recording
     /// </summary>
     public float startQuantizeOffset;
     public float endQuantizeOffset;
+    public bool isRunning;
+
 
     /// <summary>
     /// Get the length of one record / chord, in sixteenth.
