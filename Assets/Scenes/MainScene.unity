@@ -5449,6 +5449,8 @@ MonoBehaviour:
   isPreRecording: 0
   preRecCounter: 0
   noteAdd: 0
+  loopStart: 0
+  loopEnd_extended: 0
 --- !u!114 &993132848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8526,7 +8528,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1457492037}
   m_Layer: 5
-  m_Name: Tracks
+  m_Name: Layers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

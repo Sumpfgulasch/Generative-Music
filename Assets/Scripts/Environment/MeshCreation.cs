@@ -303,7 +303,7 @@ public static class MeshCreation
 
         // 1.2. Triangles & normals
         int[] triangles;
-        Vector3[] normals;
+        //Vector3[] normals;
         Vector2[] uvs;
 
         if (fields[index].isCorner)

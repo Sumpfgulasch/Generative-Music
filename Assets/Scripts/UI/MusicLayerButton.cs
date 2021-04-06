@@ -20,7 +20,7 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
     private bool isDeleting;
 
 
-    private void Start()
+    protected override void Start()
     {
         base.Start();
         filledTransform = transform; // eig nur von filled-image

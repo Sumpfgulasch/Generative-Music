@@ -30,8 +30,6 @@ public class MusicManager : MonoBehaviour
     public enum Precision { fine, middle, rough};
     public Precision curPrecision = Precision.fine;
 
-    private int precisionValue = 1;
-
     [HideInInspector] public List<float> quantizeSteps;
     [HideInInspector] public float quantizeStep;
 
@@ -124,7 +122,7 @@ public class MusicManager : MonoBehaviour
 
 
     /// <summary>
-    /// Change controller-channel and sequencer-reference.
+    /// Change controller channel and sequencer reference.
     /// </summary>
     /// <param name="layer"></param>
     public void ChangeLayer(int layer)
@@ -253,12 +251,6 @@ public class MusicManager : MonoBehaviour
     // Fields
     public void OnFieldStart(Player.Side side)
     {
-        //if (side == Player.Side.inner)
-        //    controller = Instrument.inner;
-        //else
-        //    controller = Instrument.outer;
-
-
         PlayField();
 
         #region pitch
@@ -291,7 +283,7 @@ public class MusicManager : MonoBehaviour
         {
             // no UI
             var pointerPos = Pointer.current.position.ReadValue();
-            if (!UIOps.inst.PointerHitsUI(pointerPos))
+            if (!UIOps.inst.PointerHitsUI(pointerPos) || !Mouse.current.leftButton.isPressed) // unschön, hack
             {
                 if (!Recorder.inst.isRecording && !Recorder.inst.isPreRecording)
                 {
@@ -301,6 +293,7 @@ public class MusicManager : MonoBehaviour
                     }
                     else
                     {
+                        // Wird aktuell nicht mehr verwendet
                         if (firstRecordDelay)
                             Recorder.inst.StartRecordDelayed(LoopData.quartersPerBar);
                         else
@@ -318,19 +311,10 @@ public class MusicManager : MonoBehaviour
 
     public void OnReset(InputAction.CallbackContext context)
     {
-        controller.AllNotesOff();
-
         if (context.performed)
         {
+            controller.AllNotesOff();
             LoopData.Init();
-        }
-    }
-
-    public void OnPlay(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            //curInstrument = Instrument.inner;
         }
     }
 
@@ -394,6 +378,9 @@ public class MusicManager : MonoBehaviour
         if (context.performed)
         {
             int value = (int) context.ReadValue<Vector2>().normalized.y;
+
+            // Notes off
+            controller.AllNotesOff();
 
             // Increase layer
             int nextLayer = ExtensionMethods.Modulo(controller.channel + value, maxLayers);

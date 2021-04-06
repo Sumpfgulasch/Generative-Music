@@ -11,9 +11,9 @@ public class GameEvents : MonoBehaviour
     public Action onTunnelEnter;
     public Action onScreenResize;
     // Input
-    public Action <Player.Side> onFieldStart;
-    public Action<PlayerField> onFieldChange;
-    public Action onFieldLeave;
+    public Action <Player.Side> onStartField_input;
+    public Action<PlayerField> onChangeField_input;
+    public Action onEndField_input;
     // Play fields
     public Action onPlayField;
     public Action onStopField;
@@ -44,19 +44,19 @@ public class GameEvents : MonoBehaviour
         onTunnelEnter?.Invoke();
     }
 
-    public void FieldStart(Player.Side side)
+    public void StartField_input(Player.Side side)
     {
-        onFieldStart?.Invoke(side);
+        onStartField_input?.Invoke(side);
     }
 
-    public void FieldChange(PlayerField fieldData)
+    public void ChangeField_input(PlayerField fieldData)
     {
-        onFieldChange?.Invoke(fieldData);
+        onChangeField_input?.Invoke(fieldData);
     }
 
-    public void FieldLeave()
+    public void EndField_input()
     {
-        onFieldLeave?.Invoke();
+        onEndField_input?.Invoke();
     }
 
     public void MouseOutside()

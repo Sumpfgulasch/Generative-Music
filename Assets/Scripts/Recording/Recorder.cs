@@ -17,9 +17,12 @@ public class Recorder : MonoBehaviour
     [HideInInspector] public int preRecCounter;
     public List<RecordObject>[] recordObjects;
     public float noteAdd = 0.1f;
+    public Recording recording = new Recording();
+    [HideInInspector] public float loopStart;
+    [HideInInspector] public float loopEnd_extended;
 
     // Private
-    public Recording recording = new Recording();
+
     private Coroutine recordBar;
 
 
@@ -110,15 +113,21 @@ public class Recorder : MonoBehaviour
         // 3.2. Chord already playing?
         if (Player.inst.actionState == Player.ActionState.Play)
         {
-            recording.start = (float) CurSequencer.GetSequencerPosition();
-            recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
+            //recording.start = (float) CurSequencer.GetSequencerPosition();
+            //recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
+
+            SaveRecordStartData();
+            StartSpawnChordObject();
         }
 
         // 3.3. Set sequencer loop start?
         if (!Has1stRecord)
         {
-            recording.loopStart = (float)CurSequencer.GetSequencerPosition();
-            recording.loopEnd_extended = recording.loopStart + CurSequencer.length;
+            //recording.loopStart = (float)CurSequencer.GetSequencerPosition();
+            //recording.loopEnd_extended = recording.loopStart + CurSequencer.length;
+
+            loopStart = recording.start;
+            loopEnd_extended = loopStart + CurSequencer.length;
         }
     }
 
@@ -277,23 +286,23 @@ public class Recorder : MonoBehaviour
     // Recording
 
     /// <summary>
-    /// Save start time and notes of the currently played chord.
+    /// Save data to the RECORDING-variable (start time, notes, fieldID, sequencer, quantizeOffset).
     /// </summary>
     private void SaveRecordStartData()
     {
         float sequencerPos = (float)CurSequencer.GetSequencerPosition();
 
-        // Quantization?
+        // 1. Start & quantize offset
         if (MusicManager.inst.quantize)
         {
             float quantize = Quantize(sequencerPos);
             recording.start = quantize;
 
+            // hack für sequencerPos bei sequencer.length
             if (quantize == 0 && sequencerPos > CurSequencer.length/2)
                 quantize = CurSequencer.length;
 
             recording.startQuantizeOffset = quantize - sequencerPos;
-            print("START quantize; sequencerPos: " + sequencerPos + ", quantize: " + quantize + ", offset: " + recording.startQuantizeOffset);
         }
         else
         {
@@ -301,7 +310,8 @@ public class Recorder : MonoBehaviour
             recording.startQuantizeOffset = 0;
         }
 
-        recording.end = -1;
+        // 2. End, notes, ID, sequencer
+        recording.end = -1;                             // unschöner hack für ...?
         recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         recording.fieldID = Player.inst.curField.ID;
         recording.sequencer = CurSequencer;
@@ -332,7 +342,6 @@ public class Recorder : MonoBehaviour
             // Legato: quantize recording.end, too
             if (Player.inst.actionState == Player.ActionState.Play)
             {
-                print("PLAYING");
                 float quantize = Quantize(curPos);
                 recording.endQuantizeOffset = quantize - curPos;
                 recording.end = Quantize(curPos);
@@ -341,21 +350,16 @@ public class Recorder : MonoBehaviour
                 if (recording.end == recording.start)
                 {
                     recording.end = (recording.end + MusicManager.inst.quantizeStep) % CurSequencer.length;
-                    Debug.Log("START == END");
                 }
-
-                print("END quantize; curPos: " + curPos + ", quantize: " + quantize + ", offset: " + recording.endQuantizeOffset);
             }
 
             // Staccato: Dont quantize recording.end
             else
             {
-                print("NOT PLAYING");
                 // get the time the chord was pressed
                 float length = AudioHelmHelper.NoteLength(recording.sequencer, recording.start, curPos) - recording.startQuantizeOffset;
                 recording.end = ExtensionMethods.Modulo(curPos + recording.startQuantizeOffset, recording.sequencer.length);
                 recording.endQuantizeOffset = recording.startQuantizeOffset;
-                print("END quantize; curPos: " + curPos + ", length: " + length + ", final pos: " + recording.end + ", offset: " + recording.endQuantizeOffset);
             }
         }
         else
@@ -404,17 +408,14 @@ public class Recorder : MonoBehaviour
                 // 2.2. Add note for remaining sequencer note?
                 float oldEndPercentage = SequencerPositionPercentage(recording.sequencer, oldEnd, recording.loopStart);
                 float curPosPercentage = SequencerPositionPercentage(recording.sequencer, recording.end, recording.loopStart);
-                //if (oldEndPercentage > curPosPercentage)
-                //{
                     int note = doubleNote.note;
                     float start = recording.end;// + 0.01f;
                     float end = oldEnd;
 
                     var temp = new NoteContainer(note, start, end, velocity);
                     remainingNotes.Add(temp); // dont add now because it would be overwritten by usual notes; has to be added at last
-                //}
                 MusicManager.inst.controller.NoteOn(note, velocity, end - start);
-                print("case #2: Existing note extends over bounds");
+                //print("case #2: Existing note extends over bounds");
             }
         }
 
@@ -427,7 +428,6 @@ public class Recorder : MonoBehaviour
         if (recordCopy.endQuantizeOffset > 0)
         {
             float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
-            print("quantize delay start; delay (s): " + delay);
             yield return new WaitForSeconds(delay);
         }
 
@@ -470,12 +470,10 @@ public class Recorder : MonoBehaviour
             {
                 var helmNote = new Note {note = note.note, start = note.start, end = note.end }; 
                 unplayedBridgeNotes.Add(helmNote);
-                print("remaining, unplayedBridge note: " + note.note + ", start: " + note.start + ", end: " + note.end + " (will get added at last)");
             }
             else
             {
                 recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
-                print("remaining, other (?) note: " + note.note + ", start: " + note.start + ", end: " + note.end + " (gets added now)");
             }
         }
         foreach (Note note in unplayedBridgeNotes)  // #3: unplayed bridge notes
@@ -592,7 +590,7 @@ public class Recorder : MonoBehaviour
     // Visuals
 
     /// <summary>
-    /// Instantiate 2 lane surfaces (current chord, looped chord) and keep scaling it by a coroutine upwards from zero until stopped. Writes into chordRecord (!).
+    /// Instantiate 2 lane surfaces (current chord, looped chord) and keep scaling it by a coroutine upwards from zero until stopped. Writes into RECORDING variable (!).
     /// </summary>
     private void StartSpawnChordObject()
     {

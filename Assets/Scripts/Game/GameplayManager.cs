@@ -44,17 +44,17 @@ public class GameplayManager : MonoBehaviour
         MusicRef.inst.beatSequencer.beatEvent.AddListener(MusicManager.inst.OnVeryFirstBeats);
         GameEvents.inst.onVeryFirstBeat += OnVeryFirstBeat;
         GameEvents.inst.onVerySecondBeat += OnVerySecondBeat;
-        GameEvents.inst.onFieldStart += VisualController.inst.OnPlayStart;
-        GameEvents.inst.onFieldLeave += VisualController.inst.OnPlayEnd;
-        GameEvents.inst.onFieldChange += VisualController.inst.OnFieldChange;
+        GameEvents.inst.onStartField_input += VisualController.inst.OnPlayStart;
+        GameEvents.inst.onEndField_input += VisualController.inst.OnPlayEnd;
+        GameEvents.inst.onChangeField_input += VisualController.inst.OnFieldChange;
         GameEvents.inst.onMouseInside += VisualController.inst.OnMouseInside;
         GameEvents.inst.onMouseOutside += VisualController.inst.OnMouseOutside;
         GameEvents.inst.onScreenResize += CameraOps.PanCamera;
         
         // Music-related
-        GameEvents.inst.onFieldStart += MusicManager.inst.OnFieldStart;
-        GameEvents.inst.onFieldChange += MusicManager.inst.OnFieldChange;
-        GameEvents.inst.onFieldLeave += MusicManager.inst.OnFieldLeave;
+        GameEvents.inst.onStartField_input += MusicManager.inst.OnFieldStart;
+        GameEvents.inst.onChangeField_input += MusicManager.inst.OnFieldChange;
+        GameEvents.inst.onEndField_input += MusicManager.inst.OnFieldLeave;
 
         GameEvents.inst.onScreenResize?.Invoke(); // Hack
 

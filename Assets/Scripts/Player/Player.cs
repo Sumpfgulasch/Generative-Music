@@ -199,26 +199,25 @@ public class Player : MonoBehaviour
 
 
     /// <summary>
-    /// Set data (actionState, curSide, press times), change collider size and stick to edge. Update player width(!).
+    /// Set data (actionState, curSide, press times), stick to edge and pdate player width(!). Trigger event.
     /// </summary>
     private void PlayMovement(Side side)
     {
+        // Data
         actionState = ActionState.Play;
         curPlaySide = side;
-        StopCoroutine(scaleRoutine);
-        StickToEdge(curPlaySide);
-
-        // press frequencies
         curRotPressTime = bt_play_selectionPressTime;
         curRotFrequency = bt_play_selectionFrequency;
 
+        // Visual
+        StopCoroutine(scaleRoutine);
+        StickToEdge(curPlaySide);
         // set mouse collider
         //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_play);
-
         MeshUpdate.UpdatePlayer();
 
         // Events
-        GameEvents.inst.FieldStart(side);
+        GameEvents.inst.StartField_input(side);
     }
 
 
@@ -248,7 +247,7 @@ public class Player : MonoBehaviour
         //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_move);
 
         // Events
-        GameEvents.inst.FieldLeave();
+        GameEvents.inst.EndField_input();
     }
 
 
@@ -268,14 +267,12 @@ public class Player : MonoBehaviour
             {
                 // 2. UI?
                 var pointerPos = Pointer.current.position.ReadValue();
-                if (!UIOps.inst.PointerHitsUI(pointerPos))
+                if (!UIOps.inst.PointerHitsUI(pointerPos) || !Mouse.current.leftButton.isPressed)   // hack
                 {
                     // press
                     if (context.performed)
                     {
-                        {
-                            PlayMovement(Side.inner);
-                        }
+                        PlayMovement(Side.inner);
                     }
                     // release
                     else if (context.canceled)
@@ -286,21 +283,6 @@ public class Player : MonoBehaviour
             }
         }
     }
-    
-    //public void OnPlayOutside(InputAction.CallbackContext context)
-    //{
-    //    if (positionState != PositionState.NoTunnel)
-    //    {
-    //        if (context.performed)
-    //        {
-    //            PlayMovement(Side.outer);
-    //        }
-    //        else if (context.canceled)
-    //        {
-    //            StopPlayMovement(Side.outer);
-    //        }
-    //    }
-    //}
 
     
     
@@ -359,7 +341,7 @@ public class Player : MonoBehaviour
                 
                 if (fieldChanged)
                 {
-                    GameEvents.inst.FieldChange(data);
+                    GameEvents.inst.ChangeField_input(data);
 
                     StopCoroutines(curRotateRoutines);
                     StopCoroutines(curTriggerRoutines);
@@ -575,7 +557,7 @@ public class Player : MonoBehaviour
             var data = PlayerData.SetDataByID(nextID);
 
             // FIRE EVENT
-            GameEvents.inst.FieldChange(data);                              // TO DO: gehört hier nicht rein!!!
+            GameEvents.inst.ChangeField_input(data);                              // TO DO: gehört hier nicht rein!!!
 
             // 3. Get target rotation
             var targetPos = data.mid;
