@@ -249,7 +249,7 @@ public class MusicManager : MonoBehaviour
 
 
     // Fields
-    public void OnFieldStart(Player.Side side)
+    public void OnFieldStart()
     {
         PlayField();
 

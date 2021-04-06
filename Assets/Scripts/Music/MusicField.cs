@@ -324,16 +324,18 @@ public class PlayerField // : MusicField
     }
 
     /// <summary>
-    /// Change line renderer width, opacity and z-position.
+    /// Change highlight surface opacity (+unused stuff: Change line renderer width and z-position).
     /// </summary>
     public void SetToPlay()
     {
+        // 1. Unimportant lineRend stuff
         this.lineRend.startWidth = VisualController.inst.playerFieldPlayThickness;
         this.lineRend.endWidth = VisualController.inst.playerFieldPlayThickness;
 
         float zPos = Player.inst.transform.position.z - (VisualController.inst.fieldsBeforeSurface + 0.001f);
         SetZPos(zPos);
 
+        // 2. Set highlight surface
         SetOpacity(VisualController.inst.ms_play_outside_fieldSurfaceOpacity);
     }
 

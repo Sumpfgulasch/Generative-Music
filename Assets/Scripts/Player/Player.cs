@@ -201,53 +201,51 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Set data (actionState, curSide, press times), stick to edge and pdate player width(!). Trigger event.
     /// </summary>
-    private void PlayMovement(Side side)
+    private void PlayMovement()
     {
-        // Data
+        // 1. Data
         actionState = ActionState.Play;
-        curPlaySide = side;
+        //curPlaySide = side;
         curRotPressTime = bt_play_selectionPressTime;
         curRotFrequency = bt_play_selectionFrequency;
 
-        // Visual
+        // 2. Visual
         StopCoroutine(scaleRoutine);
         StickToEdge(curPlaySide);
         // set mouse collider
         //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_play);
         MeshUpdate.UpdatePlayer();
 
-        // Events
-        GameEvents.inst.StartField_input(side);
+        // 3. Events
+        GameEvents.inst.onPlayPerformed?.Invoke();
     }
 
 
     /// <summary>
     /// Set data, collider size and scale back to origin.
     /// </summary>
-    private void StopPlayMovement(Side side)
+    private void StopPlayMovement()
     {
+        // 1. Data
         actionState = ActionState.None;
-
-        if (side == Side.inner)
-        {
-            scaleRoutine = DampedScale(scaleMin);
-        }
-        else
-        {
-            scaleRoutine = DampedScale(scaleMax);
-        }
-        
-        StartCoroutine(scaleRoutine);
-
-        // press frequencies
         curRotPressTime = bt_selectionPressTime;
         curRotFrequency = bt_selectionFrequency;
 
+        // 2. Visual
+        //if (side == Side.inner)
+        //{
+        scaleRoutine = DampedScale(scaleMin);
+        //}
+        //else
+        //{
+        //    scaleRoutine = DampedScale(scaleMax);
+        //}
+        StartCoroutine(scaleRoutine);
         // set mouse collider
         //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_move);
 
-        // Events
-        GameEvents.inst.EndField_input();
+        // 3. Events
+        GameEvents.inst.onPlayCanceled?.Invoke();
     }
 
 
@@ -272,12 +270,12 @@ public class Player : MonoBehaviour
                     // press
                     if (context.performed)
                     {
-                        PlayMovement(Side.inner);
+                        PlayMovement();
                     }
                     // release
                     else if (context.canceled)
                     {
-                        StopPlayMovement(Side.inner);
+                        StopPlayMovement();
                     }
                 }
             }
@@ -341,7 +339,7 @@ public class Player : MonoBehaviour
                 
                 if (fieldChanged)
                 {
-                    GameEvents.inst.ChangeField_input(data);
+                    GameEvents.inst.onChangeField?.Invoke(data);
 
                     StopCoroutines(curRotateRoutines);
                     StopCoroutines(curTriggerRoutines);
@@ -557,12 +555,10 @@ public class Player : MonoBehaviour
             var data = PlayerData.SetDataByID(nextID);
 
             // FIRE EVENT
-            GameEvents.inst.ChangeField_input(data);                              // TO DO: gehört hier nicht rein!!!
+            GameEvents.inst.onChangeField?.Invoke(data);                              // TO DO: gehört hier nicht rein!!!
 
             // 3. Get target rotation
             var targetPos = data.mid;
-
-            
 
             // 5. ROTATE TO ID
             float maxTime = 1.2f;

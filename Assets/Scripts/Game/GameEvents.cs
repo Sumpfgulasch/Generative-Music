@@ -10,13 +10,13 @@ public class GameEvents : MonoBehaviour
 
     public Action onTunnelEnter;
     public Action onScreenResize;
-    // Input
-    public Action <Player.Side> onStartField_input;
-    public Action<PlayerField> onChangeField_input;
-    public Action onEndField_input;
-    // Play fields
-    public Action onPlayField;
-    public Action onStopField;
+    // Input field
+    public Action onPlayPerformed;                  // playAction.performed
+    public Action<PlayerField> onChangeField;       // field ID change (regardless of if the field is playing)
+    public Action onPlayCanceled;                   // playAction.canceled
+    // Music field
+    public Action onPlayField;                      // each time a (changed) field starts to play
+    public Action onStopField;                      // each time a (changed) field stops to play
     // Beats
     public Action onVeryFirstBeat;
     public Action onVerySecondBeat;
@@ -44,20 +44,20 @@ public class GameEvents : MonoBehaviour
         onTunnelEnter?.Invoke();
     }
 
-    public void StartField_input(Player.Side side)
-    {
-        onStartField_input?.Invoke(side);
-    }
+    //public void PlayPerformed()
+    //{
+    //    onPlayPerformed?.Invoke();
+    //}
 
-    public void ChangeField_input(PlayerField fieldData)
-    {
-        onChangeField_input?.Invoke(fieldData);
-    }
+    //public void ChangeField_input(PlayerField fieldData)
+    //{
+    //    onChangeField?.Invoke(fieldData);
+    //}
 
-    public void EndField_input()
-    {
-        onEndField_input?.Invoke();
-    }
+    //public void EndField_input()
+    //{
+    //    onPlayCanceled?.Invoke();
+    //}
 
     public void MouseOutside()
     {
