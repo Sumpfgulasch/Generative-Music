@@ -475,7 +475,7 @@ public class MusicManager : MonoBehaviour
 
     public void StopChord(Chord chord, HelmController instrument)
     {
-        // Mindest-Spielzeit für Noten
+        // Mindest-Spielzeit für Noten (Nicht verwendet!!!)
         float timeToPlay = shortNotes_minPlayTime - instrument.pressedNotesDurations[chord.notes[0]].duration;
         
         for (int i = 0; i < chord.notes.Length; i++)
@@ -487,7 +487,28 @@ public class MusicManager : MonoBehaviour
                     StartCoroutine(instrument.WaitNoteOff(chord.notes[i], timeToPlay));
                 }
                 else
-                    instrument.NoteOff(chord.notes[i]);
+                {
+                    // 1. Check if the current notes are played in the sequencer
+                    var curPos = (float) curSequencer.GetSequencerPosition();
+                    var curSeqNotes = AudioHelmHelper.GetCurrentNotes(curSequencer, curPos);
+
+                    bool noteIsPlayed = false;
+
+                    foreach (Note sequencerNote in curSeqNotes)
+                    {
+                        if (sequencerNote.note == chord.notes[i])
+                        {
+                            noteIsPlayed = true;
+                            break;
+                        }
+                    }
+
+                    // 2. Stop only if the notes are not being played in the sequencer
+                    if (!noteIsPlayed)
+                    {
+                        instrument.NoteOff(chord.notes[i]);
+                    }
+                }
             }
         }
     }

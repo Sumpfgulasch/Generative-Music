@@ -126,7 +126,8 @@ public class Recorder : MonoBehaviour
             loopEnd_extended = loopStart + CurSequencer.length;
         }
 
-        checkRecordLength = StartCoroutine(CheckRecordLength());
+        // 4. Max record length
+        checkRecordLength = StartCoroutine(MaxRecordLength());
     }
 
     
@@ -184,7 +185,7 @@ public class Recorder : MonoBehaviour
         GameEvents.inst.onStopField -= WriteToSequencer;
         GameEvents.inst.onStopField -= StopSpawnChordObject;    // Visual
 
-        // check record length
+        // Max record length
         StopCoroutine(checkRecordLength);
     }
 
@@ -288,12 +289,10 @@ public class Recorder : MonoBehaviour
     // Recording
 
     /// <summary>
-    /// Save data to the RECORDING-variable (start time, notes, fieldID, sequencer, quantizeOffset).
+    /// Save data of currently one recording chord to the RECORDING-variable (start time, notes, fieldID, sequencer, quantizeOffset).
     /// </summary>
     private void SaveRecordStartData()
     {
-        //recording = new Recording();
-
         float sequencerPos = (float)CurSequencer.GetSequencerPosition();
 
         // 1. Start & quantize offset
@@ -315,7 +314,7 @@ public class Recorder : MonoBehaviour
         }
 
         // 2. End, notes, ID, sequencer
-        recording.end = -1;                             // hack;
+        recording.end = -1;                             // hack; nicht mehr nötig
         recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         recording.fieldID = Player.inst.curField.ID;
         recording.sequencer = CurSequencer;
@@ -339,7 +338,7 @@ public class Recorder : MonoBehaviour
     {
         float curPos = (float)CurSequencer.GetSequencerPosition();
         float velocity = MusicManager.inst.velocity;
-        var curNotes = AudioHelmHelper.GetAllNotesInRange(CurSequencer, curPos);
+        var curNotes = AudioHelmHelper.GetCurrentNotes(CurSequencer, curPos);
         var doubleNotes = AudioHelmHelper.DoubleNotes(recording.notes, curNotes);
 
         // 1. Write to recording
@@ -356,17 +355,26 @@ public class Recorder : MonoBehaviour
                 recording.end = Quantize(curPos);
 
                 // Special case: very short notes
-                if (recording.end == recording.start)
+                //if (recording.end == recording.start)
+                //{
+                //    recording.end = (recording.end + MusicManager.inst.quantizeStep) % CurSequencer.length;
+                //}
+                if (recording.endExceedsStart)
                 {
-                    recording.end = (recording.end + MusicManager.inst.quantizeStep) % CurSequencer.length;
+                    recording.end = ExtensionMethods.Modulo(recording.start - 0.01f, recording.sequencer.length);
+                    foreach (int note in recording.notes)
+                        recording.sequencer.NoteOn(note, velocity);
+
+                    recording.endExceedsStart = false;
                 }
+                print("legato quantize; recording.start: " + recording.start + ", recording.end: " + recording.end);
             }
 
             // Staccato: Dont quantize recording.end
             else
             {
                 // get the time the chord was pressed
-                float length = AudioHelmHelper.NoteLength(recording.sequencer, recording.start, curPos) - recording.startQuantizeOffset;
+                //float length = AudioHelmHelper.NoteLength(recording.sequencer, recording.start, curPos) - recording.startQuantizeOffset;
                 recording.end = ExtensionMethods.Modulo(curPos + recording.startQuantizeOffset, recording.sequencer.length);
                 recording.endQuantizeOffset = recording.startQuantizeOffset;
             }
@@ -433,7 +441,7 @@ public class Recorder : MonoBehaviour
 
 
 
-        // WAIT
+        // WAIT to add notes; otherwise notes will disrupt unintendedly
         if (recordCopy.endQuantizeOffset > 0)
         {
             float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
@@ -495,18 +503,26 @@ public class Recorder : MonoBehaviour
 
 
 
-
-    private IEnumerator CheckRecordLength()
+    /// <summary>
+    /// Guarantee max record length. If currently recorded obj == sequencer.length, then stop spawning (WriteToSequencer and StopSpawnChordObject).
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator MaxRecordLength()
     {
         while (true)
         {
             if (recording.isRunning)
             {
-                if (recording.obj.transform.localScale.z >= LoopData.distancePerRecLoop) // || recording.loopObj.transform.position.z <= Player.inst.transform.position.z + ObjectManager.inst.moveSpeed
+                if (recording.loopObj.transform.position.z <= Player.inst.transform.position.z) // || recording.obj.transform.localScale.z >= LoopData.distancePerRecLoop           + ObjectManager.inst.moveSpeed
                 {
                     print("loop obj kommt wieder");
+
+                    recording.endExceedsStart = true;
+
                     WriteToSequencer();
                     StopSpawnChordObject();
+
+                    //Debug.Break();
                 }
             }
             yield return null;
@@ -704,6 +720,7 @@ public class Recording
     public float startQuantizeOffset;
     public float endQuantizeOffset;
     public bool isRunning;
+    public bool endExceedsStart;
 
 
     /// <summary>

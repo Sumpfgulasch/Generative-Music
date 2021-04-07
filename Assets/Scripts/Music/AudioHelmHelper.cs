@@ -10,9 +10,9 @@ public static class AudioHelmHelper // : MonoBehaviour
     /// Get all the notes that play at the given sequencer position. Also those that extent over the sequencer-end.
     /// </summary>
     /// <param name="sequencer"></param>
-    /// <param name="end"></param>
+    /// <param name="pos"></param>
     /// <returns></returns>
-    public static List<Note> GetAllNotesInRange(Sequencer sequencer, float end)
+    public static List<Note> GetCurrentNotes(Sequencer sequencer, float pos)
     {
         var allNotes = sequencer.GetAllNotes();
         var notes = new List<Note>();
@@ -20,14 +20,14 @@ public static class AudioHelmHelper // : MonoBehaviour
         foreach (Note note in allNotes)
         {
             // Regular notes (start < end)
-            if (end > note.start && end < note.end)
+            if (pos > note.start && pos < note.end)
             {
                 notes.Add(note);
             }
             // Notes that extend over the sequencer end
             else if (note.start > note.end)
             {
-                if (end > note.start || end < note.end)
+                if (pos > note.start || pos < note.end)
                     notes.Add(note);
             }
         }
