@@ -265,11 +265,19 @@ public class Player : MonoBehaviour
             {
                 // 2. UI?
                 var pointerPos = Pointer.current.position.ReadValue();
-                if (!UIOps.inst.PointerHitsUI(pointerPos) || (!Mouse.current.leftButton.wasPressedThisFrame && !Mouse.current.leftButton.wasReleasedThisFrame))   // hack
+                bool pointerHitsUI = UIOps.inst.PointerHitsUI(pointerPos);
+                bool mouseWasNOTpressedAndReleased = (!Mouse.current.leftButton.wasPressedThisFrame && !Mouse.current.leftButton.wasReleasedThisFrame);
+
+                if (!pointerHitsUI || mouseWasNOTpressedAndReleased)   // hack
                 {
+                    
                     // press
                     if (context.performed)
                     {
+                        print("pointer hits UI: " + pointerHitsUI + ", mouse was NOT press and released: " + mouseWasNOTpressedAndReleased);
+
+                        // hier weiter machen: entweder ist mouseWasNOTpressedAndReleased falsch, oder in onMove wird PlayMovement (und somit fälschlicherweise onPlayStart) getriggert, was dazu führt, dass, wenn ich
+                        // in record auf nen nächsten musicLayerButton klicke, im Recorder StartSpawnChordObj (mit alter curLayer) getriggert wird
                         PlayMovement();
                     }
                     // release

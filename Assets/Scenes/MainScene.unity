@@ -4955,8 +4955,8 @@ MonoBehaviour:
   - {fileID: 1666383812}
   - {fileID: 796965509}
   activeLayerButton: {fileID: 501009927}
-  musicLayerButton_waitBeforDelete: 0.2
-  musicLayerButton_duration: 0.8
+  musicLayerButton_waitBeforDelete: 0
+  musicLayerButton_duration: 0.7
   deleteLerp:
     serializedVersion: 2
     m_Curve:

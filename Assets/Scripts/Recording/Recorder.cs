@@ -43,16 +43,16 @@ public class Recorder : MonoBehaviour
     
     private Sequencer CurSequencer { get { return MusicManager.inst.curSequencer; } }
     public int CurLayer { get                                               // scheiﬂe aber mir egal
-        { 
-            //for (int i=0; i<sequencers.Count; i++)
-            //{
-            //    if (CurSequencer == sequencers[i])
-            //        return i;
-            //}
-            //Debug.LogError("curLayer not found");
-            //return 0;
+        {
+            for (int i = 0; i < sequencers.Count; i++)
+            {
+                if (CurSequencer == sequencers[i])
+                    return i;
+            }
+            Debug.LogError("curLayer not found");
+            return 0;
 
-            return UIManager.inst.activeLayerButton.layer;
+            //return UIManager.inst.activeLayerButton.layer;
         } 
     }
 
@@ -78,9 +78,9 @@ public class Recorder : MonoBehaviour
 
     // ------------------------------ Public functions ------------------------------
 
-     
 
-        
+
+
     /// <summary>
     /// Record a layer.
     /// </summary>
@@ -367,7 +367,6 @@ public class Recorder : MonoBehaviour
 
                     recording.endExceedsStart = false;
                 }
-                print("legato quantize; recording.start: " + recording.start + ", recording.end: " + recording.end);
             }
 
             // Staccato: Dont quantize recording.end
@@ -640,7 +639,8 @@ public class Recorder : MonoBehaviour
 
         RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects, CurLayer);
 
-        UIOps.inst.EnableRecordedTrackImage(CurLayer, true);
+        print("layer: " + CurLayer);
+        UIOps.inst.EnableRecordedTrackImage(CurLayer, true);        // HIER FEHLER
     }
 
     /// <summary>

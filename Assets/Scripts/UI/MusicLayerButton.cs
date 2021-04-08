@@ -44,12 +44,18 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
 
 
 
-    private void ScaleAndDelete(float waitBeforeStart, float duration, float targetValue)
+    /// <summary>
+    /// Scale the button down and clear everything when done.
+    /// </summary>
+    private void ShrinkAndClear(float waitBeforeStart, float duration, float targetValue)
     {
         deleteRoutine = StartCoroutine(ScaleAndClear(waitBeforeStart, duration, targetValue));
     }
 
 
+    /// <summary>
+    /// Scale the button down and clear everything when done.
+    /// </summary>
     private IEnumerator ScaleAndClear(float waitBeforeStart, float duration, float targetValue)
     {
         isDeleting = true;
@@ -102,19 +108,21 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
     {
         base.OnPointerDown(eventData);
 
-        // 1. Glow-image
-        EnableGlow();
+        // 1. Active-image
+        //UpdateGlow();
 
-        // 2. MusicManager
-        MusicManager.inst.ChangeLayer(layer);
+        // 2. Change layer
+        //MusicManager.inst.ChangeLayer(layer);
 
-        // 3. Delete?
+        UIOps.inst.ChangeLayer(layer);
+
+        // 3. Start delete-routine
         if (MusicManager.inst.curSequencer.GetAllNotes().Count != 0)
         {
             float wait = UIManager.inst.musicLayerButton_waitBeforDelete;
             float duration = UIManager.inst.musicLayerButton_duration;
 
-            ScaleAndDelete(wait, duration, 0);
+            ShrinkAndClear(wait, duration, 0);
         }
     }
 
@@ -136,18 +144,18 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
 
     
 
-    /// <summary>
-    /// Disable old and enable new glow-image.
-    /// </summary>
-    private void EnableGlow()
-    {
-        // 1. Disable old & enable new graphics
-        UIManager.inst.activeLayerButton.glow.enabled = false;
-        glow.enabled = true;
+    ///// <summary>
+    ///// Disable old and enable new glow-image. Set activeLayerbutton in UI-Manager.
+    ///// </summary>
+    //private void UpdateGlow()
+    //{
+    //    // 1. Disable old & enable new graphics
+    //    UIManager.inst.activeLayerButton.glow.enabled = false;
+    //    glow.enabled = true;
 
-        // 2. Set active-variable
-        UIManager.inst.activeLayerButton = this;
-    }
+    //    // 2. Set active-variable
+    //    UIManager.inst.activeLayerButton = this;
+    //}
 
 
     private void EnableImage(Image image, bool value)

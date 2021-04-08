@@ -21,7 +21,7 @@ public class UIOps : MonoBehaviour
         graphicRaycaster = GetComponent<GraphicRaycaster>();
         eventSystem = GetComponent<EventSystem>();
 
-        HighlightLayerButton(0);
+        UpdateLayerButton(0);
         
     }
 
@@ -73,7 +73,11 @@ public class UIOps : MonoBehaviour
             activeButton.targetGraphic = UIManager.inst.activeLayerButton.unfilled;
     }
 
-    public void HighlightLayerButton(int layer)
+    /// <summary>
+    /// Disable old glow-image, enable new. Set activeLayerButton in UI-manager.
+    /// </summary>
+    /// <param name="layer"></param>
+    private void UpdateLayerButton(int layer)
     {
         // 1. Disable old & enable new graphics
         UIManager.inst.activeLayerButton.glow.enabled = false;
@@ -81,6 +85,17 @@ public class UIOps : MonoBehaviour
 
         // 2. Set active-variable
         UIManager.inst.activeLayerButton = UIManager.inst.layerButtons[layer];
+    }
+
+
+    /// <summary>
+    /// Change layer in MusicManager (ggf. stop playing notes) and update layer button image and variable.
+    /// </summary>
+    /// <param name="layer"></param>
+    public void ChangeLayer(int layer)
+    {
+        MusicManager.inst.ChangeLayer(layer);
+        UpdateLayerButton(layer);
     }
 
 

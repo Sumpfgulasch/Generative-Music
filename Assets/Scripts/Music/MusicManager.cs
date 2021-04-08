@@ -127,6 +127,34 @@ public class MusicManager : MonoBehaviour
     /// <param name="layer"></param>
     public void ChangeLayer(int layer)
     {
+        bool isPlaying = Player.inst.actionState == Player.ActionState.Play;
+        var sequencerPos = (float) curSequencer.GetSequencerPosition();
+        var sequencerNotes = AudioHelmHelper.GetCurrentNotes(curSequencer, sequencerPos);
+
+        // 1. Stop curChord (if not being played in the sequencer)
+        if (isPlaying)
+        {
+            foreach(int curNote in curChord.notes)
+            {
+                bool isPlayedInSequencer = false;
+                foreach(Note seqNote in sequencerNotes)
+                {
+                    if (curNote == seqNote.note)
+                    {
+                        isPlayedInSequencer = true;
+                        break;
+                    }
+                }
+
+                if (!isPlayedInSequencer)
+                {
+                    controller.NoteOff(curNote);
+                }
+            }
+            //controller.AllNotesOff();
+        }
+        
+        // 2. Change sequencer & controller reference
         curSequencer = Recorder.inst.sequencers[layer];
         controller.channel = layer;
     }
@@ -203,6 +231,7 @@ public class MusicManager : MonoBehaviour
         // 2. Event
         GameEvents.inst.onPlayField?.Invoke();
     }
+
 
     private void StopField()
     {
@@ -377,17 +406,10 @@ public class MusicManager : MonoBehaviour
     {
         if (context.performed)
         {
-            int value = (int) context.ReadValue<Vector2>().normalized.y;
-
-            // Notes off
-            controller.AllNotesOff();
-
-            // Increase layer
-            int nextLayer = ExtensionMethods.Modulo(controller.channel + value, maxLayers);
-            ChangeLayer(nextLayer);
-
-            // Visual
-            UIOps.inst.HighlightLayerButton(nextLayer);
+            // Change layer
+            int input = (int) context.ReadValue<Vector2>().normalized.y;
+            int layer = ExtensionMethods.Modulo(controller.channel + input, maxLayers);
+            UIOps.inst.ChangeLayer(layer);
         }
     }
 
