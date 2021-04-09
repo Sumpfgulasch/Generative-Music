@@ -304,6 +304,8 @@ public class Recorder : MonoBehaviour
                 quantize = CurSequencer.length;
 
             recording.startQuantizeOffset = quantize - sequencerPos;
+
+            print("START; quantized start: " + recording.start + ", startQuantizeOffset: " + recording.startQuantizeOffset);
         }
         else
         {
@@ -337,9 +339,11 @@ public class Recorder : MonoBehaviour
         float velocity = MusicManager.inst.velocity;
         var curNotes = AudioHelmHelper.GetCurrentNotes(CurSequencer, curPos);
         var doubleNotes = AudioHelmHelper.DoubleNotes(recording.notes, curNotes);
+        Debug.Log("doubleNotes.Count: " + doubleNotes.Count + " (curNotes.Count: " + curNotes.Count + ")");
 
         // 1. Write to recording
         
+
 
         // 2. Quantize?
         if (MusicManager.inst.quantize)
@@ -356,27 +360,33 @@ public class Recorder : MonoBehaviour
                 //{
                 //    recording.end = (recording.end + MusicManager.inst.quantizeStep) % CurSequencer.length;
                 //}
-                if (recording.endExceedsStart)
-                {
-                    recording.end = (recording.start - 0.01f).Modulo(recording.sequencer.length);
-                    foreach (int note in recording.notes)
-                        recording.sequencer.NoteOn(note, velocity);
 
-                    recording.endExceedsStart = false;
-                }
+                print("END; quantized end: " + recording.end + ", endQuantizeOffset: " + recording.endQuantizeOffset);
             }
-
             // Staccato: Dont quantize recording.end
             else
             {
                 // get the time the chord was pressed
                 recording.end = (curPos + recording.startQuantizeOffset).Modulo(recording.sequencer.length);
                 recording.endQuantizeOffset = recording.startQuantizeOffset;
+
+                print("END (stac); quantized end: " + recording.end + ", endQuantizeOffset: " + recording.endQuantizeOffset);
             }
         }
         else
         {
             recording.end = curPos;
+        }
+
+
+        // Special case: recording exceeds self
+        if (recording.endExceedsStart)
+        {
+            recording.end = (recording.start - 0.01f).Modulo(recording.sequencer.length);
+            recording.endExceedsStart = false;
+
+            foreach (int note in recording.notes)
+                recording.sequencer.NoteOn(note, velocity);
         }
 
         // 3. Calc additional notes, to prevent breaking notes
@@ -388,22 +398,23 @@ public class Recorder : MonoBehaviour
             if (recording.end > doubleNote.start && recording.end < doubleNote.end)
             {
                 int note = doubleNote.note;
-                float start = recording.end + noteAdd;
+                float start = recording.end + noteAdd; // note add == 0 currently
                 float end = doubleNote.end;
 
                 // 1.1. Shorten existing note
-                doubleNote.end = recording.start;
-
-                //if (!MusicManager.inst.quantize)
+                //if (recording.sequencer.NoteExistsInRange(doubleNote.note, doubleNote.start, recording.start))
+                //{
+                //    recording.sequencer.RemoveNote(doubleNote);
+                //    print("REMOVE note (#1), that would be shortened and become a douplicate");
+                //}
+                //else
+                //{
+                    doubleNote.end = recording.start;
+                //}
+                // Note on
                 MusicManager.inst.controller.NoteOn(note, velocity, end - start);
-                //print("#1: add note for the end, that would be deleted; note: " + note);
                 
-                // 1.2. Add new note
-                #region pos percentage
-                //float doubleNoteEndPercentage = SequencerPositionPercentage(CurSequencer, end, recording);
-                //float curPosPercentage = SequencerPositionPercentage(CurSequencer, curPos, recording);
-                #endregion
-                //CurSequencer.AddNote(note, start, end, velocity);
+                // 1.2. Add new note for remaining part (== 3/3; recording == 2/3, existing note == 1/3)
                 usualNotes.Add(new NoteContainer(note, start, end, velocity));
             }
 
@@ -413,21 +424,32 @@ public class Recorder : MonoBehaviour
                 float oldEnd = doubleNote.end;
 
                 // 2.1. Shorten existing sequencer note
-                doubleNote.end = recording.start;
-                if (doubleNote.end == 0)
-                    doubleNote.end = recording.sequencer.length - 0.01f;
+                //if (recording.sequencer.NoteExistsInRange(doubleNote.note, doubleNote.start, recording.start) || recording.sequencer.NoteExistsInRange(doubleNote.note, doubleNote.start, recording.sequencer.length - 0.01f))
+                //{
+                //    // remove if double
+                //    recording.sequencer.RemoveNote(doubleNote);
+                //    print("REMOVE note (#2), that would be shortened and become a douplicate");
+                //}
+                //else
+                //{
+                    // shorten
+                    if (recording.start != 0)
+                        doubleNote.end = recording.start;
+                    else
+                        doubleNote.end = recording.sequencer.length - 0.01f;
+                //}
+
 
                 // 2.2. Add note for remaining sequencer note?
                 float oldEndPercentage = SequencerPositionPercentage(recording.sequencer, oldEnd, recording.loopStart);
                 float curPosPercentage = SequencerPositionPercentage(recording.sequencer, recording.end, recording.loopStart);
-                    int note = doubleNote.note;
-                    float start = recording.end;// + 0.01f;
-                    float end = oldEnd;
+                int note = doubleNote.note;
+                float start = recording.end;
+                float end = oldEnd;
 
-                    var temp = new NoteContainer(note, start, end, velocity);
-                    remainingNotes.Add(temp); // dont add now because it would be overwritten by usual notes; has to be added at last
+                var temp = new NoteContainer(note, start, end, velocity);
+                remainingNotes.Add(temp); // dont add now because it would be overwritten by usual notes; has to be added at last
                 MusicManager.inst.controller.NoteOn(note, velocity, end - start);
-                //print("case #2: Existing note extends over bounds");
             }
         }
 
@@ -440,7 +462,13 @@ public class Recorder : MonoBehaviour
         if (recordCopy.endQuantizeOffset > 0)
         {
             float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
-            yield return new WaitForSeconds(delay);
+            if (delay > 1f)
+            {
+                print("delay > 1");
+                yield return new WaitForSeconds(1f);
+            }   
+            else
+                yield return new WaitForSeconds(delay);
         }
 
 
@@ -461,7 +489,7 @@ public class Recorder : MonoBehaviour
         foreach (int noteNote in recordCopy.notes)
         {
             //var test = new NoteContainer(note, recording.start, recording.end, velocity);
-            var note = new Note(); note.note = noteNote; note.start = recordCopy.start; note.end = recordCopy.end;
+            var note = new Note(); note.note = noteNote; note.start = recordCopy.start; note.end = recordCopy.end; // hier fehler?
             if (note.IsUnplayedBridgeNote(curPos))
             {
                 unplayedBridgeNotes.Add(note);
@@ -514,8 +542,6 @@ public class Recorder : MonoBehaviour
 
                     WriteToSequencer();
                     StopSpawnChordObject();
-
-                    //Debug.Break();
                 }
             }
             yield return null;
@@ -629,8 +655,6 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void StartSpawnChordObject()
     {
-        print("layer: " + CurLayer);
-
         RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects, CurLayer);
         UIOps.inst.EnableRecordedTrackImage(CurLayer, true);
     }

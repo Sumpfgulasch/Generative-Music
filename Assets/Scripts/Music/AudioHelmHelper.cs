@@ -15,10 +15,15 @@ public static class AudioHelmHelper // : MonoBehaviour
     public static List<Note> GetCurrentNotes(Sequencer sequencer, float pos)
     {
         var allNotes = sequencer.GetAllNotes();
+        Debug.Log("All seq notes: " + allNotes.Count);
+
         var notes = new List<Note>();
 
         foreach (Note note in allNotes)
         {
+            if (note == null)
+                continue;
+
             // Regular notes (start < end)
             if (pos > note.start && pos < note.end)
             {
@@ -100,15 +105,15 @@ public static class AudioHelmHelper // : MonoBehaviour
     /// <summary>
     /// Return the sequencer notes that have the some notes as the current recorded chord.
     /// </summary>
-    /// <param name="requordNotes"></param>
+    /// <param name="recordNotes"></param>
     /// <param name="seqNotes"></param>
     /// <returns></returns>
-    public static List<Note> DoubleNotes(int[] requordNotes, List<Note> seqNotes)
+    public static List<Note> DoubleNotes(int[] recordNotes, List<Note> seqNotes)
     {
         var doubleNotes = new List<Note>();
         foreach (Note note in seqNotes)
         {
-            if (requordNotes.Contains(note.note))
+            if (recordNotes.Contains(note.note))
                 doubleNotes.Add(note);
         }
 
