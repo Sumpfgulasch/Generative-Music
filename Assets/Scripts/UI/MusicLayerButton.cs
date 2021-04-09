@@ -158,8 +158,8 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
     //}
 
 
-    private void EnableImage(Image image, bool value)
-    {
-        image.enabled = value;
-    }
+    //private void EnableImage(Image image, bool value)
+    //{
+    //    image.enabled = value;
+    //}
 }

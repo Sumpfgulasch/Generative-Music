@@ -227,7 +227,6 @@ public class MusicManager : MonoBehaviour
                     break;
             }
         }
-
         // 2. Event
         GameEvents.inst.onPlayField?.Invoke();
     }
@@ -280,6 +279,7 @@ public class MusicManager : MonoBehaviour
     // Fields
     public void OnFieldStart()
     {
+        //print("OnFieldStart (abonniert onPlayPerformed, PlayField->invoke OnPlayField");
         PlayField();
 
         #region pitch
@@ -294,6 +294,7 @@ public class MusicManager : MonoBehaviour
         {
             StopField();
             PlayField();
+            //print("OnFieldChange (abonniert OnFieldChange), PlayField -> invoke OnPlayField ");
         }
     }
 

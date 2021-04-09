@@ -44,11 +44,6 @@ public class GameEvents : MonoBehaviour
         onTunnelEnter?.Invoke();
     }
 
-    //public void PlayPerformed()
-    //{
-    //    onPlayPerformed?.Invoke();
-    //}
-
     //public void ChangeField_input(PlayerField fieldData)
     //{
     //    onChangeField?.Invoke(fieldData);

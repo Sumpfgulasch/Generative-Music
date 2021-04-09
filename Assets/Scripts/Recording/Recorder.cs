@@ -196,8 +196,6 @@ public class Recorder : MonoBehaviour
     /// </summary>
     public void ClearLayer(int layer)
     {
-        //recording = new Recording();
-
         // 1. Clear sequencer
         sequencers[layer].Clear();
 
@@ -324,7 +322,6 @@ public class Recorder : MonoBehaviour
     
     private void WriteToSequencer()
     {
-        //print("Write to sequencer");
         if (recording.isRunning)
         {
             StartCoroutine(WriteToSequencer_delayed());
@@ -361,7 +358,7 @@ public class Recorder : MonoBehaviour
                 //}
                 if (recording.endExceedsStart)
                 {
-                    recording.end = ExtensionMethods.Modulo(recording.start - 0.01f, recording.sequencer.length);
+                    recording.end = (recording.start - 0.01f).Modulo(recording.sequencer.length);
                     foreach (int note in recording.notes)
                         recording.sequencer.NoteOn(note, velocity);
 
@@ -373,8 +370,7 @@ public class Recorder : MonoBehaviour
             else
             {
                 // get the time the chord was pressed
-                //float length = AudioHelmHelper.NoteLength(recording.sequencer, recording.start, curPos) - recording.startQuantizeOffset;
-                recording.end = ExtensionMethods.Modulo(curPos + recording.startQuantizeOffset, recording.sequencer.length);
+                recording.end = (curPos + recording.startQuantizeOffset).Modulo(recording.sequencer.length);
                 recording.endQuantizeOffset = recording.startQuantizeOffset;
             }
         }
@@ -512,10 +508,8 @@ public class Recorder : MonoBehaviour
         {
             if (recording.isRunning)
             {
-                if (recording.loopObj.transform.position.z <= Player.inst.transform.position.z) // || recording.obj.transform.localScale.z >= LoopData.distancePerRecLoop           + ObjectManager.inst.moveSpeed
+                if (recording.loopObj.transform.position.z <= Player.inst.transform.position.z)
                 {
-                    print("loop obj kommt wieder");
-
                     recording.endExceedsStart = true;
 
                     WriteToSequencer();
@@ -635,12 +629,10 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void StartSpawnChordObject()
     {
-        //int layer = UIManager.inst.activeLayerButton.layer;         // Unschön; sollte Variable haben
+        print("layer: " + CurLayer);
 
         RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects, CurLayer);
-
-        print("layer: " + CurLayer);
-        UIOps.inst.EnableRecordedTrackImage(CurLayer, true);        // HIER FEHLER
+        UIOps.inst.EnableRecordedTrackImage(CurLayer, true);
     }
 
     /// <summary>

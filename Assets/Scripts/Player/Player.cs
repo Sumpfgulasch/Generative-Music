@@ -266,16 +266,14 @@ public class Player : MonoBehaviour
                 // 2. UI?
                 var pointerPos = Pointer.current.position.ReadValue();
                 bool pointerHitsUI = UIOps.inst.PointerHitsUI(pointerPos);
-                bool mouseWasNOTpressedAndReleased = (!Mouse.current.leftButton.wasPressedThisFrame && !Mouse.current.leftButton.wasReleasedThisFrame);
+                bool mouseWasNOTPressedAndReleased = (!Mouse.current.leftButton.wasPressedThisFrame && !Mouse.current.leftButton.wasReleasedThisFrame);
 
-                if (!pointerHitsUI || mouseWasNOTpressedAndReleased)   // hack
+                if (!pointerHitsUI || mouseWasNOTPressedAndReleased)   // hack
                 {
                     
                     // press
                     if (context.performed)
                     {
-                        print("pointer hits UI: " + pointerHitsUI + ", mouse was NOT press and released: " + mouseWasNOTpressedAndReleased);
-
                         // hier weiter machen: entweder ist mouseWasNOTpressedAndReleased falsch, oder in onMove wird PlayMovement (und somit fälschlicherweise onPlayStart) getriggert, was dazu führt, dass, wenn ich
                         // in record auf nen nächsten musicLayerButton klicke, im Recorder StartSpawnChordObj (mit alter curLayer) getriggert wird
                         PlayMovement();
@@ -335,28 +333,35 @@ public class Player : MonoBehaviour
                 allowedToMove = false;
             }
 
-            // 1. Allowed to select? 
-            if (mouseMiminumDistance && allowedToMove)
+            // ui
+            bool pointerHitsUI = UIOps.inst.PointerHitsUI(pointerPos);
+            bool mouseWasNOTPressedAndReleased = (!Mouse.current.leftButton.wasPressedThisFrame && !Mouse.current.leftButton.wasReleasedThisFrame);
+
+            if (!pointerHitsUI || mouseWasNOTPressedAndReleased)
             {
-                var mouseDirection = ConvertMouseToDirection(pointerPos);
-                
-                // 2. Get & set data (ID, positions, ...)
-                var ID = PlayerData.GetIDfromRaycast(mouseDirection);
-                var data = PlayerData.SetDataByID(ID);
-                var fieldChanged = PlayerData.FieldHasChanged();
-                
-                if (fieldChanged)
+                // 1. Allowed to select? 
+                if (mouseMiminumDistance && allowedToMove)
                 {
-                    GameEvents.inst.onChangeField?.Invoke(data);
+                    var mouseDirection = ConvertMouseToDirection(pointerPos);
 
-                    StopCoroutines(curRotateRoutines);
-                    StopCoroutines(curTriggerRoutines);
+                    // 2. Get & set data (ID, positions, ...)
+                    var ID = PlayerData.GetIDfromRaycast(mouseDirection);
+                    var data = PlayerData.SetDataByID(ID);
+                    var fieldChanged = PlayerData.FieldHasChanged();
 
-                    var rotateRoutine = RotateToID(ID);
-                    curRotateRoutines.Add(rotateRoutine);
+                    if (fieldChanged)
+                    {
+                        GameEvents.inst.onChangeField?.Invoke(data);
 
-                    // 3. Rotate!
-                    StartCoroutine(rotateRoutine);
+                        StopCoroutines(curRotateRoutines);
+                        StopCoroutines(curTriggerRoutines);
+
+                        var rotateRoutine = RotateToID(ID);
+                        curRotateRoutines.Add(rotateRoutine);
+
+                        // 3. Rotate!
+                        StartCoroutine(rotateRoutine);
+                    }
                 }
             }
         }
