@@ -68,7 +68,6 @@ public class MusicManager : MonoBehaviour
             quantization = value;
 
             quantizeSteps = new List<float>();
-            //int takeBeat = 16 / quantization;
             quantizeStep = 16 / value;
             float length = curSequencer.length / quantizeStep;
             for (int i = 0; i < length; i++)

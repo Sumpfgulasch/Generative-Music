@@ -15,7 +15,6 @@ public static class AudioHelmHelper // : MonoBehaviour
     public static List<Note> GetCurrentNotes(Sequencer sequencer, float pos)
     {
         var allNotes = sequencer.GetAllNotes();
-        Debug.Log("All seq notes: " + allNotes.Count);
 
         var notes = new List<Note>();
 
@@ -102,6 +101,52 @@ public static class AudioHelmHelper // : MonoBehaviour
         return false;
     }
 
+
+    /// <summary>
+    /// Removes those notes from the note-sequencer, that have the same start position.
+    /// </summary>
+    /// <param name="note"></param>
+    /// <param name="doubleNotes"></param>
+    /// <returns></returns>
+    public static bool TryRemoveIdenticalStartNotes(this Note note, List<Note> doubleNotes, Sequencer sequencer)
+    {
+        bool remove = false;
+        foreach(Note doubleNote in doubleNotes)
+        {
+            if (note.start == doubleNote.start)
+            {
+                sequencer.RemoveNote(doubleNote);
+                remove = true;
+            }
+        }
+        return remove;
+    }
+
+    /// <summary>
+    /// Removes those notes from the note-sequencer, that have the same start position.
+    /// </summary>
+    /// <param name="note"></param>
+    /// <param name="doubleNotes"></param>
+    /// <returns></returns>
+    public static bool TryRemoveIdenticalStartNotes(this NoteContainer note, List<Note> doubleNotes, Sequencer sequencer)
+    {
+        bool remove = false;
+        foreach (Note doubleNote in doubleNotes)
+        {
+            if (note.start == doubleNote.start)
+            {
+                sequencer.RemoveNote(doubleNote);
+                remove = true;
+            }
+        }
+        return remove;
+    }
+
+
+
+
+
+
     /// <summary>
     /// Return the sequencer notes that have the some notes as the current recorded chord.
     /// </summary>
@@ -149,11 +194,13 @@ public class NoteContainer
     public float start;
     public float end;
     public float velocity;
+    //public Sequencer parent;
     public NoteContainer(int note, float start, float end, float velocity)
     {
         this.note = note;
         this.start = start;
         this.end = end;
         this.velocity = velocity;
+        //this.parent = sequencer;
     }
 }
