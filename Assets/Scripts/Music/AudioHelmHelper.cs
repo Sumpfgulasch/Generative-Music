@@ -6,6 +6,59 @@ using System.Linq;
 
 public static class AudioHelmHelper // : MonoBehaviour
 {
+
+
+
+    public static void PlayChord(Chord chord, HelmController controller, float velocity)
+    {
+        for (int i = 0; i < chord.notes.Length; i++)
+        {
+            if (!controller.IsNoteOn(chord.notes[i]))
+            {
+                controller.NoteOn(chord.notes[i], velocity);
+            }
+            else
+            {
+                Debug.Log("note is still on");
+            }
+        }
+    }
+
+    public static void StopChord(Chord chord, HelmController controller, Sequencer sequencer, bool forceNoteOff = false)
+    {
+        for (int i = 0; i < chord.notes.Length; i++)
+        {
+            if (controller.IsNoteOn(chord.notes[i]))
+            {
+                // 1. Check if the current notes are played in the sequencer
+                //var curPos = (float) sequencer.GetSequencerPosition();
+                //var curSeqNotes = GetCurrentNotes(sequencer, curPos);
+
+                //bool noteIsPlayed = false;
+
+                //foreach (Note sequencerNote in curSeqNotes)
+                //{
+                //    if (sequencerNote.note == chord.notes[i])
+                //    {
+                //        noteIsPlayed = true;
+                //        Debug.Log("seq note.end: " + sequencerNote.end);
+                //        break;
+                //    }
+                //}
+
+
+                // 2. Stop only if the notes are not being played in the sequencer
+                //if (!noteIsPlayed || forceNoteOff)
+                //{
+                    controller.NoteOff(chord.notes[i]);
+                //}
+
+            }
+        }
+    }
+
+
+
     /// <summary>
     /// Get all the notes that play at the given sequencer position. Also those that extent over the sequencer-end.
     /// </summary>
@@ -24,34 +77,19 @@ public static class AudioHelmHelper // : MonoBehaviour
                 continue;
 
             // Regular notes (start < end)
-            if (pos > note.start && pos < note.end)
+            if (pos >= note.start && pos <= note.end)
             {
                 notes.Add(note);
             }
             // Notes that extend over the sequencer end
             else if (note.start > note.end)
             {
-                if (pos > note.start || pos < note.end)
+                if (pos >= note.start || pos <= note.end)
                     notes.Add(note);
             }
         }
 
         return notes;
-
-
-
-        //var allNotes = sequencer.GetAllNotes();
-        //var notes = new List<Note>();
-
-        //foreach (Note note in allNotes)
-        //{
-        //    if (curPos > note.start && curPos < note.end)
-        //    {
-        //        notes.Add(note);
-        //    }
-        //}
-
-        //return notes;
     }
 
     /// <summary>
@@ -108,39 +146,49 @@ public static class AudioHelmHelper // : MonoBehaviour
     /// <param name="note"></param>
     /// <param name="doubleNotes"></param>
     /// <returns></returns>
-    public static bool TryRemoveIdenticalStartNotes(this Note note, List<Note> doubleNotes, Sequencer sequencer)
+    public static bool RemoveIdenticalStartNotes(Note note, List<Note> doubleNotes, Sequencer sequencer)
     {
         bool remove = false;
         foreach(Note doubleNote in doubleNotes)
         {
-            if (note.start == doubleNote.start)
+            if (doubleNote.note == note.note)
             {
-                sequencer.RemoveNote(doubleNote);
-                remove = true;
+                if (doubleNote.start == note.start || doubleNote.end == note.end)
+                {
+                    sequencer.RemoveNote(doubleNote);
+                    // force note off, wont happen through the delayed remove of the sequencer note
+                    MusicManager.inst.controller.NoteOff(note.note);
+                    remove = true;
+                    //sequencer.remo
+
+                    Debug.Log("remove: " + doubleNote.note);
+                }
             }
         }
+
         return remove;
     }
 
-    /// <summary>
-    /// Removes those notes from the note-sequencer, that have the same start position.
-    /// </summary>
-    /// <param name="note"></param>
-    /// <param name="doubleNotes"></param>
-    /// <returns></returns>
-    public static bool TryRemoveIdenticalStartNotes(this NoteContainer note, List<Note> doubleNotes, Sequencer sequencer)
-    {
-        bool remove = false;
-        foreach (Note doubleNote in doubleNotes)
-        {
-            if (note.start == doubleNote.start)
-            {
-                sequencer.RemoveNote(doubleNote);
-                remove = true;
-            }
-        }
-        return remove;
-    }
+    ///// <summary>
+    ///// Removes those notes from the note-sequencer, that have the same start position.
+    ///// </summary>
+    ///// <param name="note"></param>
+    ///// <param name="doubleNotes"></param>
+    ///// <returns></returns>
+    //public static bool RemoveIdenticalStartNotes(this NoteContainer note, List<Note> doubleNotes, Sequencer sequencer)
+    //{
+    //    bool remove = false;
+    //    foreach (Note doubleNote in doubleNotes)
+    //    {
+    //        if (doubleNote.note == note.note)
+    //        {
+    //            sequencer.RemoveNote(doubleNote);
+    //            MusicManager.inst.controller.NoteOff(doubleNote.note); // force note off, wont happen through the delayed remove of the sequencer note
+    //            remove = true;
+    //        }
+    //    }
+    //    return remove;
+    //}
 
 
 

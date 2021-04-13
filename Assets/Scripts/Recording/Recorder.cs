@@ -1,9 +1,7 @@
+using AudioHelm;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using AudioHelm;
-using UnityEngine.Audio;
-using System.Linq;
 using UnityEngine.InputSystem;
 
 public class Recorder : MonoBehaviour
@@ -291,7 +289,7 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void SaveRecordStartData()
     {
-        float sequencerPos = (float)CurSequencer.GetSequencerPosition();
+        float sequencerPos = (float) CurSequencer.GetSequencerPosition();
 
         // 1. Start & quantize offset
         if (MusicManager.inst.quantize)
@@ -299,16 +297,21 @@ public class Recorder : MonoBehaviour
             float quantize = Quantize(sequencerPos);
             recording.start = quantize;
 
-            // hack für sequencerPos bei sequencer.length
-            if (quantize == 0 && sequencerPos > CurSequencer.length/2)
+            // hack für sequencerPos bei sequencer.length: quantize 0 oder 32 (sequencer.length)
+            if (quantize == 0 && sequencerPos > CurSequencer.length / 2)
+            {
                 quantize = CurSequencer.length;
+            }
 
             recording.startQuantizeOffset = quantize - sequencerPos;
+
+            Debug.Log("START quantize; quantize: " + quantize + ", curPos: " + sequencerPos + ", offset: " + recording.startQuantizeOffset);
         }
         else
         {
             recording.start = sequencerPos;
             recording.startQuantizeOffset = 0;
+            Debug.Log("NO QUANTIZE");
         }
 
         // 2. End, notes, ID, sequencer
@@ -355,6 +358,7 @@ public class Recorder : MonoBehaviour
                 // get the time the chord was pressed
                 recording.end = (curPos + recording.startQuantizeOffset).Modulo(recording.sequencer.length);
                 recording.endQuantizeOffset = recording.startQuantizeOffset;
+                Debug.Log("END quantize; end: " + recording.end + ", curPos: " + curPos + ", offset: " + recording.endQuantizeOffset);
             }
         }
         else
@@ -388,11 +392,11 @@ public class Recorder : MonoBehaviour
                 float end = doubleNote.end;
 
                 // 1.1. Shorten existing note
-                //if (recording.start != doubleNote.start)    // sonst macht das keinen sinn
-                //{
-                //    doubleNote.end = recording.start;
-                //}
-                
+                if (recording.start != doubleNote.start)    // sonst macht das keinen sinn
+                {
+                    doubleNote.end = recording.start;
+                }
+
                 // Note on
                 MusicManager.inst.controller.NoteOn(note, velocity, end - start);
                 
@@ -406,13 +410,13 @@ public class Recorder : MonoBehaviour
                 float oldEnd = doubleNote.end;
 
                 // 2.1. Shorten existing sequencer note
-                //if (recording.start != doubleNote.start)    // sonst macht das keinen sinn
-                //{
-                //    if (recording.start != 0)
-                //        doubleNote.end = recording.start;
-                //    else
-                //        doubleNote.end = recording.sequencer.length - 0.01f;
-                //}
+                if (recording.start != doubleNote.start)    // sonst macht das keinen sinn
+                {
+                    if (recording.start != 0)
+                        doubleNote.end = recording.start;
+                    else
+                        doubleNote.end = recording.sequencer.length - 0.01f;
+                }
 
                 // 2.2. Add note for remaining sequencer note?
                 float oldEndPercentage = SequencerPositionPercentage(recording.sequencer, oldEnd, recording.loopStart);
@@ -433,12 +437,12 @@ public class Recorder : MonoBehaviour
 
 
         // WAIT to add notes; otherwise notes will disrupt unintendedly
-        if (recordCopy.endQuantizeOffset > 0)
-        {
-            float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
+        //if (recordCopy.endQuantizeOffset > 0)
+        //{
+        //    float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
 
-            yield return new WaitForSeconds(delay);
-        }
+        //    yield return new WaitForSeconds(delay);
+        //}
 
 
 
@@ -447,10 +451,10 @@ public class Recorder : MonoBehaviour
         var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
 
 
-        //// 5. Add remaining usual notes (#1)
+        // 5. Add remaining usual notes (#1)
         //foreach (NoteContainer note in usualNotes)
         //{
-        //    note.TryRemoveIdenticalStartNotes(doubleNotes, recordCopy.sequencer);
+        //    AudioHelmHelper.RemoveIdenticalStartNotes(note.note, doubleNotes, recordCopy.sequencer);
 
         //    recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
         //}
@@ -459,7 +463,8 @@ public class Recorder : MonoBehaviour
         // 4. Write CURRENTLY RECORDED notes
         foreach (int noteNote in recordCopy.notes)
         {
-            var note = new Note { note = noteNote, start = recordCopy.start, end = recordCopy.end };
+            var note = new Note { note = noteNote, start = recordCopy.start, end = recordCopy.end, velocity = velocity, parent = null };
+            //note.parent = null;
 
             if (note.IsUnplayedBridgeNote(curPos))
             {
@@ -467,16 +472,14 @@ public class Recorder : MonoBehaviour
             }
             else
             {
-                // delete doubleNotes with the same length
-                for (int i = 0; i < doubleNotes.Count; i++)
-                {
-                    if (note.start == doubleNotes[i].start)
-                    {
-                        recordCopy.sequencer.RemoveNote(doubleNotes[i]);
-                    }
-                }
+                var curPos_quantized = recordCopy.start;
+                var curNotes_quantize = AudioHelmHelper.GetCurrentNotes(recordCopy.sequencer, curPos_quantized);
+                var curDoubleNotes_quantize = AudioHelmHelper.DoubleNotes(recordCopy.notes, curNotes_quantize);
 
-                //note.TryRemoveIdenticalStartNotes(doubleNotes, recordCopy.sequencer);
+                AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
+                Debug.Log("before add to sequencer; curDoubleNotes_quantize.count: " + curDoubleNotes_quantize.Count);
+                foreach (Note doubleNote in curDoubleNotes_quantize)
+                    Debug.Log("doubleNote: " + doubleNote.note + ", note.start: " + doubleNote.start + ", note.end: " + doubleNote.end);
 
                 // add to sequencer
                 recordCopy.sequencer.AddNote(noteNote, recordCopy.start, recordCopy.end, velocity);
@@ -485,7 +488,7 @@ public class Recorder : MonoBehaviour
 
 
 
-        //// 5. Add bridge notes again
+        // 5. Add bridge notes again
         //foreach (NoteContainer note in remainingNotes) // #2: remaining notes of case #2
         //{
         //    if (note.IsUnplayedBridgeNote(curPos))
@@ -495,14 +498,14 @@ public class Recorder : MonoBehaviour
         //    }
         //    else
         //    {
-        //        note.TryRemoveIdenticalStartNotes(doubleNotes, recordCopy.sequencer);
+        //        AudioHelmHelper.RemoveIdenticalStartNotes(note.note, doubleNotes, recordCopy.sequencer);
 
         //        recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
         //    }
         //}
         //foreach (Note note in unplayedBridgeNotes)  // #3: unplayed bridge notes
         //{
-        //    note.TryRemoveIdenticalStartNotes(doubleNotes, recordCopy.sequencer);
+        //    AudioHelmHelper.RemoveIdenticalStartNotes(note.note, doubleNotes, recordCopy.sequencer);
 
         //    recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
         //}
@@ -631,8 +634,9 @@ public class Recorder : MonoBehaviour
         if (closestStep == 100)
         {
             Debug.LogError("Quantize closest step == 100");
-            MusicManager.inst.quantize = false;
-            return sequencerPos;
+            //MusicManager.inst.quantize = false;
+            return 0;
+            //return sequencerPos;
         }
 
         return closestStep;

@@ -166,39 +166,39 @@ public class MusicManager : MonoBehaviour
 
 
 
-    private void ManageChordPlaying()
-    {
-        if (Player.actionState == Player.ActionState.Play)
-        {
-            // FIRST EDGE TOUCH
-            if (Player.curEdge.firstTouch)
-            {
-                #region pitch
-                // calc pitch
-                SetFirstPitchRange(ref minPitch, ref maxPitch);
-                #endregion
-            }
+    //private void ManageChordPlaying()
+    //{
+    //    if (Player.actionState == Player.ActionState.Play)
+    //    {
+    //        // FIRST EDGE TOUCH
+    //        if (Player.curEdge.firstTouch)
+    //        {
+    //            #region pitch
+    //            // calc pitch
+    //            SetFirstPitchRange(ref minPitch, ref maxPitch);
+    //            #endregion
+    //        }
             
-        }
+    //    }
 
-        #region Pitch
-        //if (Input.GetKey(KeyCode.Space))
-        //{
-        //    curPitch = player.curEdge.percentage.Remap(0, 1, minPitch, maxPitch);
-        //    #region Quantize Pitch
-        //    //float quantizeSize = 0.5f;
-        //    //float quantize = curPitch % quantizeSize;
-        //    //if (quantize > 0.05f || quantize < -0.05f)
-        //    //{
-        //    //    if (quantize > quantizeSize / 2f)
-        //    //        curPitch += (quantizeSize - quantize);
-        //    //    else
-        //    //        curPitch -= quantize;
-        //    //}
-        //    Instrument.inner.SetPitchWheel(curPitch);
-        //}
-        #endregion
-    }
+    //    #region Pitch
+    //    //if (Input.GetKey(KeyCode.Space))
+    //    //{
+    //    //    curPitch = player.curEdge.percentage.Remap(0, 1, minPitch, maxPitch);
+    //    //    #region Quantize Pitch
+    //    //    //float quantizeSize = 0.5f;
+    //    //    //float quantize = curPitch % quantizeSize;
+    //    //    //if (quantize > 0.05f || quantize < -0.05f)
+    //    //    //{
+    //    //    //    if (quantize > quantizeSize / 2f)
+    //    //    //        curPitch += (quantizeSize - quantize);
+    //    //    //    else
+    //    //    //        curPitch -= quantize;
+    //    //    //}
+    //    //    Instrument.inner.SetPitchWheel(curPitch);
+    //    //}
+    //    #endregion
+    //}
 
     private void PlayField()
     {
@@ -215,7 +215,7 @@ public class MusicManager : MonoBehaviour
             switch (fieldType)
             {
                 case MusicField.Type.Chord:
-                    PlayChord(curChord, controller, velocity);
+                    AudioHelmHelper.PlayChord(curChord, controller, velocity);
                     break;
 
                 case MusicField.Type.Modulation:
@@ -240,7 +240,7 @@ public class MusicManager : MonoBehaviour
         switch (fieldType)
         {
             case MusicField.Type.Chord:
-                StopChord(curChord, controller);
+                AudioHelmHelper.StopChord(curChord, controller, curSequencer);
                 break;
 
             case MusicField.Type.Modulation:
@@ -420,7 +420,10 @@ public class MusicManager : MonoBehaviour
         quantize = value;
     }
 
-    public void IncreasePrecision()
+    /// <summary>
+    /// Increase the current precision level by 1. [0 == rough, 1 == middle, 2 == fine]
+    /// </summary>
+    public Precision IncreasePrecision()
     {
         curPrecision += 1;
         if ((int) curPrecision == quantizationChoices.Length)
@@ -428,7 +431,7 @@ public class MusicManager : MonoBehaviour
 
         Quantization = quantizationChoices[(int)curPrecision];
 
-        UIOps.inst.SetPrecisionText(curPrecision);
+        return curPrecision;
     }
 
 
@@ -472,99 +475,20 @@ public class MusicManager : MonoBehaviour
 
 
 
-    //public static class Instrument
+    //public IEnumerator WaitBeats(float beatsToWait)
     //{
-    //    public static HelmController inner;
-    //    public static HelmController outer;
-
-    //    static Instrument()
+    //    float targetBeat = curBeat + beatsToWait;
+    //    print("COROUTINE; curBeat: " + curBeat + ", targetBeat: " + targetBeat);
+    //    while (curBeat < targetBeat)
     //    {
-    //        inner = MusicRef.inst.helmControllers[0];
-    //        outer = MusicRef.inst.helmControllers[1];
+    //        //print("curBeat: " + curBeat + ", targetBeat: " + targetBeat);
+    //        yield return null;
     //    }
+    //    print("FINISHED WAIT (targetBeat: " + targetBeat);
     //}
 
 
 
-    public void PlayChord(Chord chord, HelmController instrument, float velocity)
-    {
-        for (int i = 0; i < chord.notes.Length; i++)
-        {
-            if (!instrument.IsNoteOn(chord.notes[i]))
-                instrument.NoteOn(chord.notes[i], velocity);
-        }
-    }
-
-    public void StopChord(Chord chord, HelmController instrument)
-    {
-        // Mindest-Spielzeit für Noten (Nicht verwendet!!!)
-        float timeToPlay = shortNotes_minPlayTime - instrument.pressedNotesDurations[chord.notes[0]].duration;
-        
-        for (int i = 0; i < chord.notes.Length; i++)
-        {
-            if (instrument.IsNoteOn(chord.notes[i]))
-            {
-                if (timeToPlay > 0)
-                {
-                    StartCoroutine(instrument.WaitNoteOff(chord.notes[i], timeToPlay));
-                }
-                else
-                {
-                    // 1. Check if the current notes are played in the sequencer
-                    var curPos = (float) curSequencer.GetSequencerPosition();
-                    var curSeqNotes = AudioHelmHelper.GetCurrentNotes(curSequencer, curPos);
-
-                    bool noteIsPlayed = false;
-
-                    foreach (Note sequencerNote in curSeqNotes)
-                    {
-                        if (sequencerNote.note == chord.notes[i])
-                        {
-                            noteIsPlayed = true;
-                            break;
-                        }
-                    }
-
-                    // 2. Stop only if the notes are not being played in the sequencer
-                    if (!noteIsPlayed)
-                    {
-                        instrument.NoteOff(chord.notes[i]);
-                    }
-                }
-            }
-        }
-    }
-
-    public void QuantizeSequence() // AudioHelm.Sequencer sequencer
-    {
-
-    }
-
-    public IEnumerator WaitBeats(float beatsToWait)
-    {
-        float targetBeat = curBeat + beatsToWait;
-        print("COROUTINE; curBeat: " + curBeat + ", targetBeat: " + targetBeat);
-        while (curBeat < targetBeat)
-        {
-            //print("curBeat: " + curBeat + ", targetBeat: " + targetBeat);
-            yield return null;
-        }
-        print("FINISHED WAIT (targetBeat: " + targetBeat);
-    }
-
-    //public void WaitBeats(int beats)
-    //{
-
-    //    GameEvents.inst.onBeat += OnWaitBeats;
-    //}
-
-    //public void OnWaitBeats(int beats)
-    //{
-
-    //}
-
-
-    
 
 
 }

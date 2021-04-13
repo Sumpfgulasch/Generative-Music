@@ -22,6 +22,8 @@ public class UIOps : MonoBehaviour
         eventSystem = GetComponent<EventSystem>();
 
         UpdateLayerButton(0);
+
+        SetPrecisionText(MusicManager.inst.curPrecision);
         
     }
 
@@ -73,6 +75,33 @@ public class UIOps : MonoBehaviour
             activeButton.targetGraphic = UIManager.inst.activeLayerButton.unfilled;
     }
 
+   
+
+
+    /// <summary>
+    /// Change layer in MusicManager (ggf. stop playing notes) and update layer button image and variable.
+    /// </summary>
+    /// <param name="layer"></param>
+    public void ChangeLayer(int layer)
+    {
+        MusicManager.inst.ChangeLayer(layer);
+        UpdateLayerButton(layer);
+    }
+
+
+
+
+    public void IncreasePrecision()
+    {
+        var precision = MusicManager.inst.IncreasePrecision();
+
+        SetPrecisionText(precision);
+    }
+
+
+
+
+
     /// <summary>
     /// Disable old glow-image, enable new. Set activeLayerButton in UI-manager.
     /// </summary>
@@ -88,18 +117,7 @@ public class UIOps : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Change layer in MusicManager (ggf. stop playing notes) and update layer button image and variable.
-    /// </summary>
-    /// <param name="layer"></param>
-    public void ChangeLayer(int layer)
-    {
-        MusicManager.inst.ChangeLayer(layer);
-        UpdateLayerButton(layer);
-    }
-
-
-    public void SetPrecisionText(MusicManager.Precision value)
+    private void SetPrecisionText(MusicManager.Precision value)
     {
         MeshRef.inst.quantizePrecision.text = value.ToString();
     }
