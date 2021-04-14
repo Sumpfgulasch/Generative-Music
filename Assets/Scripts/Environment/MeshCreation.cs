@@ -267,10 +267,12 @@ public static class MeshCreation
             int fieldRenderQueue = MeshRef.inst.fieldSurfaces_renderQueue;
             Transform parent_high = MeshRef.inst.highlightSurfaces_parent;
             Material material_high = MeshRef.inst.highlightSurfaces_mat;
+            bool noCollider = false;
+            string notag = null;
    
 
-            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, false, -1f, fieldLayer, fieldRenderQueue);
-            MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, false, -2f);
+            MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, false, noCollider, notag, - 1f, fieldLayer, fieldRenderQueue);
+            MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, false, noCollider, notag, - 2f);
 
             fields[ID].fieldSurface = fieldSurface;
             fields[ID].highlightSurface = highlightSurface;
@@ -283,7 +285,7 @@ public static class MeshCreation
     /// Create a lane surface (gameObj, MeshRenderer, MeshFilter) with data (vertices, ...) for a given ID. Disable MeshRenderer (!).
     /// </summary>
     /// <param name="index">[0, fields.Length]</param>
-    public static MeshRenderer CreateLaneSurface(MusicField[] fields, int index, string name, Transform parent, Material material, bool visible = false, float length = -1f, int layer = 0, int renderQueue = -1)
+    public static MeshRenderer CreateLaneSurface(MusicField[] fields, int index, string name, Transform parent, Material material, bool visible = false, bool collider = false, string tag = null, float length = -1f, int layer = 0, int renderQueue = -1)
     {
         // 0. Container & components
         GameObject laneSurface = CreateContainer(name + index, parent);
@@ -409,7 +411,21 @@ public static class MeshCreation
         meshRenderer.material = material;
         meshRenderer.enabled = visible;
         if (renderQueue != -1)
+        {
             meshRenderer.material.renderQueue = renderQueue;
+        }
+
+        // 3. Collider
+        if (collider)
+        {
+            laneSurface.AddComponent<MeshCollider>();
+        }
+
+        // 4. Tag
+        if (tag != null)
+        {
+            laneSurface.tag = tag;
+        }
         
 
         return meshRenderer;

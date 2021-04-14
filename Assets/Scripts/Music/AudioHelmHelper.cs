@@ -156,12 +156,11 @@ public static class AudioHelmHelper // : MonoBehaviour
                 if (doubleNote.start == note.start || doubleNote.end == note.end)
                 {
                     sequencer.RemoveNote(doubleNote);
-                    // force note off, wont happen through the delayed remove of the sequencer note
-                    MusicManager.inst.controller.NoteOff(note.note);
-                    remove = true;
-                    //sequencer.remo
 
-                    Debug.Log("remove: " + doubleNote.note);
+                    MusicManager.inst.controller.NoteOff(note.note); // force note off, wont happen through the delayed remove of the sequencer note
+                    remove = true;
+
+                    //Debug.Log("remove: " + doubleNote.note);
                 }
             }
         }
@@ -169,26 +168,30 @@ public static class AudioHelmHelper // : MonoBehaviour
         return remove;
     }
 
-    ///// <summary>
-    ///// Removes those notes from the note-sequencer, that have the same start position.
-    ///// </summary>
-    ///// <param name="note"></param>
-    ///// <param name="doubleNotes"></param>
-    ///// <returns></returns>
-    //public static bool RemoveIdenticalStartNotes(this NoteContainer note, List<Note> doubleNotes, Sequencer sequencer)
-    //{
-    //    bool remove = false;
-    //    foreach (Note doubleNote in doubleNotes)
-    //    {
-    //        if (doubleNote.note == note.note)
-    //        {
-    //            sequencer.RemoveNote(doubleNote);
-    //            MusicManager.inst.controller.NoteOff(doubleNote.note); // force note off, wont happen through the delayed remove of the sequencer note
-    //            remove = true;
-    //        }
-    //    }
-    //    return remove;
-    //}
+    /// <summary>
+    /// Removes those notes from the note-sequencer, that have the same start position.
+    /// </summary>
+    /// <param name="note"></param>
+    /// <param name="doubleNotes"></param>
+    /// <returns></returns>
+    public static bool RemoveIdenticalStartNotes(this NoteContainer note, List<Note> doubleNotes, Sequencer sequencer)
+    {
+        bool remove = false;
+        foreach (Note doubleNote in doubleNotes)
+        {
+            if (doubleNote.note == note.note)
+            {
+                if (doubleNote.start == note.start || doubleNote.end == note.end)
+                {
+                    sequencer.RemoveNote(doubleNote);
+
+                    MusicManager.inst.controller.NoteOff(doubleNote.note); // force note off, wont happen through the delayed remove of the sequencer note
+                    remove = true;
+                }
+            }
+        }
+        return remove;
+    }
 
 
 

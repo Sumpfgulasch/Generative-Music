@@ -134,14 +134,14 @@ public class ObjectManager : MonoBehaviour
 
     public void OnDelete(InputAction.CallbackContext context)
     {
-        if (context.performed)
-        {
-            deleteRoutine = StartCoroutine(DeleteObjects());
-        }
-        else if (context.canceled)
-        {
-            StopCoroutine(deleteRoutine);
-        }
+        //if (context.performed)
+        //{
+        //    deleteRoutine = StartCoroutine(DeleteObjects());
+        //}
+        //else if (context.canceled)
+        //{
+        //    StopCoroutine(deleteRoutine);
+        //}
             
     }
 
@@ -157,6 +157,11 @@ public class ObjectManager : MonoBehaviour
             {
                 foreach (RecordObject obj in objects) // in Recorder.inst.recordObjects[layer]
                 {
+                    if (obj.trackLayer != layer)
+                    {
+                        continue;
+                    }
+
                     if (Player.inst.curField.ID == obj.fieldID)
                     {
                         if (obj.obj.transform.position.z <= Player.inst.transform.position.z + 0.0f)

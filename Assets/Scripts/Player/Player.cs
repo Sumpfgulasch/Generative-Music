@@ -41,10 +41,10 @@ public class Player : MonoBehaviour
     [Range(0.01f, 1f)]
     public float bt_rotationDamp = 0.4f;
     public float bt_scaleDamp = 1f;
-    public float bt_selectionPressTime = 0.3f;
-    public float bt_selectionFrequency = 0.13f;
-    public float bt_play_selectionPressTime = 0.7f;
-    public float bt_play_selectionFrequency = 0.4f;
+    public float bt_selectionPressTimeFactor = 1f;
+    public float bt_selectionFrequencyFactor = 1f;
+    //public float bt_play_selectionPressTime = 0.7f;
+    //public float bt_play_selectionFrequency = 0.4f;
 
 
     // Public attributes
@@ -82,7 +82,7 @@ public class Player : MonoBehaviour
     private Side curPlaySide = Side.inner;
     private Side curMouseSide, lastMouseSide;
     private bool menuVisible = true;
-
+    private Coroutine deleteRoutine = null;
 
 
     // Properties
@@ -142,8 +142,8 @@ public class Player : MonoBehaviour
         scaleOutEnumerator = DampedScale(scaleMax);
         scaleRoutine = DampedScale(scaleMin);
 
-        curRotPressTime = bt_selectionPressTime;
-        curRotFrequency = bt_selectionFrequency;
+        //curRotPressTime = bt_selectionPressTime;
+        //curRotFrequency = LoopData.timePerSixteenth * bt_selectionFrequencyFactor;
     }
 
     
@@ -206,8 +206,8 @@ public class Player : MonoBehaviour
         // 1. Data
         actionState = ActionState.Play;
         //curPlaySide = side;
-        curRotPressTime = bt_play_selectionPressTime;
-        curRotFrequency = bt_play_selectionFrequency;
+        curRotPressTime = LoopData.timePerSixteenth * bt_selectionPressTimeFactor;
+        curRotFrequency = LoopData.timePerSixteenth * bt_selectionFrequencyFactor;
 
         // 2. Visual
         StopCoroutine(scaleRoutine);
@@ -228,8 +228,8 @@ public class Player : MonoBehaviour
     {
         // 1. Data
         actionState = ActionState.None;
-        curRotPressTime = bt_selectionPressTime;
-        curRotFrequency = bt_selectionFrequency;
+        curRotPressTime = LoopData.timePerSixteenth * bt_selectionPressTimeFactor;
+        curRotFrequency = LoopData.timePerSixteenth * bt_selectionFrequencyFactor;
 
         // 2. Visual
         //if (side == Side.inner)
@@ -364,8 +364,63 @@ public class Player : MonoBehaviour
                     }
                 }
             }
+
+
+            //var mousePos = Mouse.current.position.ReadValue();
+            //var ray = Camera.main.ScreenPointToRay(mousePos);
+
+            //if (Physics.Raycast(ray, out RaycastHit hit))
+            //{
+            //    if (hit.collider.CompareTag(MeshRef.inst.recordObjTag))
+            //    {
+            //        //Recorder.inst.RemoveRecord(hit.collider.GetComponent<RecordObject>());
+            //        Debug.Log("REMOVE");
+            //    }
+            //}
+
         }
     }
+
+
+    public void OnDelete(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            deleteRoutine = StartCoroutine(Delete());
+        }
+        else if (context.canceled)
+        {
+            StopCoroutine(deleteRoutine);
+        }
+    }
+
+    private IEnumerator Delete()
+    {
+        while (true)
+        {
+            var mousePos = Mouse.current.position.ReadValue();
+            var ray = Camera.main.ScreenPointToRay(mousePos);
+
+            //var mousePosWorld = Camera.main.ScreenToWorldPoint(mousePos);
+            //Debug.DrawLine(mousePosWorld, Vector3.zero, Color.blue, 2f);
+
+            var hits = Physics.RaycastAll(ray);
+
+            foreach (RaycastHit hit in hits)
+            {
+                //Debug.Log("hit; " + hit.collider.gameObject.name, hit.collider.gameObject);
+
+                if (hit.collider.CompareTag(MeshRef.inst.recordObjTag))
+                {
+                    Debug.DrawLine(hit.point, Vector3.zero, Color.green, 2f);
+                    Recorder.inst.RemoveRecord(hit.collider.GetComponent<RecordObject>());
+                    Debug.Log("REMOVE");
+                }
+            }
+            yield return null;
+        }
+    }
+
 
     public void OnRhythm1(InputAction.CallbackContext context)
     {

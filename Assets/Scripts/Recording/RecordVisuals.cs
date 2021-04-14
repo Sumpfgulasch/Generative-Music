@@ -41,10 +41,13 @@ public class RecordVisuals : MonoBehaviour
         //var pos2 = pos1 + LoopData.distancePerRecLoop * Vector3.forward;
         var pos2 = Recorder.inst.NextLoopPosition(recording.sequencer, recording.start, recording.loopStart);
         var layer = 8;
+        var collider = true;
+        var visible = true;
+        var tag = MeshRef.inst.recordObjTag;
 
         // 1. Instantiate
-        var obj1 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
-        var obj2 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
+        var obj1 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, visible, collider, tag, 1f, layer).gameObject;
+        var obj2 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, visible, collider, tag, 1f, layer).gameObject;
 
         var recordObject2 = RecordObject.Create(obj2, null, pos2, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
         var recordObject1 = RecordObject.Create(obj1, recordObject2, pos1, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
@@ -70,9 +73,12 @@ public class RecordVisuals : MonoBehaviour
         var material = MeshRef.inst.recordObjs_mat[recordObj.trackLayer];
         var pos = Recorder.inst.NextLoopPosition(recordObj.sequencer, recordObj.start, recordObj.loopStart);
         var layer = 8;
+        var visible = true;
+        var collider = true;
+        var tag = MeshRef.inst.recordObjTag;
 
         // 1. Instantiate & scale!
-        var newObj = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, true, 1f, layer).gameObject;
+        var newObj = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, visible, collider, tag, 1f, layer).gameObject;
         newObj.transform.localScale = recordObj.obj.transform.localScale;
 
         var douplicateObj = RecordObject.Create(newObj, null, pos, ID, recordObj.notes, recordObj.sequencer, recordObj.trackLayer, recordObj.start, recordObj.end, recordObj.loopStart, recordObj.loopEnd_extended);

@@ -305,7 +305,7 @@ public class Recorder : MonoBehaviour
 
             recording.startQuantizeOffset = quantize - sequencerPos;
 
-            Debug.Log("START quantize; quantize: " + quantize + ", curPos: " + sequencerPos + ", offset: " + recording.startQuantizeOffset);
+            //Debug.Log("START quantize; quantize: " + quantize + ", curPos: " + sequencerPos + ", offset: " + recording.startQuantizeOffset);
         }
         else
         {
@@ -340,6 +340,7 @@ public class Recorder : MonoBehaviour
         float velocity = MusicManager.inst.velocity;
         var curNotes = AudioHelmHelper.GetCurrentNotes(CurSequencer, curPos);
         var doubleNotes = AudioHelmHelper.DoubleNotes(recording.notes, curNotes);
+        bool zeroNote = false;
 
         // 1. Write to recording
         // 2. Quantize?
@@ -349,8 +350,20 @@ public class Recorder : MonoBehaviour
             if (Player.inst.actionState == Player.ActionState.Play)
             {
                 float quantize = Quantize(curPos);
+
+                recording.end = quantize;
                 recording.endQuantizeOffset = quantize - curPos;
-                recording.end = Quantize(curPos);
+
+                // Special case: very short notes
+                if (recording.end == recording.start)
+                {
+                    print("SHORT ZERO NOTE");
+                    //zeroNote = true;
+
+                    recording.end = (recording.end + MusicManager.inst.quantizeStep) % recording.sequencer.length;
+                }
+
+                //Debug.Log("END quantize LEG; end: " + recording.end + ", curPos: " + curPos + ", offset: " + recording.endQuantizeOffset);
             }
             // Staccato: Dont quantize recording.end
             else
@@ -358,7 +371,7 @@ public class Recorder : MonoBehaviour
                 // get the time the chord was pressed
                 recording.end = (curPos + recording.startQuantizeOffset).Modulo(recording.sequencer.length);
                 recording.endQuantizeOffset = recording.startQuantizeOffset;
-                Debug.Log("END quantize; end: " + recording.end + ", curPos: " + curPos + ", offset: " + recording.endQuantizeOffset);
+                //Debug.Log("END quantize STAC; end: " + recording.end + ", curPos: " + curPos + ", offset: " + recording.endQuantizeOffset);
             }
         }
         else
@@ -379,137 +392,149 @@ public class Recorder : MonoBehaviour
             }
         }
 
-        // 3. Calc additional notes, to prevent breaking notes
-        var usualNotes = new List<NoteContainer>();
-        var remainingNotes = new List<NoteContainer>();
-        foreach (Note doubleNote in doubleNotes)
+
+
+        if (!zeroNote)
         {
-            // #1: Existing note within bounds (Sequencer note.start < note.end), curNote plays within sequencer.chord (curNote > start); would disrupt and delete remaining note
-            if (recording.end > doubleNote.start && recording.end < doubleNote.end)
+            // 3. IF THERE ARE CURRENTLY EXISTING NOTES: Calc additional notes, to prevent breaking notes
+            var usualNotes = new List<NoteContainer>();
+            var remainingNotes = new List<NoteContainer>();
+            foreach (Note doubleNote in doubleNotes)
             {
-                int note = doubleNote.note;
-                float start = recording.end + noteAdd; // note add == 0 currently
-                float end = doubleNote.end;
-
-                // 1.1. Shorten existing note
-                if (recording.start != doubleNote.start)    // sonst macht das keinen sinn
+                // #1: Existing note within bounds (Sequencer note.start < note.end), curNote plays within sequencer.chord (curNote > start); would disrupt and delete remaining note
+                if (recording.end > doubleNote.start && recording.end < doubleNote.end)
                 {
-                    doubleNote.end = recording.start;
-                }
+                    int note = doubleNote.note;
+                    float start = recording.end + noteAdd; // note add == 0 currently
+                    float end = doubleNote.end;
 
-                // Note on
-                MusicManager.inst.controller.NoteOn(note, velocity, end - start);
-                
-                // 1.2. Add new note for remaining part (== 3/3; recording == 2/3, existing note == 1/3)
-                usualNotes.Add(new NoteContainer(note, start, end, velocity));
-            }
-
-            // #2 Existing note extends over the sequencer bounds, would disrupt and stop playing the remaining note
-            else if (doubleNote.start > doubleNote.end)
-            {
-                float oldEnd = doubleNote.end;
-
-                // 2.1. Shorten existing sequencer note
-                if (recording.start != doubleNote.start)    // sonst macht das keinen sinn
-                {
-                    if (recording.start != 0)
+                    // 1.1. Shorten existing note (1/3)
+                    if (recording.start != doubleNote.start)    // sonst macht das keinen sinn
+                    {
                         doubleNote.end = recording.start;
-                    else
-                        doubleNote.end = recording.sequencer.length - 0.01f;
+                    }
+
+                    // Note on
+                    MusicManager.inst.controller.NoteOn(note, velocity, end - start);
+
+                    // 1.2. Add new note for remaining part (== 3/3; recording == 2/3, existing note == 1/3)
+                    usualNotes.Add(new NoteContainer(note, start, end, velocity));
+
+                    //print("existing note, case #1; remaining usual note gets added (3/3)");
                 }
 
-                // 2.2. Add note for remaining sequencer note?
-                float oldEndPercentage = SequencerPositionPercentage(recording.sequencer, oldEnd, recording.loopStart);
-                float curPosPercentage = SequencerPositionPercentage(recording.sequencer, recording.end, recording.loopStart);
-                int note = doubleNote.note;
-                float start = recording.end;
-                float end = oldEnd;
+                // #2 Existing note extends over the sequencer bounds, would disrupt and stop playing the remaining note
+                else if (doubleNote.start > doubleNote.end)
+                {
+                    float oldEnd = doubleNote.end;
 
-                var temp = new NoteContainer(note, start, end, velocity);
-                remainingNotes.Add(temp); // dont add now because it would be overwritten by usual notes; has to be added at last
-                MusicManager.inst.controller.NoteOn(note, velocity, end - start);
+                    // 2.1. Shorten existing sequencer note
+                    if (recording.start != doubleNote.start)    // sonst macht das keinen sinn
+                    {
+                        if (recording.start != 0)
+                            doubleNote.end = recording.start;
+                        else
+                            doubleNote.end = recording.sequencer.length - 0.01f;
+                    }
+
+                    // 2.2. Add note for remaining sequencer note?
+                    float oldEndPercentage = SequencerPositionPercentage(recording.sequencer, oldEnd, recording.loopStart);
+                    float curPosPercentage = SequencerPositionPercentage(recording.sequencer, recording.end, recording.loopStart);
+                    int note = doubleNote.note;
+                    float start = recording.end;
+                    float end = oldEnd;
+
+                    var temp = new NoteContainer(note, start, end, velocity);
+                    remainingNotes.Add(temp); // dont add now because it would be overwritten by usual notes; has to be added at last
+                    MusicManager.inst.controller.NoteOn(note, velocity, end - start);
+
+                    //print("existing note, case #2; remaining undefined note gets added (3/3)");
+                }
             }
-        }
-
-        
-        var recordCopy = recording.DeepCopy(); // DeepCopy, because otherwise wrong data at later point
 
 
-
-        // WAIT to add notes; otherwise notes will disrupt unintendedly
-        //if (recordCopy.endQuantizeOffset > 0)
-        //{
-        //    float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
-
-        //    yield return new WaitForSeconds(delay);
-        //}
+            var recordCopy = recording.DeepCopy(); // DeepCopy, because otherwise wrong data at later point
 
 
 
-        // #3 Get bridges notes that are NOT being played
-        curPos = (float)recordCopy.sequencer.GetSequencerPosition();
-        var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
-
-
-        // 5. Add remaining usual notes (#1)
-        //foreach (NoteContainer note in usualNotes)
-        //{
-        //    AudioHelmHelper.RemoveIdenticalStartNotes(note.note, doubleNotes, recordCopy.sequencer);
-
-        //    recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
-        //}
-
-
-        // 4. Write CURRENTLY RECORDED notes
-        foreach (int noteNote in recordCopy.notes)
-        {
-            var note = new Note { note = noteNote, start = recordCopy.start, end = recordCopy.end, velocity = velocity, parent = null };
-            //note.parent = null;
-
-            if (note.IsUnplayedBridgeNote(curPos))
+            // WAIT to add notes; otherwise notes will disrupt unintendedly
+            if (recordCopy.endQuantizeOffset > 0)
             {
-                unplayedBridgeNotes.Add(note);
+                float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
+
+                yield return new WaitForSeconds(delay);
             }
-            else
-            {
-                var curPos_quantized = recordCopy.start;
-                var curNotes_quantize = AudioHelmHelper.GetCurrentNotes(recordCopy.sequencer, curPos_quantized);
-                var curDoubleNotes_quantize = AudioHelmHelper.DoubleNotes(recordCopy.notes, curNotes_quantize);
 
+
+
+            // #3 Get bridges notes that are NOT being played
+            curPos = (float)recordCopy.sequencer.GetSequencerPosition();
+            var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
+
+            // cur douplicate notes, at the time of the start
+            var curNotes_quantize = AudioHelmHelper.GetCurrentNotes(recordCopy.sequencer, recordCopy.start);
+            var curDoubleNotes_quantize = AudioHelmHelper.DoubleNotes(recordCopy.notes, curNotes_quantize);
+
+
+            // 5. Add remaining usual notes (#1; 3/3)
+            foreach (NoteContainer note in usualNotes)
+            {
                 AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
-                Debug.Log("before add to sequencer; curDoubleNotes_quantize.count: " + curDoubleNotes_quantize.Count);
-                foreach (Note doubleNote in curDoubleNotes_quantize)
-                    Debug.Log("doubleNote: " + doubleNote.note + ", note.start: " + doubleNote.start + ", note.end: " + doubleNote.end);
 
-                // add to sequencer
-                recordCopy.sequencer.AddNote(noteNote, recordCopy.start, recordCopy.end, velocity);
+                recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
             }
+
+
+            // 4. Write CURRENTLY RECORDED notes
+            foreach (int noteNote in recordCopy.notes)
+            {
+                var note = new Note { note = noteNote, start = recordCopy.start, end = recordCopy.end, velocity = velocity, parent = null };
+                //note.parent = null;
+
+                if (note.IsUnplayedBridgeNote(curPos))
+                {
+                    unplayedBridgeNotes.Add(note);
+                }
+                else
+                {
+
+
+                    AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
+                    //Debug.Log("before add to sequencer; curDoubleNotes_quantize.count: " + curDoubleNotes_quantize.Count);
+                    //foreach (Note doubleNote in curDoubleNotes_quantize)
+                    //    Debug.Log("doubleNote: " + doubleNote.note + ", note.start: " + doubleNote.start + ", note.end: " + doubleNote.end);
+
+                    // add to sequencer
+                    recordCopy.sequencer.AddNote(noteNote, recordCopy.start, recordCopy.end, velocity);
+                }
+            }
+
+
+
+            // 5. Add bridge notes again
+            foreach (NoteContainer note in remainingNotes) // #2: remaining notes of case #2
+            {
+                if (note.IsUnplayedBridgeNote(curPos))
+                {
+                    var helmNote = new Note { note = note.note, start = note.start, end = note.end };
+                    unplayedBridgeNotes.Add(helmNote);
+                }
+                else
+                {
+                    AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
+
+                    recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
+                }
+            }
+            foreach (Note note in unplayedBridgeNotes)  // #3: unplayed bridge notes
+            {
+                AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
+
+                recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
+            }
+
+            yield return null;
         }
-
-
-
-        // 5. Add bridge notes again
-        //foreach (NoteContainer note in remainingNotes) // #2: remaining notes of case #2
-        //{
-        //    if (note.IsUnplayedBridgeNote(curPos))
-        //    {
-        //        var helmNote = new Note { note = note.note, start = note.start, end = note.end };
-        //        unplayedBridgeNotes.Add(helmNote);
-        //    }
-        //    else
-        //    {
-        //        AudioHelmHelper.RemoveIdenticalStartNotes(note.note, doubleNotes, recordCopy.sequencer);
-
-        //        recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
-        //    }
-        //}
-        //foreach (Note note in unplayedBridgeNotes)  // #3: unplayed bridge notes
-        //{
-        //    AudioHelmHelper.RemoveIdenticalStartNotes(note.note, doubleNotes, recordCopy.sequencer);
-
-        //    recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
-        //}
-
         yield return null;
     }
 
