@@ -460,7 +460,7 @@ public class Player : MonoBehaviour
     {
         if (context.performed)
         {
-            foreach(GameObject obj in MeshRef.inst.menuObjects)
+            foreach(GameObject obj in MeshRef.inst.additionalSettings)
             {
                 obj.SetActive(menuVisible);
             }

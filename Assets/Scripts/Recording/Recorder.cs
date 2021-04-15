@@ -21,7 +21,8 @@ public class Recorder : MonoBehaviour
 
     // Private
 
-    private Coroutine recordBar, checkRecordLength;
+    //private Coroutine recordBar;
+    private Coroutine checkRecordLength;
 
 
     // Properties
@@ -61,10 +62,8 @@ public class Recorder : MonoBehaviour
         inst = this;
 
         MeshRef.inst.recordText.enabled = false;
-        MeshRef.inst.recordBar.enabled = false;
         MeshRef.inst.recordImage.enabled = false;
         MeshRef.inst.preRecordCounter.enabled = false;
-        MeshRef.inst.recordBarFill.enabled = false;
 
         sequencers = MusicRef.inst.sequencers;
         recordObjects = new List<RecordObject>[MusicManager.inst.maxLayers];
@@ -94,12 +93,10 @@ public class Recorder : MonoBehaviour
         MeshRef.inst.recordText.color = recordColor;
         MeshRef.inst.recordImage.enabled = true;
         MeshRef.inst.recordImage.color = recordColor;
-        MeshRef.inst.recordBar.enabled = true;
-        MeshRef.inst.recordBar.color = recordColor;
-        MeshRef.inst.recordBarFill.enabled = true;
-        MeshRef.inst.recordBarFill.color = recordColor;
         if (!Has1stRecord)
-            recordBar = StartCoroutine(RecordingBar());
+        {
+            //recordBar = StartCoroutine(RecordingBar());
+        }
         MeshRef.inst.preRecordCounter.enabled = false;
         #endregion
 
@@ -151,9 +148,7 @@ public class Recorder : MonoBehaviour
         var color = VisualController.inst.nonRecordColor;
         MeshRef.inst.recordText.enabled = false;
         MeshRef.inst.recordImage.enabled = false;
-        MeshRef.inst.recordBar.color = color;
         MeshRef.inst.preRecordCounter.enabled = false;
-        MeshRef.inst.recordBarFill.color = color;
         #endregion
 
         // 2. Variables
@@ -174,7 +169,7 @@ public class Recorder : MonoBehaviour
         // Disable record bar?
         if (!Has1stRecord)
         {
-            DisableRecordBar();
+            DisableRecordLoop();
         }
 
         // 3.1. UNsubscribe
@@ -200,7 +195,7 @@ public class Recorder : MonoBehaviour
         // 2. UI & objects
         if (!Has1stRecord)
         {
-            DisableRecordBar();
+            DisableRecordLoop();
         }
         // clear highlighted fieldSurface und highlightSurface
         foreach (RecordObject recordObj in recordObjects[layer])
@@ -315,7 +310,7 @@ public class Recorder : MonoBehaviour
         }
 
         // 2. End, notes, ID, sequencer
-        recording.end = -1;                             // hack; nicht mehr nötig
+        //recording.end = -1;                             // hack; nicht mehr nötig
         recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         recording.fieldID = Player.inst.curField.ID;
         recording.sequencer = CurSequencer;
@@ -340,7 +335,7 @@ public class Recorder : MonoBehaviour
         float velocity = MusicManager.inst.velocity;
         var curNotes = AudioHelmHelper.GetCurrentNotes(CurSequencer, curPos);
         var doubleNotes = AudioHelmHelper.DoubleNotes(recording.notes, curNotes);
-        bool zeroNote = false;
+        bool legatoZeroNote = false;
 
         // 1. Write to recording
         // 2. Quantize?
@@ -362,8 +357,6 @@ public class Recorder : MonoBehaviour
 
                     recording.end = (recording.end + MusicManager.inst.quantizeStep) % recording.sequencer.length;
                 }
-
-                //Debug.Log("END quantize LEG; end: " + recording.end + ", curPos: " + curPos + ", offset: " + recording.endQuantizeOffset);
             }
             // Staccato: Dont quantize recording.end
             else
@@ -371,7 +364,6 @@ public class Recorder : MonoBehaviour
                 // get the time the chord was pressed
                 recording.end = (curPos + recording.startQuantizeOffset).Modulo(recording.sequencer.length);
                 recording.endQuantizeOffset = recording.startQuantizeOffset;
-                //Debug.Log("END quantize STAC; end: " + recording.end + ", curPos: " + curPos + ", offset: " + recording.endQuantizeOffset);
             }
         }
         else
@@ -394,7 +386,7 @@ public class Recorder : MonoBehaviour
 
 
 
-        if (!zeroNote)
+        if (!legatoZeroNote)
         {
             // 3. IF THERE ARE CURRENTLY EXISTING NOTES: Calc additional notes, to prevent breaking notes
             var usualNotes = new List<NoteContainer>();
@@ -580,9 +572,6 @@ public class Recorder : MonoBehaviour
         MeshRef.inst.recordText.color = color;
         MeshRef.inst.recordImage.enabled = true;
         MeshRef.inst.recordImage.color = color;
-        MeshRef.inst.recordBar.enabled = true;
-        MeshRef.inst.recordBar.color = color;
-        MeshRef.inst.recordBarFill.enabled = false;
 
         MeshRef.inst.preRecordCounter.enabled = true;
         MeshRef.inst.preRecordCounter.text = "";
@@ -659,9 +648,7 @@ public class Recorder : MonoBehaviour
         if (closestStep == 100)
         {
             Debug.LogError("Quantize closest step == 100");
-            //MusicManager.inst.quantize = false;
             return 0;
-            //return sequencerPos;
         }
 
         return closestStep;
@@ -695,29 +682,27 @@ public class Recorder : MonoBehaviour
 
     
 
-    private void DisableRecordBar()
+    private void DisableRecordLoop()
     {
-        StopCoroutine(recordBar);
-        MeshRef.inst.recordBar.enabled = false;
-        MeshRef.inst.recordBarFill.enabled = false;
+        //StopCoroutine(recordBar);
+        //MeshRef.inst.recordBar.enabled = false;
+        //MeshRef.inst.recordBarFill.enabled = false;
 
-        var x = new Note();
-        
     }
 
-    private IEnumerator RecordingBar()
-    {
-        while (true)
-        {
-            float curSequencerPos = (float) CurSequencer.GetSequencerPosition();
-            float percentage = SequencerPositionPercentage(CurSequencer, curSequencerPos, recording.loopStart);
+    //private IEnumerator RecordingBar()
+    //{
+    //    while (true)
+    //    {
+    //        float curSequencerPos = (float) CurSequencer.GetSequencerPosition();
+    //        float percentage = SequencerPositionPercentage(CurSequencer, curSequencerPos, recording.loopStart);
 
-            MeshRef.inst.recordBarFill.fillAmount = percentage;
+    //        MeshRef.inst.recordBarFill.fillAmount = percentage;
 
-            yield return null;
-        }
+    //        yield return null;
+    //    }
 
-    }
+    //}
 
 }
 

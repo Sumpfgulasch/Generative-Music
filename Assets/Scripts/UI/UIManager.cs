@@ -20,7 +20,7 @@ public class UIManager : MonoBehaviour
 
         layerButtons = MeshRef.inst.layerButtons;
 
-        foreach (GameObject obj in MeshRef.inst.menuObjects)
+        foreach (GameObject obj in MeshRef.inst.additionalSettings)
             obj.SetActive(false);
 
         // to do: read from MusicManager.record-variables (quantization, ...)

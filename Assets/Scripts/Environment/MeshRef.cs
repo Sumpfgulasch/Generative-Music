@@ -36,14 +36,14 @@ public class MeshRef : MonoBehaviour
     public string recordObjTag = "recordObject";
     public TextMeshProUGUI recordText;
     public Image recordImage;
-    public Image recordBar;
-    public Image recordBarFill;
+    //public Image recordBar;
+    //public Image recordBarFill;
     public GameObject recordObject;
     public Transform recordObj_parent;
     public Material[] recordObjs_mat;
     public TextMeshProUGUI preRecordCounter;
     [Header("UI")]
-    public List<GameObject> menuObjects;
+    public List<GameObject> additionalSettings;
     public List<MusicLayerButton> layerButtons;
     public TextMeshProUGUI quantizePrecision;
     [Header("Diverse")]
