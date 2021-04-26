@@ -411,9 +411,7 @@ public class Player : MonoBehaviour
 
                 if (hit.collider.CompareTag(MeshRef.inst.recordObjTag))
                 {
-                    Debug.DrawLine(hit.point, Vector3.zero, Color.green, 2f);
                     Recorder.inst.RemoveRecord(hit.collider.GetComponent<RecordObject>());
-                    Debug.Log("REMOVE");
                 }
             }
             yield return null;
