@@ -81,7 +81,6 @@ public class Player : MonoBehaviour
     public enum Side { inner, outer};
     private Side curPlaySide = Side.inner;
     private Side curMouseSide, lastMouseSide;
-    private bool menuVisible = true;
     private Coroutine deleteRoutine = null;
 
 
@@ -456,17 +455,6 @@ public class Player : MonoBehaviour
     }
 
 
-    public void OnToggleMenu(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            foreach(GameObject obj in MeshRef.inst.additionalSettings)
-            {
-                obj.SetActive(menuVisible);
-            }
-            menuVisible = !menuVisible;
-        }
-    }
 
 
 

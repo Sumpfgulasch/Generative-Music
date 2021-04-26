@@ -18,12 +18,11 @@ public class UIManager : MonoBehaviour
     {
         inst = this;
 
+        MeshRef.inst.preRecordCounter.enabled = false;
+
         layerButtons = MeshRef.inst.layerButtons;
 
-        foreach (GameObject obj in MeshRef.inst.additionalSettings)
-            obj.SetActive(false);
-
-        // to do: read from MusicManager.record-variables (quantization, ...)
+        MeshRef.inst.additionalSettings.SetActive(false);
     }
 
     
@@ -31,4 +30,7 @@ public class UIManager : MonoBehaviour
     {
         
     }
+
+
+    
 }

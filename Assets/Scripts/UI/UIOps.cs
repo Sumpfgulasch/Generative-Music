@@ -103,7 +103,7 @@ public class UIOps : MonoBehaviour
 
 
     /// <summary>
-    /// Disable old glow-image, enable new. Set activeLayerButton in UI-manager.
+    /// Disable old glow- (and record-)image, enable new. Set activeLayerButton in UI-manager.
     /// </summary>
     /// <param name="layer"></param>
     private void UpdateLayerButton(int layer)
@@ -112,6 +112,15 @@ public class UIOps : MonoBehaviour
         UIManager.inst.activeLayerButton.glow.enabled = false;
         UIManager.inst.layerButtons[layer].glow.enabled = true;
 
+        // 2. Record-label?
+        if (Recorder.inst.isRecording)
+        {
+            UIManager.inst.activeLayerButton.glow.color = Color.white;
+            UIManager.inst.layerButtons[layer].glow.color = MeshRef.inst.recordColor;
+            UIManager.inst.activeLayerButton.EnableRecordLabel(false);
+            UIManager.inst.layerButtons[layer].EnableRecordLabel(true);
+        }
+        
         // 2. Set active-variable
         UIManager.inst.activeLayerButton = UIManager.inst.layerButtons[layer];
     }
@@ -120,5 +129,17 @@ public class UIOps : MonoBehaviour
     private void SetPrecisionText(MusicManager.Precision value)
     {
         MeshRef.inst.quantizePrecision.text = value.ToString();
+    }
+
+    public void SetPrecisionTextActive(bool enable)
+    {
+        if (enable)
+        {
+            MeshRef.inst.quantizePrecision.color = Color.white;
+        }
+        else
+        {
+            MeshRef.inst.quantizePrecision.color = MeshRef.inst.inactiveColor;
+        }
     }
 }

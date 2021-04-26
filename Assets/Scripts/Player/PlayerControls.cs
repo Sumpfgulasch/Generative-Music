@@ -374,6 +374,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""902b1005-b07e-425e-bf21-496a83f11108"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Record"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""7a4fac47-72e9-4f24-967b-21a746812f6e"",
                     ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",

@@ -61,10 +61,6 @@ public class Recorder : MonoBehaviour
     {
         inst = this;
 
-        MeshRef.inst.recordText.enabled = false;
-        MeshRef.inst.recordImage.enabled = false;
-        MeshRef.inst.preRecordCounter.enabled = false;
-
         sequencers = MusicRef.inst.sequencers;
         recordObjects = new List<RecordObject>[MusicManager.inst.maxLayers];
         for (int i=0; i<recordObjects.Length; i++)
@@ -88,11 +84,8 @@ public class Recorder : MonoBehaviour
 
         #region visuals
         // 2. Visuals
-        var recordColor = VisualController.inst.recordColor;
-        MeshRef.inst.recordText.enabled = true;
-        MeshRef.inst.recordText.color = recordColor;
-        MeshRef.inst.recordImage.enabled = true;
-        MeshRef.inst.recordImage.color = recordColor;
+        UIManager.inst.activeLayerButton.EnableRecordLabel(true);
+
         if (!Has1stRecord)
         {
             //recordBar = StartCoroutine(RecordingBar());
@@ -145,10 +138,11 @@ public class Recorder : MonoBehaviour
     {
         #region visuals
         // 1. Visuals
-        var color = VisualController.inst.nonRecordColor;
-        MeshRef.inst.recordText.enabled = false;
-        MeshRef.inst.recordImage.enabled = false;
-        MeshRef.inst.preRecordCounter.enabled = false;
+        //var color = VisualController.inst.nonRecordColor;
+        //MeshRef.inst.recordText.enabled = false;
+        //MeshRef.inst.recordImage.enabled = false;
+        //MeshRef.inst.preRecordCounter.enabled = false;
+        UIManager.inst.activeLayerButton.EnableRecordLabel(false);
         #endregion
 
         // 2. Variables
@@ -264,13 +258,6 @@ public class Recorder : MonoBehaviour
     }
 
 
-    public void OnDebug(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            
-        }
-    }
 
 
 
@@ -306,11 +293,9 @@ public class Recorder : MonoBehaviour
         {
             recording.start = sequencerPos;
             recording.startQuantizeOffset = 0;
-            Debug.Log("NO QUANTIZE");
         }
 
         // 2. End, notes, ID, sequencer
-        //recording.end = -1;                             // hack; nicht mehr nötig
         recording.notes = MusicManager.inst.curChord.DeepCopy().notes;
         recording.fieldID = Player.inst.curField.ID;
         recording.sequencer = CurSequencer;

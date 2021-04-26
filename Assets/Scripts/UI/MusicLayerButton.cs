@@ -14,6 +14,8 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
     public Image unfilled;
     public Image filled;
     public Image glow;
+    public TextMeshProUGUI recordText;
+    public Image recordImage;
 
     private Transform filledTransform;
     private Coroutine deleteRoutine;
@@ -108,15 +110,10 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
     {
         base.OnPointerDown(eventData);
 
-        // 1. Active-image
-        //UpdateGlow();
-
-        // 2. Change layer
-        //MusicManager.inst.ChangeLayer(layer);
-
+        // 1. Change layer
         UIOps.inst.ChangeLayer(layer);
 
-        // 3. Start delete-routine
+        // 2. Start delete-routine
         if (MusicManager.inst.curSequencer.GetAllNotes().Count != 0)
         {
             float wait = UIManager.inst.musicLayerButton_waitBeforDelete;
@@ -142,24 +139,19 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
         }
     }
 
-    
 
-    ///// <summary>
-    ///// Disable old and enable new glow-image. Set activeLayerbutton in UI-Manager.
-    ///// </summary>
-    //private void UpdateGlow()
-    //{
-    //    // 1. Disable old & enable new graphics
-    //    UIManager.inst.activeLayerButton.glow.enabled = false;
-    //    glow.enabled = true;
+    public void EnableRecordLabel(bool enable)
+    {
+        recordText.enabled = enable;
+        recordImage.enabled = enable;
 
-    //    // 2. Set active-variable
-    //    UIManager.inst.activeLayerButton = this;
-    //}
-
-
-    //private void EnableImage(Image image, bool value)
-    //{
-    //    image.enabled = value;
-    //}
+        if (enable)
+        {
+            glow.color = MeshRef.inst.recordColor;
+        }
+        else
+        {
+            glow.color = Color.white;
+        }
+    }
 }

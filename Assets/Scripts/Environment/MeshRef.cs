@@ -36,16 +36,16 @@ public class MeshRef : MonoBehaviour
     public string recordObjTag = "recordObject";
     public TextMeshProUGUI recordText;
     public Image recordImage;
-    //public Image recordBar;
-    //public Image recordBarFill;
+    public Color recordColor;
     public GameObject recordObject;
     public Transform recordObj_parent;
     public Material[] recordObjs_mat;
     public TextMeshProUGUI preRecordCounter;
     [Header("UI")]
-    public List<GameObject> additionalSettings;
+    public GameObject additionalSettings;
     public List<MusicLayerButton> layerButtons;
     public TextMeshProUGUI quantizePrecision;
+    public Color inactiveColor;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;
     public Transform mouseTrail;
