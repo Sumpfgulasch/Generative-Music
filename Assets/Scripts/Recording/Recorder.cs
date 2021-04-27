@@ -207,27 +207,27 @@ public class Recorder : MonoBehaviour
     }
 
 
-    public void RemoveRecord(ChordObject recordObj)
+    public void RemoveRecord(ChordObject chordObj)
     {
         // 1. clear notes
-        foreach (int note in recordObj.notes)
+        foreach (int note in chordObj.notes)
         {
-            recordObj.sequencer.RemoveNotesInRange(note, recordObj.start, recordObj.end);
-            recordObj.sequencer.NoteOff(note);
+            chordObj.sequencer.RemoveNotesInRange(note, chordObj.start, chordObj.end);
+            chordObj.sequencer.NoteOff(note);
         }
 
         // 2. gameObject & list
-        RecordVisuals.inst.DestroyChordObject(recordObj);
+        RecordVisuals.inst.DestroyChordObject(chordObj);
 
         // 3. UI
-        if (recordObj.sequencer.GetAllNotes().Count == 0)
+        if (chordObj.sequencer.GetAllNotes().Count == 0)
         {
-            UIOps.inst.EnableRecordedTrackImage(recordObj.trackLayer, false);
+            UIOps.inst.EnableRecordedTrackImage(chordObj.trackLayer, false);
         }
 
         // 4. field.activeChords
-        if (recordObj.isPlaying)
-            Player.inst.curFieldSet[recordObj.fieldID].ActiveRecords--;
+        if (chordObj.isPlaying)
+            Player.inst.curFieldSet[chordObj.fieldID].ActiveRecords--;
         
     }
 

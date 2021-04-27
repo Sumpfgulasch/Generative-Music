@@ -103,13 +103,6 @@ public class MusicManager : MonoBehaviour
         curSequencer = MusicRef.inst.sequencers[0];
 
         Quantization = quantizationChoices[(int)curPrecision];
-        //UIOps.inst.SetPrecisionText(curPrecision);
-
-        //curInstrument.SetParameterValue(AudioHelm.Param.arp, 8);
-
-        //controllers[0].SetPitchWheel(0);
-
-
     }
 
 
@@ -150,7 +143,6 @@ public class MusicManager : MonoBehaviour
                     controller.NoteOff(curNote);
                 }
             }
-            //controller.AllNotesOff();
         }
         
         // 2. Change sequencer & controller reference
@@ -166,39 +158,6 @@ public class MusicManager : MonoBehaviour
 
 
 
-    //private void ManageChordPlaying()
-    //{
-    //    if (Player.actionState == Player.ActionState.Play)
-    //    {
-    //        // FIRST EDGE TOUCH
-    //        if (Player.curEdge.firstTouch)
-    //        {
-    //            #region pitch
-    //            // calc pitch
-    //            SetFirstPitchRange(ref minPitch, ref maxPitch);
-    //            #endregion
-    //        }
-            
-    //    }
-
-    //    #region Pitch
-    //    //if (Input.GetKey(KeyCode.Space))
-    //    //{
-    //    //    curPitch = player.curEdge.percentage.Remap(0, 1, minPitch, maxPitch);
-    //    //    #region Quantize Pitch
-    //    //    //float quantizeSize = 0.5f;
-    //    //    //float quantize = curPitch % quantizeSize;
-    //    //    //if (quantize > 0.05f || quantize < -0.05f)
-    //    //    //{
-    //    //    //    if (quantize > quantizeSize / 2f)
-    //    //    //        curPitch += (quantizeSize - quantize);
-    //    //    //    else
-    //    //    //        curPitch -= quantize;
-    //    //    //}
-    //    //    Instrument.inner.SetPitchWheel(curPitch);
-    //    //}
-    //    #endregion
-    //}
 
     private void PlayField()
     {
@@ -278,7 +237,6 @@ public class MusicManager : MonoBehaviour
     // Fields
     public void OnFieldStart()
     {
-        //print("OnFieldStart (abonniert onPlayPerformed, PlayField->invoke OnPlayField");
         PlayField();
 
         #region pitch
@@ -293,7 +251,6 @@ public class MusicManager : MonoBehaviour
         {
             StopField();
             PlayField();
-            //print("OnFieldChange (abonniert OnFieldChange), PlayField -> invoke OnPlayField ");
         }
     }
 

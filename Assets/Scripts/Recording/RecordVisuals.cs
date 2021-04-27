@@ -90,6 +90,19 @@ public class RecordVisuals : MonoBehaviour
         return douplicateObj;
     }
 
+    public RecordObject DouplicateLoopObject(RecordObject loopObject)
+    {
+        var obj = MeshRef.inst.loopObject;
+        var parent = MeshRef.inst.recordObj_parent;
+        var pos = loopObject.loopStart;
+
+        // HIER WEITERMACHEN
+
+        //var newLoopObj = Instantiate(obj, parent, )
+
+        return null;
+    }
+
 
 
     /// <summary>

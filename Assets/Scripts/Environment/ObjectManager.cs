@@ -129,33 +129,61 @@ public class ObjectManager : MonoBehaviour
 
 
 
-    private void OnRecObjFieldEnter(ChordObject recordObject)
+    private void OnRecObjFieldEnter(RecordObject recordObject)
     {
-       
-        // Instantiate
-        if (!recordObject.hasRespawned)
+        // CHORD OBJECT
+        if (recordObject is ChordObject)
         {
-            var newObj = RecordVisuals.inst.DouplicateChordObject(recordObject);
-            Recorder.inst.recordObjects[newObj.trackLayer].Add(newObj);
-            recordObject.hasRespawned = true;
+            ChordObject chordObject = (ChordObject)recordObject;
+
+            // Instantiate
+            if (!chordObject.hasRespawned)
+            {
+                var newObj = RecordVisuals.inst.DouplicateChordObject(chordObject);
+                Recorder.inst.recordObjects[newObj.trackLayer].Add(newObj);
+                chordObject.hasRespawned = true;
+            }
+
+            // Active records
+            Player.inst.curFieldSet[chordObject.fieldID].ActiveRecords++;
         }
 
-        // Active records
-        Player.inst.curFieldSet[recordObject.fieldID].ActiveRecords++;
+        // LOOP OBJECT
+        else 
+        {
+            if (!recordObject.hasRespawned)
+            {
+
+            }
+
+        }
 
     }
 
-    private void OnRecObjFieldExit(ChordObject recordObject)
+    private void OnRecObjFieldExit(RecordObject recordObject)
     {
-        // Active records
-        Player.inst.curFieldSet[recordObject.fieldID].ActiveRecords--;
+        // CHORD OBJECT
+        if (recordObject is ChordObject)
+        {
+            var chordObject = (ChordObject)recordObject;
+
+            // Active records
+            Player.inst.curFieldSet[chordObject.fieldID].ActiveRecords--;
+        }
+        
     }
 
-    private void OnRecObjScreenExit(ChordObject recordObject)
+    private void OnRecObjScreenExit(RecordObject recordObject)
     {
-        // Destroy
-        Recorder.inst.recordObjects[recordObject.trackLayer].Remove(recordObject);
-        Destroy(recordObject.obj);
+        // CHORD OBJECT
+        if (recordObject is ChordObject)
+        {
+            var chordObject = (ChordObject)recordObject;
+
+            // Destroy
+            Recorder.inst.recordObjects[chordObject.trackLayer].Remove(chordObject);
+            Destroy(recordObject.obj);
+        }
     }
 
 

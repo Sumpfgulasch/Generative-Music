@@ -34,6 +34,7 @@ public class MeshRef : MonoBehaviour
     public Material fieldSurfaces_mat;
     [Header("Record")]
     public string chordObjTag = "recordObject";
+    public GameObject loopObject;
     public TextMeshProUGUI recordText;
     public Image recordImage;
     public Color recordColor;

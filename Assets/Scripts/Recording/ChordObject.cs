@@ -7,37 +7,20 @@ using AudioHelm;
 /// Contains ONE chord always.
 /// </summary>
 /// 
-public class ChordObject : MonoBehaviour
+public class ChordObject : RecordObject
 {
     public int fieldID;
     public int[] notes;
-    public GameObject obj;
-    public ChordObject douplicate;
+
+    public new ChordObject douplicate;
     public Sequencer sequencer;
     public int trackLayer;
-    public float start;
-    public float end;
-    public float loopStart;
-    public float loopEnd_extended;
-    public bool isPlaying;
-    
-
     public MeshRenderer meshRenderer;
     public Color startColor;
 
 
-    public bool hasRespawned = false;
-    private bool hasEnteredField = false;
-    private bool hasLeftField = false;
-    private bool hasLeftScreen = false;
-    
-
     // Properties
-    public float StartZPos { get { return obj.transform.position.z; } }
-    public float EndZPos { get { return StartZPos + obj.transform.localScale.z; } }
-    //private float DeltaTime { get { return Time.deltaTime * FPS; } }
 
-    //private float length;
     /// <summary>
     /// Get the length of one record / chord, between 0 and 1 (1 == sequencer.length).
     /// </summary>
@@ -62,47 +45,11 @@ public class ChordObject : MonoBehaviour
     // Update
     private void Update()
     {
-        InvokeFieldEvents();
+        //InvokeFieldEvents();
     }
 
 
-    /// <summary>
-    /// Invoke Enter- and Exit-events for fields.
-    /// </summary>
-    private void InvokeFieldEvents()
-    {
-        // Enter
-        if (StartZPos <= Player.inst.transform.position.z)
-        {
-            if (!hasEnteredField)
-            {
-                GameEvents.inst.onRecObjFieldEnter?.Invoke(this);
-                hasEnteredField = true;
-                isPlaying = true;
-            }
-        }
-
-        // Exit
-        if (EndZPos <= Player.inst.transform.position.z)
-        {
-            if (!hasLeftField)
-            {
-                GameEvents.inst.onRecObjFieldExit?.Invoke(this);
-                hasLeftField = true;
-                isPlaying = false;
-            }
-        }
-
-        // Exit screen
-        if (EndZPos <= -2f)
-        {
-            if (!hasLeftScreen)
-            {
-                GameEvents.inst.onRecObjScreenExit?.Invoke(this);
-                hasLeftScreen = true;
-            }
-        }
-    }
+    
 
 
 
@@ -165,9 +112,6 @@ public class ChordObject : MonoBehaviour
 
 
 
-    //private void Move()
-    //{
-    //    //this.transform.position -= new Vector3(0, 0, ObjectManager.inst.moveSpeed * DeltaTime);
-    //}
+   
 
 }
