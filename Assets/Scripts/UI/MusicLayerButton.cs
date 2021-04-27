@@ -78,7 +78,7 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
             var recordObjects = Recorder.inst.recordObjects[layer];
             var targetColor = recordObjects[0].meshRenderer.material.color;
             targetColor.a = 0;
-            foreach(RecordObject recordObject in recordObjects)
+            foreach(ChordObject recordObject in recordObjects)
             {
                 var colorLerp = UIManager.inst.deleteLerp.Evaluate(lerp);
                 recordObject.meshRenderer.material.color = Color.Lerp(targetColor, recordObject.startColor, colorLerp);
@@ -132,7 +132,7 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
             StopCoroutine(deleteRoutine);
             filledTransform.localScale = Vector3.one;
             isDeleting = false;
-            foreach(RecordObject recordObject in Recorder.inst.recordObjects[layer])
+            foreach(ChordObject recordObject in Recorder.inst.recordObjects[layer])
             {
                 recordObject.meshRenderer.material.color = recordObject.startColor;
             }

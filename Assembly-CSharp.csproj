@@ -64,7 +64,7 @@
     <Compile Include="Assets\AudioHelm\Scripts\Sampler.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetSleepThreshold.cs" />
     <Compile Include="Assets\Scripts\Environment\TunnelData.cs" />
-    <Compile Include="Assets\Scripts\Recording\RecordObject.cs" />
+    <Compile Include="Assets\Scripts\Recording\ChordObject.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteHandler.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\DestroyAfterTime.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraOps.cs" />
@@ -133,6 +133,7 @@
     <Compile Include="Assets\Scripts\Environment\MeshRef.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\Environment\Move.cs" />
+    <Compile Include="Assets\Scripts\Recording\LoopObject.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

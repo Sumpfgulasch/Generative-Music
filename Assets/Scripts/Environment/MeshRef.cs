@@ -33,7 +33,7 @@ public class MeshRef : MonoBehaviour
     public Transform fieldSurfaces_parent;
     public Material fieldSurfaces_mat;
     [Header("Record")]
-    public string recordObjTag = "recordObject";
+    public string chordObjTag = "recordObject";
     public TextMeshProUGUI recordText;
     public Image recordImage;
     public Color recordColor;

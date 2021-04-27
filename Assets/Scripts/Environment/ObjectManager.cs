@@ -44,10 +44,6 @@ public class ObjectManager : MonoBehaviour
 
 
 
-    private void Update()
-    {
-        //ManageRecordedChords();
-    }
 
 
 
@@ -132,61 +128,14 @@ public class ObjectManager : MonoBehaviour
     }
 
 
-    public void OnDelete(InputAction.CallbackContext context)
+
+    private void OnRecObjFieldEnter(ChordObject recordObject)
     {
-        //if (context.performed)
-        //{
-        //    deleteRoutine = StartCoroutine(DeleteObjects());
-        //}
-        //else if (context.canceled)
-        //{
-        //    StopCoroutine(deleteRoutine);
-        //}
-            
-    }
-
-    private IEnumerator DeleteObjects()
-    {
-        while (true)
-        {
-            int layer = Recorder.inst.CurLayer;
-            var removeList = new List<RecordObject>();
-
-            // 1. get all objects behind 0
-            foreach(List<RecordObject> objects in Recorder.inst.recordObjects)
-            {
-                foreach (RecordObject obj in objects) // in Recorder.inst.recordObjects[layer]
-                {
-                    if (obj.trackLayer != layer)
-                    {
-                        continue;
-                    }
-
-                    if (Player.inst.curField.ID == obj.fieldID)
-                    {
-                        if (obj.obj.transform.position.z <= Player.inst.transform.position.z + 0.0f)
-                        {
-                            removeList.Add(obj);
-                        }
-                    }
-                }
-            }
-            
-
-            foreach (RecordObject obj in removeList)
-            {
-                Recorder.inst.RemoveRecord(obj);
-            }
-            yield return null;
-        }
-    }
-
-    private void OnRecObjFieldEnter(RecordObject recordObject)
-    {
+       
         // Instantiate
         if (!recordObject.hasRespawned)
         {
-            var newObj = RecordVisuals.inst.DouplicateRecordObject(recordObject);
+            var newObj = RecordVisuals.inst.DouplicateChordObject(recordObject);
             Recorder.inst.recordObjects[newObj.trackLayer].Add(newObj);
             recordObject.hasRespawned = true;
         }
@@ -196,17 +145,29 @@ public class ObjectManager : MonoBehaviour
 
     }
 
-    private void OnRecObjFieldExit(RecordObject recordObject)
+    private void OnRecObjFieldExit(ChordObject recordObject)
     {
         // Active records
         Player.inst.curFieldSet[recordObject.fieldID].ActiveRecords--;
     }
 
-    private void OnRecObjScreenExit(RecordObject recordObject)
+    private void OnRecObjScreenExit(ChordObject recordObject)
     {
         // Destroy
         Recorder.inst.recordObjects[recordObject.trackLayer].Remove(recordObject);
         Destroy(recordObject.obj);
+    }
+
+
+
+    private void OnLoopObjFieldEnter(LoopObject loopObject)
+    {
+
+    }
+
+    private void OnLoopObjectScreenExit(LoopObject loopObject)
+    {
+
     }
 
 

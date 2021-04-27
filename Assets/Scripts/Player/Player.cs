@@ -204,16 +204,13 @@ public class Player : MonoBehaviour
     {
         // 1. Data
         actionState = ActionState.Play;
-        //curPlaySide = side;
         curRotPressTime = LoopData.timePerSixteenth * bt_selectionPressTimeFactor;
         curRotFrequency = LoopData.timePerSixteenth * bt_selectionFrequencyFactor;
 
         // 2. Visual
         StopCoroutine(scaleRoutine);
         StickToEdge(curPlaySide);
-        // set mouse collider
-        //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_play);
-        MeshUpdate.UpdatePlayer();
+        //MeshUpdate.UpdatePlayer();
 
         // 3. Events
         GameEvents.inst.onPlayPerformed?.Invoke();
@@ -231,17 +228,8 @@ public class Player : MonoBehaviour
         curRotFrequency = LoopData.timePerSixteenth * bt_selectionFrequencyFactor;
 
         // 2. Visual
-        //if (side == Side.inner)
-        //{
         scaleRoutine = DampedScale(scaleMin);
-        //}
-        //else
-        //{
-        //    scaleRoutine = DampedScale(scaleMax);
-        //}
         StartCoroutine(scaleRoutine);
-        // set mouse collider
-        //MeshUpdate.SetMouseColliderSize(VisualController.mouseColliderSize_move);
 
         // 3. Events
         GameEvents.inst.onPlayCanceled?.Invoke();
@@ -273,8 +261,6 @@ public class Player : MonoBehaviour
                     // press
                     if (context.performed)
                     {
-                        // hier weiter machen: entweder ist mouseWasNOTpressedAndReleased falsch, oder in onMove wird PlayMovement (und somit fälschlicherweise onPlayStart) getriggert, was dazu führt, dass, wenn ich
-                        // in record auf nen nächsten musicLayerButton klicke, im Recorder StartSpawnChordObj (mit alter curLayer) getriggert wird
                         PlayMovement();
                     }
                     // release
@@ -363,20 +349,6 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-
-
-            //var mousePos = Mouse.current.position.ReadValue();
-            //var ray = Camera.main.ScreenPointToRay(mousePos);
-
-            //if (Physics.Raycast(ray, out RaycastHit hit))
-            //{
-            //    if (hit.collider.CompareTag(MeshRef.inst.recordObjTag))
-            //    {
-            //        //Recorder.inst.RemoveRecord(hit.collider.GetComponent<RecordObject>());
-            //        Debug.Log("REMOVE");
-            //    }
-            //}
-
         }
     }
 
@@ -400,18 +372,13 @@ public class Player : MonoBehaviour
             var mousePos = Mouse.current.position.ReadValue();
             var ray = Camera.main.ScreenPointToRay(mousePos);
 
-            //var mousePosWorld = Camera.main.ScreenToWorldPoint(mousePos);
-            //Debug.DrawLine(mousePosWorld, Vector3.zero, Color.blue, 2f);
-
             var hits = Physics.RaycastAll(ray);
 
             foreach (RaycastHit hit in hits)
             {
-                //Debug.Log("hit; " + hit.collider.gameObject.name, hit.collider.gameObject);
-
-                if (hit.collider.CompareTag(MeshRef.inst.recordObjTag))
+                if (hit.collider.CompareTag(MeshRef.inst.chordObjTag))
                 {
-                    Recorder.inst.RemoveRecord(hit.collider.GetComponent<RecordObject>());
+                    Recorder.inst.RemoveRecord(hit.collider.GetComponent<ChordObject>());
                 }
             }
             yield return null;
@@ -423,20 +390,7 @@ public class Player : MonoBehaviour
     {
         if (context.performed)
         {
-            //MusicRef.inst.beatSequencer.length = 16;
-            //print("rhythm: 4/4");
-            
-            
-            //var pathAbs = Application.dataPath + "/AudioHelm/Presets/Arp/CM Kleer Arp.helm";
-
-            //if (System.IO.File.Exists(pathAbs))
-            //    print("file path ABS exists");
-
-            // PATCH LADEN
-            //var patch = new AudioHelm.HelmPatch();
-            //patch.LoadPatchData(pathAbs);
             MusicManager.inst.controller.LoadPatch(MusicRef.inst.helmPatch1);
-
         }
     }
 
@@ -444,10 +398,6 @@ public class Player : MonoBehaviour
     {
         if (context.performed)
         {
-            //MusicRef.inst.beatSequencer.length = 12;
-            
-            //print("rhythm: 3/4");
-
             MusicManager.inst.controller.LoadPatch(MusicRef.inst.helmPatch2);
         }
     }
@@ -486,9 +436,7 @@ public class Player : MonoBehaviour
     {
         var posToConvert = new Vector3(input.x, input.y, Camera.main.nearClipPlane);
         mousePos = Camera.main.ScreenToWorldPoint(posToConvert);
-        //mousePos.z = 0;
         Vector3 pointerDirection = mousePos - midPoint;
-        //print("pointerDir: " + pointerDirection);
 
         return pointerDirection;
     }

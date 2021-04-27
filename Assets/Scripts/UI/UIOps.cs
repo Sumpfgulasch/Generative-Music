@@ -88,6 +88,8 @@ public class UIOps : MonoBehaviour
         UpdateLayerButton(layer);
     }
 
+    
+
 
 
 
@@ -140,6 +142,21 @@ public class UIOps : MonoBehaviour
         else
         {
             MeshRef.inst.quantizePrecision.color = MeshRef.inst.inactiveColor;
+        }
+    }
+
+
+    // Events
+
+    public void OnNextLayer(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            // Change layer
+            int input = (int)context.ReadValue<Vector2>().normalized.y;
+            int layer = (MusicManager.inst.controller.channel + input).Modulo(MusicManager.inst.maxLayers);
+            
+            ChangeLayer(layer);
         }
     }
 }

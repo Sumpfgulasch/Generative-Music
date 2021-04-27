@@ -17,7 +17,7 @@ public class MusicManager : MonoBehaviour
     public int chordDegrees = 3;
     public int toneRange_startNote = 41;
     public int toneRange = 24;
-    public int maxLayers = 2;
+    public int maxLayers = 5;
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;
     [Range(0, 1f)]
@@ -402,16 +402,6 @@ public class MusicManager : MonoBehaviour
         GameEvents.inst.onSixteenth?.Invoke(beat);
     }
 
-    public void OnNextLayer(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            // Change layer
-            int input = (int) context.ReadValue<Vector2>().normalized.y;
-            int layer = ExtensionMethods.Modulo(controller.channel + input, maxLayers);
-            UIOps.inst.ChangeLayer(layer);
-        }
-    }
 
 
     // Divers

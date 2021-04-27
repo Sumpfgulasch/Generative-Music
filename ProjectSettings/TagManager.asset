@@ -6,7 +6,7 @@ TagManager:
   tags:
   - EnvScale
   - MouseCollider
-  - recordObject
+  - chordObject
   layers:
   - Default
   - TransparentFX

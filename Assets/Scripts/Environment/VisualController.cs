@@ -57,7 +57,7 @@ public class VisualController : MonoBehaviour
     [Range(0, 1f)] public float highlightSurface_emissiveSaturation = 0.9f;
 
     [Header("Record objects")]
-    public float recordObjectsOpacity = 1;
+    public float chordObjectsOpacity = 1;
 
     [Header("Beat triangle")]
     public float highlightBeatTime = 0.2f;

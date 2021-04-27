@@ -7,12 +7,12 @@ using AudioHelm;
 /// Contains ONE chord always.
 /// </summary>
 /// 
-public class RecordObject : MonoBehaviour
+public class ChordObject : MonoBehaviour
 {
     public int fieldID;
     public int[] notes;
     public GameObject obj;
-    public RecordObject douplicate;
+    public ChordObject douplicate;
     public Sequencer sequencer;
     public int trackLayer;
     public float start;
@@ -26,9 +26,6 @@ public class RecordObject : MonoBehaviour
     public Color startColor;
 
 
-    //[HideInInspector] 
-    //public bool isRecording = true;
-
     public bool hasRespawned = false;
     private bool hasEnteredField = false;
     private bool hasLeftField = false;
@@ -38,9 +35,9 @@ public class RecordObject : MonoBehaviour
     // Properties
     public float StartZPos { get { return obj.transform.position.z; } }
     public float EndZPos { get { return StartZPos + obj.transform.localScale.z; } }
-    private float DeltaTime { get { return Time.deltaTime * FPS; } }
+    //private float DeltaTime { get { return Time.deltaTime * FPS; } }
 
-    private float length;
+    //private float length;
     /// <summary>
     /// Get the length of one record / chord, between 0 and 1 (1 == sequencer.length).
     /// </summary>
@@ -57,42 +54,9 @@ public class RecordObject : MonoBehaviour
         }
     }
 
-    private float FPS;
+    //private float FPS;
 
 
-
-    #region Constructor
-
-    //public RecordObject(GameObject obj, RecordObject douplicate, Vector3 position, int fieldID, int[] notes, Sequencer sequencer, int layer, float start, float end, float loopStart, float loopEnd_extended)
-    //{
-    //    // set
-    //    this.obj = obj;
-    //    this.douplicate = douplicate;
-    //    this.obj.transform.position = position;
-    //    this.fieldID = fieldID;
-    //    this.notes = notes;
-    //    this.sequencer = sequencer;
-    //    this.layer = layer;
-    //    this.start = start;
-    //    this.end = end;
-    //    this.loopStart = loopStart;
-    //    this.loopEnd_extended = loopEnd_extended;
-
-    //    meshRenderer = obj.GetComponent<MeshRenderer>();
-    //    if (meshRenderer == null)
-    //        Debug.LogError("mesh rend sollte nich null sein");
-    //    var color = VisualController.inst.colorPalette[layer];
-    //    color.a = VisualController.inst.recordObjectsAlpha;
-    //    meshRenderer.material.color = color;
-    //    startColor = meshRenderer.material.color;
-
-    //    // add
-    //    this.obj.AddComponent<Move>();
-
-    //    // stuff
-    //    FPS = Screen.currentResolution.refreshRate;
-    //}
-    #endregion
 
 
     // Update
@@ -108,7 +72,7 @@ public class RecordObject : MonoBehaviour
     private void InvokeFieldEvents()
     {
         // Enter
-        if (StartZPos <= Player.inst.transform.position.z + 0.0f)
+        if (StartZPos <= Player.inst.transform.position.z)
         {
             if (!hasEnteredField)
             {
@@ -147,11 +111,11 @@ public class RecordObject : MonoBehaviour
 
 
     /// <summary>
-    /// Add a RecordObject-component to the first parameter. Set remaining variables.
+    /// Add a ChordObject-component to the first parameter. Set remaining variables.
     /// </summary>
-    public static RecordObject Create(GameObject obj, RecordObject douplicate, Vector3 position, int fieldID, int[] notes, Sequencer sequencer, int trackLayer, float start, float end, float loopStart, float loopEnd_extended)
+    public static ChordObject Create(GameObject obj, ChordObject douplicate, Vector3 position, int fieldID, int[] notes, Sequencer sequencer, int trackLayer, float start, float end, float loopStart, float loopEnd_extended)
     {
-        var thisObj = obj.AddComponent<RecordObject>();
+        var thisObj = obj.AddComponent<ChordObject>();
 
         // set
         thisObj.obj = obj;
@@ -171,7 +135,7 @@ public class RecordObject : MonoBehaviour
         if (thisObj.meshRenderer == null)
             Debug.LogError("mesh rend sollte nich null sein");
         var color = VisualController.inst.colorPalette[trackLayer];
-        color.a = VisualController.inst.recordObjectsOpacity;
+        color.a = VisualController.inst.chordObjectsOpacity;
         thisObj.meshRenderer.material.color = color;
         thisObj.startColor = thisObj.meshRenderer.material.color;
 
@@ -179,7 +143,7 @@ public class RecordObject : MonoBehaviour
         thisObj.obj.AddComponent<Move>();
 
         // stuff
-        thisObj.FPS = Screen.currentResolution.refreshRate;
+        //thisObj.FPS = Screen.currentResolution.refreshRate;
 
         return thisObj;
     }

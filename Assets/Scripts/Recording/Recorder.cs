@@ -13,7 +13,7 @@ public class Recorder : MonoBehaviour
     [HideInInspector] public bool isRecording = false;
     [HideInInspector] public bool isPreRecording = false;
     [HideInInspector] public int preRecCounter;
-    public List<RecordObject>[] recordObjects;
+    public List<ChordObject>[] recordObjects;
     public float noteAdd = 0.1f;
     public Recording recording = new Recording();
     [HideInInspector] public float loopStart;
@@ -62,9 +62,9 @@ public class Recorder : MonoBehaviour
         inst = this;
 
         sequencers = MusicRef.inst.sequencers;
-        recordObjects = new List<RecordObject>[MusicManager.inst.maxLayers];
+        recordObjects = new List<ChordObject>[MusicManager.inst.maxLayers];
         for (int i=0; i<recordObjects.Length; i++)
-            recordObjects[i] = new List<RecordObject>();
+            recordObjects[i] = new List<ChordObject>();
     }
 
 
@@ -192,14 +192,14 @@ public class Recorder : MonoBehaviour
             DisableRecordLoop();
         }
         // clear highlighted fieldSurface und highlightSurface
-        foreach (RecordObject recordObj in recordObjects[layer])
+        foreach (ChordObject recordObj in recordObjects[layer])
         {
             if (recordObj.isPlaying)
             {
                 Player.inst.curFieldSet[recordObj.fieldID].ActiveRecords--;
             }
         }
-        RecordVisuals.inst.DestroyAllRecordObjects(layer);
+        RecordVisuals.inst.DestroyAllChordObjects(layer);
 
         UIOps.inst.EnableRecordedTrackImage(layer, false);
 
@@ -207,7 +207,7 @@ public class Recorder : MonoBehaviour
     }
 
 
-    public void RemoveRecord(RecordObject recordObj)
+    public void RemoveRecord(ChordObject recordObj)
     {
         // 1. clear notes
         foreach (int note in recordObj.notes)
@@ -217,7 +217,7 @@ public class Recorder : MonoBehaviour
         }
 
         // 2. gameObject & list
-        RecordVisuals.inst.DestroyRecordObject(recordObj);
+        RecordVisuals.inst.DestroyChordObject(recordObj);
 
         // 3. UI
         if (recordObj.sequencer.GetAllNotes().Count == 0)
@@ -642,7 +642,7 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void StartSpawnChordObject()
     {
-        RecordVisuals.inst.CreateRecordObjectTwice(recording, recordObjects, CurLayer);
+        RecordVisuals.inst.CreateChordObjectTwice(recording, recordObjects, CurLayer);
         UIOps.inst.EnableRecordedTrackImage(CurLayer, true);
     }
 
@@ -713,8 +713,8 @@ public class Recording
     /// </summary>
     public float loopEnd_extended;
     public Coroutine scaleRoutine;
-    public RecordObject obj;
-    public RecordObject loopObj;
+    public ChordObject obj;
+    public ChordObject loopObj;
     /// <summary>
     /// In sixteenth.
     /// </summary>
