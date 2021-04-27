@@ -1,6 +1,7 @@
 ﻿// Stencil buffer shader - WRITE
 //
-// muss als erstes gerendert werden (vor obj mit read-shader)
+// Muss als erstes gerendert werden (vor obj mit read-shader)
+// Schreibt 1 in Z-Buffer, wo das Objekt mit der Maske liegt.
 
 Shader "Universal Render Pipeline/Custom/Mask"
 {

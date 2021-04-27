@@ -37,7 +37,6 @@ public class MeshRef : MonoBehaviour
     public TextMeshProUGUI recordText;
     public Image recordImage;
     public Color recordColor;
-    public GameObject recordObject;
     public Transform recordObj_parent;
     public Material[] recordObjs_mat;
     public TextMeshProUGUI preRecordCounter;

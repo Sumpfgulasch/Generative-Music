@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: EnvGrid
+  m_Name: BeatGrid
   m_Shader: {fileID: -6465566751694194690, guid: b5634101f6921d04d965f0224e823ce8, type: 3}
   m_ShaderKeywords: _REMOVEDIAG_ON
   m_LightmapFlags: 2
@@ -55,7 +55,20 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Fill: 0
     - Vector1_4DCFF0D8: 0.99
     - _BumpScale: 1
     - _Cutoff: 0.5
