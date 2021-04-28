@@ -90,17 +90,22 @@ public class RecordVisuals : MonoBehaviour
         return douplicateObj;
     }
 
-    public RecordObject DouplicateLoopObject(RecordObject loopObject)
+    public LoopObject DouplicateLoopObject(LoopObject loopObject, List<LoopObject> addToList)
     {
+        // 1. Change existing object
+        loopObject.hasRespawned = true;
+
+        // 2. Refs
         var obj = MeshRef.inst.loopObject;
         var parent = MeshRef.inst.recordObj_parent;
-        var pos = loopObject.loopStart;
+        var position = Recorder.inst.NextLoopPosition(Recorder.inst.sequencers[0], loopObject.loopStart, loopObject.loopStart);
 
-        // HIER WEITERMACHEN
+        
 
-        //var newLoopObj = Instantiate(obj, parent, )
+        // 3. Instantiate
+        var newObj = LoopObject.Create(obj, parent, position, loopObject.loopStart, loopObject.loopEnd_extended, addToList);
 
-        return null;
+        return newObj;
     }
 
 
@@ -125,13 +130,13 @@ public class RecordVisuals : MonoBehaviour
     /// <param name="layer"></param>
     public void DestroyAllChordObjects(int layer)
     {
-        var recordObjects = Recorder.inst.recordObjects[layer];
+        var recordObjects = Recorder.inst.chordObjects[layer];
 
         for (int i=0; i < recordObjects.Count; i++)
         {
             Destroy(recordObjects[i].obj);
         }
-        Recorder.inst.recordObjects[layer] = new List<ChordObject>();
+        Recorder.inst.chordObjects[layer] = new List<ChordObject>();
     }
 
     /// <summary>
@@ -141,12 +146,12 @@ public class RecordVisuals : MonoBehaviour
     public void DestroyChordObject(ChordObject obj)
     {
         Destroy(obj.obj);
-        Recorder.inst.recordObjects[obj.trackLayer].Remove(obj);
+        Recorder.inst.chordObjects[obj.trackLayer].Remove(obj);
 
         if (obj.douplicate != null)
         {
             Destroy(obj.douplicate.obj);
-            Recorder.inst.recordObjects[obj.trackLayer].Remove(obj.douplicate);
+            Recorder.inst.chordObjects[obj.trackLayer].Remove(obj.douplicate);
         }
     }
 

@@ -2,7 +2,6 @@ using AudioHelm;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Recorder : MonoBehaviour
 {
@@ -13,7 +12,8 @@ public class Recorder : MonoBehaviour
     [HideInInspector] public bool isRecording = false;
     [HideInInspector] public bool isPreRecording = false;
     [HideInInspector] public int preRecCounter;
-    public List<ChordObject>[] recordObjects;
+    public List<ChordObject>[] chordObjects;
+    public List<LoopObject> loopObjects;
     public float noteAdd = 0.1f;
     public Recording recording = new Recording();
     [HideInInspector] public float loopStart;
@@ -23,7 +23,7 @@ public class Recorder : MonoBehaviour
 
     //private Coroutine recordBar;
     private Coroutine checkRecordLength;
-
+    private bool isWaitingToWrite = false;
 
     // Properties
     public bool Has1stRecord
@@ -36,7 +36,41 @@ public class Recorder : MonoBehaviour
                 if (notes.Count != 0)
                     return true;
             }
+
+            if (isWaitingToWrite)
+                return true;
+
             return false;
+        }
+    }
+
+    public bool HasExactlyOneLayer
+    {
+        get
+        {
+            int counter = 0;
+            foreach(Sequencer sequencer in sequencers)
+            {
+                var notes = sequencer.GetAllNotes();
+                if (notes.Count != 0)
+                {
+                    counter++;
+                }
+            }
+            print("layer counter: " + counter);
+
+            if (counter == 1)
+            {
+                return true;
+            }
+            else if (counter == 0 && isWaitingToWrite)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
     
@@ -62,9 +96,9 @@ public class Recorder : MonoBehaviour
         inst = this;
 
         sequencers = MusicRef.inst.sequencers;
-        recordObjects = new List<ChordObject>[MusicManager.inst.maxLayers];
-        for (int i=0; i<recordObjects.Length; i++)
-            recordObjects[i] = new List<ChordObject>();
+        chordObjects = new List<ChordObject>[MusicManager.inst.maxLayers];
+        for (int i=0; i<chordObjects.Length; i++)
+            chordObjects[i] = new List<ChordObject>();
     }
 
 
@@ -105,13 +139,6 @@ public class Recorder : MonoBehaviour
         {
             SaveRecordStartData();
             StartSpawnChordObject();
-        }
-
-        // 3.3. Set sequencer loop start?
-        if (!Has1stRecord)
-        {
-            loopStart = recording.start;
-            loopEnd_extended = loopStart + CurSequencer.length;
         }
 
         // 4. Max record length
@@ -160,12 +187,6 @@ public class Recorder : MonoBehaviour
             StopSpawnChordObject();
         }
 
-        // Disable record bar?
-        if (!Has1stRecord)
-        {
-            DisableRecordLoop();
-        }
-
         // 3.1. UNsubscribe
         GameEvents.inst.onPlayField -= SaveRecordStartData;
         GameEvents.inst.onPlayField -= StartSpawnChordObject;   // Visual
@@ -187,14 +208,15 @@ public class Recorder : MonoBehaviour
         sequencers[layer].Clear();
 
         // 2. UI & objects
+        print("hasExactlyOneLayer: " + HasExactlyOneLayer);
         if (!Has1stRecord)
         {
-            DisableRecordLoop();
+            DestroyLoopObjects();
         }
         // clear highlighted fieldSurface und highlightSurface
-        foreach (ChordObject recordObj in recordObjects[layer])
+        foreach (ChordObject recordObj in chordObjects[layer])
         {
-            if (recordObj.isPlaying)
+            if (recordObj.isActive)
             {
                 Player.inst.curFieldSet[recordObj.fieldID].ActiveRecords--;
             }
@@ -206,6 +228,18 @@ public class Recorder : MonoBehaviour
         MusicManager.inst.controller.AllNotesOff();
     }
 
+
+    /// <summary>
+    /// Delete over time. Make transparent and delete after that.
+    /// </summary>
+    /// <param name="chordObj"></param>
+    /// <returns></returns>
+    private IEnumerator DeleteRoutine(ChordObject chordObj)
+    {
+
+
+        yield return null;
+    }
 
     public void RemoveRecord(ChordObject chordObj)
     {
@@ -226,9 +260,15 @@ public class Recorder : MonoBehaviour
         }
 
         // 4. field.activeChords
-        if (chordObj.isPlaying)
+        if (chordObj.isActive)
             Player.inst.curFieldSet[chordObj.fieldID].ActiveRecords--;
-        
+
+        // 5. LoopObject
+        if (!Has1stRecord)
+        {
+            DestroyLoopObjects();
+        }
+
     }
 
 
@@ -271,6 +311,8 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void SaveRecordStartData()
     {
+        print("OnStartField");
+
         float sequencerPos = (float) CurSequencer.GetSequencerPosition();
 
         // 1. Start & quantize offset
@@ -286,8 +328,6 @@ public class Recorder : MonoBehaviour
             }
 
             recording.startQuantizeOffset = quantize - sequencerPos;
-
-            //Debug.Log("START quantize; quantize: " + quantize + ", curPos: " + sequencerPos + ", offset: " + recording.startQuantizeOffset);
         }
         else
         {
@@ -300,11 +340,27 @@ public class Recorder : MonoBehaviour
         recording.fieldID = Player.inst.curField.ID;
         recording.sequencer = CurSequencer;
         recording.isRunning = true;
+
+
+
+        // 3. LoopStart object?
+        if (!Has1stRecord)
+        {
+            loopStart = recording.start;
+            loopEnd_extended = loopStart + CurSequencer.length;
+
+            var obj = MeshRef.inst.loopObject;
+            var parent = MeshRef.inst.recordObj_parent;
+            var position = Player.inst.transform.position;
+
+            LoopObject.Create(obj, parent, position, loopStart, loopEnd_extended, loopObjects);
+        }
     }
 
     
     private void WriteToSequencer()
     {
+
         if (recording.isRunning)
         {
             StartCoroutine(WriteToSequencer_delayed());
@@ -433,8 +489,11 @@ public class Recorder : MonoBehaviour
         {
             float delay = recordCopy.endQuantizeOffset * LoopData.timePerSixteenth;
 
+            isWaitingToWrite = true;
+
             yield return new WaitForSeconds(delay);
         }
+        isWaitingToWrite = false;
 
 
 
@@ -642,7 +701,7 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void StartSpawnChordObject()
     {
-        RecordVisuals.inst.CreateChordObjectTwice(recording, recordObjects, CurLayer);
+        RecordVisuals.inst.CreateChordObjectTwice(recording, chordObjects, CurLayer);
         UIOps.inst.EnableRecordedTrackImage(CurLayer, true);
     }
 
@@ -660,27 +719,18 @@ public class Recorder : MonoBehaviour
 
     
 
-    private void DisableRecordLoop()
+    private void DestroyLoopObjects()
     {
-        //StopCoroutine(recordBar);
-        //MeshRef.inst.recordBar.enabled = false;
-        //MeshRef.inst.recordBarFill.enabled = false;
+        print("call destroy LoopObj");
+        foreach(LoopObject loopObject in loopObjects)
+        {
+            print("Destroy");
+            Destroy(loopObject.obj);
+        }
+        loopObjects = new List<LoopObject>();
 
     }
 
-    //private IEnumerator RecordingBar()
-    //{
-    //    while (true)
-    //    {
-    //        float curSequencerPos = (float) CurSequencer.GetSequencerPosition();
-    //        float percentage = SequencerPositionPercentage(CurSequencer, curSequencerPos, recording.loopStart);
-
-    //        MeshRef.inst.recordBarFill.fillAmount = percentage;
-
-    //        yield return null;
-    //    }
-
-    //}
 
 }
 

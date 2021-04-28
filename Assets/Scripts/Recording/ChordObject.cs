@@ -7,16 +7,16 @@ using AudioHelm;
 /// Contains ONE chord always.
 /// </summary>
 /// 
-public class ChordObject : RecordObject
+public class ChordObject : LoopObject
 {
     public int fieldID;
     public int[] notes;
+    public float start; // All the positions are values in a sequencer.
+    public float end;
 
-    public new ChordObject douplicate;
+    public ChordObject douplicate;
     public Sequencer sequencer;
     public int trackLayer;
-    public MeshRenderer meshRenderer;
-    public Color startColor;
 
 
     // Properties
@@ -37,16 +37,10 @@ public class ChordObject : RecordObject
         }
     }
 
-    //private float FPS;
 
 
 
-
-    // Update
-    private void Update()
-    {
-        //InvokeFieldEvents();
-    }
+   
 
 
     
@@ -88,9 +82,6 @@ public class ChordObject : RecordObject
 
         // add
         thisObj.obj.AddComponent<Move>();
-
-        // stuff
-        //thisObj.FPS = Screen.currentResolution.refreshRate;
 
         return thisObj;
     }

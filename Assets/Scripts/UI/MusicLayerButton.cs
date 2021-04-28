@@ -56,35 +56,49 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
 
 
     /// <summary>
-    /// Scale the button down and clear everything when done.
+    /// Scale the button down, make objects transparent over time and clear everything when done.
     /// </summary>
     private IEnumerator ScaleAndClear(float waitBeforeStart, float duration, float targetValue)
     {
-        isDeleting = true;
-
-        // 1. Wait
+        // Wait
         yield return new WaitForSeconds(waitBeforeStart);
 
-        // 2. 
+        // Data
+        isDeleting = true;
+        bool hasExactlyOneLayer = Recorder.inst.HasExactlyOneLayer;
         float t = 0;
+        var chordObjects = Recorder.inst.chordObjects[layer];
+        var targetChordColor = chordObjects[0].meshRenderer.material.color;
+        targetChordColor.a = 0;
+        var targetLoopColor = Recorder.inst.loopObjects[0].meshRenderer.material.color;
+        targetLoopColor.a = 0;
+
         while (t < duration)
         {
-            // scale
+            // 1. Scale button
             float lerp = t / duration;
+            float colorLerp = UIManager.inst.deleteLerp.Evaluate(lerp);
             float scaleLerp = Mathf.Lerp(1, targetValue, lerp);
             filledTransform.localScale = Vector3.one * scaleLerp;
 
-            // color
-            var recordObjects = Recorder.inst.recordObjects[layer];
-            var targetColor = recordObjects[0].meshRenderer.material.color;
-            targetColor.a = 0;
-            foreach(ChordObject recordObject in recordObjects)
+            // 2. Make chordObjects transparent
+            foreach(ChordObject chordObject in chordObjects)
             {
-                var colorLerp = UIManager.inst.deleteLerp.Evaluate(lerp);
-                recordObject.meshRenderer.material.color = Color.Lerp(targetColor, recordObject.startColor, colorLerp);
+                chordObject.meshRenderer.material.color = Color.Lerp(targetChordColor, chordObject.startColor, colorLerp);
+            }
+
+            // 3. LoopObjects transparent?
+            if (hasExactlyOneLayer)
+            {
+                foreach(LoopObject loopObject in Recorder.inst.loopObjects)
+                {
+                    loopObject.meshRenderer.material.color = Color.Lerp(targetLoopColor, loopObject.startColor, colorLerp);
+                    //loopObject.meshRenderer.material.SetColor("_EmissionColor", Color.Lerp(targetLoopColor*0, loopObject.startColor, colorLerp));
+                }
             }
 
             t += Time.deltaTime;
+
             yield return null;
         }
 
@@ -132,9 +146,15 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
             StopCoroutine(deleteRoutine);
             filledTransform.localScale = Vector3.one;
             isDeleting = false;
-            foreach(ChordObject recordObject in Recorder.inst.recordObjects[layer])
+
+            // Reset colors of looping objects
+            foreach(ChordObject chordObject in Recorder.inst.chordObjects[layer])
             {
-                recordObject.meshRenderer.material.color = recordObject.startColor;
+                chordObject.meshRenderer.material.color = chordObject.startColor;
+            }
+            foreach(LoopObject loopObject in Recorder.inst.loopObjects)
+            {
+                loopObject.meshRenderer.material.color = loopObject.startColor;
             }
         }
     }

@@ -129,18 +129,18 @@ public class ObjectManager : MonoBehaviour
 
 
 
-    private void OnRecObjFieldEnter(RecordObject recordObject)
+    private void OnRecObjFieldEnter(LoopObject loopObject)
     {
-        // CHORD OBJECT
-        if (recordObject is ChordObject)
+        // 1. CHORD OBJECT?
+        if (loopObject is ChordObject)
         {
-            ChordObject chordObject = (ChordObject)recordObject;
+            ChordObject chordObject = (ChordObject)loopObject;
 
             // Instantiate
             if (!chordObject.hasRespawned)
             {
                 var newObj = RecordVisuals.inst.DouplicateChordObject(chordObject);
-                Recorder.inst.recordObjects[newObj.trackLayer].Add(newObj);
+                Recorder.inst.chordObjects[newObj.trackLayer].Add(newObj);
                 chordObject.hasRespawned = true;
             }
 
@@ -148,19 +148,20 @@ public class ObjectManager : MonoBehaviour
             Player.inst.curFieldSet[chordObject.fieldID].ActiveRecords++;
         }
 
-        // LOOP OBJECT
+        // 2. LOOP OBJECT?
         else 
         {
-            if (!recordObject.hasRespawned)
+            if (!loopObject.hasRespawned)
             {
-
+                RecordVisuals.inst.DouplicateLoopObject(loopObject, Recorder.inst.loopObjects);
+                loopObject.hasRespawned = true;
             }
 
         }
 
     }
 
-    private void OnRecObjFieldExit(RecordObject recordObject)
+    private void OnRecObjFieldExit(LoopObject recordObject)
     {
         // CHORD OBJECT
         if (recordObject is ChordObject)
@@ -173,34 +174,31 @@ public class ObjectManager : MonoBehaviour
         
     }
 
-    private void OnRecObjScreenExit(RecordObject recordObject)
+    private void OnRecObjScreenExit(LoopObject loopObject)
     {
-        // CHORD OBJECT
-        if (recordObject is ChordObject)
+        // 1. CHORD OBJECT?
+        if (loopObject is ChordObject)
         {
-            var chordObject = (ChordObject)recordObject;
+            var chordObject = (ChordObject)loopObject;
 
             // Destroy
-            Recorder.inst.recordObjects[chordObject.trackLayer].Remove(chordObject);
-            Destroy(recordObject.obj);
+            Recorder.inst.chordObjects[chordObject.trackLayer].Remove(chordObject);
+            Destroy(loopObject.obj);
+        }
+
+        // 2. LOOP OBJECT?
+        else
+        {
+            Recorder.inst.loopObjects.Remove(loopObject);
+            Destroy(loopObject.obj);
         }
     }
 
 
 
-    private void OnLoopObjFieldEnter(LoopObject loopObject)
-    {
-
-    }
-
-    private void OnLoopObjectScreenExit(LoopObject loopObject)
-    {
-
-    }
-
-
 
     // ------------------------- Private functions -------------------------
+
 
 
     private void SpawnTunnel()
