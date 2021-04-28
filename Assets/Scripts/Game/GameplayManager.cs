@@ -58,8 +58,6 @@ public class GameplayManager : MonoBehaviour
 
         GameEvents.inst.onScreenResize?.Invoke(); // Hack
 
-        //GameEvents.inst.onStopField += Crap;
-
         yield return null;
     }
 
@@ -68,11 +66,6 @@ public class GameplayManager : MonoBehaviour
     {
         
     }
-
-    //void Crap()
-    //{
-    //    print("onStopField event");
-    //}
 
 
 

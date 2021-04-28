@@ -378,7 +378,11 @@ public class Player : MonoBehaviour
             {
                 if (hit.collider.CompareTag(MeshRef.inst.chordObjTag))
                 {
-                    Recorder.inst.RemoveRecord(hit.collider.GetComponent<ChordObject>());
+                    var chordObject = hit.collider.GetComponent<ChordObject>();
+                    if (!chordObject.isBeingDeleted)
+                    {
+                        StartCoroutine(Recorder.inst.DeleteRoutine(chordObject));
+                    }
                 }
             }
             yield return null;
@@ -650,7 +654,7 @@ public class Player : MonoBehaviour
     private void RotateToTarget(Vector3 targetPos)
     {
         // 1. Rotate
-        Vector3 targetVec = targetPos - this.transform.position;                                                            // TO DO: animation curve, statt damping
+        Vector3 targetVec = targetPos - this.transform.position;
         Vector3 curVec = OuterVertices[0] - this.transform.position;
 
         float nextRot = Vector2.SignedAngle(curVec, targetVec) * bt_rotationDamp * DeltaTime;

@@ -46,6 +46,8 @@ public class MeshRef : MonoBehaviour
     public List<MusicLayerButton> layerButtons;
     public TextMeshProUGUI quantizePrecision;
     public Color inactiveColor;
+    public AnimationCurve deleteLayerCurve;
+    public AnimationCurve deleteChordCurve;
     [Header("Diverse")]
     public PolygonCollider2D mouseColllider;
     public Transform mouseTrail;

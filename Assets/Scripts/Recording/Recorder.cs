@@ -73,6 +73,34 @@ public class Recorder : MonoBehaviour
             }
         }
     }
+
+    public bool HasExactlyOneChord
+    {
+        get
+        {
+            int counter = 0;
+            foreach (List<ChordObject> chordObjects in chordObjects)
+            {
+                // Exact 1 chord auf layer
+                if (chordObjects.Count == 1)
+                {
+                    counter++;
+                }
+                // Mehrere chords auf layer
+                else if (chordObjects.Count > 1)
+                {
+                    return false;
+                }
+            }
+
+            if (counter == 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
     
     private Sequencer CurSequencer { get { return MusicManager.inst.curSequencer; } }
     public int CurLayer { get                                               // scheiﬂe aber mir egal
@@ -216,7 +244,7 @@ public class Recorder : MonoBehaviour
         // clear highlighted fieldSurface und highlightSurface
         foreach (ChordObject recordObj in chordObjects[layer])
         {
-            if (recordObj.isActive)
+            if (recordObj.isPlaying)
             {
                 Player.inst.curFieldSet[recordObj.fieldID].ActiveRecords--;
             }
@@ -234,14 +262,47 @@ public class Recorder : MonoBehaviour
     /// </summary>
     /// <param name="chordObj"></param>
     /// <returns></returns>
-    private IEnumerator DeleteRoutine(ChordObject chordObj)
+    public IEnumerator DeleteRoutine(ChordObject chordObj)
     {
+        chordObj.isBeingDeleted = true;
+
+        float timer = 0;
+        float maxTime = UIManager.inst.deleteRecordTime;
+        bool hasExactlyOneChord = HasExactlyOneChord;
+
+        // 1. Fade out chordObject (& loopObject)
+        while (timer < maxTime)
+        {
+            var curveValue = MeshRef.inst.deleteChordCurve.Evaluate(timer / maxTime);
+            var chordColorLerp = Color.Lerp(Color.black * 0, MeshRef.inst.recordColor, curveValue);
 
 
-        yield return null;
+            // chordObject
+            chordObj.meshRenderer.material.color = chordColorLerp;
+
+            // loopObject
+            if (hasExactlyOneChord)
+            {
+                foreach(LoopObject loopObject in loopObjects)
+                {
+                    loopObject.meshRenderer.material.color = chordColorLerp;
+                }
+            }
+
+            timer += Time.deltaTime;
+
+            yield return null;
+        }
+
+        // 2. Destroy
+        RemoveRecord(chordObj);
     }
 
-    public void RemoveRecord(ChordObject chordObj)
+    /// <summary>
+    /// Remove a single chord. Maybe also LoopObject. Reset every necessary UI stuff.
+    /// </summary>
+    /// <param name="chordObj"></param>
+    private void RemoveRecord(ChordObject chordObj)
     {
         // 1. clear notes
         foreach (int note in chordObj.notes)
@@ -260,7 +321,7 @@ public class Recorder : MonoBehaviour
         }
 
         // 4. field.activeChords
-        if (chordObj.isActive)
+        if (chordObj.isPlaying)
             Player.inst.curFieldSet[chordObj.fieldID].ActiveRecords--;
 
         // 5. LoopObject

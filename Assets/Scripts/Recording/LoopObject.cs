@@ -13,7 +13,8 @@ public class LoopObject : MonoBehaviour
     public float loopStart;
     public float loopEnd_extended;
 
-    public bool isActive = false;
+    public bool isPlaying = false;
+    public bool isBeingDeleted = false;
     public bool hasRespawned = false;
     protected bool hasEnteredField = false;
     protected bool hasLeftField = false;
@@ -46,7 +47,7 @@ public class LoopObject : MonoBehaviour
             {
                 GameEvents.inst.onRecObjFieldEnter?.Invoke(this);
                 hasEnteredField = true;
-                isActive = true;
+                isPlaying = true;
             }
         }
 
@@ -57,7 +58,7 @@ public class LoopObject : MonoBehaviour
             {
                 GameEvents.inst.onRecObjFieldExit?.Invoke(this);
                 hasLeftField = true;
-                isActive = false;
+                isPlaying = false;
             }
         }
 

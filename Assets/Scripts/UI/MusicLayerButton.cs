@@ -77,7 +77,7 @@ public class MusicLayerButton : Button, IPointerDownHandler, IPointerUpHandler, 
         {
             // 1. Scale button
             float lerp = t / duration;
-            float colorLerp = UIManager.inst.deleteLerp.Evaluate(lerp);
+            float colorLerp = MeshRef.inst.deleteLayerCurve.Evaluate(lerp);
             float scaleLerp = Mathf.Lerp(1, targetValue, lerp);
             filledTransform.localScale = Vector3.one * scaleLerp;
 
