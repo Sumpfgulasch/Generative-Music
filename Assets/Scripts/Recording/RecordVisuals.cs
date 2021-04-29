@@ -38,7 +38,7 @@ public class RecordVisuals : MonoBehaviour
         var parent = MeshRef.inst.recordObj_parent;
         var material = MeshRef.inst.recordObjs_mat[trackLayer];
         var pos1 = Player.inst.transform.position;
-        var pos2 = Recorder.inst.NextLoopPosition(recording.sequencer, recording.start, recording.loopStart);
+        var pos2 = Recorder.inst.NextLoopPosition(recording.sequencer, recording.start);
         var layer = 8;
         var collider = true;
         var visible = true;
@@ -70,7 +70,7 @@ public class RecordVisuals : MonoBehaviour
         var ID = chordObj.fieldID;
         var parent = MeshRef.inst.recordObj_parent;
         var material = MeshRef.inst.recordObjs_mat[chordObj.trackLayer];
-        var pos = Recorder.inst.NextLoopPosition(chordObj.sequencer, chordObj.start, chordObj.loopStart);
+        var pos = Recorder.inst.NextLoopPosition(chordObj.sequencer, chordObj.start);
         var layer = 8;
         var visible = true;
         var collider = true;
@@ -98,7 +98,7 @@ public class RecordVisuals : MonoBehaviour
         // 2. Refs
         var obj = MeshRef.inst.loopObject;
         var parent = MeshRef.inst.recordObj_parent;
-        var position = Recorder.inst.NextLoopPosition(Recorder.inst.sequencers[0], loopObject.loopStart, loopObject.loopStart);
+        var position = Recorder.inst.NextLoopPosition(Recorder.inst.sequencers[0], loopObject.loopStart);
 
         
 

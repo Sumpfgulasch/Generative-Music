@@ -526,8 +526,8 @@ public class Recorder : MonoBehaviour
                 }
 
                 // 2.2. Add note for remaining sequencer note?
-                float oldEndPercentage = SequencerPositionPercentage(recording.sequencer, oldEnd, recording.loopStart);
-                float curPosPercentage = SequencerPositionPercentage(recording.sequencer, recording.end, recording.loopStart);
+                //float oldEndPercentage = SequencerPositionPercentage(recording.sequencer, oldEnd, recording.loopStart);
+                //float curPosPercentage = SequencerPositionPercentage(recording.sequencer, recording.end, recording.loopStart);
                 int note = doubleNote.note;
                 float start = recording.end;
                 float end = oldEnd;
@@ -588,12 +588,7 @@ public class Recorder : MonoBehaviour
             }
             else
             {
-
-
                 AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
-                //Debug.Log("before add to sequencer; curDoubleNotes_quantize.count: " + curDoubleNotes_quantize.Count);
-                //foreach (Note doubleNote in curDoubleNotes_quantize)
-                //    Debug.Log("doubleNote: " + doubleNote.note + ", note.start: " + doubleNote.start + ", note.end: " + doubleNote.end);
 
                 // add to sequencer
                 recordCopy.sequencer.AddNote(noteNote, recordCopy.start, recordCopy.end, velocity);
@@ -679,14 +674,16 @@ public class Recorder : MonoBehaviour
     }
 
     /// <summary>
-    /// Get the percentage of the current position of a given sequencer, with start and end point defined by recording-variable (!).
+    /// Get the percentage of the current position of a given sequencer, with end point == sequencer.Length.
     /// </summary>
-    private float SequencerPositionPercentage(Sequencer sequencer, float sequencerPos, float sequencerLoopStart)
+    private float SequencerPositionPercentage(Sequencer sequencer, float sequencerPos)
     {
-        if (sequencerPos < sequencerLoopStart)
-            sequencerPos += sequencer.length;
+        //if (sequencerPos < sequencerLoopStart)
+        //    sequencerPos += sequencer.length;
 
-        float percentage = (sequencerPos - sequencerLoopStart) / sequencer.length;
+        //float percentage = (sequencerPos - sequencerLoopStart) / sequencer.length;
+
+        float percentage = sequencerPos / sequencer.length;
 
         return percentage;  // 0-1
     }
@@ -694,30 +691,35 @@ public class Recorder : MonoBehaviour
     
 
 /// <summary>
-/// Return the Vector3 position of a to-be-douplicated recordObject (with the given sequencer data).
+/// Return the Vector3 position of a to-be-douplicated recordObject (with the given sequencer data). Calc complicated, because otherwise would become inprecise after time.
 /// </summary>
 /// <param name="recordObject"></param>
 /// <param name="sequencer">The relevant sequencer.</param>
 /// <param name="recordObj_startPos">The start position of the midi note in the sequencer.</param>
 /// <param name="recordObj_loopStart">The loop start position in the sequencer</param>
 /// <returns></returns>
-    public Vector3 NextLoopPosition(Sequencer sequencer, float recordObj_startPos, float recordObj_loopStart)
+    public Vector3 NextLoopPosition(Sequencer sequencer, float recordObj_startPos)
     {
+        //var playerPos = Player.inst.transform.position;
+        //float curSeqencerPos = (float)sequencer.GetSequencerPosition();
+
+        //var curSequencerPosPercentage = SequencerPositionPercentage(sequencer, curSeqencerPos, recordObj_loopStart);
+        //var chordStartPos = recordObj_startPos;
+        //var chordStartPosPercentage = SequencerPositionPercentage(sequencer, chordStartPos, recordObj_loopStart);
+
+        //var position = playerPos + 
+        //    (1 - curSequencerPosPercentage) * LoopData.distancePerRecLoop * Vector3.forward +
+        //    chordStartPosPercentage * LoopData.distancePerRecLoop * Vector3.forward;
 
         var playerPos = Player.inst.transform.position;
-        float curSeqencerPos = (float)sequencer.GetSequencerPosition();
+        float curSequencerPos = (float)sequencer.GetSequencerPosition();
 
-        var curSequencerPosPercentage = SequencerPositionPercentage(sequencer, curSeqencerPos, recordObj_loopStart);
-        var chordStartPos = recordObj_startPos;
-        var chordStartPosPercentage = SequencerPositionPercentage(sequencer, chordStartPos, recordObj_loopStart);
+        var sequencer_curPosPercentage =  SequencerPositionPercentage(sequencer, curSequencerPos);
+        var chordObj_startPosPercentage = SequencerPositionPercentage(sequencer, recordObj_startPos);
 
-        var position = playerPos + 
-            (1 - curSequencerPosPercentage) * LoopData.distancePerRecLoop * Vector3.forward +
-            chordStartPosPercentage * LoopData.distancePerRecLoop * Vector3.forward;
-
-
-        //var position = recordObject.transform.position + LoopData.distancePerRecLoop * Vector3.forward; // theoretisch korrekt, mit der Zeit aber asynchron
-
+        var position = playerPos +
+            (1 - sequencer_curPosPercentage) * LoopData.distancePerRecLoop * Vector3.forward +
+            chordObj_startPosPercentage * LoopData.distancePerRecLoop * Vector3.forward;
 
         return position;
     }
