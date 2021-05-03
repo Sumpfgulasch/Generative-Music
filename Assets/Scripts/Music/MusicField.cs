@@ -319,7 +319,7 @@ public class PlayerField // : MusicField
     /// <summary>
     /// Change line renderer width, outerField-opacity (and z-position of line rend).
     /// </summary>
-    public void SetToFocus()
+    public void SetHighlightSurface_toFocus()
     {
         this.lineRend.startWidth = VisualController.inst.playerFieldFocusThickness;
         this.lineRend.endWidth = VisualController.inst.playerFieldFocusThickness;
@@ -327,13 +327,13 @@ public class PlayerField // : MusicField
         float zPos = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
         SetZPos(zPos);
 
-        SetOpacity(VisualController.inst.ms_focus_outside_fieldSurfaceOpacity); // to do: besser; fragen ob ...
+        SetHighlightOpacity(VisualController.inst.ms_focus_outside_fieldSurfaceOpacity); // to do: besser; fragen ob ...
     }
 
     /// <summary>
     /// Change highlight surface opacity (+unused stuff: Change line renderer width and z-position).
     /// </summary>
-    public void SetToPlay()
+    public void SetHighlightSurfaceActive()
     {
         // 1. Unimportant lineRend stuff
         this.lineRend.startWidth = VisualController.inst.playerFieldPlayThickness;
@@ -343,7 +343,7 @@ public class PlayerField // : MusicField
         SetZPos(zPos);
 
         // 2. Set highlight surface
-        SetOpacity(VisualController.inst.ms_play_outside_fieldSurfaceOpacity);
+        SetHighlightOpacity(VisualController.inst.ms_play_outside_fieldSurfaceOpacity);
     }
 
 
@@ -362,10 +362,10 @@ public class PlayerField // : MusicField
 
 
     /// <summary>
-    /// Set opacity of the outer surface (!) - not the line renderer.
+    /// Set opacity of the highlight surface.
     /// </summary>
     /// <param name="opacity">Opacity. 0 == transparent [0, 1].</param>
-    public void SetOpacity(float opacity)
+    public void SetHighlightOpacity(float opacity)
     {
         SurfaceOpacity = opacity;
         Color newColor = OuterSurface.material.color;
@@ -374,15 +374,37 @@ public class PlayerField // : MusicField
     }
 
     /// <summary>
-    /// Disable old, enable new. Set opacity to current value.
+    /// Disable old HighlightSurface, enable new. Set opacity to current value.
     /// </summary>
-    public void UpdateSurface()
+    public void RefreshHighlightSurface()
     {
         OuterSurface.enabled = false;
         OuterSurface = Player.inst.curFieldSet[ID].highlightSurface;
         OuterSurface.enabled = true;
 
-        SetOpacity(SurfaceOpacity);
+        SetHighlightOpacity(SurfaceOpacity);
+    }
+
+    /// <summary>
+    /// LineRend currently disabled.
+    /// </summary>
+    public void RefreshLineRend()
+    {
+        var curField = Player.inst.curField;
+
+        // [currently disabled:] Line renderer positions
+        if (curField.isCorner)
+        {
+            var positions = MeshUpdate.PreventLineRendFromBending(curField.positions);
+            var positionCount = positions.Length;
+            curField.lineRend.positionCount = positionCount;
+            curField.lineRend.SetPositions(positions);
+        }
+        else
+        {
+            curField.lineRend.positionCount = curField.positions.Length;
+            curField.lineRend.SetPositions(curField.positions);
+        }
     }
 
 

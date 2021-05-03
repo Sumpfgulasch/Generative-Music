@@ -379,9 +379,12 @@ public class Player : MonoBehaviour
                 if (hit.collider.CompareTag(MeshRef.inst.chordObjTag))
                 {
                     var chordObject = hit.collider.GetComponent<ChordObject>();
-                    if (!chordObject.isBeingDeleted)
+                    if (chordObject.trackLayer == Recorder.inst.CurLayer)
                     {
-                        StartCoroutine(Recorder.inst.DeleteRoutine(chordObject));
+                        if (!chordObject.isBeingDeleted)
+                        {
+                            StartCoroutine(Recorder.inst.DeleteRoutine(chordObject));
+                        }
                     }
                 }
             }

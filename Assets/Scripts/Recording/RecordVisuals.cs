@@ -40,7 +40,7 @@ public class RecordVisuals : MonoBehaviour
         var pos1 = Player.inst.transform.position;
         var pos2 = Recorder.inst.NextLoopPosition(recording.sequencer, recording.start);
         var layer1 = LayerMask.NameToLayer(MeshRef.inst.highlightSurfaces_layer);
-        var renderQueue1 = MeshRef.inst.highlightSurfaces_renderQueue + 2;
+        var renderQueue1 = MeshRef.inst.highlightSurfaces_renderQueue + 1;
         var layer2 = LayerMask.NameToLayer(MeshRef.inst.recordLayer);
         //var layer = 8;
         var collider = true;

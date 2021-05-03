@@ -129,17 +129,32 @@ public class VisualController : MonoBehaviour
         var intensifier = innerField_recordColorIntensifier;
 
         field.SetInnerFieldVisibility(opacity, intensifier);
-        //field.highlightSurface.enabled = true;
-        //field.SetHighlightOpacity(1f);
-
     }
 
     private void OnStopField_byRecord(MusicField field)
     {
         field.SetInnerFieldVisibility(0, 1);
-        //field.highlightSurface.enabled = false;
-        //field.SetHighlightOpacity(0); // ms_focus_inside_fieldSurfaceOpacity
     }
+
+
+    
+
+    /// <summary>
+    /// Change player visibility.
+    /// </summary>
+    public void OnPlayField_byInput()
+    {
+        int ID = Player.inst.curField.ID;
+        var curField = Player.inst.curFieldSet[ID];
+
+        Player.inst.curField.SetHighlightSurfaceActive();
+
+        //curField.SetInnerFieldVisibility(ms_play_outside_fieldSurfaceOpacity, innerField_liveColorIntensifier);
+        //curField.SetHighlightOpacity(ms_play_outside_fieldSurfaceOpacity);
+        //curField.ActiveRecords++;
+        //print("onPlayField_byInput; ++");
+    }
+
 
 
     /// <summary>
@@ -149,26 +164,24 @@ public class VisualController : MonoBehaviour
     {
         if (data.IsNotSpawning && data.IsSelectable)
         {
-            MeshUpdate.UpdatePlayerFieldVisibility();
+            var curField = Player.inst.curField;
+            curField.RefreshHighlightSurface();
         }
     }
 
-    /// <summary>
-    /// Change player visibility.
-    /// </summary>
-    public void OnPlayStart()
+
+    public void OnStopfield_byInput()
     {
-        Player.inst.curField.SetToPlay();
+        Player.inst.curField.SetHighlightSurface_toFocus();
         //foreach (PlayerField secField in Player.inst.curSecondaryFields)
-        //    secField.SetVisible(true);
-    }
+        //    secField.SetVisible(false);
 
+        int ID = Player.inst.curField.ID;
+        var curField = Player.inst.curFieldSet[ID];
 
-    public void OnPlayEnd()
-    {
-        Player.inst.curField.SetToFocus();
-        foreach (PlayerField secField in Player.inst.curSecondaryFields)
-            secField.SetVisible(false);
+        //curField.SetHighlightOpacity(0);
+        //curField.ActiveRecords--;
+        //print("onSTOPField_byInput; --");
     }
 
     public void OnBeat(int beat)
@@ -181,8 +194,6 @@ public class VisualController : MonoBehaviour
     {
         if (context.performed)
         {
-            //var mousePos = Player.inst.mousePos;
-            //MusicRef.inst.beatSequencer.getsi
             MeshRef.inst.mouseTrail.position = Player.inst.mousePos;
         }
     }
@@ -195,11 +206,11 @@ public class VisualController : MonoBehaviour
     {
         if (Player.inst.actionState == Player.ActionState.Play)
         {
-            Player.inst.curField.SetOpacity(ms_play_inside_fieldSurfaceOpacity);
+            Player.inst.curField.SetHighlightOpacity(ms_play_inside_fieldSurfaceOpacity);
         }
         else
         {
-            Player.inst.curField.SetOpacity(ms_focus_inside_fieldSurfaceOpacity);
+            Player.inst.curField.SetHighlightOpacity(ms_focus_inside_fieldSurfaceOpacity);
         }
     }
 
@@ -207,11 +218,11 @@ public class VisualController : MonoBehaviour
     {
         if (Player.inst.actionState == Player.ActionState.Play)
         {
-            Player.inst.curField.SetOpacity(ms_play_outside_fieldSurfaceOpacity);
+            Player.inst.curField.SetHighlightOpacity(ms_play_outside_fieldSurfaceOpacity);
         }
         else
         {
-            Player.inst.curField.SetOpacity(ms_focus_outside_fieldSurfaceOpacity);
+            Player.inst.curField.SetHighlightOpacity(ms_focus_outside_fieldSurfaceOpacity);
         }
     }
 

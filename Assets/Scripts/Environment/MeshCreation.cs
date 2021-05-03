@@ -249,7 +249,7 @@ public static class MeshCreation
 
         // Init field & outerSurface
         Player.curField.InitSurface();
-        Player.curField.SetToFocus();
+        Player.curField.SetHighlightSurface_toFocus();
     }
 
 

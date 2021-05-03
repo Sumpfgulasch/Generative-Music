@@ -214,32 +214,30 @@ public static class MeshUpdate
     }
 
 
-    /// <summary>
-    /// Set fieldSurface- and highlightSurface-references to current ID. (+Set lineRenderer positions, disabled). Set highlightSurface opacity.
-    /// </summary>
-    public static void UpdatePlayerFieldVisibility()
-    {
-        var curField = Player.inst.curField;
+    ///// <summary>
+    ///// Set fieldSurface- and highlightSurface-references to current ID. (+Set lineRenderer positions, disabled). Set highlightSurface opacity.
+    ///// </summary>
+    //public static void UpdatePlayerFieldVisibility()
+    //{
+        //var curField = Player.inst.curField;
 
-        // 1. 
+        // 1. Highlight-surface: disable old, enable new; set opacity to current value
+        //curField.RefreshHighlightSurface();
 
-        // 2. Highlight-surface: disable old, enable new; set opacity to current value
-        curField.UpdateSurface();
-
-        // 3. [currently disabled:] Line renderer positions
-        if (curField.isCorner)
-        {
-            var positions = PreventLineRendFromBending(curField.positions);
-            var positionCount = positions.Length;
-            curField.lineRend.positionCount = positionCount;
-            curField.lineRend.SetPositions(positions);
-        }
-        else
-        {
-            curField.lineRend.positionCount = curField.positions.Length;
-            curField.lineRend.SetPositions(curField.positions);
-        }
-    }
+        // 2. [currently disabled:] Line renderer positions
+        //if (curField.isCorner)
+        //{
+        //    var positions = PreventLineRendFromBending(curField.positions);
+        //    var positionCount = positions.Length;
+        //    curField.lineRend.positionCount = positionCount;
+        //    curField.lineRend.SetPositions(positions);
+        //}
+        //else
+        //{
+        //    curField.lineRend.positionCount = curField.positions.Length;
+        //    curField.lineRend.SetPositions(curField.positions);
+        //}
+    //}
 
 
     /// <summary>

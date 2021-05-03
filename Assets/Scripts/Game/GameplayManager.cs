@@ -44,8 +44,8 @@ public class GameplayManager : MonoBehaviour
         MusicRef.inst.beatSequencer.beatEvent.AddListener(MusicManager.inst.OnVeryFirstBeats);
         GameEvents.inst.onVeryFirstBeat += OnVeryFirstBeat;
         GameEvents.inst.onVerySecondBeat += OnVerySecondBeat;
-        GameEvents.inst.onPlayPerformed += VisualController.inst.OnPlayStart;
-        GameEvents.inst.onPlayCanceled += VisualController.inst.OnPlayEnd;
+        GameEvents.inst.onPlayPerformed += VisualController.inst.OnPlayField_byInput;
+        GameEvents.inst.onPlayCanceled += VisualController.inst.OnStopfield_byInput;
         GameEvents.inst.onChangeField += VisualController.inst.OnFieldChange;
         GameEvents.inst.onMouseInside += VisualController.inst.OnMouseInside;
         GameEvents.inst.onMouseOutside += VisualController.inst.OnMouseOutside;
