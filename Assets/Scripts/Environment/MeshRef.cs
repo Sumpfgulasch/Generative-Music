@@ -28,12 +28,16 @@ public class MeshRef : MonoBehaviour
     [Space]
     public Transform highlightSurfaces_parent;
     public Material highlightSurfaces_mat;
+    public string highlightSurfaces_layer = "2nd cam";
+    public int highlightSurfaces_renderQueue = 3003;
     public string fieldSurfaces_layer = "2nd cam";
     public int fieldSurfaces_renderQueue = 3001;
     public Transform fieldSurfaces_parent;
     public Material fieldSurfaces_mat;
     [Header("Record")]
     public string chordObjTag = "recordObject";
+    public string recordLayer = "Default";
+    //public int recordRenderQueue = 
     public GameObject loopObject;
     public TextMeshProUGUI recordText;
     public Image recordImage;

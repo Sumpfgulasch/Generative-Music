@@ -1159,7 +1159,7 @@
     },
     "m_Name": "GridColor",
     "m_DefaultReferenceName": "Color_F15F84FB",
-    "m_OverrideReferenceName": "",
+    "m_OverrideReferenceName": "GridColor",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,

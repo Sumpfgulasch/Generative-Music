@@ -51,9 +51,6 @@ public class MusicManager : MonoBehaviour
 
     // Properties
     Player Player { get { return Player.inst; } }
-    VisualController VisualController { get { return VisualController.inst; } }
-
-    Player.Side curSide, lastSide;
 
     // Quantization
     private float quantization;
@@ -121,7 +118,7 @@ public class MusicManager : MonoBehaviour
     {
         bool isPlaying = Player.inst.actionState == Player.ActionState.Play;
         var sequencerPos = (float) curSequencer.GetSequencerPosition();
-        var sequencerNotes = AudioHelmHelper.GetCurrentNotes(curSequencer, sequencerPos);
+        var sequencerNotes = MyAudioHelmHelper.GetCurrentNotes(curSequencer, sequencerPos);
 
         // 1. Stop curChord (if not being played in the sequencer)
         if (isPlaying)
@@ -174,7 +171,7 @@ public class MusicManager : MonoBehaviour
             switch (fieldType)
             {
                 case MusicField.Type.Chord:
-                    AudioHelmHelper.PlayChord(curChord, controller, velocity);
+                    MyAudioHelmHelper.PlayChord(curChord, controller, velocity);
                     break;
 
                 case MusicField.Type.Modulation:
@@ -199,7 +196,7 @@ public class MusicManager : MonoBehaviour
         switch (fieldType)
         {
             case MusicField.Type.Chord:
-                AudioHelmHelper.StopChord(curChord, controller, curSequencer);
+                MyAudioHelmHelper.StopChord(curChord, controller, curSequencer);
                 break;
 
             case MusicField.Type.Modulation:
@@ -413,27 +410,6 @@ public class MusicManager : MonoBehaviour
         //        minPitch = maxPitch + Random.Range(1, maxEdgePitchIntervalRange);
         //}
     }
-
-
-
-
-
-    // -------------------------Audio Helm helper -------------------------------
-
-
-
-    //public IEnumerator WaitBeats(float beatsToWait)
-    //{
-    //    float targetBeat = curBeat + beatsToWait;
-    //    print("COROUTINE; curBeat: " + curBeat + ", targetBeat: " + targetBeat);
-    //    while (curBeat < targetBeat)
-    //    {
-    //        //print("curBeat: " + curBeat + ", targetBeat: " + targetBeat);
-    //        yield return null;
-    //    }
-    //    print("FINISHED WAIT (targetBeat: " + targetBeat);
-    //}
-
 
 
 

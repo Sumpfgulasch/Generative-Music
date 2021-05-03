@@ -45,7 +45,7 @@ public class LoopObject : MonoBehaviour
         {
             if (!hasEnteredField)
             {
-                GameEvents.inst.onRecObjFieldEnter?.Invoke(this);
+                GameEvents.inst.onLoopObjFieldEnter?.Invoke(this);
                 hasEnteredField = true;
                 isPlaying = true;
             }
@@ -56,7 +56,7 @@ public class LoopObject : MonoBehaviour
         {
             if (!hasLeftField)
             {
-                GameEvents.inst.onRecObjFieldExit?.Invoke(this);
+                GameEvents.inst.onLoopObjFieldExit?.Invoke(this);
                 hasLeftField = true;
                 isPlaying = false;
             }
@@ -67,7 +67,7 @@ public class LoopObject : MonoBehaviour
         {
             if (!hasLeftScreen)
             {
-                GameEvents.inst.onRecObjScreenExit?.Invoke(this);
+                GameEvents.inst.onLoopObjScreenExit?.Invoke(this);
                 hasLeftScreen = true;
             }
         }

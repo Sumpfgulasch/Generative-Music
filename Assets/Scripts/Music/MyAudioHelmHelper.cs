@@ -4,7 +4,7 @@ using UnityEngine;
 using AudioHelm;
 using System.Linq;
 
-public static class AudioHelmHelper // : MonoBehaviour
+public static class MyAudioHelmHelper // : MonoBehaviour
 {
 
 
@@ -13,14 +13,13 @@ public static class AudioHelmHelper // : MonoBehaviour
     {
         for (int i = 0; i < chord.notes.Length; i++)
         {
-            if (!controller.IsNoteOn(chord.notes[i]))
+            int note = chord.notes[i];
+            if (controller.IsNoteOn(note))
             {
-                controller.NoteOn(chord.notes[i], velocity);
+                controller.NoteOff(note);
             }
-            else
-            {
-                Debug.Log("note is still on");
-            }
+
+            controller.NoteOn(note, velocity);
         }
     }
 
@@ -28,30 +27,14 @@ public static class AudioHelmHelper // : MonoBehaviour
     {
         for (int i = 0; i < chord.notes.Length; i++)
         {
-            if (controller.IsNoteOn(chord.notes[i]))
+            int note = chord.notes[i];
+            if (controller.IsNoteOn(note))
             {
-                // 1. Check if the current notes are played in the sequencer
-                //var curPos = (float) sequencer.GetSequencerPosition();
-                //var curSeqNotes = GetCurrentNotes(sequencer, curPos);
-
-                //bool noteIsPlayed = false;
-
-                //foreach (Note sequencerNote in curSeqNotes)
-                //{
-                //    if (sequencerNote.note == chord.notes[i])
-                //    {
-                //        noteIsPlayed = true;
-                //        Debug.Log("seq note.end: " + sequencerNote.end);
-                //        break;
-                //    }
-                //}
-
-
-                // 2. Stop only if the notes are not being played in the sequencer
-                //if (!noteIsPlayed || forceNoteOff)
-                //{
-                    controller.NoteOff(chord.notes[i]);
-                //}
+                // 2. Stop only if the notes are NOT being played in the sequencer
+                if (!sequencer.IsNoteOn(note) || forceNoteOff)
+                {
+                    controller.NoteOff(note);
+                }
 
             }
         }
@@ -230,6 +213,34 @@ public static class AudioHelmHelper // : MonoBehaviour
         }
         
         return (end - start); // in sixteenth
+    }
+
+
+    /// <summary>
+    /// Check if a given note is currently played in the given sequencer.
+    /// </summary>
+    /// <param name="note"></param>
+    /// <param name="sequencer"></param>
+    /// <returns></returns>
+    public static bool IsNoteOn(this Sequencer sequencer, int note)
+    {
+        // 1. Check if the current notes are played in the sequencer
+        var curPos = (float)sequencer.GetSequencerPosition();
+        var curSeqNotes = GetCurrentNotes(sequencer, curPos);
+
+        bool noteIsPlayed = false;
+
+        foreach (Note sequencerNote in curSeqNotes)
+        {
+            if (sequencerNote.note == note)
+            {
+                noteIsPlayed = true;
+                //Debug.Log("seq note.end: " + sequencerNote.end);
+                break;
+            }
+        }
+
+        return noteIsPlayed;
     }
 
 

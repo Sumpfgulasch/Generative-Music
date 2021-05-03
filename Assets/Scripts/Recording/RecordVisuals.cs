@@ -39,14 +39,17 @@ public class RecordVisuals : MonoBehaviour
         var material = MeshRef.inst.recordObjs_mat[trackLayer];
         var pos1 = Player.inst.transform.position;
         var pos2 = Recorder.inst.NextLoopPosition(recording.sequencer, recording.start);
-        var layer = 8;
+        var layer1 = LayerMask.NameToLayer(MeshRef.inst.highlightSurfaces_layer);
+        var renderQueue1 = MeshRef.inst.highlightSurfaces_renderQueue + 2;
+        var layer2 = LayerMask.NameToLayer(MeshRef.inst.recordLayer);
+        //var layer = 8;
         var collider = true;
         var visible = true;
         var tag = MeshRef.inst.chordObjTag;
 
         // 1. Instantiate
-        var obj1 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, visible, collider, tag, 1f, layer).gameObject;
-        var obj2 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, visible, collider, tag, 1f, layer).gameObject;
+        var obj1 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, visible, collider, tag, 1f, layer1, renderQueue1).gameObject;
+        var obj2 = MeshCreation.CreateLaneSurface(fields, ID, "ChordObject", parent, material, visible, collider, tag, 1f, layer2).gameObject;
 
         var recordObject2 = ChordObject.Create(obj2, null, pos2, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
         var recordObject1 = ChordObject.Create(obj1, recordObject2, pos1, ID, recording.notes, recording.sequencer, trackLayer, recording.start, recording.end, recording.loopStart, recording.loopEnd_extended);
@@ -63,7 +66,7 @@ public class RecordVisuals : MonoBehaviour
         recording.scaleRoutine = StartCoroutine(ScaleChordObject(recordObject1, recordObject2));
     }
 
-    public ChordObject DouplicateChordObject(ChordObject chordObj)
+    public ChordObject DouplicateChordObject(ChordObject chordObj, List<ChordObject> chordObjects)
     {
         // 0. Refs
         var fields = Player.inst.curFieldSet;
@@ -83,9 +86,11 @@ public class RecordVisuals : MonoBehaviour
         var douplicateObj = ChordObject.Create(newObj, null, pos, ID, chordObj.notes, chordObj.sequencer, chordObj.trackLayer, chordObj.start, chordObj.end, chordObj.loopStart, chordObj.loopEnd_extended);
         
         // 2. Set data
-        chordObj.douplicate = douplicateObj;   // obj that was douplicated
+        chordObj.douplicate = douplicateObj;
+        chordObj.hasRespawned = true;
 
-        // !!! in ObjectManager: Add to recordObjects-list when invoked !!!
+        // 3. Add to list
+        chordObjects.Add(douplicateObj);
 
         return douplicateObj;
     }

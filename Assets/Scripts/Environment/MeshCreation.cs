@@ -265,6 +265,8 @@ public static class MeshCreation
             Material material_field = MeshRef.inst.fieldSurfaces_mat;
             int fieldLayer = LayerMask.NameToLayer(MeshRef.inst.fieldSurfaces_layer);
             int fieldRenderQueue = MeshRef.inst.fieldSurfaces_renderQueue;
+            int highlightLayer = LayerMask.NameToLayer(MeshRef.inst.highlightSurfaces_layer);
+            int highlightRenderQueue = MeshRef.inst.highlightSurfaces_renderQueue;
             Transform parent_high = MeshRef.inst.highlightSurfaces_parent;
             Material material_high = MeshRef.inst.highlightSurfaces_mat;
             bool noCollider = false;
@@ -272,7 +274,7 @@ public static class MeshCreation
    
 
             MeshRenderer fieldSurface = CreateLaneSurface(fields, ID, "FieldSurface", parent_field, material_field, false, noCollider, notag, - 1f, fieldLayer, fieldRenderQueue);
-            MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, false, noCollider, notag, - 2f);
+            MeshRenderer highlightSurface = CreateLaneSurface(fields, ID, "HighlightSurface", parent_high, material_high, false, noCollider, notag, - 2f, highlightLayer, highlightRenderQueue);
 
             fields[ID].fieldSurface = fieldSurface;
             fields[ID].highlightSurface = highlightSurface;

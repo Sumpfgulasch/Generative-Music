@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 931661302326470943}
   - component: {fileID: 931661302326470942}
   - component: {fileID: 931661302326471393}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: asdf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 931661302585686933}
   - component: {fileID: 931661302585686932}
   - component: {fileID: 931661302585686935}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: asdf (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ GameObject:
   - component: {fileID: 931661302737592571}
   - component: {fileID: 931661302737592570}
   - component: {fileID: 931661302737592573}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: asdf (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 931661303509340524}
   - component: {fileID: 729003345590577650}
   - component: {fileID: 624924990838013988}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: LoopObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -338,9 +338,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   obj: {fileID: 0}
   meshRenderer: {fileID: 5283842568455886753}
+  startColor: {r: 0, g: 0, b: 0, a: 0}
   loopStart: 0
   loopEnd_extended: 0
-  isActive: 0
+  isPlaying: 0
+  isBeingDeleted: 0
   hasRespawned: 0
 --- !u!114 &624924990838013988
 MonoBehaviour:

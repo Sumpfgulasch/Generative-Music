@@ -26,9 +26,9 @@ public class GameEvents : MonoBehaviour
     public Action onMouseInside;
     public Action onMouseOutside;
     // Record
-    public Action<LoopObject> onRecObjFieldEnter;
-    public Action<LoopObject> onRecObjFieldExit;
-    public Action<LoopObject> onRecObjScreenExit;
+    public Action<LoopObject> onLoopObjFieldEnter;
+    public Action<LoopObject> onLoopObjFieldExit;
+    public Action<LoopObject> onLoopObjScreenExit;
     public Action<MusicField> onPlayFieldByRecord;
     public Action<MusicField> onStopFieldByRecord;
 

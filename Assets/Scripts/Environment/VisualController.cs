@@ -47,6 +47,11 @@ public class VisualController : MonoBehaviour
     [Range(0, 2.0f)] public float maxFieldSurfaceHeight = 0.4f;
     [Range(0.1f, 1)] public float fieldSurfaceAlpha = 1;
     [Range(0.1f, 1)] public float fieldSurfaceValue = 0.5f;
+    [Space]
+    [Range(0.001f, 1)] public float innerFieldSurface_recordPlayOpacity = 0.001f;
+    [Range(0.01f, 30)] public float innerField_recordColorIntensifier = 6.8f;
+    [Range(0.001f, 1)] public float innerFieldSurface_livePlayOpacity = 0.5f;
+    [Range(0.01f, 30)] public float innerField_liveColorIntensifier = 10f;
 
     [Header("Highlight surfaces")]
     [Range(0f, 1f)] public float ms_focus_inside_fieldSurfaceOpacity = 0;
@@ -114,19 +119,26 @@ public class VisualController : MonoBehaviour
     // ----------------------------- Events ----------------------------
 
 
+    /// <summary>
+    /// Highlight field when played by a loopObject.
+    /// </summary>
+    /// <param name="field"></param>
     private void OnPlayField_byRecord(MusicField field)
     {
-        field.fieldSurface.material.SetFloat("Fill", 1f);
-        field.highlightSurface.enabled = true;
-        field.SetHighlightOpacity(1f);
+        var opacity = innerFieldSurface_recordPlayOpacity;
+        var intensifier = innerField_recordColorIntensifier;
+
+        field.SetInnerFieldVisibility(opacity, intensifier);
+        //field.highlightSurface.enabled = true;
+        //field.SetHighlightOpacity(1f);
 
     }
 
     private void OnStopField_byRecord(MusicField field)
     {
-        field.fieldSurface.material.SetFloat("Fill", 0);
-        field.highlightSurface.enabled = false;
-        field.SetHighlightOpacity(ms_focus_inside_fieldSurfaceOpacity);
+        field.SetInnerFieldVisibility(0, 1);
+        //field.highlightSurface.enabled = false;
+        //field.SetHighlightOpacity(0); // ms_focus_inside_fieldSurfaceOpacity
     }
 
 

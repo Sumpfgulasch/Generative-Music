@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 
 
-// ----------------------------- Edge Part ----------------------------
+// ----------------------------- MusicField ----------------------------
 
 public class MusicField
 {
@@ -56,8 +56,8 @@ public class MusicField
     }
 
     // Private variables
-    public Color color;
-
+    public Color fieldSurfaceColor;
+    public Color highlightSurfaceColor;
 
 
 
@@ -120,14 +120,6 @@ public class MusicField
     }
 
 
-    ///// <summary>
-    ///// Store color and change material color of line renderer.
-    ///// </summary>
-    //public void SetColor(Color color)
-    //{
-    //    this.color = color;
-    //    this.lineRend.material.color = color;
-    //}
 
     /// <summary>
     /// Set the z-positions of the line renderer.
@@ -154,20 +146,25 @@ public class MusicField
     }
 
     /// <summary>
-    /// Calc different colors from the given color. Set material colors (baseColor and emissiveColor, for (1) lineRend, (2) highlightSurface and (3) fieldSurface).
+    /// Calc different colors from the given color (differing in opacity and value). Set material colors (baseColor and emissiveColor for lineRend, highlightSurface and fieldSurface).
     /// </summary>
-    public void SetColor(Color color)
+    public void SetColors(Color color)
     {
-        // Calc colors
+        // 1. Calc colors
         float h, s, v;
         Color.RGBToHSV(color, out h, out s, out v);
+
+        // 1.1. fieldSurface
         v = VisualController.inst.fieldSurfaceValue;
         Color fieldSurfaceColor = Color.HSVToRGB(h,s,v);
         fieldSurfaceColor.a = VisualController.inst.fieldSurfaceAlpha; // fieldSurface, alpha
+        this.fieldSurfaceColor = fieldSurfaceColor;
         
+        // 1.2. highlightSurface
         Color.RGBToHSV(color, out h, out s, out v);
         s = VisualController.inst.highlightSurface_emissiveSaturation; // highlightSurface, saturation
         Color highlightSurfaceColor = Color.HSVToRGB(h, s, v);
+        this.highlightSurfaceColor = highlightSurfaceColor;
 
         // Calc intensities
         float lineRendIntensity;
@@ -193,6 +190,16 @@ public class MusicField
         var color = highlightSurface.material.color;
         color.a = opacity;
         highlightSurface.material.color = color;
+    }
+
+    /// <summary>
+    /// Set the opacity of the inner surface and an emissive intensifier.
+    /// </summary>
+    /// <param name="opacity"></param>
+    public void SetInnerFieldVisibility(float opacity, float emissiveIntensifier)
+    {
+        fieldSurface.material.SetFloat("Fill", opacity);
+        fieldSurface.material.SetColor("GridColor", fieldSurfaceColor * emissiveIntensifier);
     }
 
     public static bool IsCorner(int ID)

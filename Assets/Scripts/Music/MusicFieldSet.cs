@@ -65,7 +65,7 @@ public static class MusicFieldSet
     {
         for (int i=0; i<fields.Length; i++)
         {
-            fields[i].SetColor(colors[i]);
+            fields[i].SetColors(colors[i]);
         }
     }
 }

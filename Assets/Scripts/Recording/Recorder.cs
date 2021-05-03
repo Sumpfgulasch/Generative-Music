@@ -57,7 +57,6 @@ public class Recorder : MonoBehaviour
                     counter++;
                 }
             }
-            print("layer counter: " + counter);
 
             if (counter == 1)
             {
@@ -236,7 +235,6 @@ public class Recorder : MonoBehaviour
         sequencers[layer].Clear();
 
         // 2. UI & objects
-        print("hasExactlyOneLayer: " + HasExactlyOneLayer);
         if (!Has1stRecord)
         {
             DestroyLoopObjects();
@@ -372,8 +370,6 @@ public class Recorder : MonoBehaviour
     /// </summary>
     private void SaveRecordStartData()
     {
-        print("OnStartField");
-
         float sequencerPos = (float) CurSequencer.GetSequencerPosition();
 
         // 1. Start & quantize offset
@@ -435,8 +431,8 @@ public class Recorder : MonoBehaviour
     {
         float curPos = (float)CurSequencer.GetSequencerPosition();
         float velocity = MusicManager.inst.velocity;
-        var curNotes = AudioHelmHelper.GetCurrentNotes(CurSequencer, curPos);
-        var doubleNotes = AudioHelmHelper.DoubleNotes(recording.notes, curNotes);
+        var curNotes = MyAudioHelmHelper.GetCurrentNotes(CurSequencer, curPos);
+        var doubleNotes = MyAudioHelmHelper.DoubleNotes(recording.notes, curNotes);
 
         // 1. Write to recording
         // 2. Quantize?
@@ -560,17 +556,17 @@ public class Recorder : MonoBehaviour
 
         // #3 Get bridges notes that are NOT being played
         curPos = (float)recordCopy.sequencer.GetSequencerPosition();
-        var unplayedBridgeNotes = AudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
+        var unplayedBridgeNotes = MyAudioHelmHelper.UnplayedBridgeNotes(CurSequencer, curPos);
 
         // cur douplicate notes, at the time of the start
-        var curNotes_quantize = AudioHelmHelper.GetCurrentNotes(recordCopy.sequencer, recordCopy.start);
-        var curDoubleNotes_quantize = AudioHelmHelper.DoubleNotes(recordCopy.notes, curNotes_quantize);
+        var curNotes_quantize = MyAudioHelmHelper.GetCurrentNotes(recordCopy.sequencer, recordCopy.start);
+        var curDoubleNotes_quantize = MyAudioHelmHelper.DoubleNotes(recordCopy.notes, curNotes_quantize);
 
 
         // 5. Add remaining usual notes (#1; 3/3)
         foreach (NoteContainer note in usualNotes)
         {
-            AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
+            MyAudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
 
             recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
         }
@@ -588,7 +584,7 @@ public class Recorder : MonoBehaviour
             }
             else
             {
-                AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
+                MyAudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
 
                 // add to sequencer
                 recordCopy.sequencer.AddNote(noteNote, recordCopy.start, recordCopy.end, velocity);
@@ -607,14 +603,14 @@ public class Recorder : MonoBehaviour
             }
             else
             {
-                AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
+                MyAudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
 
                 recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
             }
         }
         foreach (Note note in unplayedBridgeNotes)  // #3: unplayed bridge notes
         {
-            AudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
+            MyAudioHelmHelper.RemoveIdenticalStartNotes(note, curDoubleNotes_quantize, recordCopy.sequencer);
 
             recordCopy.sequencer.AddNote(note.note, note.start, note.end, velocity);
         }
@@ -784,10 +780,8 @@ public class Recorder : MonoBehaviour
 
     private void DestroyLoopObjects()
     {
-        print("call destroy LoopObj");
         foreach(LoopObject loopObject in loopObjects)
         {
-            print("Destroy");
             Destroy(loopObject.obj);
         }
         loopObjects = new List<LoopObject>();

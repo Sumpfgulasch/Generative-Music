@@ -36,9 +36,9 @@ public class ObjectManager : MonoBehaviour
 
         GetData();
 
-        GameEvents.inst.onRecObjFieldEnter += OnRecObjFieldEnter;
-        GameEvents.inst.onRecObjFieldExit += OnRecObjFieldExit;
-        GameEvents.inst.onRecObjScreenExit += OnRecObjScreenExit;
+        GameEvents.inst.onLoopObjFieldEnter += OnLoopObjFieldEnter;
+        GameEvents.inst.onLoopObjFieldExit += OnLoopObjFieldExit;
+        GameEvents.inst.onLoopObjScreenExit += OnRecObjScreenExit;
     }
 
 
@@ -128,20 +128,22 @@ public class ObjectManager : MonoBehaviour
     }
 
 
-
-    private void OnRecObjFieldEnter(LoopObject loopObject)
+    /// <summary>
+    /// Douplicate chordObjects and loopObjects onLoopObjectFieldEnter
+    /// </summary>
+    /// <param name="loopObject"></param>
+    private void OnLoopObjFieldEnter(LoopObject loopObject)
     {
         // 1. CHORD OBJECT?
         if (loopObject is ChordObject)
         {
-            ChordObject chordObject = (ChordObject)loopObject;
+            var chordObject = (ChordObject)loopObject;
+            var chordObjects = Recorder.inst.chordObjects[chordObject.trackLayer];
 
             // Instantiate
             if (!chordObject.hasRespawned)
             {
-                var newObj = RecordVisuals.inst.DouplicateChordObject(chordObject);
-                Recorder.inst.chordObjects[newObj.trackLayer].Add(newObj);
-                chordObject.hasRespawned = true;
+                RecordVisuals.inst.DouplicateChordObject(chordObject, chordObjects);
             }
 
             // Active records
@@ -161,12 +163,12 @@ public class ObjectManager : MonoBehaviour
 
     }
 
-    private void OnRecObjFieldExit(LoopObject recordObject)
+    private void OnLoopObjFieldExit(LoopObject loopObject)
     {
         // CHORD OBJECT
-        if (recordObject is ChordObject)
+        if (loopObject is ChordObject)
         {
-            var chordObject = (ChordObject)recordObject;
+            var chordObject = (ChordObject)loopObject;
 
             // Active records
             Player.inst.curFieldSet[chordObject.fieldID].ActiveRecords--;
