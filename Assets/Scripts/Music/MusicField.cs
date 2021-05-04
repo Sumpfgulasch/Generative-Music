@@ -174,6 +174,11 @@ public class MusicField
         this.highlightSurface.material.SetColor("_EmissionColor", highlightSurfaceColor * surfaceIntensity);
     }
 
+    public void SetFieldColor(Color color)
+    {
+        fieldSurface.material.SetColor("GridColor", color);
+    }
+
 
     /// <summary>
     /// Set opacity of the highlight surface meshRenderer. Store value in a variable.
@@ -191,10 +196,16 @@ public class MusicField
     /// Set the opacity of the inner surface and an emissive intensifier.
     /// </summary>
     /// <param name="opacity"></param>
-    public void SetFieldVisibility(float opacity, float emissiveIntensifier)
+    public void SetFieldVisibility(float opacity, float emissiveIntensifier, string altColor = null)
     {
+        Color color = fieldSurfaceColor;
+
+        if (altColor == "red")
+        {
+            color = MeshRef.inst.recordFieldColor;
+        }
         fieldSurface.material.SetFloat("Fill", opacity);
-        fieldSurface.material.SetColor("GridColor", fieldSurfaceColor * emissiveIntensifier);
+        fieldSurface.material.SetColor("GridColor", color * emissiveIntensifier);
     }
 
     public static bool IsCorner(int ID)
@@ -307,7 +318,15 @@ public class MusicField
         if (Player.inst.actionState == Player.ActionState.Play)
         {
             SetHighlightOpacity(playHighlightOpacity);
-            SetFieldVisibility(playFieldOpacity, playFieldIntensifier);
+
+            if (Recorder.inst.isRecording)
+            {
+                SetFieldVisibility(playFieldOpacity, playFieldIntensifier, "red");
+            }
+            else
+            {
+                SetFieldVisibility(playFieldOpacity, playFieldIntensifier);
+            }
         }
         else
         {

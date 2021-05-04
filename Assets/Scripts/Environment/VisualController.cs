@@ -164,7 +164,15 @@ public class VisualController : MonoBehaviour
         curPlayerField.SetHighlightOpacity(playOutsideHighlightOpacity);
 
         // 2. FieldSurface
-        curField.SetFieldVisibility(playFieldOpacity, playFieldIntensifier);
+        if (Recorder.inst.isRecording)
+        {
+            curField.SetFieldVisibility(playFieldOpacity, playFieldIntensifier, "red");
+        }
+        else
+        {
+            curField.SetFieldVisibility(playFieldOpacity, playFieldIntensifier);
+        }
+        
     }
 
 
@@ -256,6 +264,25 @@ public class VisualController : MonoBehaviour
         }
     }
 
+
+    public void OnRecord(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (Player.inst.actionState == Player.ActionState.Play)
+            {
+                if (Recorder.inst.isRecording)
+                {
+                    Player.inst.curField.SetFieldVisibility(playFieldOpacity, playFieldIntensifier, "red");
+                }
+                else
+                {
+                    Player.inst.curField.SetFieldVisibility(playFieldOpacity, playFieldIntensifier);
+                }
+                
+            }
+        }
+    }
 
 
 

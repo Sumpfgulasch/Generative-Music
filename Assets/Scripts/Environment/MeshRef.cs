@@ -37,11 +37,11 @@ public class MeshRef : MonoBehaviour
     [Header("Record")]
     public string chordObjTag = "recordObject";
     public string recordLayer = "Default";
-    //public int recordRenderQueue = 
     public GameObject loopObject;
     public TextMeshProUGUI recordText;
     public Image recordImage;
     public Color recordColor;
+    public Color recordFieldColor;
     public Transform recordObj_parent;
     public Material[] recordObjs_mat;
     public TextMeshProUGUI preRecordCounter;
