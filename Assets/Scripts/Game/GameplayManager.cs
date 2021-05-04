@@ -32,10 +32,10 @@ public class GameplayManager : MonoBehaviour
         
         // 2. Fill fields with last content (chords & colors)
         LoopData.Init();
-        #region hack: isSpawning = true
+        #region hack: isNotSpawning = false
         for (int i=0; i< TunnelData.fields.Length; i++)
         {
-            Player.inst.curFieldSet[i].isSpawning = true;
+            Player.inst.curFieldSet[i].isNotSpawning = false;
         }
         #endregion
 

@@ -309,7 +309,7 @@ public class ObjectManager : MonoBehaviour
 
         field.fieldSurface.transform.localScale = new Vector3(1, 1, field.height);
         field.SetLineRendZPos(Player.inst.transform.position.z - field.height);
-        field.isSpawning = false;
+        field.isNotSpawning = true;
 
         // aktiviere variablen
     }

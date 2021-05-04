@@ -12,7 +12,7 @@ public class GameEvents : MonoBehaviour
     public Action onScreenResize;
     // Input field
     public Action onPlayPerformed;                  // playAction.performed
-    public Action<PlayerField> onChangeField;       // field ID change (regardless of if the field is playing)
+    public Action<MusicField> onChangeField;        // field ID change (regardless of if the field is playing)
     public Action onPlayCanceled;                   // playAction.canceled
     // Music field
     public Action onPlayField;                      // each time a (changed) field starts to PLAY

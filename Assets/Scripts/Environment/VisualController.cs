@@ -43,23 +43,26 @@ public class VisualController : MonoBehaviour
     [Range(0, 20f)] public float lineRendNoCornerIntensity = 2.2f;
 
     [Header("Field surfaces")]
+    [Range(0.001f, 1)] public float recordFieldOpacity = 0.005f;
+    [Range(0.01f, 30)] public float recordFieldIntensifier = 22;
+    [Range(0.001f, 1)] public float playFieldOpacity = 0.177f;
+    [Range(0.01f, 30)] public float playFieldIntensifier = 30f;
+    [Space]
     [Range(0, 0.5f)] public float minFieldSurfaceHeight = 0.1f;
     [Range(0, 2.0f)] public float maxFieldSurfaceHeight = 0.4f;
-    [Range(0.1f, 1)] public float fieldSurfaceAlpha = 1;
-    [Range(0.1f, 1)] public float fieldSurfaceValue = 0.5f;
-    [Space]
-    [Range(0.001f, 1)] public float innerFieldSurface_recordPlayOpacity = 0.001f;
-    [Range(0.01f, 30)] public float innerField_recordColorIntensifier = 6.8f;
-    [Range(0.001f, 1)] public float innerFieldSurface_livePlayOpacity = 0.5f;
-    [Range(0.01f, 30)] public float innerField_liveColorIntensifier = 10f;
+    [Range(0.1f, 1)] public float fieldSurfaceAlpha = 0.9f;
+    [Range(0.1f, 1)] public float fieldSurfaceValue = 0.6f;
+
+
 
     [Header("Highlight surfaces")]
-    [Range(0f, 1f)] public float ms_focus_inside_fieldSurfaceOpacity = 0;
-    [Range(0f, 1f)] public float ms_focus_outside_fieldSurfaceOpacity = 0.058f;
-    [Range(0f, 1f)] public float ms_play_inside_fieldSurfaceOpacity = 1;
-    [Range(0f, 1f)] public float ms_play_outside_fieldSurfaceOpacity = 1;
-    [Range(0, 20f)] public float highlightSurface_emisiveIntensity = 5f;
-    [Range(0, 1f)] public float highlightSurface_emissiveSaturation = 0.9f;
+    [Range(0f, 1f)] public float focusInsideHighlightOpacity = 0.02f;
+    [Range(0f, 1f)] public float focusOutsideHighlightOpacity = 0.04f;
+    [Range(0f, 1f)] public float playInsideHighlightOpacity = 1;
+    [Range(0f, 1f)] public float playOutsideHighlightOpacity = 1;
+    [Space]
+    [Range(0, 20f)] public float highlightSurface_emisiveIntensity = 3.94f;
+    [Range(0, 1f)] public float highlightSurface_emissiveSaturation = 0.8f;
 
     [Header("Record objects")]
     public float chordObjectsOpacity = 1;
@@ -126,10 +129,10 @@ public class VisualController : MonoBehaviour
     private void OnPlayField_byRecord(MusicField field)
     {
         bool isPlayingLive = Player.inst.actionState == Player.ActionState.Play;
-        if (!isPlayingLive)
+        if (!(isPlayingLive && Player.inst.curField.ID == field.ID))
         {
-            var opacity = innerFieldSurface_recordPlayOpacity;
-            var intensifier = innerField_recordColorIntensifier;
+            var opacity = recordFieldOpacity;
+            var intensifier = recordFieldIntensifier;
 
             field.SetFieldVisibility(opacity, intensifier);
         }
@@ -140,7 +143,7 @@ public class VisualController : MonoBehaviour
     private void OnStopField_byRecord(MusicField field)
     {
         bool isPlayingLive = Player.inst.actionState == Player.ActionState.Play;
-        if (!isPlayingLive)
+        if (!(isPlayingLive && Player.inst.curField.ID == field.ID))
         {
             field.SetFieldVisibility(0, 1);
         }
@@ -156,17 +159,12 @@ public class VisualController : MonoBehaviour
     {
         var curField = Player.inst.curFieldSet[Player.inst.curField.ID];
         var curPlayerField = Player.inst.curField;
-        var opacity = ms_play_outside_fieldSurfaceOpacity;
 
         // 1. HighlightSurface
-        //curField.SetHighlightSurfaceActive();
-        curPlayerField.SetHighlightOpacity(opacity);
+        curPlayerField.SetHighlightOpacity(playOutsideHighlightOpacity);
 
         // 2. FieldSurface
-        var fieldOpacity = ms_play_outside_fieldSurfaceOpacity;
-        var intensifier = innerField_liveColorIntensifier;                                                      // vllt nicht mehr nötig, weil intensifier bei jedem setten immer gleich?
-
-        curField.SetFieldVisibility(fieldOpacity, intensifier);
+        curField.SetFieldVisibility(playFieldOpacity, playFieldIntensifier);
     }
 
 
@@ -179,7 +177,7 @@ public class VisualController : MonoBehaviour
         var curField = Player.inst.curFieldSet[Player.inst.curField.ID];
 
         var curPlayerField = Player.inst.curField;
-        var opacity = ms_focus_outside_fieldSurfaceOpacity;
+        var opacity = focusOutsideHighlightOpacity;
 
 
 
@@ -189,8 +187,8 @@ public class VisualController : MonoBehaviour
         // 2. FieldSurface
         if (curField.ActiveRecords > 0)
         {
-            var fieldOpacity = innerFieldSurface_recordPlayOpacity;
-            var intensifier = innerField_recordColorIntensifier;
+            var fieldOpacity = recordFieldOpacity;
+            var intensifier = recordFieldIntensifier;
 
             curPlayerField.SetFieldVisibility(fieldOpacity, intensifier);
         }
@@ -207,12 +205,12 @@ public class VisualController : MonoBehaviour
     /// <summary>
     /// Change player visibility
     /// </summary>
-    public void OnFieldChange(PlayerField data)
+    public void OnFieldChange(MusicField curField)
     {
-        if (data.IsNotSpawning && data.IsSelectable)
+        if (curField.isNotSpawning && curField.isSelectable)
         {
-            var curField = Player.inst.curField;
-            curField.UpdateSurfaces();
+            curField.UpdatePlayingSurfaces();
+            
         }
     }
 
@@ -238,11 +236,11 @@ public class VisualController : MonoBehaviour
     {
         if (Player.inst.actionState == Player.ActionState.Play)
         {
-            Player.inst.curField.SetHighlightOpacity(ms_play_inside_fieldSurfaceOpacity);
+            Player.inst.curField.SetHighlightOpacity(playInsideHighlightOpacity);
         }
         else
         {
-            Player.inst.curField.SetHighlightOpacity(ms_focus_inside_fieldSurfaceOpacity);
+            Player.inst.curField.SetHighlightOpacity(focusInsideHighlightOpacity);
         }
     }
 
@@ -250,11 +248,11 @@ public class VisualController : MonoBehaviour
     {
         if (Player.inst.actionState == Player.ActionState.Play)
         {
-            Player.inst.curField.SetHighlightOpacity(ms_play_outside_fieldSurfaceOpacity);
+            Player.inst.curField.SetHighlightOpacity(playOutsideHighlightOpacity);
         }
         else
         {
-            Player.inst.curField.SetHighlightOpacity(ms_focus_outside_fieldSurfaceOpacity);
+            Player.inst.curField.SetHighlightOpacity(focusOutsideHighlightOpacity);
         }
     }
 

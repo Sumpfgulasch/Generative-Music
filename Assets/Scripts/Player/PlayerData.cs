@@ -49,14 +49,6 @@ public static class PlayerData
             {
                 curEdgeStart = TunnelData.vertices[i];
                 curEdgeEnd = TunnelData.vertices[(i + 1) % TunnelData.vertices.Length];
-                // TO DO: verschieben
-                #region secondary edges: positions
-                for (int j = 0; j < Player.curSecEdges.Length; j++)
-                {
-                    Player.curSecEdges[j].start = TunnelData.vertices[(i + 1 + j) % TunnelData.vertices.Length];    // TO DO: player.curSecEdges sollten hier eig nicht gesetzt werden
-                    Player.curSecEdges[j].end = TunnelData.vertices[(i + 2 + j) % TunnelData.vertices.Length];
-                }
-                #endregion
                 curEdgeIndex = i;
             }
         }
@@ -79,27 +71,19 @@ public static class PlayerData
 
 
     /// <summary>
-    /// Set player field data: ID, positions, mid, sec IDs, sec positions (+curEdge, percentage, isCorner).
+    /// Change curField- and lastField-references.
     /// </summary>
     /// <returns></returns>
-    public static PlayerField SetDataByID(int ID)
+    public static MusicField SetDataByID(int ID)
     {
         // 0. last-variables
         lastFieldID = Player.curField.ID;
-
-        MusicField[] fields = TunnelData.fields;
+        Player.inst.lastField = Player.inst.curField;
 
         // 1. SET
-        // Primary
-        Player.curField.Set(ID, fields[ID].positions, fields[ID].mid, fields[ID].isCorner);
+        Player.inst.curField = Player.inst.curFieldSet[ID];
 
-        // Secondary
-        for (int i = 0; i < Player.curSecondaryFields.Length; i++)
-        {
-            int secID = (ID + ((i + 1) * (VisualController.inst.fieldsPerEdge - 1))) % TunnelData.FieldsCount;
-            Player.curSecondaryFields[i].Set(secID, fields[secID].positions, fields[secID].mid, fields[secID].isCorner);
-        }
-        // TO DO: set current edge (start, end, ID; percentage already set)
+        //Debug.Log("curFieldID: " + Player.inst.curField.ID + ", lastFieldID: " + Player.inst.lastField.ID);
 
         return Player.curField;
 

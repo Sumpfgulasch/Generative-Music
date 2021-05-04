@@ -165,7 +165,7 @@ public class MusicManager : MonoBehaviour
         int ID = Player.curField.ID;
         var fieldType = Player.curFieldSet[ID].type;
         
-        if (!Player.inst.curFieldSet[ID].isSpawning)
+        if (Player.inst.curFieldSet[ID].isNotSpawning)
         {
             // nur wenn sich feld nicht aufbaut
             switch (fieldType)
@@ -242,7 +242,7 @@ public class MusicManager : MonoBehaviour
         #endregion
     }
 
-    public void OnFieldChange(PlayerField data)
+    public void OnFieldChange(MusicField field)
     {
         if (Player.actionState == Player.ActionState.Play)
         {

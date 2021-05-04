@@ -55,10 +55,9 @@ public class Player : MonoBehaviour
     [HideInInspector] public Transform[] innerVertices_obj;
     [HideInInspector] public float velocity;
     [HideInInspector] public Vector3 mousePos;
-    [HideInInspector] public PlayerField curField;
-    [HideInInspector] public PlayerField[] curSecondaryFields;
+    [HideInInspector] public MusicField curField;
+    [HideInInspector] public MusicField lastField;
     [HideInInspector] public Edge curEdge;
-    [HideInInspector] public Edge[] curSecEdges;
     [HideInInspector] public bool tunnelEnter;
     [HideInInspector] public MusicField[] curFieldSet;
 
@@ -248,7 +247,7 @@ public class Player : MonoBehaviour
         // 1. Game start checks
         if (positionState != PositionState.NoTunnel)
         {
-            if (curField.IsNotSpawning)
+            if (curField.isNotSpawning)
             {
                 // 2. UI?
                 var pointerPos = Pointer.current.position.ReadValue();

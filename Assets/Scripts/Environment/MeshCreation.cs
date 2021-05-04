@@ -229,27 +229,16 @@ public static class MeshCreation
         GameObject newObj = CreateContainer("Primary", MeshRef.inst.playerField_parent);
         LineRenderer lineRend = newObj.AddLineRenderer(2, MeshRef.inst.playerField_mat, VisualController.inst.playerFieldPlayThickness);
         lineRend.enabled = VisualController.inst.showPlayerLinerend;
-        Player.curField = new PlayerField(lineRend, VisualController.inst.fieldsPerEdge - 1);
+        Player.curField = new MusicField(lineRend, VisualController.inst.fieldsPerEdge - 1);
         
-        // Seoncdary
-        Player.curSecondaryFields = new PlayerField[Player.verticesCount - 1];
-        for (int i = 0; i < Player.curSecondaryFields.Length; i++)
-        {
-            GameObject newObj2 = CreateContainer("Secondary", MeshRef.inst.playerField_parent);
-            LineRenderer lineRend2 = newObj2.AddLineRenderer(2, MeshRef.inst.playerFieldSec_mat, VisualController.inst.playerSecFieldThickness);
-            Player.curSecondaryFields[i] = new PlayerField(lineRend2, 0);
-            lineRend2.enabled = false;
-        }
-
         // EDGES
         Player.curEdge = new Edge();
-        Player.curSecEdges = new Edge[Player.verticesCount - 1];
-        for (int i = 0; i < Player.curSecEdges.Length; i++)
-            Player.curSecEdges[i] = new Edge();
 
         // Init field & outerSurface
-        Player.curField.InitSurface();
-        Player.curField.SetHighlightSurface_toFocus();
+        //Player.curField.InitSurface();
+        Player.curField = TunnelData.fields[0];
+        Player.curField.SetHighlightOpacity(VisualController.inst.focusOutsideHighlightOpacity);
+        //Player.curField.SetHighlightSurface_toFocus();
     }
 
 

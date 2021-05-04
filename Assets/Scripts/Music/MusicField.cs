@@ -12,21 +12,23 @@ public class MusicField
 
     // Properties
     public int ID;
-    public Type type;
+    public Type type; //
     public Vector3 start;
     public Vector3 end;
     public Vector3 mid;
     public Vector3[] positions;
+    public float height;
     public bool isCorner;
     public bool isEdgeMid;
     public LineRenderer lineRend;
-    public Chord chord;
+    public Chord chord; //
     public bool isSelectable;
-    public bool isSpawning;
+    public bool isNotSpawning;
     public MeshRenderer fieldSurface;
     public MeshRenderer highlightSurface;
-    public float SurfaceOpacity { get; protected set; }
-    public float height;
+    public Color fieldSurfaceColor;
+    public Color highlightSurfaceColor;
+    protected float surfaceOpacity;
 
     private int lastActiveRecords;
     private int activeRecords;
@@ -37,7 +39,6 @@ public class MusicField
         {
             lastActiveRecords = activeRecords;
 
-            //activeRecords = Mathf.Clamp(value, 0, 100);
             activeRecords = value;
             if (activeRecords == 0)
             {
@@ -55,11 +56,6 @@ public class MusicField
         }
     }
 
-    // Private variables
-    public Color fieldSurfaceColor;
-    public Color highlightSurfaceColor;
-
-
 
     // Contructors
     public MusicField()
@@ -67,9 +63,10 @@ public class MusicField
         
     }
 
-    public MusicField(Type type)
+    public MusicField(LineRenderer lineRend, int ID)
     {
-        this.type = type;
+        this.lineRend = lineRend;
+        this.ID = ID;
     }
 
     public MusicField(int ID, LineRenderer lineRend, bool isCorner, bool isEdgeMid)
@@ -80,11 +77,6 @@ public class MusicField
         this.isEdgeMid = isEdgeMid;
     }
 
-    // Update
-    //private void Update()
-    //{
-        
-    //}
 
 
 
@@ -142,7 +134,7 @@ public class MusicField
         this.type = fieldType;
         this.chord = chord;
         this.isSelectable = selectable;
-        this.isSpawning = isBuildingUp;
+        this.isNotSpawning = !isBuildingUp;
     }
 
     /// <summary>
@@ -177,16 +169,19 @@ public class MusicField
         // Assign!
         this.lineRend.material.SetColor("_BaseColor", color);
         this.lineRend.material.SetColor("_EmissionColor", color * lineRendIntensity);
-        this.fieldSurface.material.SetColor("_BaseColor", fieldSurfaceColor); // no emissive color // "_colorA"    _BaseColor
-        //this.fieldSurface.material.SetColor("_colorB", fieldSurfaceColor * 0.3f);
+        this.fieldSurface.material.SetColor("_BaseColor", fieldSurfaceColor);
         this.highlightSurface.material.SetColor("_BaseColor", highlightSurfaceColor);
         this.highlightSurface.material.SetColor("_EmissionColor", highlightSurfaceColor * surfaceIntensity);
     }
 
 
+    /// <summary>
+    /// Set opacity of the highlight surface meshRenderer. Store value in a variable.
+    /// </summary>
+    /// <param name="opacity"></param>
     public void SetHighlightOpacity(float opacity)
     {
-        SurfaceOpacity = opacity;
+        surfaceOpacity = opacity;
         var color = highlightSurface.material.color;
         color.a = opacity;
         highlightSurface.material.color = color;
@@ -240,84 +235,6 @@ public class MusicField
 
         return nextID;
     }
-}
-
-
-
-
-
-// -------------------------- Player Edge Part -------------------------
-
-
-
-
-
-public class PlayerField // : MusicField
-{
-    public int ID;
-    
-    #region line renderer zeug
-    public LineRenderer lineRend;
-    public Vector3 start;
-    public Vector3 end;
-    public Vector3 mid;
-    public Vector3[] positions;
-    public bool isCorner;
-    public bool isEdgeMid;      
-    public Vector3[] secondaryPositions; // Alles nur Zeug für line renderer
-    #endregion
-
-    public bool IsSelectable { get { return Player.inst.curFieldSet[ID].isSelectable; } }
-    public bool IsNotSpawning { get { return !Player.inst.curFieldSet[ID].isSpawning; } }
-    private MeshRenderer highlightSurface; // { get; private set; }
-    private MeshRenderer lastHighlightSurface;
-    private MeshRenderer fieldSurface; // { get; private set; }
-    private MeshRenderer lastFieldSurface;
-    private float surfaceOpacity; // { get; private set; }
-
-
-
-    // Contructors
-    public PlayerField(LineRenderer lineRend, int ID)
-    {
-        this.lineRend = lineRend;
-        this.ID = ID;
-    }
-
-
-
-    // Functions
-
-
-    /// <summary>
-    /// Assign a surface. Disable MeshRenderer.
-    /// </summary>
-    public void InitSurface()
-    {
-        highlightSurface = TunnelData.fields[0].highlightSurface;
-        highlightSurface.enabled = false;
-        lastHighlightSurface = highlightSurface;
-    }
-
-
-    /// <summary>
-    /// Set variables. Set z-position.
-    /// </summary>
-    public void Set(int ID, Vector3[] positions, Vector3 mid, bool isCorner)
-    {
-        this.ID = ID;
-        this.positions = positions;
-        this.mid = mid;
-        this.isCorner = isCorner;
-
-        for (int i=0; i< positions.Length; i++)
-            this.positions[i].z = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
-    }
-
-    public void SetVisible(bool value)
-    {
-        this.lineRend.enabled = value;
-    }
 
 
 
@@ -332,10 +249,10 @@ public class PlayerField // : MusicField
         this.lineRend.endWidth = VisualController.inst.playerFieldPlayThickness;
 
         float zPos = Player.inst.transform.position.z - (VisualController.inst.fieldsBeforeSurface + 0.001f);
-        SetZPos(zPos);
+        SetLineRendZPos(zPos);
 
         // 2. Set highlight surface
-        SetHighlightOpacity(VisualController.inst.ms_play_outside_fieldSurfaceOpacity);
+        SetHighlightOpacity(VisualController.inst.playOutsideHighlightOpacity);
     }
 
 
@@ -349,116 +266,177 @@ public class PlayerField // : MusicField
         this.lineRend.endWidth = VisualController.inst.playerFieldFocusThickness;
 
         float zPos = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
-        SetZPos(zPos);
+        SetLineRendZPos(zPos);
 
         // 2. Set opacity
-        SetHighlightOpacity(VisualController.inst.ms_focus_outside_fieldSurfaceOpacity); // to do: besser; fragen ob ...
+        SetHighlightOpacity(VisualController.inst.focusOutsideHighlightOpacity);
     }
 
 
+
     /// <summary>
-    /// Set z pos only.
+    /// Disable old Highlight- and FieldSurface, enable new. Set opacity.
     /// </summary>
-    public void SetZPos(float zPos)
+    public void UpdatePlayingSurfaces()
     {
-        for (int i = 0; i < this.lineRend.positionCount; i++)
+        var lastField = Player.inst.lastField;
+
+        var playFieldOpacity = VisualController.inst.playFieldOpacity;
+        var playFieldIntensifier = VisualController.inst.playFieldIntensifier;
+        var playHighlightOpacity = VisualController.inst.playOutsideHighlightOpacity;
+        var focusHighlightOpacity = VisualController.inst.focusOutsideHighlightOpacity;
+        var recordOpacity = VisualController.inst.recordFieldOpacity;
+        var recordIntensifier = VisualController.inst.recordFieldIntensifier;
+
+        // LAST FIELD
+        // 1.1. Highlight surface
+        lastField.highlightSurface.enabled = false;
+        // 1.2. FieldSurfaces: Keep enabled, set opacity
+        if (lastField.activeRecords > 0)
         {
-            Vector3 newPos = this.lineRend.GetPosition(i);
-            newPos.z = zPos;
-            this.lineRend.SetPosition(i, newPos);
-        }
-    }
-
-
-    /// <summary>
-    /// Set opacity of the highlight surface meshRenderer. Store value in a variable.
-    /// </summary>
-    /// <param name="opacity">Opacity. 0 == transparent [0, 1].</param>
-    public void SetHighlightOpacity(float opacity)
-    {
-        // 1. Store data (nötig)
-        surfaceOpacity = opacity;
-
-        // 2. Set color
-        Color newColor = highlightSurface.material.color;
-        newColor.a = opacity;
-        highlightSurface.material.color = newColor;
-    }
-
-
-    public void SetFieldOpacity(float opacity)
-    {
-        // 1. store data
-
-        // 2. set color
-        Color color = fieldSurface.material.color;
-        color.a = opacity;
-        fieldSurface.material.color = color;
-
-    }
-
-    /// <summary>
-    /// Set the opacity of the inner surface and an emissive intensifier for both surface and edges.
-    /// </summary>
-    /// <param name="opacity"></param>
-    public void SetFieldVisibility(float opacity, float emissiveIntensifier)
-    {
-        var fieldSurfaceColor = Player.inst.curFieldSet[Player.inst.curField.ID].fieldSurfaceColor;     // richtig beschissener hack
-
-        fieldSurface.material.SetFloat("Fill", opacity);
-        fieldSurface.material.SetColor("GridColor", fieldSurfaceColor * emissiveIntensifier);
-    }
-
-    /// <summary>
-    /// Disable old HighlightSurface, enable new. Set opacity.
-    /// </summary>
-    public void UpdateSurfaces()
-    {
-        // 1. Disable old, enable new
-        lastHighlightSurface.enabled = false;
-        highlightSurface = Player.inst.curFieldSet[ID].highlightSurface;
-        highlightSurface.enabled = true;
-
-        lastHighlightSurface = highlightSurface;
-
-        // 2. Refresh opacity
-        SetHighlightOpacity(surfaceOpacity);
-
-
-
-        //HighlightSurface.enabled = false;
-        //HighlightSurface = Player.inst.curFieldSet[ID].highlightSurface;
-        //HighlightSurface.enabled = true;
-
-        //SetHighlightOpacity(SurfaceOpacity);
-    }
-
-
-    /// <summary>
-    /// LineRend currently disabled.
-    /// </summary>
-    public void RefreshLineRend()
-    {
-        var curField = Player.inst.curField;
-
-        // [currently disabled:] Line renderer positions
-        if (curField.isCorner)
-        {
-            var positions = MeshUpdate.PreventLineRendFromBending(curField.positions);
-            var positionCount = positions.Length;
-            curField.lineRend.positionCount = positionCount;
-            curField.lineRend.SetPositions(positions);
+            lastField.SetFieldVisibility(recordOpacity, recordIntensifier);
         }
         else
         {
-            curField.lineRend.positionCount = curField.positions.Length;
-            curField.lineRend.SetPositions(curField.positions);
+            lastField.SetFieldVisibility(0, 1);                                                      // opacity bräuchte eig variable
         }
+
+        // CURRENT FIELD
+        highlightSurface.enabled = true;
+
+        if (Player.inst.actionState == Player.ActionState.Play)
+        {
+            SetHighlightOpacity(playHighlightOpacity);
+            SetFieldVisibility(playFieldOpacity, playFieldIntensifier);
+        }
+        else
+        {
+            SetHighlightOpacity(focusHighlightOpacity);
+            if (ActiveRecords == 0)
+            {
+                SetFieldVisibility(0, 1);                                                                 // opacity bräuchte eig variable
+            }
+        }
+
+        //var fieldOpacity = ms_play_outside_fieldSurfaceOpacity;
+        //var intensifier = innerField_liveColorIntensifier;
+
     }
-
-
-
 }
+
+
+
+
+#region trash
+// -------------------------- Player Edge Part -------------------------
+
+
+
+
+
+//public class PlayerField : MusicField
+//{
+//public bool IsSelectable { get { return Player.inst.curFieldSet[ID].isSelectable; } }
+//public bool IsNotSpawning { get { return !Player.inst.curFieldSet[ID].isNotSpawning; } }
+//private MeshRenderer lastHighlightSurface;
+//private MeshRenderer lastFieldSurface;
+
+
+
+// Contructors
+//public PlayerField(LineRenderer lineRend, int ID)
+//{
+//    this.lineRend = lineRend;
+//    this.ID = ID;
+//}
+
+
+
+// Functions
+
+
+///// <summary>
+///// Assign a surface. Disable MeshRenderer.
+///// </summary>
+//public void InitSurface()
+//{
+//    highlightSurface = TunnelData.fields[0].highlightSurface;
+//    highlightSurface.enabled = false;
+//    lastHighlightSurface = highlightSurface;
+//}
+
+
+///// <summary>
+///// Set variables. Set z-position.
+///// </summary>
+//public void Set(int ID, Vector3[] positions, Vector3 mid, bool isCorner)
+//{
+//    this.ID = ID;
+//    this.positions = positions;
+//    this.mid = mid;
+//    this.isCorner = isCorner;
+
+//    for (int i=0; i< positions.Length; i++)
+//        this.positions[i].z = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
+//}
+
+//public void SetVisible(bool value)
+//{
+//    this.lineRend.enabled = value;
+//}
+
+
+
+
+
+
+
+///// <summary>
+///// Set z pos only.
+///// </summary>
+//public void SetZPos(float zPos)
+//{
+//    for (int i = 0; i < this.lineRend.positionCount; i++)
+//    {
+//        Vector3 newPos = this.lineRend.GetPosition(i);
+//        newPos.z = zPos;
+//        this.lineRend.SetPosition(i, newPos);
+//    }
+//}
+
+
+
+
+
+
+
+
+/// <summary>
+/// LineRend currently disabled.
+/// </summary>
+//public void RefreshLineRend()
+//{
+//    var curField = Player.inst.curField;
+
+//    // [currently disabled:] Line renderer positions
+//    if (curField.isCorner)
+//    {
+//        var positions = MeshUpdate.PreventLineRendFromBending(curField.positions);
+//        var positionCount = positions.Length;
+//        curField.lineRend.positionCount = positionCount;
+//        curField.lineRend.SetPositions(positions);
+//    }
+//    else
+//    {
+//        curField.lineRend.positionCount = curField.positions.Length;
+//        curField.lineRend.SetPositions(curField.positions);
+//    }
+//}
+
+
+
+//}
+#endregion
 
 
 // -------------------------------- Edge -------------------------------
