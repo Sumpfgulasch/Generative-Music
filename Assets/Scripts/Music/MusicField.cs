@@ -196,7 +196,7 @@ public class MusicField
     /// Set the opacity of the inner surface and an emissive intensifier.
     /// </summary>
     /// <param name="opacity"></param>
-    public void SetInnerFieldVisibility(float opacity, float emissiveIntensifier)
+    public void SetFieldVisibility(float opacity, float emissiveIntensifier)
     {
         fieldSurface.material.SetFloat("Fill", opacity);
         fieldSurface.material.SetColor("GridColor", fieldSurfaceColor * emissiveIntensifier);
@@ -269,10 +269,13 @@ public class PlayerField // : MusicField
 
     public bool IsSelectable { get { return Player.inst.curFieldSet[ID].isSelectable; } }
     public bool IsNotSpawning { get { return !Player.inst.curFieldSet[ID].isSpawning; } }
-    public MeshRenderer OuterSurface { get; private set; }
-    public float SurfaceOpacity { get; private set; }
+    private MeshRenderer highlightSurface; // { get; private set; }
+    private MeshRenderer lastHighlightSurface;
+    private MeshRenderer fieldSurface; // { get; private set; }
+    private MeshRenderer lastFieldSurface;
+    private float surfaceOpacity; // { get; private set; }
 
-    
+
 
     // Contructors
     public PlayerField(LineRenderer lineRend, int ID)
@@ -291,8 +294,9 @@ public class PlayerField // : MusicField
     /// </summary>
     public void InitSurface()
     {
-        OuterSurface = TunnelData.fields[0].highlightSurface;
-        OuterSurface.enabled = false;
+        highlightSurface = TunnelData.fields[0].highlightSurface;
+        highlightSurface.enabled = false;
+        lastHighlightSurface = highlightSurface;
     }
 
 
@@ -315,25 +319,13 @@ public class PlayerField // : MusicField
         this.lineRend.enabled = value;
     }
 
-    
-    /// <summary>
-    /// Change line renderer width, outerField-opacity (and z-position of line rend).
-    /// </summary>
-    public void SetHighlightSurface_toFocus()
-    {
-        this.lineRend.startWidth = VisualController.inst.playerFieldFocusThickness;
-        this.lineRend.endWidth = VisualController.inst.playerFieldFocusThickness;
 
-        float zPos = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
-        SetZPos(zPos);
 
-        SetHighlightOpacity(VisualController.inst.ms_focus_outside_fieldSurfaceOpacity); // to do: besser; fragen ob ...
-    }
 
     /// <summary>
     /// Change highlight surface opacity (+unused stuff: Change line renderer width and z-position).
     /// </summary>
-    public void SetHighlightSurfaceActive()
+    public void SetHighlightSurface_toActive()
     {
         // 1. Unimportant lineRend stuff
         this.lineRend.startWidth = VisualController.inst.playerFieldPlayThickness;
@@ -344,6 +336,23 @@ public class PlayerField // : MusicField
 
         // 2. Set highlight surface
         SetHighlightOpacity(VisualController.inst.ms_play_outside_fieldSurfaceOpacity);
+    }
+
+
+    /// <summary>
+    /// Change line renderer width, outerField-opacity (and z-position of line rend).
+    /// </summary>
+    public void SetHighlightSurface_toFocus()
+    {
+        // 1. Unimportant lineRend stuff
+        this.lineRend.startWidth = VisualController.inst.playerFieldFocusThickness;
+        this.lineRend.endWidth = VisualController.inst.playerFieldFocusThickness;
+
+        float zPos = Player.inst.transform.position.z - VisualController.inst.playerFieldBeforeSurface;
+        SetZPos(zPos);
+
+        // 2. Set opacity
+        SetHighlightOpacity(VisualController.inst.ms_focus_outside_fieldSurfaceOpacity); // to do: besser; fragen ob ...
     }
 
 
@@ -362,28 +371,68 @@ public class PlayerField // : MusicField
 
 
     /// <summary>
-    /// Set opacity of the highlight surface.
+    /// Set opacity of the highlight surface meshRenderer. Store value in a variable.
     /// </summary>
     /// <param name="opacity">Opacity. 0 == transparent [0, 1].</param>
     public void SetHighlightOpacity(float opacity)
     {
-        SurfaceOpacity = opacity;
-        Color newColor = OuterSurface.material.color;
+        // 1. Store data (nötig)
+        surfaceOpacity = opacity;
+
+        // 2. Set color
+        Color newColor = highlightSurface.material.color;
         newColor.a = opacity;
-        OuterSurface.material.color = newColor;
+        highlightSurface.material.color = newColor;
+    }
+
+
+    public void SetFieldOpacity(float opacity)
+    {
+        // 1. store data
+
+        // 2. set color
+        Color color = fieldSurface.material.color;
+        color.a = opacity;
+        fieldSurface.material.color = color;
+
     }
 
     /// <summary>
-    /// Disable old HighlightSurface, enable new. Set opacity to current value.
+    /// Set the opacity of the inner surface and an emissive intensifier for both surface and edges.
     /// </summary>
-    public void RefreshHighlightSurface()
+    /// <param name="opacity"></param>
+    public void SetFieldVisibility(float opacity, float emissiveIntensifier)
     {
-        OuterSurface.enabled = false;
-        OuterSurface = Player.inst.curFieldSet[ID].highlightSurface;
-        OuterSurface.enabled = true;
+        var fieldSurfaceColor = Player.inst.curFieldSet[Player.inst.curField.ID].fieldSurfaceColor;     // richtig beschissener hack
 
-        SetHighlightOpacity(SurfaceOpacity);
+        fieldSurface.material.SetFloat("Fill", opacity);
+        fieldSurface.material.SetColor("GridColor", fieldSurfaceColor * emissiveIntensifier);
     }
+
+    /// <summary>
+    /// Disable old HighlightSurface, enable new. Set opacity.
+    /// </summary>
+    public void UpdateSurfaces()
+    {
+        // 1. Disable old, enable new
+        lastHighlightSurface.enabled = false;
+        highlightSurface = Player.inst.curFieldSet[ID].highlightSurface;
+        highlightSurface.enabled = true;
+
+        lastHighlightSurface = highlightSurface;
+
+        // 2. Refresh opacity
+        SetHighlightOpacity(surfaceOpacity);
+
+
+
+        //HighlightSurface.enabled = false;
+        //HighlightSurface = Player.inst.curFieldSet[ID].highlightSurface;
+        //HighlightSurface.enabled = true;
+
+        //SetHighlightOpacity(SurfaceOpacity);
+    }
+
 
     /// <summary>
     /// LineRend currently disabled.
