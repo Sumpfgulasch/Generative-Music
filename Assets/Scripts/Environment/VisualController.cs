@@ -18,7 +18,7 @@ public class VisualController : MonoBehaviour
     [Range(0.1f, 1)]
     public float mouseColliderSize_play = 1;
     public Vector2 cameraOffset;
-    public Color[] colorPalette;
+    [HideInInspector] public Color[] tracksColorPalette;
 
     [Header("Player")]
     [Range(0, 1f)] public float playerAlpha = 0.5f;
@@ -64,9 +64,6 @@ public class VisualController : MonoBehaviour
     [Range(0, 20f)] public float highlightSurface_emisiveIntensity = 3.94f;
     [Range(0, 1f)] public float highlightSurface_emissiveSaturation = 0.8f;
 
-    [Header("Record objects")]
-    public float chordObjectsOpacity = 1;
-
     [Header("Beat triangle")]
     public float highlightBeatTime = 0.2f;
     public Color highlightBeatColor = Color.white;
@@ -106,10 +103,12 @@ public class VisualController : MonoBehaviour
 
         playerMid = Player.transform.position;
 
-        colorPalette = new Color[5];
-        for (int i=0; i<colorPalette.Length; i++)
+        tracksColorPalette = new Color[5];
+
+        // Unschön
+        for (int i=0; i<tracksColorPalette.Length; i++)
         {
-            colorPalette[i] = MeshRef.inst.layerButtons[i].colors.normalColor;
+            tracksColorPalette[i] = MeshRef.inst.layerButtons[i].colors.normalColor;
         }
 
         // Events

@@ -929,7 +929,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
     "m_ObjectId": "76befd6ca72e5e88a18e6e6bd8219137",
     "m_Id": 0,
-    "m_DisplayName": "GridColor",
+    "m_DisplayName": "Color",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -1157,9 +1157,9 @@
     "m_Guid": {
         "m_GuidSerialized": "8aa0fbc4-1385-4dc4-aede-428ea9109446"
     },
-    "m_Name": "GridColor",
+    "m_Name": "Color",
     "m_DefaultReferenceName": "Color_F15F84FB",
-    "m_OverrideReferenceName": "GridColor",
+    "m_OverrideReferenceName": "_Color",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
