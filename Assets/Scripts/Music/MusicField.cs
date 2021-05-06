@@ -205,7 +205,7 @@ public class MusicField
             color = MeshRef.inst.recordFieldColor;
         }
         fieldSurface.material.SetFloat("Fill", opacity);
-        fieldSurface.material.SetColor("_BaseColor", color * emissiveIntensifier);
+        fieldSurface.material.SetColor("_BaseColor", color * emissiveIntensifier);  // _BaseColor
     }
 
     public static bool IsCorner(int ID)

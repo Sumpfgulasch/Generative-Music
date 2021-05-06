@@ -91,6 +91,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Fill: 0.7
+    - Vector1_4DCFF0D8: 0.97
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -118,7 +120,8 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0.19937494, g: 0.08609373, b: 0.29, a: 1}
+    - Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _BaseColor: {r: 0.06486485, g: 0.036486484, b: 0.1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0.085519016, g: 0.023495886, b: 0.16981131, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}

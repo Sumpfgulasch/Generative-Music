@@ -77,10 +77,9 @@ public class ChordObject : LoopObject
             Debug.LogError("mesh rend sollte nich null sein");
 
         var color = VisualController.inst.tracksColorPalette[trackLayer];
-        //thisObj.meshRenderer.material.SetColor("_BaseColor", color);
-        thisObj.meshRenderer.material.color = color;
-        //thisObj.meshRenderer.material.SetColor("_EmissionColor", color);      // emissive
-        thisObj.startColor = thisObj.meshRenderer.material.GetColor("_BaseColor");
+        thisObj.meshRenderer.material.SetColor("_BaseColor", color);
+        //thisObj.meshRenderer.material.color = color;
+        thisObj.startColor = color;
 
         // add
         thisObj.obj.AddComponent<Move>();

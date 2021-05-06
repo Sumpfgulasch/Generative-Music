@@ -77,6 +77,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Fill: 0
     - Vector1_4DCFF0D8: 0.95
     - _AlphaClip: 0
     - _Blend: 0
@@ -111,10 +112,11 @@ Material:
     - _minDistance: -0.4
     m_Colors:
     - Color_F15F84FB: {r: 0.2196078, g: 1.207843, b: 2, a: 0}
+    - GridColor: {r: 0.2196078, g: 1.207843, b: 2, a: 0}
     - Tiling: {r: 1, g: 1, b: 0, a: 0}
     - _BackColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 0.09803922}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseColor: {r: 0.20698163, g: 1.2108425, b: 1.9766746, a: 0.09803922}
+    - _Color: {r: 0.23036258, g: 1.235581, b: 1.999966, a: 0}
     - _EmissionColor: {r: 0, g: 0.60854894, b: 0.5461179, a: 1}
     - _FrontColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
