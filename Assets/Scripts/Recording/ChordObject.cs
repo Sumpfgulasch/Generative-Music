@@ -56,9 +56,10 @@ public class ChordObject : LoopObject
     /// </summary>
     public static ChordObject Create(GameObject obj, ChordObject douplicate, Vector3 position, int fieldID, int[] notes, Sequencer sequencer, int trackLayer, float start, float end, float loopStart, float loopEnd_extended)
     {
+        // 1. ChordObject-Script
         var thisObj = obj.AddComponent<ChordObject>();
 
-        // set
+        // 2. Variables
         thisObj.obj = obj;
         thisObj.douplicate = douplicate;
         thisObj.obj.transform.position = position;
@@ -71,7 +72,7 @@ public class ChordObject : LoopObject
         thisObj.loopStart = loopStart;
         thisObj.loopEnd_extended = loopEnd_extended;
 
-        // Mesn & colors
+        // 3. Mesh & colors
         thisObj.meshRenderer = obj.GetComponent<MeshRenderer>();
         if (thisObj.meshRenderer == null)
             Debug.LogError("mesh rend sollte nich null sein");
@@ -81,8 +82,14 @@ public class ChordObject : LoopObject
         //thisObj.meshRenderer.material.color = color;
         thisObj.startColor = color;
 
-        // add
+        // 4. Move
         thisObj.obj.AddComponent<Move>();
+
+        // 5. Outline
+        //var outline = thisObj.obj.AddComponent<Outline>();
+        //outline.OutlineMode = Outline.Mode.OutlineAll;
+        //outline.OutlineWidth = 5f;
+        //outline.OutlineColor = Color.red;
 
         return thisObj;
     }
