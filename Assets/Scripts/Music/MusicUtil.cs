@@ -79,7 +79,7 @@ public static class MusicUtil
 
 
     /// <summary>
-    /// Returns any triad in a given key and in the given degree*. The tonality is 48-59. No inversion. (* Chords not containing the perfect unison are not supported yet.)
+    /// Returns any triad in a given key and in the given degree. No Inversion. (intervals[0] with other than perfect unison are not supported yet!)
     /// </summary>
     /// <param name="key">The key in which you wanna have the chord.</param>
     /// <param name="degree">The wanted degree within the key.</param>
@@ -93,12 +93,7 @@ public static class MusicUtil
         int note3 = key.notes[baseNoteIndex + (intervals[2] - 1)];
         int[] chordNotes = new int[3] { note1, note2, note3 };
 
-        Chord newChord = new Chord(chordNotes, degree, 0, note1);
-
-        //if (intervals[0] != 1)
-        //    Debug.LogError("Chords different than 1-3-5 are not tested yet. First interval: " + intervals[0]);
-
-        return newChord;
+        return new Chord(chordNotes, degree, 0, note1);
     }
 
 
@@ -115,13 +110,10 @@ public static class MusicUtil
         int[][] bigIntervals = Chords.BigChordStructures(intervals, key.notesPerOctave);
         Chord[] chords = new Chord[bigIntervals.Length];
 
-        //Debug.Log("intervals: " + bigIntervals[0].ArrayToString() + ", key: " + key.Scale);
-
         // 2. Get all chords within one octave
         for (int i=0; i<bigIntervals.Length; i++)
         {
             chords[i] = Triad(key, degree, bigIntervals[i], 0);
-            //Debug.Log(i + "; degree: " + degree + ", chord: " + chords[i].notes.ArrayToString() + ", in notes: " + chords[i].notes.AsNames());
         }
 
         // 3. Get all chords withing tone range
@@ -144,11 +136,6 @@ public static class MusicUtil
             }
             
         }
-
-        //for (int i=0; i<allChords.Count; i++)
-        //{
-        //    ExtensionMethods.PrintArray("ALL CHORDS: ", allChords[i].notes.ToList());
-        //}
 
 
         return allChords.ToArray();
@@ -477,16 +464,6 @@ public static class MusicUtil
             return false;
     }
 
-    private static bool NotesAreWithinRange(List<int> notes, int minNote, int maxNote)
-    {
-        foreach(int note in notes)
-        {
-            if (note < minNote || note > maxNote)
-                return false;
-        }
-        return true;
-    }
-
 
 
 
@@ -690,12 +667,11 @@ public class ChordData
     public Color color;
 
 
-    public ChordData(int degree, int[] intervals, int individualCount)//, Color color)
+    public ChordData(int degree, int[] intervals, int individualCount)
     {
         this.degree = degree;
         this.intervals = intervals;
         this.individualCount = individualCount;
-        //this.color = color;
     }
 }
 
@@ -720,10 +696,8 @@ public class Key
     public int[] notes;                 // Alle verfügbaren Midi-Noten der Tonart aus 0-127 (length immer kleiner als 128!)
     public int notesPerOctave;          // Anzahl der Skala-Noten innerhalb einer Oktave; meist 7
     
-    // Auxilliary / fields
+    // Auxilliary
     private int[] stepsInOctave;        // Alle Intervalle von der Prim der Skala aus, die die Skala innerhalb einer Oktave ausmachen
-
-
 
     // CONSTRUCTOR
 

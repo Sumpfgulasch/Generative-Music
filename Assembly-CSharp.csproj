@@ -56,6 +56,7 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\QuickOutline\Scripts\Outline.cs" />
     <Compile Include="Assets\Scripts\Additional stuff\SetRenderQueue.cs" />
     <Compile Include="Assets\test.cs" />
     <Compile Include="Assets\Scripts\Player\Player.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\TriggerVisibleNotes.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\SetHelmParameter.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshUpdateMono.cs" />
+    <Compile Include="Assets\Scripts\Music\MyAudioHelmHelper.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\NoteRow.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\Native.cs" />
     <Compile Include="Assets\Scripts\Environment\MeshCreation.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="Assets\Scripts\CopyPlayerPosition.cs" />
     <Compile Include="Assets\Scripts\Music\MusicField.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerControls.cs" />
+    <Compile Include="Assets\Scripts\Recording\LoopObject.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\ControlJump.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmAudioReceive.cs" />
     <Compile Include="Assets\AudioHelm\Demos\Assets\Scripts\PulseImageOnNote.cs" />
@@ -132,9 +135,6 @@
     <Compile Include="Assets\Scripts\Environment\MeshRef.cs" />
     <Compile Include="Assets\AudioHelm\Scripts\HelmController.cs" />
     <Compile Include="Assets\Scripts\Environment\Move.cs" />
-    <Compile Include="Assets\Scripts\Recording\LoopObject.cs" />
-    <Compile Include="Assets\QuickOutline\Scripts\Outline.cs" />
-    <Compile Include="Assets\Scripts\Music\MyAudioHelmHelper.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
