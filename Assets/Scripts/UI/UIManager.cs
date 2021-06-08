@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     public static UIManager inst;
+    public bool debugChords = false;
 
     [HideInInspector] public List<MusicLayerButton> layerButtons;
     public MusicLayerButton activeLayerButton;

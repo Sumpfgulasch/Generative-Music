@@ -158,6 +158,11 @@ public static class ExtensionMethods
         return newList;
     }
 
+    /// <summary>
+    /// Check if a random number between 0 and 1 is smaller than the given value.
+    /// </summary>
+    /// <param name="probability">[0-1]</param>
+    /// <returns></returns>
     public static bool Probability(float probability)
     {
         // probability has to be 0 - 1!
@@ -233,4 +238,11 @@ public static class ExtensionMethods
 
         return list.ToArray();
     }
+}
+
+
+[System.Serializable]
+public class IntArray2D
+{
+    public int[] array = new int[3];
 }

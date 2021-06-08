@@ -13,10 +13,14 @@ public class MusicManager : MonoBehaviour
     // Public properties
     [Header("Contraints")]
     [Tooltip("Number of chord degrees that make up the edgeParts in the beginning.")]
-    public int[] intervals = new int[] { 1, 3, 5 };
+    public int[] standartIntervals = new int[] { 1, 3, 5 };
+    public IntArray2D[] unusualIntervals;
+    public float unusualIntervalsChance_NoRec = 0.3f;
+    public float unusualIntervalsChance_HasRec = 0.8f;
     public int chordDegrees = 3;
     public int toneRange_startNote = 41;
     public int toneRange = 24;
+    public int toneRange_maxStartNoteShift = 7;
     public int maxLayers = 5;
     public float shortNotes_minPlayTime = 0.3f;
     public int maxEdgePitchIntervalRange = 14;

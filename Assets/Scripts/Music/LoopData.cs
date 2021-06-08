@@ -103,24 +103,50 @@ public static class LoopData
         // 0. Weights
         //weights = InitWeights();
 
+        bool has1stRecord = Recorder.inst.Has1stRecord;
+
         // 1. key
-        curKey = MusicGenerationLogic.RandomKey();
+        if (!has1stRecord)
+        {
+            curKey = MusicGenerationLogic.RandomKey();
+        }
 
         // 2. tone range
-        toneRangeMin = curKey.KeyNote + MusicManager.inst.toneRange_startNote;      // 3
-        toneRangeMax = toneRangeMin + MusicManager.inst.toneRange;                  // 5
+        toneRangeMin = curKey.KeyNote + MusicManager.inst.toneRange_startNote;      // oct. 3
+        if (has1stRecord)
+        {
+            var randAdd = Random.Range(-MusicManager.inst.toneRange_maxStartNoteShift, MusicManager.inst.toneRange_maxStartNoteShift);
+            toneRangeMin += randAdd;
+            toneRangeMin = Mathf.Clamp(toneRangeMin, MusicManager.inst.toneRange_startNote, MusicManager.inst.toneRange_startNote + MusicManager.inst.toneRange);
+        }
+        toneRangeMax = toneRangeMin + MusicManager.inst.toneRange;                  // oct. 5
 
         // 3. velocity
         minVelocity = 0.08f;
         maxVelocity = 0.2f;
 
-        // 3. chord types
+        // 3. chord structure
         // count
         chordTypeCount = MusicManager.inst.chordDegrees;
         // degrees
         int[] degrees = MusicGenerationLogic.RandomChordDegrees(curKey, chordTypeCount);
         // intervals
-        int[] intervals = MusicManager.inst.intervals;
+        int[] intervals;
+
+        var chanceNoRec = ExtensionMethods.Probability(MusicManager.inst.unusualIntervalsChance_NoRec);
+        var chanceHasRec = ExtensionMethods.Probability(MusicManager.inst.unusualIntervalsChance_HasRec);
+        var randIndex = Random.Range(0, MusicManager.inst.unusualIntervals.Length);
+
+        if (Time.time > 5f && ((has1stRecord && chanceHasRec) || (!has1stRecord && chanceNoRec)))
+        {
+            intervals = MusicManager.inst.unusualIntervals[randIndex].array;
+            Debug.Log("unusual intervals: " + intervals[0] + ", " + intervals[1] + ", " + intervals[2]);
+        }
+        else
+        {
+            intervals = MusicManager.inst.standartIntervals;
+        }
+        
         // individual count
         int[] individualCounts = MusicGenerationLogic.RandomChordTypeCounts(chordTypeCount);
         // store!

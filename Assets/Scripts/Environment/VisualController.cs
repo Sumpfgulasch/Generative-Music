@@ -287,16 +287,16 @@ public class VisualController : MonoBehaviour
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(50, 50, 200, 70), 
-            "Chord: " + MusicManager.inst.curChord.notes.NoteNames(), 
+        if (UIManager.inst.debugChords)
+        {
+            GUI.Label(new Rect(50, 50, 200, 70),
+            "Chord: " + MusicManager.inst.curChord.notes.NoteNames(),
             curChordTextStyle);
 
-        GUI.Label(new Rect(50, 90, 200, 70),
-            "Chord: " + MusicManager.inst.lastChord.notes.NoteNames(),
-            lastChordTextStyle);
-
-        
-
+            GUI.Label(new Rect(50, 90, 200, 70),
+                "Chord: " + MusicManager.inst.lastChord.notes.NoteNames(),
+                lastChordTextStyle);
+        }
 
     }
 
